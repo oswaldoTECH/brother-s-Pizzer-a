@@ -11,11 +11,11 @@
         href="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=64&h=64&q=80"
         type="image/x-icon">
 
-    <!-- ICONOS -->
+    <!-- FONT AWESOME -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- FUENTES -->
+    <!-- GOOGLE FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -25,6 +25,7 @@
     <!-- AOS -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+
 
     <style>
 
@@ -71,8 +72,16 @@
 
         body {
             background:
-                radial-gradient(circle at 15% 10%, rgba(229,9,20,.13), transparent 25%),
-                radial-gradient(circle at 85% 40%, rgba(255,123,0,.08), transparent 25%),
+                radial-gradient(
+                    circle at 15% 10%,
+                    rgba(229,9,20,.13),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 85% 40%,
+                    rgba(255,123,0,.08),
+                    transparent 25%
+                ),
                 var(--black);
 
             color: var(--white);
@@ -94,7 +103,9 @@
 
         body::before {
             content: "";
+
             position: fixed;
+
             inset: 0;
 
             pointer-events: none;
@@ -102,22 +113,27 @@
             opacity: .12;
 
             background-image:
-                radial-gradient(circle, #fff 1px, transparent 1px);
+                radial-gradient(
+                    circle,
+                    #fff 1px,
+                    transparent 1px
+                );
 
             background-size: 22px 22px;
 
-            mask-image: linear-gradient(
-                to bottom,
-                black,
-                transparent 80%
-            );
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent 80%
+                );
 
             z-index: -1;
         }
 
 
         /* =========================================================
-           PEPPERONI DECORATIVO
+           PEPPERONIS DECORATIVOS
         ========================================================= */
 
         .pepperoni {
@@ -129,10 +145,26 @@
             border-radius: 50%;
 
             background:
-                radial-gradient(circle at 30% 25%, #ff6b35 0 5%, transparent 6%),
-                radial-gradient(circle at 70% 65%, #7a080d 0 7%, transparent 8%),
-                radial-gradient(circle at 35% 70%, #a50d13 0 6%, transparent 7%),
-                radial-gradient(circle at 60% 30%, #7d080d 0 5%, transparent 6%),
+                radial-gradient(
+                    circle at 30% 25%,
+                    #ff6b35 0 5%,
+                    transparent 6%
+                ),
+                radial-gradient(
+                    circle at 70% 65%,
+                    #7a080d 0 7%,
+                    transparent 8%
+                ),
+                radial-gradient(
+                    circle at 35% 70%,
+                    #a50d13 0 6%,
+                    transparent 7%
+                ),
+                radial-gradient(
+                    circle at 60% 30%,
+                    #7d080d 0 5%,
+                    transparent 6%
+                ),
                 #b51218;
 
             box-shadow:
@@ -143,47 +175,59 @@
 
             z-index: 0;
 
-            animation: floatingPepperoni 6s ease-in-out infinite;
+            animation:
+                floatingPepperoni 6s
+                ease-in-out
+                infinite;
         }
 
         .pepperoni.one {
             top: 18%;
             left: 3%;
-            transform: rotate(20deg);
         }
 
         .pepperoni.two {
             top: 65%;
             right: 3%;
+
             width: 55px;
             height: 55px;
+
             animation-delay: 1s;
         }
 
         .pepperoni.three {
             bottom: 8%;
             left: 7%;
+
             width: 45px;
             height: 45px;
+
             animation-delay: 2s;
         }
 
         .pepperoni.four {
             top: 35%;
             right: 12%;
+
             width: 38px;
             height: 38px;
+
             animation-delay: 3s;
         }
 
         @keyframes floatingPepperoni {
 
-            0%,100% {
-                transform: translateY(0) rotate(0deg);
+            0%, 100% {
+                transform:
+                    translateY(0)
+                    rotate(0deg);
             }
 
             50% {
-                transform: translateY(-15px) rotate(12deg);
+                transform:
+                    translateY(-15px)
+                    rotate(12deg);
             }
         }
 
@@ -203,25 +247,33 @@
             padding: 15px 6%;
 
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
 
-            background: rgba(8,5,4,.86);
+            background:
+                rgba(8,5,4,.86);
 
             backdrop-filter: blur(18px);
 
-            border-bottom: 1px solid rgba(255,255,255,.08);
+            border-bottom:
+                1px solid
+                rgba(255,255,255,.08);
 
             z-index: 1000;
         }
 
         .logo {
             display: flex;
+
             align-items: center;
 
             gap: 9px;
 
-            font-family: 'Playfair Display', serif;
+            font-family:
+                'Playfair Display',
+                serif;
 
             font-size: 1.55rem;
 
@@ -235,7 +287,6 @@
         .logo span {
             color: var(--orange);
         }
-
 
         nav ul {
             list-style: none;
@@ -329,7 +380,8 @@
 
             border-radius: 50%;
 
-            background: rgba(255,123,0,.07);
+            background:
+                rgba(255,123,0,.07);
 
             filter: blur(50px);
         }
@@ -341,7 +393,9 @@
         }
 
 
-        /* BADGE */
+        /* =========================================================
+           BADGE
+        ========================================================= */
 
         .badge {
             display: inline-flex;
@@ -354,9 +408,12 @@
 
             border-radius: 30px;
 
-            background: rgba(229,9,20,.13);
+            background:
+                rgba(229,9,20,.13);
 
-            border: 1px solid rgba(255,71,87,.3);
+            border:
+                1px solid
+                rgba(255,71,87,.3);
 
             color: #ff6b6b;
 
@@ -366,13 +423,19 @@
 
             margin-bottom: 22px;
 
-            box-shadow: 0 0 25px rgba(229,9,20,.12);
+            box-shadow:
+                0 0 25px
+                rgba(229,9,20,.12);
         }
 
         .badge i {
             color: var(--orange);
 
-            animation: firePulse 1.2s infinite alternate;
+            animation:
+                firePulse
+                1.2s
+                infinite
+                alternate;
         }
 
         @keyframes firePulse {
@@ -387,12 +450,17 @@
         }
 
 
-        /* HERO TITLE */
+        /* =========================================================
+           HERO TITLE
+        ========================================================= */
 
         .hero h1 {
-            font-family: 'Playfair Display', serif;
+            font-family:
+                'Playfair Display',
+                serif;
 
-            font-size: clamp(3rem, 5vw, 5.2rem);
+            font-size:
+                clamp(3rem, 5vw, 5.2rem);
 
             line-height: .98;
 
@@ -405,7 +473,8 @@
             color: var(--red-light);
 
             text-shadow:
-                0 0 30px rgba(229,9,20,.25);
+                0 0 30px
+                rgba(229,9,20,.25);
         }
 
         .hero h1 .orange {
@@ -425,7 +494,9 @@
         }
 
 
-        /* INFO */
+        /* =========================================================
+           INFO
+        ========================================================= */
 
         .info-box {
             display: flex;
@@ -442,9 +513,12 @@
 
             border-radius: 10px;
 
-            background: rgba(255,255,255,.045);
+            background:
+                rgba(255,255,255,.045);
 
-            border: 1px solid var(--border);
+            border:
+                1px solid
+                var(--border);
 
             color: #ccc;
 
@@ -458,7 +532,9 @@
         }
 
 
-        /* BOTONES */
+        /* =========================================================
+           BOTONES
+        ========================================================= */
 
         .btn-group {
             display: flex;
@@ -501,28 +577,37 @@
                 );
 
             box-shadow:
-                0 12px 30px rgba(229,9,20,.3);
+                0 12px 30px
+                rgba(229,9,20,.3);
         }
 
         .btn-primary:hover {
-            transform: translateY(-4px) scale(1.02);
+            transform:
+                translateY(-4px)
+                scale(1.02);
 
             box-shadow:
-                0 18px 40px rgba(229,9,20,.45);
+                0 18px 40px
+                rgba(229,9,20,.45);
         }
 
         .btn-secondary {
-            border: 1px solid rgba(255,255,255,.15);
+            border:
+                1px solid
+                rgba(255,255,255,.15);
 
-            background: rgba(255,255,255,.05);
+            background:
+                rgba(255,255,255,.05);
 
             color: white;
         }
 
         .btn-secondary:hover {
-            background: rgba(255,255,255,.1);
+            background:
+                rgba(255,255,255,.1);
 
-            transform: translateY(-3px);
+            transform:
+                translateY(-3px);
         }
 
 
@@ -548,13 +633,19 @@
             width: 430px;
             height: 430px;
 
-            background: rgba(255,81,0,.25);
+            background:
+                rgba(255,81,0,.25);
 
             border-radius: 50%;
 
             filter: blur(65px);
 
-            animation: glow 4s ease-in-out infinite alternate;
+            animation:
+                glow
+                4s
+                ease-in-out
+                infinite
+                alternate;
         }
 
         @keyframes glow {
@@ -571,7 +662,8 @@
         }
 
         .hero-img {
-            width: min(520px, 100%);
+            width:
+                min(520px, 100%);
 
             height: 480px;
 
@@ -579,27 +671,39 @@
 
             border-radius: 50%;
 
-            border: 9px solid rgba(255,255,255,.08);
+            border:
+                9px solid
+                rgba(255,255,255,.08);
 
             box-shadow:
-                0 30px 80px rgba(0,0,0,.8),
-                0 0 50px rgba(255,74,0,.2);
+                0 30px 80px
+                rgba(0,0,0,.8),
+                0 0 50px
+                rgba(255,74,0,.2);
 
             position: relative;
 
             z-index: 2;
 
-            animation: pizzaFloat 5s ease-in-out infinite;
+            animation:
+                pizzaFloat
+                5s
+                ease-in-out
+                infinite;
         }
 
         @keyframes pizzaFloat {
 
-            0%,100% {
-                transform: translateY(0) rotate(-2deg);
+            0%, 100% {
+                transform:
+                    translateY(0)
+                    rotate(-2deg);
             }
 
             50% {
-                transform: translateY(-15px) rotate(2deg);
+                transform:
+                    translateY(-15px)
+                    rotate(2deg);
             }
         }
 
@@ -621,7 +725,8 @@
 
             max-width: 700px;
 
-            margin: 0 auto 55px;
+            margin:
+                0 auto 55px;
         }
 
         .section-tag {
@@ -641,9 +746,12 @@
         }
 
         .section-header h2 {
-            font-family: 'Playfair Display', serif;
+            font-family:
+                'Playfair Display',
+                serif;
 
-            font-size: clamp(2.2rem, 4vw, 3.4rem);
+            font-size:
+                clamp(2.2rem, 4vw, 3.4rem);
 
             margin-bottom: 12px;
         }
@@ -695,7 +803,9 @@
                     rgba(255,255,255,.025)
                 );
 
-            border: 1px solid rgba(255,255,255,.1);
+            border:
+                1px solid
+                rgba(255,255,255,.1);
 
             border-radius: 20px;
 
@@ -712,7 +822,8 @@
             width: 90px;
             height: 90px;
 
-            background: rgba(229,9,20,.13);
+            background:
+                rgba(229,9,20,.13);
 
             border-radius: 50%;
 
@@ -732,7 +843,8 @@
             width: 60px;
             height: 60px;
 
-            margin: 0 auto 15px;
+            margin:
+                0 auto 15px;
 
             border-radius: 50%;
 
@@ -750,7 +862,9 @@
 
             font-size: 25px;
 
-            box-shadow: 0 10px 25px rgba(229,9,20,.25);
+            box-shadow:
+                0 10px 25px
+                rgba(229,9,20,.25);
         }
 
         .size-card h3 {
@@ -764,7 +878,9 @@
         .price {
             color: var(--yellow);
 
-            font-family: 'Playfair Display', serif;
+            font-family:
+                'Playfair Display',
+                serif;
 
             font-size: 2.3rem;
 
@@ -807,7 +923,9 @@
                     rgba(255,255,255,.025)
                 );
 
-            border: 1px solid rgba(255,255,255,.08);
+            border:
+                1px solid
+                rgba(255,255,255,.08);
 
             transition: var(--transition);
         }
@@ -815,11 +933,14 @@
         .card:hover {
             transform: translateY(-10px);
 
-            border-color: rgba(255,71,50,.5);
+            border-color:
+                rgba(255,71,50,.5);
 
             box-shadow:
-                0 25px 60px rgba(0,0,0,.5),
-                0 0 30px rgba(229,9,20,.12);
+                0 25px 60px
+                rgba(0,0,0,.5),
+                0 0 30px
+                rgba(229,9,20,.12);
         }
 
         .card-img-container {
@@ -865,7 +986,8 @@
 
             z-index: 3;
 
-            background: var(--red);
+            background:
+                var(--red);
 
             color: white;
 
@@ -883,7 +1005,9 @@
         }
 
         .card h3 {
-            font-family: 'Playfair Display', serif;
+            font-family:
+                'Playfair Display',
+                serif;
 
             font-size: 1.5rem;
 
@@ -918,7 +1042,9 @@
             background:
                 rgba(37,211,102,.08);
 
-            border: 1px solid rgba(37,211,102,.4);
+            border:
+                1px solid
+                rgba(37,211,102,.4);
 
             color: #49e889;
 
@@ -934,7 +1060,9 @@
 
             transform: translateY(-2px);
 
-            box-shadow: 0 10px 25px rgba(37,211,102,.2);
+            box-shadow:
+                0 10px 25px
+                rgba(37,211,102,.2);
         }
 
 
@@ -970,17 +1098,21 @@
                     rgba(255,123,0,.04)
                 );
 
-            border: 1px solid rgba(255,255,255,.1);
+            border:
+                1px solid
+                rgba(255,255,255,.1);
 
             box-shadow:
-                0 25px 70px rgba(0,0,0,.35);
+                0 25px 70px
+                rgba(0,0,0,.35);
         }
 
         .delivery-icon {
             width: 75px;
             height: 75px;
 
-            margin: 0 auto 20px;
+            margin:
+                0 auto 20px;
 
             border-radius: 50%;
 
@@ -998,11 +1130,15 @@
                     var(--orange)
                 );
 
-            box-shadow: 0 15px 35px rgba(229,9,20,.3);
+            box-shadow:
+                0 15px 35px
+                rgba(229,9,20,.3);
         }
 
         .delivery-card h3 {
-            font-family: 'Playfair Display', serif;
+            font-family:
+                'Playfair Display',
+                serif;
 
             font-size: 2.3rem;
 
@@ -1012,7 +1148,8 @@
         .delivery-list {
             max-width: 600px;
 
-            margin: auto auto 30px;
+            margin:
+                auto auto 30px;
 
             display: grid;
 
@@ -1028,7 +1165,8 @@
 
             border-radius: 10px;
 
-            background: rgba(0,0,0,.2);
+            background:
+                rgba(0,0,0,.2);
 
             color: #d4d0cd;
 
@@ -1078,19 +1216,26 @@
         .cta::before {
             left: -30px;
             top: -35px;
-            transform: rotate(-25deg);
+
+            transform:
+                rotate(-25deg);
         }
 
         .cta::after {
             right: -30px;
             bottom: -45px;
-            transform: rotate(20deg);
+
+            transform:
+                rotate(20deg);
         }
 
         .cta h2 {
-            font-family: 'Playfair Display', serif;
+            font-family:
+                'Playfair Display',
+                serif;
 
-            font-size: clamp(2.3rem, 5vw, 4rem);
+            font-size:
+                clamp(2.3rem, 5vw, 4rem);
 
             margin-bottom: 15px;
         }
@@ -1137,26 +1282,33 @@
             z-index: 999;
 
             box-shadow:
-                0 10px 30px rgba(37,211,102,.4);
+                0 10px 30px
+                rgba(37,211,102,.4);
 
-            animation: whatsappPulse 2s infinite;
+            animation:
+                whatsappPulse
+                2s
+                infinite;
         }
 
         @keyframes whatsappPulse {
 
             0% {
                 box-shadow:
-                    0 0 0 0 rgba(37,211,102,.5);
+                    0 0 0 0
+                    rgba(37,211,102,.5);
             }
 
             70% {
                 box-shadow:
-                    0 0 0 15px rgba(37,211,102,0);
+                    0 0 0 15px
+                    rgba(37,211,102,0);
             }
 
             100% {
                 box-shadow:
-                    0 0 0 0 rgba(37,211,102,0);
+                    0 0 0 0
+                    rgba(37,211,102,0);
             }
         }
 
@@ -1172,7 +1324,9 @@
 
             background: #050303;
 
-            border-top: 1px solid rgba(255,255,255,.08);
+            border-top:
+                1px solid
+                rgba(255,255,255,.08);
 
             color: #888;
 
@@ -1207,7 +1361,8 @@
 
                 text-align: center;
 
-                padding: 130px 6% 80px;
+                padding:
+                    130px 6% 80px;
             }
 
             .hero p {
@@ -1224,13 +1379,15 @@
             }
 
             .hero-img {
-                width: min(420px, 90vw);
+                width:
+                    min(420px, 90vw);
 
                 height: 420px;
             }
 
             .sizes-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:
+                    repeat(2, 1fr);
             }
         }
 
@@ -1274,7 +1431,8 @@
             }
 
             .sizes-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns:
+                    1fr 1fr;
 
                 gap: 12px;
             }
@@ -1307,12 +1465,16 @@
         }
 
     </style>
+
 </head>
 
 
 <body>
 
-    <!-- PEPPERONIS DECORATIVOS -->
+
+    <!-- =========================================================
+         PEPPERONIS DECORATIVOS
+    ========================================================== -->
 
     <div class="pepperoni one"></div>
     <div class="pepperoni two"></div>
@@ -1340,19 +1502,27 @@
             <ul>
 
                 <li>
-                    <a href="#inicio">Inicio</a>
+                    <a href="#inicio">
+                        Inicio
+                    </a>
                 </li>
 
                 <li>
-                    <a href="#precios">Precios</a>
+                    <a href="#precios">
+                        Precios
+                    </a>
                 </li>
 
                 <li>
-                    <a href="#menu">Menú</a>
+                    <a href="#menu">
+                        Menú
+                    </a>
                 </li>
 
                 <li>
-                    <a href="#delivery">Delivery</a>
+                    <a href="#delivery">
+                        Delivery
+                    </a>
                 </li>
 
             </ul>
@@ -1369,8 +1539,10 @@
 
     <section class="hero" id="inicio">
 
+
         <div class="hero-content"
              data-aos="fade-right">
+
 
             <div class="badge">
 
@@ -1407,6 +1579,7 @@
 
             <div class="info-box">
 
+
                 <div class="info-item">
 
                     <i class="fa-regular fa-clock"></i>
@@ -1433,10 +1606,12 @@
 
                 </div>
 
+
             </div>
 
 
             <div class="btn-group">
+
 
                 <a href="#menu"
                    class="btn btn-primary">
@@ -1448,9 +1623,10 @@
                 </a>
 
 
-                <a href="https://wa.me/593984113081?text=Hola,%20quiero%20hacer%20un%20pedido%20a%20Brother's%20Pizza"
-                   target="_blank"
-                   class="btn btn-secondary">
+                <a
+                    href="https://wa.me/593984113081?text=Hola,%20quiero%20hacer%20un%20pedido%20a%20Brother's%20Pizza"
+                    target="_blank"
+                    class="btn btn-secondary">
 
                     <i class="fa-brands fa-whatsapp"></i>
 
@@ -1458,13 +1634,16 @@
 
                 </a>
 
+
             </div>
+
 
         </div>
 
 
         <div class="hero-visual"
              data-aos="zoom-in">
+
 
             <div class="pizza-glow"></div>
 
@@ -1474,7 +1653,9 @@
                 alt="Pizza artesanal Brother's Pizza"
                 class="hero-img">
 
+
         </div>
+
 
     </section>
 
@@ -1487,21 +1668,26 @@
     <section class="prices"
              id="precios">
 
+
         <div class="section-header"
              data-aos="fade-up">
+
 
             <span class="section-tag">
                 ELIGE TU TAMAÑO
             </span>
 
+
             <h2>
                 Una pizza para cada hambre
             </h2>
+
 
             <p>
                 Desde una porción para matar el antojo
                 hasta una pizza grande para compartir.
             </p>
+
 
         </div>
 
@@ -1529,7 +1715,6 @@
             </div>
 
 
-
             <div class="size-card"
                  data-aos="fade-up"
                  data-aos-delay="100">
@@ -1549,7 +1734,6 @@
                 </div>
 
             </div>
-
 
 
             <div class="size-card"
@@ -1573,7 +1757,6 @@
             </div>
 
 
-
             <div class="size-card"
                  data-aos="fade-up"
                  data-aos-delay="300">
@@ -1594,7 +1777,9 @@
 
             </div>
 
+
         </div>
+
 
     </section>
 
@@ -1607,52 +1792,66 @@
     <section class="menu-section"
              id="menu">
 
+
         <div class="section-header"
              data-aos="fade-up">
+
 
             <span class="section-tag">
                 NUESTRO MENÚ
             </span>
 
+
             <h2>
                 Elige tu favorita 🍕
             </h2>
+
 
             <p>
                 Preparadas al momento con ingredientes
                 seleccionados y mucho sabor.
             </p>
 
+
         </div>
+
 
 
         <div class="grid">
 
 
-            <!-- PEPPERONI -->
+            <!-- =================================================
+                 PEPPERONI
+            ================================================== -->
 
             <div class="card"
                  data-aos="fade-up">
 
+
                 <div class="card-img-container">
+
 
                     <span class="popular">
                         ⭐ FAVORITA
                     </span>
+
 
                     <img
                         src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=700&q=85"
                         alt="Pizza Pepperoni"
                         class="card-img">
 
+
                 </div>
 
 
                 <div class="card-content">
 
+
                     <h3>
                         Pepperoni
                     </h3>
+
 
                     <p>
                         Pepperoni doradito, abundante queso
@@ -1672,33 +1871,42 @@
 
                     </a>
 
+
                 </div>
+
 
             </div>
 
 
 
-            <!-- JAMÓN -->
+            <!-- =================================================
+                 JAMÓN
+            ================================================== -->
 
             <div class="card"
                  data-aos="fade-up"
                  data-aos-delay="100">
 
+
                 <div class="card-img-container">
 
+
                     <img
-                        src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=700&q=85"
-                        alt="Pizza de Jamón"
+                        src="https://static.wixstatic.com/media/448d9d_8d27209f8f8345d9b651b466d95e63ca~mv2.webp/v1/fit/w_700%2Ch_700%2Cq_90/file.webp"
+                        alt="Pizza de Jamón y Queso"
                         class="card-img">
+
 
                 </div>
 
 
                 <div class="card-content">
 
+
                     <h3>
                         Jamón Tradicional
                     </h3>
+
 
                     <p>
                         El clásico que nunca falla:
@@ -1718,33 +1926,42 @@
 
                     </a>
 
+
                 </div>
+
 
             </div>
 
 
 
-            <!-- HAWAIANA -->
+            <!-- =================================================
+                 HAWAIANA
+            ================================================== -->
 
             <div class="card"
                  data-aos="fade-up"
                  data-aos-delay="200">
 
+
                 <div class="card-img-container">
 
+
                     <img
-                        src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=700&q=85"
-                        alt="Pizza Hawaiana"
+                        src="https://www.wilmingtonpizzadays.com/_next/image?q=75&url=%2Fimages%2Fpizzas%2Fhawaiian.jpeg&w=750"
+                        alt="Pizza Hawaiana con jamón y piña"
                         class="card-img">
+
 
                 </div>
 
 
                 <div class="card-content">
 
+
                     <h3>
                         Hawaiana
                     </h3>
+
 
                     <p>
                         Jamón y trozos de piña para esa
@@ -1764,37 +1981,47 @@
 
                     </a>
 
+
                 </div>
+
 
             </div>
 
 
 
-            <!-- ESPECIAL -->
+            <!-- =================================================
+                 BROTHER'S ESPECIAL
+            ================================================== -->
 
             <div class="card"
                  data-aos="fade-up"
                  data-aos-delay="300">
 
+
                 <div class="card-img-container">
+
 
                     <span class="popular">
                         🔥 ESPECIAL
                     </span>
 
+
                     <img
-                        src="https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=700&q=85"
-                        alt="Brother's Especial"
+                        src="https://slice-menu-assets-prod.imgix.net/3785/1730394159_55008a636f?fit=crop&h=700&w=700"
+                        alt="Brother's Especial con carnes"
                         class="card-img">
+
 
                 </div>
 
 
                 <div class="card-content">
 
+
                     <h3>
                         Brother's Especial
                     </h3>
+
 
                     <p>
                         Nuestra combinación de la casa:
@@ -1814,33 +2041,42 @@
 
                     </a>
 
+
                 </div>
+
 
             </div>
 
 
 
-            <!-- BEBIDAS -->
+            <!-- =================================================
+                 BEBIDAS
+            ================================================== -->
 
             <div class="card"
                  data-aos="fade-up"
                  data-aos-delay="400">
 
+
                 <div class="card-img-container">
+
 
                     <img
                         src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=700&q=85"
-                        alt="Bebidas"
+                        alt="Bebidas frías"
                         class="card-img">
+
 
                 </div>
 
 
                 <div class="card-content">
 
+
                     <h3>
                         Bebidas & Complementos
                     </h3>
+
 
                     <p>
                         Acompaña tu pizza con bebidas
@@ -1860,11 +2096,15 @@
 
                     </a>
 
+
                 </div>
+
 
             </div>
 
+
         </div>
+
 
     </section>
 
@@ -1877,8 +2117,10 @@
     <section class="delivery-section"
              id="delivery">
 
+
         <div class="delivery-card"
              data-aos="zoom-in">
+
 
             <div class="delivery-icon">
 
@@ -1893,6 +2135,7 @@
 
 
             <ul class="delivery-list">
+
 
                 <li>
 
@@ -1936,6 +2179,7 @@
 
                 </li>
 
+
             </ul>
 
 
@@ -1950,7 +2194,9 @@
 
             </a>
 
+
         </div>
+
 
     </section>
 
@@ -1962,9 +2208,11 @@
 
     <section class="cta">
 
+
         <h2>
             Tu pizza está a un WhatsApp de distancia 🍕
         </h2>
+
 
         <p>
             Haz tu pedido y disfruta Brother's Pizza.
@@ -1981,6 +2229,7 @@
             PEDIR AHORA
 
         </a>
+
 
     </section>
 
@@ -2016,6 +2265,7 @@
             · Biblián, Ecuador
 
         </p>
+
 
         <p style="margin-top:8px;">
 
