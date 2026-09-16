@@ -2,10 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Brother's Pizza | Las mejores pizzas artesanales en Biblián</title>
 
-    <!-- Favicon de Pizza para la pestaña -->
+    <!-- Favicon -->
     <link rel="icon" href="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=64&h=64&q=80" type="image/x-icon">
 
     <!-- FontAwesome Icons -->
@@ -29,6 +32,7 @@
             --text-muted: #a4b0be;
             --border-subtle: rgba(255, 255, 255, 0.1);
             --transition: all 0.3s ease;
+            --header-height: 64px;
         }
 
         * {
@@ -36,7 +40,13 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: rgba(255, 71, 87, 0.15);
+        }
+
+        html {
             scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+            scroll-padding-top: var(--header-height);
         }
 
         body {
@@ -44,85 +54,215 @@
             color: var(--text-main);
             line-height: 1.6;
             overflow-x: hidden;
+            min-height: 100vh;
+            min-height: 100dvh;
         }
 
-        /* HEADER */
+        /* Evita zoom en inputs y mejora legibilidad */
+        input, textarea, select, button {
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ============================================================
+           HEADER — MOBILE FIRST
+        ============================================================ */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 7%;
-            background: rgba(18, 18, 18, 0.95);
-            backdrop-filter: blur(10px);
+            padding: 12px 5%;
+            background: rgba(18, 18, 18, 0.96);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
             position: fixed;
             width: 100%;
             top: 0;
+            left: 0;
             z-index: 1000;
             border-bottom: 1px solid var(--border-subtle);
+            height: var(--header-height);
         }
 
         .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
+            font-size: 1.35rem;
             font-weight: 800;
             color: #fff;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            padding: 6px 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .logo i {
+            color: var(--primary-pizza);
+            font-size: 1.2rem;
         }
 
         .logo span {
             color: var(--primary-pizza);
         }
 
-        nav ul {
+        /* MENÚ HAMBURGUESA */
+        .menu-toggle {
             display: flex;
-            list-style: none;
-            gap: 24px;
-        }
-
-        nav a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 500;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 44px;
+            height: 44px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            gap: 5px;
+            padding: 0;
+            z-index: 1100;
+            position: relative;
+            border-radius: 10px;
             transition: var(--transition);
         }
 
+        .menu-toggle:active {
+            background: rgba(255, 71, 87, 0.15);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 2.5px;
+            background: var(--text-main);
+            border-radius: 3px;
+            transition: var(--transition);
+            transform-origin: center;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: translateY(7.5px) rotate(45deg);
+            background: var(--primary-pizza);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: translateY(-7.5px) rotate(-45deg);
+            background: var(--primary-pizza);
+        }
+
+        /* NAVEGACIÓN */
+        nav {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            width: 100%;
+            height: calc(100vh - var(--header-height));
+            height: calc(100dvh - var(--header-height));
+            background: rgba(15, 15, 15, 0.98);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px 8%;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        nav.open {
+            transform: translateX(0);
+        }
+
+        nav ul {
+            display: flex;
+            flex-direction: column;
+            list-style: none;
+            gap: 8px;
+        }
+
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.15rem;
+            padding: 16px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            min-height: 56px;
+        }
+
+        nav a i {
+            color: var(--primary-pizza);
+            width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        nav a:active,
         nav a:hover {
+            background: rgba(255, 71, 87, 0.12);
+            border-color: rgba(255, 71, 87, 0.3);
             color: var(--primary-pizza);
         }
 
-        /* HERO SECTION */
+        /* Bloquea scroll al abrir menú */
+        body.no-scroll {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        /* ============================================================
+           HERO — MOBILE FIRST
+        ============================================================ */
         .hero {
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            padding: 140px 7% 80px;
-            gap: 40px;
+            padding: calc(var(--header-height) + 30px) 5% 50px;
+            gap: 30px;
             background: linear-gradient(135deg, #121212 0%, #1a0f0f 100%);
+            text-align: center;
+        }
+
+        .hero > div {
+            width: 100%;
+            max-width: 520px;
         }
 
         .badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: rgba(255, 71, 87, 0.15);
             color: var(--primary-pizza);
             padding: 6px 14px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .hero h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 3.3rem;
+            font-size: clamp(1.9rem, 8vw, 3.3rem);
             font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 20px;
+            line-height: 1.15;
+            margin-bottom: 16px;
         }
 
         .hero h1 span {
@@ -131,205 +271,250 @@
 
         .hero p {
             color: var(--text-muted);
-            font-size: 1.1rem;
-            margin-bottom: 25px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            line-height: 1.65;
         }
 
         .info-box {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-bottom: 30px;
-            font-size: 0.95rem;
+            gap: 10px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
             color: var(--text-muted);
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 16px;
+            border-radius: 14px;
             border: 1px solid var(--border-subtle);
+            text-align: left;
+        }
+
+        .info-box > div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .info-box i {
             color: var(--secondary-pizza);
-            margin-right: 8px;
+            font-size: 1rem;
+            width: 20px;
+            flex-shrink: 0;
         }
 
         .btn-group {
             display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .btn {
-            padding: 14px 28px;
-            border-radius: 10px;
+            padding: 16px 24px;
+            border-radius: 12px;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.95rem;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 10px;
             transition: var(--transition);
+            min-height: 54px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
         }
 
         .btn-primary {
             background: var(--primary-pizza);
             color: #fff;
-            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.35);
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover,
+        .btn-primary:active {
             background: #ff3838;
-            transform: translateY(-2px);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
             color: #fff;
             border: 1px solid var(--border-subtle);
         }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .btn-secondary:hover,
+        .btn-secondary:active {
+            background: rgba(255, 255, 255, 0.12);
         }
 
         .hero-img {
             width: 100%;
-            max-width: 480px;
+            max-width: 100%;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            margin: 0 auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
             border: 2px solid var(--border-subtle);
             object-fit: cover;
-            height: 360px;
+            height: 260px;
+            aspect-ratio: 4 / 3;
         }
 
-        /* SECCIONES GENERALES */
+        /* ============================================================
+           SECCIONES GENERALES
+        ============================================================ */
         section {
-            padding: 90px 7%;
+            padding: 60px 5%;
         }
 
         .section-header {
             text-align: center;
             max-width: 600px;
-            margin: 0 auto 50px;
+            margin: 0 auto 40px;
         }
 
         .section-header h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.4rem;
-            margin-bottom: 10px;
+            font-size: clamp(1.6rem, 6vw, 2.4rem);
+            margin-bottom: 8px;
+            line-height: 1.2;
         }
 
         .section-header p {
             color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
-        /* TAMAÑOS DE PIZZA */
+        /* ============================================================
+           TAMAÑOS DE PIZZA
+        ============================================================ */
         .sizes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 60px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .size-card {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
             border-radius: 14px;
-            padding: 24px;
+            padding: 20px 12px;
             text-align: center;
             transition: var(--transition);
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .size-card:hover {
+        .size-card:active {
             border-color: var(--secondary-pizza);
-            transform: translateY(-4px);
+            transform: scale(0.98);
         }
 
         .size-card h3 {
-            font-size: 1.1rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            font-weight: 500;
+            line-height: 1.3;
         }
 
         .size-card .price {
-            font-size: 2rem;
+            font-size: 1.7rem;
             font-weight: 800;
             color: var(--secondary-pizza);
             font-family: 'Playfair Display', serif;
         }
 
-        /* MENÚ DE SABORES Y COMPLEMENTOS */
+        /* ============================================================
+           MENÚ DE SABORES — TARJETAS
+        ============================================================ */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
 
         .card {
             background: var(--bg-card);
-            border-radius: 16px;
+            border-radius: 18px;
             overflow: hidden;
             border: 1px solid var(--border-subtle);
             transition: var(--transition);
         }
 
-        .card:hover {
-            transform: translateY(-5px);
+        .card:active {
+            transform: scale(0.99);
             border-color: var(--primary-pizza);
-            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.2);
         }
 
         .card-img {
             height: 200px;
             width: 100%;
             object-fit: cover;
+            display: block;
         }
 
         .card-content {
-            padding: 24px;
+            padding: 20px;
         }
 
         .card h3 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .card p {
             color: var(--text-muted);
-            font-size: 0.92rem;
-            margin-bottom: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 18px;
+            line-height: 1.6;
         }
 
         .order-btn {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             width: 100%;
-            padding: 10px;
+            padding: 14px;
             background: rgba(255, 71, 87, 0.1);
             color: var(--primary-pizza);
             text-align: center;
-            border-radius: 8px;
+            border-radius: 10px;
             text-decoration: none;
-            font-weight: 600;
-            border: 1px solid var(--primary-pizza);
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 1.5px solid var(--primary-pizza);
             transition: var(--transition);
+            min-height: 50px;
         }
 
-        .order-btn:hover {
+        .order-btn:active {
             background: var(--primary-pizza);
             color: #fff;
+            transform: scale(0.98);
         }
 
-        /* DELIVERY & INFO SECTION */
+        /* ============================================================
+           DELIVERY
+        ============================================================ */
         .delivery-section {
             background: linear-gradient(180deg, transparent, rgba(255, 71, 87, 0.05), transparent);
+            padding: 60px 5%;
         }
 
         .delivery-card {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            border-radius: 20px;
-            padding: 40px;
+            border-radius: 18px;
+            padding: 28px 20px;
             max-width: 800px;
             margin: 0 auto;
             text-align: center;
@@ -337,72 +522,325 @@
 
         .delivery-card h3 {
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
             margin-bottom: 20px;
             color: var(--secondary-pizza);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            line-height: 1.3;
         }
 
         .delivery-card ul {
             list-style: none;
             text-align: left;
-            max-width: 500px;
-            margin: 0 auto 30px;
+            margin: 0 auto 24px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             color: var(--text-muted);
+            padding: 0;
+        }
+
+        .delivery-card ul li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.92rem;
+            line-height: 1.55;
         }
 
         .delivery-card ul li i {
             color: #2ed573;
-            margin-right: 10px;
+            margin-top: 4px;
+            flex-shrink: 0;
+            font-size: 1rem;
         }
 
-        /* WHATSAPP FLOTANTE */
+        /* ============================================================
+           WHATSAPP FLOTANTE — posición segura para móvil
+        ============================================================ */
         .whatsapp-float {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 55px;
-            height: 55px;
+            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            right: 20px;
+            width: 58px;
+            height: 58px;
             background-color: #25d366;
             color: #fff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-            z-index: 1000;
+            font-size: 30px;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
+            z-index: 998;
             text-decoration: none;
             transition: var(--transition);
         }
 
-        .whatsapp-float:hover {
-            transform: scale(1.1);
+        .whatsapp-float:active {
+            transform: scale(0.9);
         }
 
-        /* FOOTER */
+        /* Pulso sutil */
+        .whatsapp-float::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: #25d366;
+            animation: waPulse 2s infinite;
+            z-index: -1;
+        }
+
+        @keyframes waPulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            70% { transform: scale(1.35); opacity: 0; }
+            100% { transform: scale(1.35); opacity: 0; }
+        }
+
+        /* ============================================================
+           FOOTER
+        ============================================================ */
         footer {
             text-align: center;
-            padding: 30px 7%;
+            padding: 28px 5%;
+            padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
             background: #0d0d0d;
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             border-top: 1px solid var(--border-subtle);
+            line-height: 1.6;
         }
 
-        @media (max-width: 850px) {
-            .hero {
-                grid-template-columns: 1fr;
-                text-align: center;
-                padding-top: 120px;
+        /* ============================================================
+           TABLETS — desde 640px
+        ============================================================ */
+        @media (min-width: 640px) {
+            .hero-img {
+                height: 320px;
             }
+
             .btn-group {
+                flex-direction: row;
                 justify-content: center;
             }
-            .info-box {
+
+            .btn {
+                width: auto;
+                flex: 1;
+                max-width: 240px;
+            }
+
+            .sizes-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+
+            .card-img {
+                height: 220px;
+            }
+        }
+
+        /* ============================================================
+           DESKTOP — desde 900px
+        ============================================================ */
+        @media (min-width: 900px) {
+            :root {
+                --header-height: 72px;
+            }
+
+            header {
+                padding: 18px 7%;
+            }
+
+            .logo {
+                font-size: 1.6rem;
+            }
+
+            .logo i {
+                font-size: 1.4rem;
+            }
+
+            .menu-toggle {
+                display: none;
+            }
+
+            nav {
+                position: static;
+                width: auto;
+                height: auto;
+                background: transparent;
+                -webkit-backdrop-filter: none;
+                backdrop-filter: none;
+                transform: none;
+                padding: 0;
+                overflow: visible;
+            }
+
+            nav ul {
+                flex-direction: row;
+                gap: 28px;
                 align-items: center;
+            }
+
+            nav a {
+                padding: 8px 4px;
+                font-size: 0.95rem;
+                min-height: auto;
+                border-radius: 6px;
+                border: none;
+                color: var(--text-muted);
+                position: relative;
+                gap: 0;
+            }
+
+            nav a i {
+                display: none;
+            }
+
+            nav a::after {
+                content: "";
+                position: absolute;
+                bottom: -4px;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: var(--primary-pizza);
+                transition: width 0.3s ease;
+            }
+
+            nav a:hover,
+            nav a:active {
+                background: transparent;
+                color: var(--primary-pizza);
+                border: none;
+            }
+
+            nav a:hover::after {
+                width: 100%;
+            }
+
+            .hero {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                text-align: left;
+                min-height: 100vh;
+                padding: 140px 7% 80px;
+                gap: 40px;
+            }
+
+            .hero > div {
+                max-width: none;
+            }
+
+            .hero-img {
+                height: 400px;
+                aspect-ratio: auto;
+            }
+
+            .info-box {
+                text-align: left;
+            }
+
+            section {
+                padding: 90px 7%;
+            }
+
+            .sizes-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+                max-width: 1100px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 30px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .card-img {
+                height: 220px;
+            }
+
+            .card:hover {
+                transform: translateY(-6px);
+                border-color: var(--primary-pizza);
+                box-shadow: 0 12px 30px rgba(255, 71, 87, 0.2);
+            }
+
+            .delivery-card {
+                padding: 50px 40px;
+            }
+
+            .whatsapp-float {
+                width: 62px;
+                height: 62px;
+                font-size: 32px;
+                bottom: 28px;
+                right: 28px;
+            }
+        }
+
+        /* ============================================================
+           PANTALLAS MUY PEQUEÑAS (<360px)
+        ============================================================ */
+        @media (max-width: 359px) {
+            .logo {
+                font-size: 1.15rem;
+            }
+
+            .logo i {
+                font-size: 1.05rem;
+            }
+
+            .hero h1 {
+                font-size: 1.7rem;
+            }
+
+            .size-card .price {
+                font-size: 1.45rem;
+            }
+
+            .btn {
+                font-size: 0.85rem;
+                padding: 14px 18px;
+            }
+        }
+
+        /* ============================================================
+           REDUCE MOTION (accesibilidad)
+        ============================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Landscape en móviles pequeños */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .hero {
+                padding-top: calc(var(--header-height) + 20px);
+            }
+
+            .hero-img {
+                height: 200px;
             }
         }
     </style>
@@ -412,38 +850,50 @@
     <!-- HEADER -->
     <header>
         <a href="#inicio" class="logo">
-            <i class="fa-solid fa-pizza-slice" style="color: var(--primary-pizza);"></i> Brother's <span>Pizza</span>
+            <i class="fa-solid fa-pizza-slice"></i> Brother's <span>Pizza</span>
         </a>
-        <nav>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav id="mainNav">
             <ul>
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#precios">Precios</a></li>
-                <li><a href="#menu">Menú</a></li>
-                <li><a href="#delivery">Delivery</a></li>
+                <li><a href="#inicio" data-nav><i class="fa-solid fa-house"></i> Inicio</a></li>
+                <li><a href="#precios" data-nav><i class="fa-solid fa-tag"></i> Precios</a></li>
+                <li><a href="#menu" data-nav><i class="fa-solid fa-pizza-slice"></i> Menú</a></li>
+                <li><a href="#delivery" data-nav><i class="fa-solid fa-motorcycle"></i> Delivery</a></li>
             </ul>
         </nav>
     </header>
 
     <!-- HERO -->
     <section class="hero" id="inicio">
-        <div data-aos="fade-right">
+        <div data-aos="fade-up">
             <div class="badge"><i class="fa-solid fa-fire"></i> Sabor Artesanal en Biblián</div>
             <h1>Las mejores pizzas hechas entre <span>Hermanos</span></h1>
             <p>Masa fresca preparada a diario, ingredientes de calidad y el auténtico toque al horno para disfrutar con quienes más quieres.</p>
-            
+
             <div class="info-box">
-                <div><i class="fa-regular fa-clock"></i> <strong>Horario:</strong> 17:00 – 22:30</div>
-                <div><i class="fa-solid fa-location-dot"></i> <strong>Ubicación:</strong> Biblián, Ecuador</div>
-                <div><i class="fa-solid fa-phone"></i> <strong>WhatsApp:</strong> 098 411 3081</div>
+                <div><i class="fa-regular fa-clock"></i> <span><strong>Horario:</strong> 17:00 – 22:30</span></div>
+                <div><i class="fa-solid fa-location-dot"></i> <span><strong>Ubicación:</strong> Biblián, Ecuador</span></div>
+                <div><i class="fa-solid fa-phone"></i> <span><strong>WhatsApp:</strong> 098 411 3081</span></div>
             </div>
 
             <div class="btn-group">
                 <a href="#menu" class="btn btn-primary"><i class="fa-solid fa-utensils"></i> Ver Sabores</a>
-                <a href="https://wa.me/593984113081?text=Hola,%20quiero%20hacer%20un%20pedido%20a%20Brother's%20Pizza" target="_blank" class="btn btn-secondary"><i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp</a>
+                <a href="https://wa.me/593984113081?text=Hola,%20quiero%20hacer%20un%20pedido%20a%20Brother's%20Pizza" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp</a>
             </div>
         </div>
-        <div data-aos="fade-left">
-            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80" alt="Pizza Brother's" class="hero-img">
+
+        <div data-aos="fade-up" data-aos-delay="150">
+            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
+                 alt="Pizza Brother's"
+                 class="hero-img"
+                 loading="eager"
+                 decoding="async">
         </div>
     </section>
 
@@ -455,26 +905,26 @@
         </div>
 
         <div class="sizes-grid">
-            <div class="size-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="size-card" data-aos="fade-up" data-aos-delay="50">
                 <h3>Porción / Slice</h3>
                 <div class="price">$1,25</div>
             </div>
-            <div class="size-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="size-card" data-aos="fade-up" data-aos-delay="100">
                 <h3>Pizza Pequeña</h3>
                 <div class="price">$5,00</div>
             </div>
-            <div class="size-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="size-card" data-aos="fade-up" data-aos-delay="150">
                 <h3>Pizza Mediana</h3>
                 <div class="price">$9,00</div>
             </div>
-            <div class="size-card" data-aos="fade-up" data-aos-delay="400">
+            <div class="size-card" data-aos="fade-up" data-aos-delay="200">
                 <h3>Pizza Grande</h3>
                 <div class="price">$13,00</div>
             </div>
         </div>
     </section>
 
-    <!-- MENÚ DE SABORES Y COMPLEMENTOS -->
+    <!-- MENÚ DE SABORES -->
     <section class="menu" id="menu">
         <div class="section-header" data-aos="fade-up">
             <h2>Especialidades de la Casa</h2>
@@ -483,52 +933,82 @@
 
         <div class="grid">
             <!-- Pepperoni -->
-            <div class="card" data-aos="fade-up" data-aos-delay="100">
-                <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80" alt="Pizza de Pepperoni clásica" class="card-img">
+            <div class="card" data-aos="fade-up" data-aos-delay="50">
+                <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80"
+                     alt="Pizza de Pepperoni clásica"
+                     class="card-img"
+                     loading="lazy"
+                     decoding="async">
                 <div class="card-content">
                     <h3>Pepperoni</h3>
                     <p>Deliciosa capa de pepperoni crujiente y abundante queso mozzarella fundido sobre nuestra salsa de tomate artesanal.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20de%20Pepperoni" target="_blank" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp</a>
+                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20de%20Pepperoni" target="_blank" rel="noopener" class="order-btn">
+                        <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
+                    </a>
                 </div>
             </div>
 
-            <!-- Jamón Tradicional (Imagen corregida: pizza clásica de jamón limpia, sin pepperoni) -->
-            <div class="card" data-aos="fade-up" data-aos-delay="200">
-                <img src="https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?auto=format&fit=crop&w=500&q=80" alt="Pizza Jamón Tradicional" class="card-img">
+            <!-- Jamón Tradicional -->
+            <div class="card" data-aos="fade-up" data-aos-delay="100">
+                <img src="https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?auto=format&fit=crop&w=500&q=80"
+                     alt="Pizza Jamón Tradicional"
+                     class="card-img"
+                     loading="lazy"
+                     decoding="async">
                 <div class="card-content">
                     <h3>Jamón Tradicional</h3>
                     <p>El clásico favorito con finas rodajas de jamón selecto y doble porción de queso derretido en cada bocado.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20de%20Jam%C3%B3n" target="_blank" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp</a>
+                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20de%20Jam%C3%B3n" target="_blank" rel="noopener" class="order-btn">
+                        <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
+                    </a>
                 </div>
             </div>
 
             <!-- Hawaiana -->
-            <div class="card" data-aos="fade-up" data-aos-delay="300">
-                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=500&q=80" alt="Pizza Hawaiana con piña" class="card-img">
+            <div class="card" data-aos="fade-up" data-aos-delay="150">
+                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=500&q=80"
+                     alt="Pizza Hawaiana con piña"
+                     class="card-img"
+                     loading="lazy"
+                     decoding="async">
                 <div class="card-content">
                     <h3>Hawaiana</h3>
                     <p>La combinación perfecta entre lo dulce y lo salado con trozos de piña en su punto y jamón fresco.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20Hawaiana" target="_blank" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp</a>
+                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20Hawaiana" target="_blank" rel="noopener" class="order-btn">
+                        <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
+                    </a>
                 </div>
             </div>
 
-            <!-- Brother's Especial (Imagen corregida: pizza robusta de carnes mixtas, sin albahaca) -->
-            <div class="card" data-aos="fade-up" data-aos-delay="100">
-                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80" alt="Brother's Especial con varios ingredientes" class="card-img">
+            <!-- Brother's Especial -->
+            <div class="card" data-aos="fade-up" data-aos-delay="200">
+                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80"
+                     alt="Brother's Especial con varios ingredientes"
+                     class="card-img"
+                     loading="lazy"
+                     decoding="async">
                 <div class="card-content">
                     <h3>Brother’s Especial</h3>
                     <p>Nuestra joya de la casa: generosa mezcla de queso, pepperoni, jamón, tocino ahumado y nuestra salsa especial propia.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20Brother's%20Especial" target="_blank" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp</a>
+                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20Brother's%20Especial" target="_blank" rel="noopener" class="order-btn">
+                        <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
+                    </a>
                 </div>
             </div>
 
-            <!-- Bebidas y Complementos -->
-            <div class="card" data-aos="fade-up" data-aos-delay="200">
-                <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=80" alt="Bebidas frías" class="card-img">
+            <!-- Bebidas -->
+            <div class="card" data-aos="fade-up" data-aos-delay="250">
+                <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=80"
+                     alt="Bebidas frías"
+                     class="card-img"
+                     loading="lazy"
+                     decoding="async">
                 <div class="card-content">
                     <h3>Bebidas & Complementos</h3>
                     <p>Acompaña tu pizza favorita con bebidas frías y complementos ideales para redondear tu experiencia.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20quiero%20consultar%20las%20bebidas%20y%20complementos%20disponibles" target="_blank" class="order-btn"><i class="fa-brands fa-whatsapp"></i> Consultar Bebidas</a>
+                    <a href="https://wa.me/593984113081?text=Hola,%20quiero%20consultar%20las%20bebidas%20y%20complementos%20disponibles" target="_blank" rel="noopener" class="order-btn">
+                        <i class="fa-brands fa-whatsapp"></i> Consultar Bebidas
+                    </a>
                 </div>
             </div>
         </div>
@@ -537,18 +1017,20 @@
     <!-- SECCIÓN DELIVERY -->
     <section class="delivery-section" id="delivery">
         <div class="delivery-card" data-aos="fade-up">
-            <h3><i class="fa-solid fa-motorcycle"></i> Servicio a Domicilio (Delivery)</h3>
+            <h3><i class="fa-solid fa-motorcycle"></i> Servicio a Domicilio</h3>
             <ul>
-                <li><i class="fa-solid fa-circle-check"></i> <strong>¡Delivery Gratis!</strong> En compras a partir de $5.00.</li>
-                <li><i class="fa-solid fa-circle-check"></i> <strong>Cobertura:</strong> Casco urbano de Biblián y alrededores.</li>
-                <li><i class="fa-solid fa-circle-check"></i> Para zonas más alejadas o periféricas puede aplicar un pequeño recargo.</li>
+                <li><i class="fa-solid fa-circle-check"></i> <span><strong>¡Delivery Gratis!</strong> En compras a partir de $5.00.</span></li>
+                <li><i class="fa-solid fa-circle-check"></i> <span><strong>Cobertura:</strong> Casco urbano de Biblián y alrededores.</span></li>
+                <li><i class="fa-solid fa-circle-check"></i> <span>Para zonas más alejadas o periféricas puede aplicar un pequeño recargo.</span></li>
             </ul>
-            <a href="https://wa.me/593984113081?text=Hola,%20quiero%20pedir%20delivery%20a%20domicilio%20en%20Biblián" target="_blank" class="btn btn-primary"><i class="fa-brands fa-whatsapp"></i> Solicitar Delivery Ahora</a>
+            <a href="https://wa.me/593984113081?text=Hola,%20quiero%20pedir%20delivery%20a%20domicilio%20en%20Biblián" target="_blank" rel="noopener" class="btn btn-primary">
+                <i class="fa-brands fa-whatsapp"></i> Solicitar Delivery
+            </a>
         </div>
     </section>
 
     <!-- WHATSAPP FLOTANTE -->
-    <a href="https://wa.me/593984113081?text=Hola,%20quiero%20hacer%20un%20pedido%20en%20Brother's%20Pizza" target="_blank" class="whatsapp-float" aria-label="WhatsApp">
+    <a href="https://wa.me/593984113081?text=Hola,%20quiero%20hacer%20un%20pedido%20en%20Brother's%20Pizza" target="_blank" rel="noopener" class="whatsapp-float" aria-label="Pedir por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
@@ -560,7 +1042,111 @@
     <!-- AOS Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
-        AOS.init({ duration: 800, once: true });
+        // AOS con configuración mobile-friendly
+        AOS.init({
+            duration: 600,
+            once: true,
+            offset: 40,
+            disable: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        });
+
+        // ============================================================
+        // MENÚ HAMBURGUESA
+        // ============================================================
+        const menuToggle = document.getElementById('menuToggle');
+        const mainNav = document.getElementById('mainNav');
+        const navLinks = document.querySelectorAll('[data-nav]');
+
+        function toggleMenu() {
+            const isOpen = mainNav.classList.toggle('open');
+            menuToggle.classList.toggle('active');
+            menuToggle.setAttribute('aria-expanded', isOpen);
+            menuToggle.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
+            document.body.classList.toggle('no-scroll', isOpen);
+        }
+
+        function closeMenu() {
+            if (mainNav.classList.contains('open')) {
+                mainNav.classList.remove('open');
+                menuToggle.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                menuToggle.setAttribute('aria-label', 'Abrir menú');
+                document.body.classList.remove('no-scroll');
+            }
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+
+        // Cierra menú al hacer click en un enlace
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                setTimeout(closeMenu, 100);
+            });
+        });
+
+        // Cierra menú con tecla Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMenu();
+        });
+
+        // Cierra menú si se redimensiona a desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 900) closeMenu();
+        });
+
+        // ============================================================
+        // HEADER INTELIGENTE (oculta al bajar, muestra al subir)
+        // ============================================================
+        let lastScroll = 0;
+        const header = document.querySelector('header');
+        let ticking = false;
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const currentScroll = window.pageYOffset;
+
+                    // Solo oculta el header en móvil
+                    if (window.innerWidth < 900 && currentScroll > 100) {
+                        if (currentScroll > lastScroll) {
+                            header.style.transform = 'translateY(-100%)';
+                            header.style.transition = 'transform 0.3s ease';
+                        } else {
+                            header.style.transform = 'translateY(0)';
+                        }
+                    } else {
+                        header.style.transform = 'translateY(0)';
+                    }
+
+                    lastScroll = currentScroll;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+
+        // ============================================================
+        // SMOOTH SCROLL con offset del header
+        // ============================================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href === '#' || href === '') return;
+
+                const target = document.querySelector(href);
+                if (!target) return;
+
+                e.preventDefault();
+                const headerOffset = document.querySelector('header').offsetHeight;
+                const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - headerOffset - 10;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            });
+        });
     </script>
 </body>
 </html>
