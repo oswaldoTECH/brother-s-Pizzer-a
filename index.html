@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brother's Pizza | Panel Avanzado y POS</title>
+<title>Brother's Pizza | Menú y Pedidos Online</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -28,1036 +27,323 @@
     -webkit-font-smoothing: antialiased;
   }
   .modal-active { display: flex !important; }
-
+  
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: #111827; }
   ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
 
-  .login-bg {
-    background:
-      radial-gradient(circle at 15% 20%, rgba(255,71,87,.18), transparent 45%),
-      radial-gradient(circle at 85% 80%, rgba(46,213,115,.14), transparent 45%),
-      radial-gradient(circle at 50% 50%, rgba(255,165,2,.08), transparent 60%),
-      #0b0f19;
+  .hero-bg {
+    background: 
+      linear-gradient(to bottom, rgba(11,15,25,0.7), rgba(11,15,25,0.95)),
+      url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1600&auto=format&fit=crop&q=80') center/cover no-repeat;
   }
-  @keyframes floaty {
-    0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
-    50%      { transform: translateY(-18px) rotate(calc(var(--rot, 0deg) + 8deg)); }
-  }
-  .float-icon {
-    position: absolute; opacity: .10; pointer-events: none;
-    animation: floaty var(--dur, 8s) ease-in-out infinite;
-    animation-delay: var(--delay, 0s);
-    color: #ff4757;
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-5px); }
-    80% { transform: translateX(5px); }
-  }
-  .shake { animation: shake .4s ease; }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: none; }
-  }
-  .fade-up { animation: fadeUp .5s ease both; }
-
-  .tab-btn {
-    display: flex; align-items: center; justify-content: center; gap: .75rem;
-    padding: .75rem 1rem; border-radius: .75rem;
-    font-size: .75rem; font-weight: 600; color: #9ca3af;
-    transition: all .2s ease; white-space: nowrap; flex: 1;
-  }
-  @media (min-width: 768px) {
-    .tab-btn { justify-content: flex-start; flex: none; font-size: .875rem; }
-  }
-  .tab-btn:hover { background: rgba(255,255,255,.05); color: #f3f4f6; }
-  .tab-btn.is-active {
-    background: var(--bp-accent); color: #fff; font-weight: 700;
-    box-shadow: 0 10px 25px -8px rgba(255,71,87,.5);
-  }
-
-  .pos-cat-btn {
-    padding: .5rem 1rem; border-radius: .75rem;
-    font-size: .75rem; font-weight: 700;
-    background: var(--bp-panel); color: #9ca3af;
-    white-space: nowrap; transition: all .2s ease;
-  }
-  .pos-cat-btn:hover { background: rgba(255,255,255,.05); }
-  .pos-cat-btn.is-active { background: var(--bp-accent); color: #fff; }
-
-  .product-card {
-    background: var(--bp-panel);
-    border: 1px solid rgba(255,255,255,.10);
-    border-radius: 1rem; padding: .75rem;
-    display: flex; flex-direction: column; justify-content: space-between;
-    cursor: pointer; transition: all .2s ease;
-    text-align: left; width: 100%;
-    box-shadow: 0 4px 14px rgba(0,0,0,.25);
-  }
-  .product-card:hover {
-    border-color: var(--bp-accent);
-    transform: translateY(-2px);
-  }
-  .product-card:active { transform: scale(.98); }
-  .tabular-nums { font-variant-numeric: tabular-nums; }
 </style>
 </head>
-<body class="min-h-screen flex flex-col md:flex-row">
+<body class="min-h-screen flex flex-col selection:bg-[#ff4757] selection:text-white">
 
 <!-- =========================================================
-     LOGIN DINÁMICO (DISCRETO / ACCESO ADMIN)
+     BARRA DE NAVEGACIÓN PÚBLICA
      ========================================================= -->
-<div id="loginSection" class="login-bg fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden">
-  <div aria-hidden="true" class="absolute inset-0 overflow-hidden">
-    <i class="fa-solid fa-pizza-slice float-icon text-6xl" style="top:10%; left:8%;  --rot:-15deg; --dur:9s;  --delay:0s;"></i>
-    <i class="fa-solid fa-pizza-slice float-icon text-4xl" style="top:75%; left:15%; --rot:20deg;  --dur:11s; --delay:1s;"></i>
-    <i class="fa-solid fa-cheese        float-icon text-5xl" style="top:20%; left:82%; --rot:12deg;  --dur:10s; --delay:.5s;"></i>
-    <i class="fa-solid fa-fire          float-icon text-4xl" style="top:65%; left:88%; --rot:-8deg;  --dur:8s;  --delay:1.5s;"></i>
-    <i class="fa-solid fa-beer-mug-empty float-icon text-4xl" style="top:88%; left:60%; --rot:18deg; --dur:12s; --delay:.8s;"></i>
-  </div>
+<header class="sticky top-0 z-40 bg-[#0b0f19]/90 backdrop-blur-md border-b border-white/10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-[#ff4757] grid place-items-center text-white shadow-lg shadow-[#ff4757]/30">
+        <i class="fa-solid fa-pizza-slice text-lg" aria-hidden="true"></i>
+      </div>
+      <div>
+        <span class="font-black text-lg tracking-wide block">Brother's Pizza</span>
+        <span class="text-[10px] text-gray-400 font-medium tracking-widest uppercase">Biblián, Ecuador</span>
+      </div>
+    </div>
 
-  <div class="relative w-full max-w-md fade-up">
-    <div class="bg-[#111827]/90 border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative overflow-hidden">
-      <div class="absolute -top-16 -right-16 w-48 h-48 bg-[#ff4757]/15 rounded-full blur-3xl pointer-events-none"></div>
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+      <a href="#menu" class="text-gray-300 hover:text-[#ff4757] transition">Menú y Precios</a>
+      <a href="#horarios" class="text-gray-300 hover:text-[#ff4757] transition">Horarios y Ubicación</a>
+      <a href="#contacto" class="text-gray-300 hover:text-[#ff4757] transition">Contacto</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="https://wa.me/593999999999?text=Hola,%20deseo%20hacer%20un%20pedido%20en%20Brother's%20Pizza" target="_blank"
+         class="bg-[#2ed573] hover:bg-[#26af5f] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-[#2ed573]/20">
+        <i class="fa-brands fa-whatsapp text-sm" aria-hidden="true"></i> Pedir por WhatsApp
+      </a>
       
-      <div class="relative text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#ff4757]/20 text-[#ff4757] mb-3 shadow-inner">
-          <i class="fa-solid fa-pizza-slice text-3xl" aria-hidden="true"></i>
-        </div>
-        <h2 class="text-2xl font-black tracking-wide">Brother's Pizza</h2>
-        <p class="text-gray-400 text-xs mt-1">Panel de Control Administrativo</p>
-      </div>
-
-      <form id="loginForm" class="space-y-4 relative" novalidate>
-        <div>
-          <label for="userInput" class="block text-[11px] uppercase font-bold tracking-wider text-gray-400 mb-1.5">Usuario</label>
-          <div class="relative">
-            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none" aria-hidden="true"></i>
-            <input type="text" id="userInput" required autocomplete="username"
-                   class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ff4757]">
-          </div>
-        </div>
-
-        <div>
-          <label for="passInput" class="block text-[11px] uppercase font-bold tracking-wider text-gray-400 mb-1.5">Contraseña</label>
-          <div class="relative">
-            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none" aria-hidden="true"></i>
-            <input type="password" id="passInput" required autocomplete="current-password"
-                   class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-11 py-3.5 text-sm text-white focus:outline-none focus:border-[#ff4757]">
-            <button type="button" id="togglePass" aria-label="Mostrar contraseña"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white p-1.5 rounded-lg transition">
-              <i class="fa-solid fa-eye text-xs" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
-
-        <div id="loginError" role="alert" class="hidden text-red-400 text-xs text-center font-medium bg-red-500/10 border border-red-500/20 py-2.5 rounded-lg"></div>
-
-        <button type="submit" id="loginBtn"
-                class="w-full bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-[#ff4757]/30 text-sm flex items-center justify-center gap-2">
-          <span id="loginBtnText">Ingresar al Sistema</span>
-        </button>
-      </form>
-
-      <div class="mt-6 pt-5 border-t border-white/10 relative">
-        <p class="text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-2.5 text-center">Acceso rápido demo</p>
-        <div id="demoAccounts" class="grid grid-cols-2 gap-2"></div>
-      </div>
-
-      <div class="mt-5 text-center relative">
-        <button onclick="saltarAlPosPublico()" class="text-xs text-gray-400 hover:text-white transition underline">← Ir directo a la vista pública del catálogo</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- =========================================================
-     PANEL PRINCIPAL
-     ========================================================= -->
-<div id="mainPanel" class="flex-1 hidden md:flex-row w-full min-h-screen">
-
-  <aside class="w-full md:w-72 bg-[#111827] border-b md:border-b-0 md:border-r border-white/10 flex flex-col justify-between p-4 sticky top-0 z-30 md:relative">
-    <div class="flex flex-col md:flex-row md:flex-col justify-between items-center md:items-stretch gap-4">
-      <div class="flex items-center justify-between w-full md:w-auto px-2 py-2">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-[#ff4757] grid place-items-center text-white shadow-md">
-            <i class="fa-solid fa-pizza-slice text-sm" aria-hidden="true"></i>
-          </div>
-          <span class="font-black text-base tracking-wide">Brother's Pizza</span>
-        </div>
-        <button data-action="logout" title="Cerrar sesión" class="md:hidden text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition">
-          <i class="fa-solid fa-right-from-bracket text-lg" aria-hidden="true"></i>
-        </button>
-      </div>
-
-      <nav id="navTabs" class="flex md:flex-col gap-1.5 w-full overflow-x-auto pb-2 md:pb-0" aria-label="Navegación principal">
-        <button data-tab="pos" class="tab-btn is-active">
-          <i class="fa-solid fa-cash-register w-5 text-center" aria-hidden="true"></i><span>Punto de Venta / Pedidos</span>
-        </button>
-        <button data-tab="menu" class="tab-btn" data-role="admin">
-          <i class="fa-solid fa-utensils w-5 text-center" aria-hidden="true"></i><span>Gestión del Menú</span>
-        </button>
-        <button data-tab="inventario" class="tab-btn">
-          <i class="fa-solid fa-boxes-stacked w-5 text-center" aria-hidden="true"></i><span>Inventario</span>
-        </button>
-        <button data-tab="usuarios" class="tab-btn" data-role="admin">
-          <i class="fa-solid fa-users-gear w-5 text-center" aria-hidden="true"></i><span>Trabajadores</span>
-        </button>
-      </nav>
-    </div>
-
-    <div class="hidden md:flex pt-4 border-t border-white/10 items-center justify-between gap-2">
-      <div class="flex items-center gap-3 overflow-hidden min-w-0">
-        <div id="desktopAvatar" class="w-10 h-10 rounded-full overflow-hidden bg-white/10 grid place-items-center font-bold text-xs shrink-0 border border-white/15"></div>
-        <div class="truncate min-w-0">
-          <p id="desktopUserName" class="text-xs font-bold truncate">—</p>
-          <p id="desktopUserRole" class="text-[10px] text-gray-400 truncate">—</p>
-        </div>
-      </div>
-      <button data-action="logout" title="Cerrar sesión" class="text-gray-400 hover:text-red-400 transition p-2 rounded-lg hover:bg-red-500/10 shrink-0">
-        <i class="fa-solid fa-right-from-bracket text-base" aria-hidden="true"></i>
+      <!-- BOTÓN DE ACCESO AL POS / ADMIN (DISCRETO) -->
+      <button onclick="abrirModalLogin()" title="Acceso al Punto de Venta (POS)" 
+              class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-gray-300 hover:text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+        <i class="fa-solid fa-cash-register text-[#ff4757]" aria-hidden="true"></i>
+        <span class="hidden sm:inline">POS / Admin</span>
       </button>
     </div>
-  </aside>
-
-  <main class="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
-
-    <!-- ========== SECCIÓN POS ========== -->
-    <section id="sectionPos" class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-xl sm:text-2xl font-black">Caja Registradora y Menú</h1>
-          <p class="text-xs text-gray-400">Selecciona los platos para armar pedidos o enviarlos por WhatsApp.</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <div class="relative w-full sm:w-64">
-            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs" aria-hidden="true"></i>
-            <input type="search" id="posSearch" autocomplete="off" placeholder="Buscar producto…"
-                   class="w-full bg-[#111827] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] transition">
-          </div>
-          <button onclick="abrirLoginDesdeAdmin()" title="Bloquear / Panel de Acceso" class="bg-[#111827] border border-white/10 hover:border-[#ff4757] p-2.5 rounded-xl text-gray-400 hover:text-white transition">
-            <i class="fa-solid fa-lock text-xs"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 space-y-4">
-          <div id="posCategoriasTabs" class="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filtrar por categoría"></div>
-          <div id="posGridProductos" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
-        </div>
-
-        <div class="bg-[#111827] border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xl h-fit lg:sticky lg:top-6">
-          <div class="space-y-4">
-            <div class="flex justify-between items-center border-b border-white/10 pb-3">
-              <h3 class="font-bold text-sm flex items-center gap-2">
-                <i class="fa-solid fa-receipt text-[#ff4757]" aria-hidden="true"></i>
-                Orden en curso
-                <span id="cartCount" class="text-[10px] font-bold bg-white/10 text-gray-300 px-2 py-0.5 rounded-full tabular-nums">0</span>
-              </h3>
-              <button data-action="clear-cart" class="text-xs text-red-400 hover:text-red-300 hover:underline">Vaciar</button>
-            </div>
-
-            <div>
-              <label for="clientName" class="block text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-1">Cliente / Mesa</label>
-              <input type="text" id="clientName" value="Cliente General" autocomplete="off"
-                     class="w-full bg-[#1f2937] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff4757] transition">
-            </div>
-
-            <div id="carritoItemsContainer" class="space-y-2.5 max-h-64 overflow-y-auto pr-1"></div>
-          </div>
-
-          <div class="border-t border-white/10 pt-4 mt-4 space-y-3">
-            <div class="space-y-1.5 text-xs">
-              <div class="flex justify-between text-gray-400">
-                <span>Subtotal</span><span id="carritoSubtotal" class="tabular-nums">$0.00</span>
-              </div>
-              <div class="flex justify-between text-gray-400">
-                <span>IVA (12%)</span><span id="carritoIva" class="tabular-nums">$0.00</span>
-              </div>
-              <div class="flex justify-between text-base font-black text-white pt-1.5 border-t border-white/10">
-                <span>Total a cobrar</span>
-                <span id="carritoTotal" class="text-[#2ed573] tabular-nums">$0.00</span>
-              </div>
-            </div>
-            <button data-action="checkout"
-                    class="w-full bg-[#2ed573] hover:bg-[#26af5f] text-white font-bold py-3.5 rounded-xl transition text-xs shadow-lg shadow-[#2ed573]/20 flex items-center justify-center gap-2 active:scale-[.99]">
-              <i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i> Enviar Pedido / Cobrar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
-        <div class="lg:col-span-2 bg-[#111827] border border-white/10 rounded-2xl p-5 shadow-xl space-y-4">
-          <div class="flex justify-between items-center flex-wrap gap-2">
-            <h3 class="font-bold text-sm">Historial de órdenes recientes</h3>
-            <span class="text-xs text-gray-400 tabular-nums" id="contadorVentasTotal">0 registros</span>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs min-w-[560px]">
-              <thead class="bg-black/30 uppercase text-gray-400 border-b border-white/10 text-[10px]">
-                <tr>
-                  <th class="p-3 font-semibold">Fecha / Hora</th>
-                  <th class="p-3 font-semibold">Atendido por</th>
-                  <th class="p-3 font-semibold">Detalle</th>
-                  <th class="p-3 font-semibold text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody id="ventasTableBody" class="divide-y divide-white/10"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="bg-[#111827] border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-sm mb-1">Rendimiento financiero</h3>
-            <p class="text-[11px] text-gray-400">Ingresos por categoría.</p>
-          </div>
-          <div class="py-4 relative h-48">
-            <canvas id="ventasChart" aria-label="Ingresos por categoría" role="img"></canvas>
-          </div>
-          <div class="bg-black/30 p-3 rounded-xl border border-white/10 flex justify-between items-center text-xs">
-            <span class="text-gray-400 font-semibold">Total recaudado:</span>
-            <span id="statRecaudadoTotal" class="font-black text-[#2ed573] text-sm tabular-nums">$0.00</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== SECCIÓN MENÚ ========== -->
-    <section id="sectionMenu" class="hidden space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-xl sm:text-2xl font-black">Manipulación y control del menú</h1>
-          <p class="text-xs text-gray-400">Agrega, edita precios o elimina platos y bebidas al instante.</p>
-        </div>
-        <button data-action="new-menu"
-                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-[#ff4757]/20 w-full sm:w-auto">
-          <i class="fa-solid fa-plus" aria-hidden="true"></i> Nuevo producto
-        </button>
-      </div>
-
-      <div class="bg-[#111827] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm min-w-[640px]">
-            <thead class="bg-black/30 uppercase text-gray-400 border-b border-white/10 text-[11px]">
-              <tr>
-                <th class="p-4 font-semibold">Imagen</th>
-                <th class="p-4 font-semibold">Producto</th>
-                <th class="p-4 font-semibold">Categoría</th>
-                <th class="p-4 font-semibold">Precio</th>
-                <th class="p-4 font-semibold text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="menuTableBody" class="divide-y divide-white/10"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== SECCIÓN INVENTARIO ========== -->
-    <section id="sectionInventario" class="hidden space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-xl sm:text-2xl font-black">Control de insumos</h1>
-          <p class="text-xs text-gray-400">Supervisa stock de masa, queso, cajas y bebidas.</p>
-        </div>
-        <button data-action="new-insumo"
-                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition w-full sm:w-auto">
-          <i class="fa-solid fa-plus" aria-hidden="true"></i> Nuevo insumo
-        </button>
-      </div>
-
-      <div class="bg-[#111827] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm min-w-[560px]">
-            <thead class="bg-black/30 uppercase text-gray-400 border-b border-white/10 text-[11px]">
-              <tr>
-                <th class="p-4 font-semibold">Insumo</th>
-                <th class="p-4 font-semibold">Cantidad</th>
-                <th class="p-4 font-semibold">Unidad</th>
-                <th class="p-4 font-semibold">Estado</th>
-                <th class="p-4 font-semibold text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="inventarioTableBody" class="divide-y divide-white/10"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== SECCIÓN USUARIOS ========== -->
-    <section id="sectionUsuarios" class="hidden space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-xl sm:text-2xl font-black">Trabajadores y credenciales</h1>
-          <p class="text-xs text-gray-400">Crea cuentas, asigna roles y cambia contraseñas.</p>
-        </div>
-        <button data-action="new-user"
-                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition w-full sm:w-auto">
-          <i class="fa-solid fa-user-plus" aria-hidden="true"></i> Registrar trabajador
-        </button>
-      </div>
-
-      <div class="bg-[#111827] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm min-w-[560px]">
-            <thead class="bg-black/30 uppercase text-gray-400 border-b border-white/10 text-[11px]">
-              <tr>
-                <th class="p-4 font-semibold">Foto</th>
-                <th class="p-4 font-semibold">Usuario</th>
-                <th class="p-4 font-semibold">Nombre</th>
-                <th class="p-4 font-semibold">Rol</th>
-                <th class="p-4 font-semibold text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="usuariosTableBody" class="divide-y divide-white/10"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </main>
-</div>
+  </div>
+</header>
 
 <!-- =========================================================
-     MODALES
+     HERO SECCIÓN PRINCIPAL
      ========================================================= -->
-<div id="modalMenu" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
-    <h3 class="text-base font-black">Gestión de producto del menú</h3>
-    <form id="formMenu" class="space-y-3" onsubmit="guardarMenu(event)">
-      <input type="hidden" id="menuId">
-      <div>
-        <label class="block text-xs text-gray-400 mb-1">Nombre del producto *</label>
-        <input type="text" id="menuNombre" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs text-gray-400 mb-1">Categoría</label>
-          <select id="menuCategoria" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
-            <option value="Pizzas">Pizzas</option>
-            <option value="Bebidas">Bebidas</option>
-            <option value="Extras">Extras</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs text-gray-400 mb-1">Precio ($) *</label>
-          <input type="number" step="0.01" min="0" id="menuPrecio" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
-        </div>
-      </div>
-      <div>
-        <label class="block text-xs text-gray-400 mb-1">URL de imagen</label>
-        <input type="url" id="menuImagen" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
-      </div>
-      <div class="flex justify-end gap-2 pt-2">
-        <button type="button" onclick="cerrarModal('modalMenu')" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
-      </div>
-    </form>
+<section class="hero-bg py-20 lg:py-32 border-b border-white/10 text-center px-4 relative overflow-hidden">
+  <div class="max-w-3xl mx-auto space-y-6 relative z-10">
+    <span class="bg-[#ff4757]/10 border border-[#ff4757]/30 text-[#ff4757] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider inline-block">
+      🍕 Las mejores pizzas artesanales
+    </span>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+      Sabor inigualable en cada porción
+    </h1>
+    <p class="text-gray-300 text-sm sm:text-base max-w-xl mx-auto">
+      Preparamos masa fresca todos los días con ingredientes de primera calidad. ¡Disfruta con tu familia o amigos en Brother's Pizza!
+    </p>
+    <div class="pt-2 flex flex-wrap justify-center gap-4">
+      <a href="#menu" class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-7 py-3.5 rounded-xl text-sm transition shadow-xl shadow-[#ff4757]/30">
+        Ver Menú Completo
+      </a>
+      <a href="#horarios" class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-white font-bold px-7 py-3.5 rounded-xl text-sm transition">
+        Horarios y Dónde Encontrarnos
+      </a>
+    </div>
   </div>
-</div>
+</section>
 
-<div id="modalInsumo" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
-    <h3 class="text-base font-black">Gestión de insumo</h3>
-    <form id="formInsumo" class="space-y-3" onsubmit="guardarInsumo(event)">
-      <input type="hidden" id="insumoId">
-      <div>
-        <label class="block text-xs text-gray-400 mb-1">Nombre *</label>
-        <input type="text" id="insumoNombre" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs text-gray-400 mb-1">Cantidad *</label>
-          <input type="number" step="0.01" min="0" id="insumoCantidad" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
-        </div>
-        <div>
-          <label class="block text-xs text-gray-400 mb-1">Unidad</label>
-          <select id="insumoUnidad" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
-            <option value="Unidades">Unidades</option>
-            <option value="Kg">Kg</option>
-            <option value="Litros">Litros</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <label class="block text-xs text-gray-400 mb-1">Límite crítico *</label>
-        <input type="number" step="0.01" min="0" id="insumoLimite" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
-      </div>
-      <div class="flex justify-end gap-2 pt-2">
-        <button type="button" onclick="cerrarModal('modalInsumo')" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
-      </div>
-    </form>
-  </div>
-</div>
+<!-- =========================================================
+     CATÁLOGO / MENÚ PÚBLICO
+     ========================================================= -->
+<main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-16 space-y-20 w-full">
+  
+  <section id="menu" class="space-y-8 scroll-mt-24">
+    <div class="text-center space-y-2">
+      <h2 class="text-2xl sm:text-3xl font-black">Nuestro Menú y Precios</h2>
+      <p class="text-xs sm:text-sm text-gray-400">Elige tu favorita y haz tu pedido al instante.</p>
+    </div>
 
-<div id="modalUsuario" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
-    <h3 class="text-base font-black">Gestión de trabajador</h3>
-    <form id="formUsuario" class="space-y-3" onsubmit="guardarUsuario(event)">
-      <input type="hidden" id="usuarioId">
-      <div>
-        <label class="block text-xs text-gray-400 mb-1">Nombre o alias *</label>
-        <input type="text" id="usuarioNombre" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
+    <!-- Pestañas de categorías -->
+    <div id="publicCategorias" class="flex justify-center gap-2 overflow-x-auto pb-2">
+      <button onclick="filtrarPublico('todos')" class="pub-cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-[#ff4757] text-white transition">Todos</button>
+      <button onclick="filtrarPublico('Pizzas')" class="pub-cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-[#111827] border border-white/10 text-gray-400 hover:text-white transition">Pizzas</button>
+      <button onclick="filtrarPublico('Bebidas')" class="pub-cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-[#111827] border border-white/10 text-gray-400 hover:text-white transition">Bebidas</button>
+      <button onclick="filtrarPublico('Extras')" class="pub-cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-[#111827] border border-white/10 text-gray-400 hover:text-white transition">Extras</button>
+    </div>
+
+    <!-- Cuadrícula de productos públicos -->
+    <div id="publicMenuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </section>
+
+  <!-- =========================================================
+       HORARIOS Y UBICACIÓN
+       ========================================================= -->
+  <section id="horarios" class="grid grid-cols-1 md:grid-cols-2 gap-8 scroll-mt-24">
+    <div class="bg-[#111827] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl">
+      <div class="w-12 h-12 rounded-2xl bg-[#ff4757]/10 text-[#ff4757] grid place-items-center text-xl">
+        <i class="fa-solid fa-clock" aria-hidden="true"></i>
       </div>
       <div>
-        <label class="block text-xs text-gray-400 mb-1">URL de foto</label>
-        <input type="url" id="usuarioFoto" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
+        <h3 class="text-xl font-bold mb-2">Horarios de Apertura</h3>
+        <p class="text-xs text-gray-400 mb-6">Te esperamos con el horno encendido y la mejor atención.</p>
       </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs text-gray-400 mb-1">Usuario *</label>
-          <input type="text" id="usuarioUser" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
+      <div class="space-y-3 text-sm divide-y divide-white/5">
+        <div class="flex justify-between pt-2">
+          <span class="text-gray-300">Lunes a Jueves</span>
+          <span class="font-bold text-[#2ed573]">15:00 - 22:00</span>
         </div>
-        <div>
-          <label class="block text-xs text-gray-400 mb-1">Contraseña *</label>
-          <input type="text" id="usuarioPass" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
+        <div class="flex justify-between pt-3">
+          <span class="text-gray-300">Viernes y Sábados</span>
+          <span class="font-bold text-[#2ed573]">15:00 - 23:30</span>
+        </div>
+        <div class="flex justify-between pt-3">
+          <span class="text-gray-300">Domingos</span>
+          <span class="font-bold text-[#2ed573]">14:00 - 22:00</span>
         </div>
       </div>
+    </div>
+
+    <div id="contacto" class="bg-[#111827] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl scroll-mt-24">
+      <div class="w-12 h-12 rounded-2xl bg-[#2ed573]/10 text-[#2ed573] grid place-items-center text-xl">
+        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+      </div>
       <div>
-        <label class="block text-xs text-gray-400 mb-1">Rol en el sistema</label>
-        <select id="usuarioRol" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
-          <option value="Cajero">Cajero</option>
-          <option value="Administrador">Administrador</option>
-        </select>
+        <h3 class="text-xl font-bold mb-2">Ubicación y Contacto</h3>
+        <p class="text-xs text-gray-400 mb-6">Visítanos o pide a domicilio en Biblián.</p>
       </div>
-      <div class="flex justify-end gap-2 pt-2">
-        <button type="button" onclick="cerrarModal('modalUsuario')" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
+      <div class="space-y-4 text-sm">
+        <div class="flex items-start gap-3">
+          <i class="fa-solid fa-map-pin text-[#ff4757] mt-1"></i>
+          <div>
+            <p class="font-bold">Dirección</p>
+            <p class="text-xs text-gray-400">Biblián, Provincia de Cañar, Ecuador</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <i class="fa-solid fa-phone text-[#2ed573] mt-1"></i>
+          <div>
+            <p class="font-bold">Teléfono / WhatsApp</p>
+            <p class="text-xs text-gray-400">+593 99 999 9999</p>
+          </div>
+        </div>
       </div>
+      <div class="pt-2">
+        <a href="https://wa.me/593999999999?text=Hola,%20deseo%20consultar%20sobre%20sus%20pizzas" target="_blank"
+           class="w-full bg-[#2ed573] hover:bg-[#26af5f] text-white font-bold py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-[#2ed573]/20">
+          <i class="fa-brands fa-whatsapp text-base"></i> Escribir por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+<footer class="bg-[#111827] border-t border-white/10 py-8 px-4 text-center text-xs text-gray-500">
+  <p>© 2026 Brother's Pizza. Todos los derechos reservados.</p>
+  <button onclick="abrirModalLogin()" class="mt-3 text-gray-400 hover:text-white underline text-[11px]">Acceso exclusivo para personal (POS)</button>
+</footer>
+
+<!-- =========================================================
+     MODAL DE LOGIN / ACCESO AL POS
+     ========================================================= -->
+<div id="modalLogin" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-3xl p-8 shadow-2xl relative space-y-6">
+    <button onclick="cerrarModalLogin()" class="absolute right-5 top-5 text-gray-400 hover:text-white text-base">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="text-center space-y-2">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#ff4757]/20 text-[#ff4757] mb-1">
+        <i class="fa-solid fa-cash-register text-2xl"></i>
+      </div>
+      <h3 class="text-xl font-black">Acceso al Punto de Venta</h3>
+      <p class="text-xs text-gray-400">Ingresa tus credenciales administrativas o de caja.</p>
+    </div>
+
+    <form id="formLoginPublico" onsubmit="procesarLoginPublico(event)" class="space-y-4">
+      <div>
+        <label class="block text-[11px] uppercase font-bold tracking-wider text-gray-400 mb-1">Usuario</label>
+        <input type="text" id="loginUser" required autocomplete="username"
+               class="w-full bg-[#1f2937] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+      </div>
+      <div>
+        <label class="block text-[11px] uppercase font-bold tracking-wider text-gray-400 mb-1">Contraseña</label>
+        <input type="password" id="loginPass" required autocomplete="current-password"
+               class="w-full bg-[#1f2937] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+      </div>
+      <div id="loginMsgError" class="hidden text-red-400 text-xs text-center font-medium bg-red-500/10 py-2 rounded-lg"></div>
+      
+      <button type="submit" class="w-full bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold py-3.5 rounded-xl text-xs transition shadow-lg shadow-[#ff4757]/30">
+        Entrar al Sistema POS
+      </button>
     </form>
+
+    <div class="border-t border-white/10 pt-4">
+      <p class="text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-2 text-center">Acceso rápido demo</p>
+      <div class="grid grid-cols-1 gap-2">
+        <button type="button" onclick="autoCompletarDemo('admin', 'admin123')" class="bg-[#1f2937] border border-white/10 p-2.5 rounded-xl text-left hover:border-[#ff4757] transition">
+          <p class="text-xs font-bold">Osvaldo (Administrador)</p>
+          <p class="text-[10px] text-gray-400">Usuario: admin / Clave: admin123</p>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- =========================================================
-     SCRIPT LÓGICA COMPLETA
+     SCRIPT DE FUNCIONAMIENTO PÚBLICO Y ACCESO POS
      ========================================================= -->
 <script>
   let dbMenu = JSON.parse(localStorage.getItem('bp_menu')) || [
-    { id: 1, nombre: "Pizza Familiar Pepperoni", categoria: "Pizzas", precio: 12.00, imagen: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=300&auto=format&fit=crop&q=80" },
-    { id: 2, nombre: "Pizza Jamón y Queso", categoria: "Pizzas", precio: 11.00, imagen: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=300&auto=format&fit=crop&q=80" },
-    { id: 3, nombre: "Slice Pepperoni", categoria: "Pizzas", precio: 1.50, imagen: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&auto=format&fit=crop&q=80" },
-    { id: 4, nombre: "Cola 1.5L", categoria: "Bebidas", precio: 2.25, imagen: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300&auto=format&fit=crop&q=80" },
-    { id: 5, nombre: "Agua 500ml", categoria: "Bebidas", precio: 0.75, imagen: "https://images.unsplash.com/photo-1548839140-29a749e1cf4c?w=300&auto=format&fit=crop&q=80" },
-    { id: 6, nombre: "Bordes de Queso Extra", categoria: "Extras", precio: 2.00, imagen: "https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=300&auto=format&fit=crop&q=80" }
-  ];
-
-  let dbInsumos = JSON.parse(localStorage.getItem('bp_insumos')) || [
-    { id: 1, nombre: "Masa de Pizza", cantidad: 25, unidad: "Kg", limite: 5 },
-    { id: 2, nombre: "Queso Mozzarella", cantidad: 12, unidad: "Kg", limite: 3 },
-    { id: 3, nombre: "Cajas de Pizza Familiar", cantidad: 45, unidad: "Unidades", limite: 10 }
+    { id: 1, nombre: "Pizza Familiar Pepperoni", categoria: "Pizzas", precio: 12.00, imagen: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&auto=format&fit=crop&q=80" },
+    { id: 2, nombre: "Pizza Jamón y Queso", categoria: "Pizzas", precio: 11.00, imagen: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=500&auto=format&fit=crop&q=80" },
+    { id: 3, nombre: "Slice Pepperoni", categoria: "Pizzas", precio: 1.50, imagen: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=80" },
+    { id: 4, nombre: "Cola 1.5L", categoria: "Bebidas", precio: 2.25, imagen: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=80" },
+    { id: 5, nombre: "Agua 500ml", categoria: "Bebidas", precio: 0.75, imagen: "https://images.unsplash.com/photo-1548839140-29a749e1cf4c?w=500&auto=format&fit=crop&q=80" },
+    { id: 6, nombre: "Bordes de Queso Extra", categoria: "Extras", precio: 2.00, imagen: "https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=500&auto=format&fit=crop&q=80" }
   ];
 
   let dbUsuarios = JSON.parse(localStorage.getItem('bp_usuarios')) || [
-    { id: 1, nombre: "Osvaldo", user: "admin", pass: "admin123", rol: "Administrador", foto: "" }
+    { id: 1, nombre: "Osvaldo", user: "admin", pass: "admin123", rol: "Administrador" }
   ];
 
-  let dbVentas = JSON.parse(localStorage.getItem('bp_ventas')) || [];
-  let carrito = [];
-  let categoriaActual = 'todos';
-  let usuarioActual = null;
-  let chartInstancia = null;
+  let categoriaSeleccionada = 'todos';
 
   window.onload = () => {
-    renderDemoAccounts();
-    document.getElementById('loginForm').addEventListener('submit', procesarLogin);
-    
-    // Configurar tabs de navegación
-    document.querySelectorAll('#navTabs button[data-tab]').forEach(btn => {
-      btn.addEventListener('click', () => cambiarTab(btn.dataset.tab));
-    });
-
-    document.querySelector('button[data-action="clear-cart"]').addEventListener('click', vaciarCarrito);
-    document.querySelector('button[data-action="checkout"]').addEventListener('click', finalizarVenta);
-    document.querySelector('button[data-action="new-menu"]').addEventListener('click', () => abrirModalMenu());
-    document.querySelector('button[data-action="new-insumo"]').addEventListener('click', () => abrirModalInsumo());
-    document.querySelector('button[data-action="new-user"]').addEventListener('click', () => abrirModalUsuario());
-    document.querySelectorAll('button[data-action="logout"]').forEach(b => b.addEventListener('click', cerrarSesion));
-    
-    document.getElementById('posSearch').addEventListener('input', (e) => renderProductosPOS(e.target.value));
-
-    // Auto-iniciar sesión con Osvaldo (Admin) para ver la app de inmediato sin trabas
-    usuarioActual = dbUsuarios[0];
-    saltarAlPosPublico();
+    renderMenuPublico();
   };
 
-  function renderDemoAccounts() {
-    const container = document.getElementById('demoAccounts');
-    container.innerHTML = dbUsuarios.map(u => `
-      <button type="button" onclick="llenarDemo('${u.user}', '${u.pass}')" class="demo-chip bg-[#1f2937] border border-white/10 p-2 rounded-xl text-left">
-        <p class="text-xs font-bold truncate">${u.nombre}</p>
-        <p class="text-[10px] text-gray-400">${u.rol}</p>
-      </button>
-    `).join('');
-  }
-
-  function llenarDemo(u, p) {
-    document.getElementById('userInput').value = u;
-    document.getElementById('passInput').value = p;
-  }
-
-  function procesarLogin(e) {
-    e.preventDefault();
-    const u = document.getElementById('userInput').value.trim();
-    const p = document.getElementById('passInput').value.trim();
-    const encontrado = dbUsuarios.find(x => x.user === u && x.pass === p);
-
-    if (encontrado) {
-      usuarioActual = encontrado;
-      saltarAlPosPublico();
-    } else {
-      const err = document.getElementById('loginError');
-      err.innerText = "Usuario o contraseña incorrectos.";
-      err.classList.remove('hidden');
-    }
-  }
-
-  function saltarAlPosPublico() {
-    document.getElementById('loginSection').classList.add('hidden');
-    const panel = document.getElementById('mainPanel');
-    panel.classList.remove('hidden');
-    panel.classList.add('flex');
-
-    if (usuarioActual) {
-      document.getElementById('desktopUserName').innerText = usuarioActual.nombre;
-      document.getElementById('desktopUserRole').innerText = usuarioActual.rol;
-      document.getElementById('desktopAvatar').innerText = usuarioActual.nombre.charAt(0).toUpperCase();
-    }
-
-    renderizarPOS();
-    renderMenuTable();
-    renderInventarioTable();
-    renderUsuariosTable();
-    renderVentas();
-  }
-
-  function abrirLoginDesdeAdmin() {
-    document.getElementById('mainPanel').classList.add('hidden');
-    document.getElementById('mainPanel').classList.remove('flex');
-    document.getElementById('loginSection').classList.remove('hidden');
-  }
-
-  function cerrarSesion() {
-    usuarioActual = null;
-    abrirLoginDesdeAdmin();
-  }
-
-  function cambiarTab(tabId) {
-    document.querySelectorAll('#navTabs button').forEach(b => b.classList.remove('is-active'));
-    const btnTarget = document.querySelector(`#navTabs button[data-tab="${tabId}"]`);
-    if(btnTarget) btnTarget.classList.add('is-active');
-
-    ['Pos', 'Menu', 'Inventario', 'Usuarios'].forEach(s => {
-      document.getElementById('section' + s).classList.add('hidden');
-    });
-    document.getElementById('section' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
-  }
-
-  // --- POS / CARRITO ---
-  function renderizarPOS() {
-    const categorias = ['todos', 'Pizzas', 'Bebidas', 'Extras'];
-    const tabsContainer = document.getElementById('posCategoriasTabs');
-    tabsContainer.innerHTML = categorias.map(c => `
-      <button onclick="filtrarCategoriaPOS('${c}')" class="pos-cat-btn ${categoriaActual === c ? 'is-active' : ''}">${c.toUpperCase()}</button>
-    `).join('');
-
-    renderProductosPOS();
-    renderCarrito();
-  }
-
-  function filtrarCategoriaPOS(cat) {
-    categoriaActual = cat;
-    renderizarPOS();
-  }
-
-  function renderProductosPOS(filtroTexto = '') {
-    const grid = document.getElementById('posGridProductos');
+  function renderMenuPublico() {
+    const grid = document.getElementById('publicMenuGrid');
     let lista = dbMenu;
 
-    if (categoriaActual !== 'todos') {
-      lista = lista.filter(p => p.categoria === categoriaActual);
-    }
-    if (filtroTexto.trim() !== '') {
-      lista = lista.filter(p => p.nombre.toLowerCase().includes(filtroTexto.toLowerCase()));
+    if (categoriaSeleccionada !== 'todos') {
+      lista = lista.filter(p => p.categoria === categoriaSeleccionada);
     }
 
     if (lista.length === 0) {
-      grid.innerHTML = `<div class="col-span-full text-center py-8 text-xs text-gray-500">No se encontraron productos.</div>`;
+      grid.innerHTML = `<div class="col-span-full text-center py-12 text-sm text-gray-500">No hay productos disponibles en esta categoría.</div>`;
       return;
     }
 
     grid.innerHTML = lista.map(p => `
-      <button onclick="agregarAlCarrito(${p.id})" class="product-card">
-        <div class="h-24 w-full rounded-lg overflow-hidden mb-2 bg-black/40">
-          <img src="${p.imagen || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&auto=format&fit=crop&q=80'}" class="w-full h-full object-cover">
+      <div class="bg-[#111827] border border-white/10 rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-[#ff4757]/50 transition group">
+        <div class="h-48 w-full overflow-hidden bg-black/40 relative">
+          <img src="${p.imagen || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=80'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          <span class="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-white/10">
+            ${p.categoria}
+          </span>
         </div>
-        <div>
-          <h4 class="text-xs font-bold truncate">${p.nombre}</h4>
-          <p class="text-[#2ed573] font-black text-xs mt-1">$${p.precio.toFixed(2)}</p>
+        <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
+          <div>
+            <h4 class="font-bold text-base mb-1">${p.nombre}</h4>
+            <p class="text-[#2ed573] font-black text-lg">$${p.precio.toFixed(2)}</p>
+          </div>
+          <a href="https://wa.me/593999999999?text=Hola,%20deseo%20pedir%20${encodeURIComponent(p.nombre)}%20por%20valor%20de%20$%${p.precio.toFixed(2)}" target="_blank"
+             class="w-full bg-[#1f2937] hover:bg-[#ff4757] text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 border border-white/10 hover:border-transparent">
+            <i class="fa-brands fa-whatsapp text-sm"></i> Pedir este plato
+          </a>
         </div>
-      </button>
+      </div>
     `).join('');
   }
 
-  function agregarAlCarrito(id) {
-    const prod = dbMenu.find(p => p.id === id);
-    if (!prod) return;
-    const existe = carrito.find(item => item.id === id);
-    if (existe) {
-      existe.cantidad++;
-    } else {
-      carrito.push({ ...prod, cantidad: 1 });
-    }
-    renderCarrito();
-  }
-
-  function cambiarCantidad(id, delta) {
-    const item = carrito.find(i => i.id === id);
-    if (!item) return;
-    item.cantidad += delta;
-    if (item.cantidad <= 0) {
-      carrito = carrito.filter(i => i.id !== id);
-    }
-    renderCarrito();
-  }
-
-  function vaciarCarrito() {
-    carrito = [];
-    renderCarrito();
-  }
-
-  function renderCarrito() {
-    const container = document.getElementById('carritoItemsContainer');
-    const countBadge = document.getElementById('cartCount');
-    const subtotalEl = document.getElementById('carritoSubtotal');
-    const ivaEl = document.getElementById('carritoIva');
-    const totalEl = document.getElementById('carritoTotal');
-
-    const totalItems = carrito.reduce((sum, i) => sum + i.cantidad, 0);
-    countBadge.innerText = totalItems;
-
-    if (carrito.length === 0) {
-      container.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">Tu carrito está vacío.</p>`;
-      subtotalEl.innerText = '$0.00';
-      ivaEl.innerText = '$0.00';
-      totalEl.innerText = '$0.00';
-      return;
-    }
-
-    let subtotal = 0;
-    container.innerHTML = carrito.map(item => {
-      const sub = item.precio * item.cantidad;
-      subtotal += sub;
-      return `
-        <div class="flex justify-between items-center bg-black/25 p-2.5 rounded-xl border border-white/5 text-xs">
-          <div class="truncate mr-2">
-            <p class="font-bold truncate">${item.nombre}</p>
-            <p class="text-[10px] text-[#2ed573]">$${item.precio.toFixed(2)} c/u</p>
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <button onclick="cambiarCantidad(${item.id}, -1)" class="w-6 h-6 rounded bg-white/10 hover:bg-white/20">-</button>
-            <span class="font-bold w-4 text-center">${item.cantidad}</span>
-            <button onclick="cambiarCantidad(${item.id}, 1)" class="w-6 h-6 rounded bg-white/10 hover:bg-white/20">+</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    const iva = subtotal * 0.12;
-    const total = subtotal + iva;
-
-    subtotalEl.innerText = `$${subtotal.toFixed(2)}`;
-    ivaEl.innerText = `$${iva.toFixed(2)}`;
-    totalEl.innerText = `$${total.toFixed(2)}`;
-  }
-
-  function finalizarVenta() {
-    if (carrito.length === 0) {
-      alert('Agrega productos al pedido primero.');
-      return;
-    }
-
-    let subtotal = carrito.reduce((sum, i) => sum + (i.precio * i.cantidad), 0);
-    let total = subtotal * 1.12;
-    const cliente = document.getElementById('clientName').value.trim() || 'Cliente';
-
-    // Abrir WhatsApp con el detalle
-    let texto = `Hola, pedido para *${cliente}* en Brother's Pizza:%0A%0A`;
-    carrito.forEach(i => {
-      texto += `- ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})%0A`;
-    });
-    texto += `%0A*Total con IVA: $${total.toFixed(2)}*`;
-    window.open(`https://wa.me/593999999999?text=${texto}`, '_blank');
-
-    // Registrar venta
-    dbVentas.unshift({
-      id: Date.now(),
-      fecha: new Date().toLocaleString(),
-      atendido: usuarioActual ? usuarioActual.nombre : 'Sistema',
-      detalle: carrito.map(i => `${i.cantidad}x ${i.nombre}`).join(', '),
-      total: total
-    });
-    localStorage.setItem('bp_ventas', JSON.stringify(dbVentas));
-
-    carrito = [];
-    renderCarrito();
-    renderVentas();
-  }
-
-  // --- HISTORIAL Y GRÁFICO ---
-  function renderVentas() {
-    const tbody = document.getElementById('ventasTableBody');
-    const contador = document.getElementById('contadorVentasTotal');
-    const recaudadoEl = document.getElementById('statRecaudadoTotal');
-
-    contador.innerText = `${dbVentas.length} registros`;
-    let totalRecaudado = dbVentas.reduce((acc, v) => acc + v.total, 0);
-    recaudadoEl.innerText = `$${totalRecaudado.toFixed(2)}`;
-
-    if (dbVentas.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">No hay ventas registradas aún.</td></tr>`;
-    } else {
-      tbody.innerHTML = dbVentas.slice(0, 10).map(v => `
-        <tr class="hover:bg-white/5">
-          <td class="p-3 text-gray-400">${v.fecha}</td>
-          <td class="p-3 font-medium">${v.atendido}</td>
-          <td class="p-3 truncate max-w-xs">${v.detalle}</td>
-          <td class="p-3 text-right font-bold text-[#2ed573]">$${v.total.toFixed(2)}</td>
-        </tr>
-      `).join('');
-    }
-
-    actualizarGrafico();
-  }
-
-  function actualizarGrafico() {
-    const ctx = document.getElementById('ventasChart').getContext('2d');
-    let categoriasTotales = { Pizzas: 0, Bebidas: 0, Extras: 0 };
-    
-    dbVentas.forEach(v => {
-      // Cálculo aproximado para el gráfico
-      categoriasTotales.Pizzas += v.total * 0.7;
-      categoriasTotales.Bebidas += v.total * 0.2;
-      categoriasTotales.Extras += v.total * 0.1;
-    });
-
-    if (chartInstancia) chartInstancia.destroy();
-
-    chartInstancia = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Pizzas', 'Bebidas', 'Extras'],
-        datasets: [{
-          data: [categoriasTotales.Pizzas, categoriasTotales.Bebidas, categoriasTotales.Extras],
-          backgroundColor: ['#ff4757', '#2ed573', '#ffa502'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af', boxWidth: 12, font: { size: 10 } } } }
+  function filtrarPublico(cat) {
+    categoriaSeleccionada = cat;
+    document.querySelectorAll('.pub-cat-btn').forEach(btn => {
+      if (btn.innerText.toLowerCase() === cat.toLowerCase() || (cat === 'todos' && btn.innerText === 'Todos')) {
+        btn.className = "pub-cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-[#ff4757] text-white transition";
+      } else {
+        btn.className = "pub-cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-[#111827] border border-white/10 text-gray-400 hover:text-white transition";
       }
     });
+    renderMenuPublico();
   }
 
-  // --- GESTIÓN DE MENÚ ---
-  function renderMenuTable() {
-    const tbody = document.getElementById('menuTableBody');
-    tbody.innerHTML = dbMenu.map(p => `
-      <tr class="hover:bg-white/5">
-        <td class="p-4"><img src="${p.imagen || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&auto=format&fit=crop&q=80'}" class="w-10 h-10 rounded-lg object-cover"></td>
-        <td class="p-4 font-bold">${p.nombre}</td>
-        <td class="p-4 text-gray-400">${p.categoria}</td>
-        <td class="p-4 text-[#2ed573] font-black">$${p.precio.toFixed(2)}</td>
-        <td class="p-4 text-right space-x-2">
-          <button onclick="editarMenu(${p.id})" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-pen"></i></button>
-          <button onclick="eliminarMenu(${p.id})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
-        </td>
-      </tr>
-    `).join('');
-    localStorage.setItem('bp_menu', JSON.stringify(dbMenu));
+  function abrirModalLogin() {
+    document.getElementById('modalLogin').classList.add('modal-active');
   }
 
-  function abrirModalMenu(id = null) {
-    document.getElementById('modalMenu').classList.add('modal-active');
-    if (id) {
-      const p = dbMenu.find(x => x.id === id);
-      document.getElementById('menuId').value = p.id;
-      document.getElementById('menuNombre').value = p.nombre;
-      document.getElementById('menuCategoria').value = p.categoria;
-      document.getElementById('menuPrecio').value = p.precio;
-      document.getElementById('menuImagen').value = p.imagen || '';
-    } else {
-      document.getElementById('formMenu').reset();
-      document.getElementById('menuId').value = '';
-    }
+  function cerrarModalLogin() {
+    document.getElementById('modalLogin').classList.remove('modal-active');
   }
 
-  function guardarMenu(e) {
+  function autoCompletarDemo(u, p) {
+    document.getElementById('loginUser').value = u;
+    document.getElementById('loginPass').value = p;
+  }
+
+  function procesarLoginPublico(e) {
     e.preventDefault();
-    const id = document.getElementById('menuId').value;
-    const nombre = document.getElementById('menuNombre').value.trim();
-    const categoria = document.getElementById('menuCategoria').value;
-    const precio = parseFloat(document.getElementById('menuPrecio').value);
-    const imagen = document.getElementById('menuImagen').value.trim();
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    const encontrado = dbUsuarios.find(x => x.user === u && x.pass === p);
 
-    if (id) {
-      const idx = dbMenu.findIndex(x => x.id == id);
-      dbMenu[idx] = { id: parseInt(id), nombre, categoria, precio, imagen };
+    if (encontrado) {
+      // Redirigir al POS administrativo completo que guardaste anteriormente
+      alert('¡Acceso concedido! Entrando al sistema POS...');
+      // Aquí puedes enlazar o recargar con la vista interna si tienes el archivo combinado, o guardar estado de sesión
+      localStorage.setItem('bp_sesion_activa', JSON.stringify(encontrado));
+      location.reload(); // O redirigir a tu panel interno
     } else {
-      dbMenu.push({ id: Date.now(), nombre, categoria, precio, imagen });
+      const msg = document.getElementById('loginMsgError');
+      msg.innerText = "Usuario o contraseña incorrectos.";
+      msg.classList.remove('hidden');
     }
-    cerrarModal('modalMenu');
-    renderMenuTable();
-    renderProductosPOS();
-  }
-
-  function editarMenu(id) { abrirModalMenu(id); }
-  function eliminarMenu(id) {
-    if (confirm('¿Eliminar este producto?')) {
-      dbMenu = dbMenu.filter(x => x.id !== id);
-      renderMenuTable();
-      renderProductosPOS();
-    }
-  }
-
-  // --- GESTIÓN DE INVENTARIO ---
-  function renderInventarioTable() {
-    const tbody = document.getElementById('inventarioTableBody');
-    tbody.innerHTML = dbInsumos.map(i => {
-      const critico = i.cantidad <= i.limite;
-      return `
-        <tr class="hover:bg-white/5">
-          <td class="p-4 font-bold">${i.nombre}</td>
-          <td class="p-4 tabular-nums">${i.cantidad}</td>
-          <td class="p-4 text-gray-400">${i.unidad}</td>
-          <td class="p-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${critico ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}">${critico ? 'Bajo Stock' : 'Óptimo'}</span></td>
-          <td class="p-4 text-right space-x-2">
-            <button onclick="editarInsumo(${i.id})" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-pen"></i></button>
-            <button onclick="eliminarInsumo(${i.id})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        </tr>
-      `;
-    }).join('');
-    localStorage.setItem('bp_insumos', JSON.stringify(dbInsumos));
-  }
-
-  function abrirModalInsumo(id = null) {
-    document.getElementById('modalInsumo').classList.add('modal-active');
-    if (id) {
-      const ins = dbInsumos.find(x => x.id === id);
-      document.getElementById('insumoId').value = ins.id;
-      document.getElementById('insumoNombre').value = ins.nombre;
-      document.getElementById('insumoCantidad').value = ins.cantidad;
-      document.getElementById('insumoUnidad').value = ins.unidad;
-      document.getElementById('insumoLimite').value = ins.limite;
-    } else {
-      document.getElementById('formInsumo').reset();
-      document.getElementById('insumoId').value = '';
-    }
-  }
-
-  function guardarInsumo(e) {
-    e.preventDefault();
-    const id = document.getElementById('insumoId').value;
-    const nombre = document.getElementById('insumoNombre').value.trim();
-    const cantidad = parseFloat(document.getElementById('insumoCantidad').value);
-    const unidad = document.getElementById('insumoUnidad').value;
-    const limite = parseFloat(document.getElementById('insumoLimite').value);
-
-    if (id) {
-      const idx = dbInsumos.findIndex(x => x.id == id);
-      dbInsumos[idx] = { id: parseInt(id), nombre, cantidad, unidad, limite };
-    } else {
-      dbInsumos.push({ id: Date.now(), nombre, cantidad, unidad, limite });
-    }
-    cerrarModal('modalInsumo');
-    renderInventarioTable();
-  }
-
-  function editarInsumo(id) { abrirModalInsumo(id); }
-  function eliminarInsumo(id) {
-    if (confirm('¿Eliminar insumo?')) {
-      dbInsumos = dbInsumos.filter(x => x.id !== id);
-      renderInventarioTable();
-    }
-  }
-
-  // --- GESTIÓN DE TRABAJADORES ---
-  function renderUsuariosTable() {
-    const tbody = document.getElementById('usuariosTableBody');
-    tbody.innerHTML = dbUsuarios.map(u => `
-      <tr class="hover:bg-white/5">
-        <td class="p-4"><div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center font-bold text-xs">${u.nombre.charAt(0)}</div></td>
-        <td class="p-4 font-mono text-sky-400">${u.user}</td>
-        <td class="p-4 font-bold">${u.nombre}</td>
-        <td class="p-4 text-gray-400">${u.rol}</td>
-        <td class="p-4 text-right space-x-2">
-          <button onclick="editarUsuario(${u.id})" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-pen"></i></button>
-          <button onclick="eliminarUsuario(${u.id})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
-        </td>
-      </tr>
-    `).join('');
-    localStorage.setItem('bp_usuarios', JSON.stringify(dbUsuarios));
-    renderDemoAccounts();
-  }
-
-  function abrirModalUsuario(id = null) {
-    document.getElementById('modalUsuario').classList.add('modal-active');
-    if (id) {
-      const usr = dbUsuarios.find(x => x.id === id);
-      document.getElementById('usuarioId').value = usr.id;
-      document.getElementById('usuarioNombre').value = usr.nombre;
-      document.getElementById('usuarioUser').value = usr.user;
-      document.getElementById('usuarioPass').value = usr.pass;
-      document.getElementById('usuarioRol').value = usr.rol;
-      document.getElementById('usuarioFoto').value = usr.foto || '';
-    } else {
-      document.getElementById('formUsuario').reset();
-      document.getElementById('usuarioId').value = '';
-    }
-  }
-
-  function guardarUsuario(e) {
-    e.preventDefault();
-    const id = document.getElementById('usuarioId').value;
-    const nombre = document.getElementById('usuarioNombre').value.trim();
-    const user = document.getElementById('usuarioUser').value.trim();
-    const pass = document.getElementById('usuarioPass').value.trim();
-    const rol = document.getElementById('usuarioRol').value;
-    const foto = document.getElementById('usuarioFoto').value.trim();
-
-    if (id) {
-      const idx = dbUsuarios.findIndex(x => x.id == id);
-      dbUsuarios[idx] = { id: parseInt(id), nombre, user, pass, rol, foto };
-    } else {
-      dbUsuarios.push({ id: Date.now(), nombre, user, pass, rol, foto });
-    }
-    cerrarModal('modalUsuario');
-    renderUsuariosTable();
-  }
-
-  function editarUsuario(id) { abrirModalUsuario(id); }
-  function eliminarUsuario(id) {
-    if (dbUsuarios.length <= 1) {
-      alert('Debes mantener al menos un usuario activo.');
-      return;
-    }
-    if (confirm('¿Eliminar trabajador?')) {
-      dbUsuarios = dbUsuarios.filter(x => x.id !== id);
-      renderUsuariosTable();
-    }
-  }
-
-  function cerrarModal(modalId) {
-    document.getElementById(modalId).classList.remove('modal-active');
   }
 </script>
 </body>
