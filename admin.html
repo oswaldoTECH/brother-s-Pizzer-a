@@ -1,346 +1,902 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#09090b">
-<title>Panel Admin · Brother's Pizza</title>
-
+<title>Admin · Brothers Pizza</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: { extend: {
-      colors: { pizza: { 400:'#fb7185', 500:'#ef4444', 600:'#dc2626', 700:'#b91c1c' } },
-      fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
-    }}
-  };
-</script>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
-
 <style>
-  :root { --safe-bottom: env(safe-area-inset-bottom, 0px); --safe-top: env(safe-area-inset-top, 0px); }
-  * { -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
-  .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: .02em; }
-
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #18181b; }
-  ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 999px; }
-
-  .glass-panel { background: rgba(9,9,11,.9); backdrop-filter: blur(14px); }
-
-  @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 15px rgba(239,68,68,.25); }
-    50%      { box-shadow: 0 0 26px rgba(239,68,68,.55); }
-  }
-  .glow-effect { animation: pulse-glow 3s ease-in-out infinite; }
-
-  @keyframes modal-in { from { opacity: 0; transform: translateY(20px) scale(.97); } to { opacity: 1; transform: none; } }
-  .modal-card { animation: modal-in .22s cubic-bezier(.22,1,.36,1); }
-
-  @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  .slide-up { animation: slide-up .3s cubic-bezier(.22,1,.36,1); }
-
-  @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);} 40%{transform:translateX(8px);} 60%{transform:translateX(-5px);} 80%{transform:translateX(5px);} }
-  .shake { animation: shake .4s ease; }
-
-  @keyframes pop-in { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
-  .pop-in { animation: pop-in .25s ease-out; }
-
-  @keyframes toast-in { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
-  .toast-in { animation: toast-in .25s ease-out; }
-
-  .tab-btn { display: flex; align-items: center; gap: .5rem; justify-content: center; padding: .7rem 1rem; border-radius: .75rem; font-size: .8rem; font-weight: 600; color: #a1a1aa; white-space: nowrap; transition: all .2s; }
-  .tab-btn:hover { color: #fff; background: #27272a; }
-  .tab-btn.is-active { background: #dc2626; color: #fff; box-shadow: 0 4px 14px rgba(220,38,38,.3); }
-
-  .category-btn { padding: .5rem .9rem; border-radius: .75rem; font-size: .75rem; font-weight: 600; background: #27272a; color: #d4d4d8; white-space: nowrap; transition: all .2s; min-height: 36px; }
-  .category-btn.is-active { background: #dc2626; color: #fff; }
-
-  .tabular-nums { font-variant-numeric: tabular-nums; }
-
-  @keyframes sync-pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
-  .sync-dot { animation: sync-pulse 2s ease-in-out infinite; }
-
-  .mobile-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
-    background: rgba(9,9,11,.97); backdrop-filter: blur(16px);
-    border-top: 1px solid #27272a; padding-bottom: var(--safe-bottom);
-    display: grid; grid-template-columns: repeat(5, 1fr);
-  }
-  @media (min-width: 1024px) { .mobile-nav { display: none; } }
-
-  .mobile-nav-item {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; padding: 10px 4px 8px; color: #71717a; font-size: 10px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .03em; position: relative;
-    transition: color .25s; min-height: 62px; background: transparent; border: none; cursor: pointer;
-  }
-  .mobile-nav-item i { font-size: 19px; }
-  .mobile-nav-item:active { transform: scale(.94); }
-  .mobile-nav-item.active { color: #ef4444; }
-  .mobile-nav-item.active::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:30px; height:3px; border-radius:0 0 6px 6px; background:linear-gradient(90deg,#ef4444,#f59e0b); }
-
-  .cart-sheet {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
-    background: #12121c; border-radius: 26px 26px 0 0; border-top: 1px solid #27272a;
-    max-height: 90vh; display: flex; flex-direction: column;
-    transform: translateY(100%); transition: transform .35s cubic-bezier(.22,1,.36,1);
-    padding-bottom: var(--safe-bottom); box-shadow: 0 -20px 60px rgba(0,0,0,.6);
-  }
-  .cart-sheet.open { transform: translateY(0); }
-  @media (min-width: 1024px) { .cart-sheet { display: none !important; } }
-
-  .cart-backdrop { position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,.7); opacity: 0; pointer-events: none; transition: opacity .3s; }
-  .cart-backdrop.open { opacity: 1; pointer-events: auto; }
-
-  .cart-fab-mobile {
-    position: fixed; bottom: calc(72px + var(--safe-bottom)); right: 14px;
-    z-index: 45; width: 62px; height: 62px; border-radius: 50%;
-    background: linear-gradient(135deg, #ef4444, #f59e0b); color: white;
-    display: grid; place-items: center;
-    box-shadow: 0 12px 30px rgba(239,68,68,.5);
-    transform: translateY(140%); transition: transform .35s cubic-bezier(.22,1,.36,1);
-    border: none; cursor: pointer;
-  }
-  .cart-fab-mobile.show { transform: translateY(0); }
-  .cart-fab-mobile:active { transform: translateY(0) scale(.92); }
-  @media (min-width: 1024px) { .cart-fab-mobile { display: none; } }
-
-  .pos-card { transition: transform .2s, border-color .2s, box-shadow .2s; cursor: pointer; overflow: hidden; position: relative; }
-  .pos-card:active { transform: scale(.96); }
-  .pos-card .pos-img { transition: transform .4s ease; }
-  @media (min-width: 1024px) {
-    .pos-card:hover { transform: translateY(-4px); border-color: rgba(239,68,68,.6); box-shadow: 0 20px 40px -15px rgba(239,68,68,.4); }
-    .pos-card:hover .pos-img { transform: scale(1.08); }
-  }
-
-  .input { width: 100%; background: #09090b; border: 1px solid #3f3f46; border-radius: .75rem; padding: .65rem .9rem; font-size: .875rem; color: #e4e4e7; outline: none; transition: border-color .2s; }
-  .input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
-
-  .modal-fullscreen { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.75); display: flex; align-items: flex-end; justify-content: center; }
-  @media (min-width: 768px) { .modal-fullscreen { align-items: center; } }
-  .modal-panel {
-    background: #18181b; border: 1px solid #27272a;
-    border-radius: 26px 26px 0 0; width: 100%; max-height: 92vh; overflow-y: auto;
-    padding: 24px 20px calc(24px + var(--safe-bottom));
-    animation: slide-up .3s cubic-bezier(.22,1,.36,1);
-  }
-  @media (min-width: 768px) {
-    .modal-panel { border-radius: 20px; max-width: 520px; max-height: 88vh; padding: 24px; animation: modal-in .22s ease-out; }
-  }
-
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { scrollbar-width: none; }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
-  }
+  body { font-family: system-ui, sans-serif; }
+  .input { width: 100%; background: #09090b; border: 1px solid #3f3f46; border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 14px; }
+  .input:focus { outline: none; border-color: #ef4444; }
+  .tab-active { background: #dc2626 !important; color: #fff !important; }
+  .hide { display: none !important; }
 </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen">
 
-<!-- ==================== LOGIN ==================== -->
-<div id="loginGate" class="fixed inset-0 z-[100] bg-zinc-950 flex items-center justify-center p-4">
-  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-7 shadow-2xl modal-card relative overflow-hidden">
-    <div class="absolute -top-16 -right-16 w-40 h-40 bg-pizza-600/15 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="relative text-center mb-6">
-      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-pizza-600 to-amber-500 text-white mb-3 shadow-lg">
-        <i class="fa-solid fa-pizza-slice text-2xl"></i>
+<!-- LOGIN -->
+<div id="loginGate" class="fixed inset-0 z-50 bg-zinc-950 flex items-center justify-center p-4">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6">
+    <div class="text-center mb-5">
+      <div class="inline-flex w-12 h-12 rounded-xl bg-red-600 items-center justify-center mb-2">
+        <i class="fa-solid fa-pizza-slice text-white text-xl"></i>
       </div>
-      <h2 class="text-xl font-bold text-white">Brother's Pizza</h2>
-      <p class="text-xs text-zinc-400 mt-1">Acceso al panel administrativo</p>
+      <h1 class="text-lg font-bold">Brothers Pizza · Admin</h1>
     </div>
-
-    <form id="loginGateForm" class="space-y-4 relative" novalidate>
-      <div>
-        <label for="gate-user" class="block text-xs text-zinc-400 mb-1.5">Usuario</label>
-        <input type="text" id="gate-user" required autocomplete="username" class="input" placeholder="admin">
-      </div>
-      <div>
-        <label for="gate-pass" class="block text-xs text-zinc-400 mb-1.5">Contraseña</label>
-        <input type="password" id="gate-pass" required autocomplete="current-password" class="input" placeholder="••••••">
-      </div>
-      <div id="gate-error" class="hidden text-rose-400 text-xs text-center bg-rose-500/10 border border-rose-500/20 py-2 rounded-lg"></div>
-      <button type="submit" class="w-full bg-pizza-600 hover:bg-pizza-700 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-pizza-600/30">
-        <i class="fa-solid fa-right-to-bracket mr-2"></i>Ingresar
-      </button>
-      <a href="index.html" class="block text-center text-xs text-zinc-400 hover:text-white transition pt-1">← Volver al sitio público</a>
+    <form id="loginForm" class="space-y-3">
+      <input type="text" id="luser" value="admin" class="input" placeholder="Usuario">
+      <input type="password" id="lpass" value="admin123" class="input" placeholder="Contraseña">
+      <div id="lerr" class="hidden text-red-400 text-xs text-center bg-red-500/10 py-2 rounded"></div>
+      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold">Ingresar</button>
     </form>
-
-    <div class="mt-5 pt-4 border-t border-zinc-800 space-y-2">
-      <p class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold text-center">Cuentas de prueba</p>
-      <div class="grid grid-cols-2 gap-2">
-        <button type="button" data-fill="admin" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2 rounded-lg text-[11px] font-semibold transition">
-          👑 Administrador
-        </button>
-        <button type="button" data-fill="cajero" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2 rounded-lg text-[11px] font-semibold transition">
-          🧑‍🍳 Cajero / Ventas
-        </button>
-      </div>
-    </div>
+    <button onclick="localStorage.removeItem('bp_staff');localStorage.removeItem('bp_session');location.reload()" class="w-full text-xs text-zinc-500 mt-3">🔧 Reparar acceso</button>
+    <a href="index.html" class="block text-center text-xs text-zinc-500 mt-2">← Volver al menú</a>
   </div>
 </div>
 
-<!-- ==================== HEADER ==================== -->
-<header id="appHeader" class="hidden glass-panel sticky top-0 z-40 border-b border-zinc-800" style="padding-top: var(--safe-top);">
-  <div class="max-w-[1600px] mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
-    <div class="flex items-center gap-3 min-w-0">
-      <div class="bg-gradient-to-tr from-pizza-600 to-amber-500 p-2.5 rounded-xl text-white shadow-lg glow-effect shrink-0">
-        <i class="fa-solid fa-pizza-slice text-lg"></i>
-      </div>
-      <div class="min-w-0">
-        <h1 class="text-base sm:text-lg font-bold tracking-tight text-white leading-tight truncate">Brother's Pizza</h1>
-        <p class="text-[10px] sm:text-xs text-zinc-400 truncate flex items-center gap-2">
-          Panel Admin
-          <span class="hidden md:inline-flex items-center gap-1.5 text-emerald-400">
-            <span class="sync-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            Sincronizado con el menú público
-          </span>
-        </p>
-      </div>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <a href="index.html" target="_blank" rel="noopener" title="Ver menú público"
-         class="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-pizza-600 to-amber-600 text-white text-xs font-semibold transition shadow-lg shadow-pizza-600/30">
-        <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
-        <span>Ver menú público</span>
-      </a>
-      <a href="index.html" title="Volver al sitio público"
-         class="md:hidden p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 transition">
-        <i class="fa-solid fa-house text-xs"></i>
-      </a>
-
-      <div class="hidden md:flex items-center gap-2.5 pl-3 border-l border-zinc-800">
-        <div id="userAvatar" class="h-9 w-9 rounded-xl bg-gradient-to-br from-pizza-500 to-amber-600 grid place-items-center font-bold text-white shadow text-xs">?</div>
-        <div class="text-right leading-tight">
-          <span id="userName" class="block text-xs font-semibold text-zinc-200">—</span>
-          <span id="userRoleLabel" class="block text-[10px] text-emerald-400">En línea</span>
+<!-- APP -->
+<div id="app" class="hide">
+  <!-- HEADER -->
+  <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-3 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-lg bg-red-600 flex items-center justify-center">
+          <i class="fa-solid fa-pizza-slice text-white"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-sm">Brothers Pizza</h1>
+          <p class="text-[10px] text-zinc-500" id="userInfo">—</p>
         </div>
       </div>
-
-      <button type="button" data-action="logout" title="Cerrar sesión"
-              class="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-red-400 transition">
-        <i class="fa-solid fa-right-from-bracket text-sm"></i>
-      </button>
-    </div>
-  </div>
-
-  <nav class="hidden lg:flex max-w-[1600px] mx-auto px-6 pb-3 gap-1.5 overflow-x-auto" aria-label="Secciones">
-    <button type="button" data-tab="pos" class="tab-btn is-active"><i class="fa-solid fa-cash-register"></i><span>Punto de Venta</span></button>
-    <button type="button" data-tab="menu" class="tab-btn"><i class="fa-solid fa-utensils"></i><span>Menú</span></button>
-    <button type="button" data-tab="inventory" class="tab-btn"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></button>
-    <button type="button" data-tab="staff" class="tab-btn"><i class="fa-solid fa-users-gear"></i><span>Trabajadores</span></button>
-    <button type="button" data-tab="stats" class="tab-btn"><i class="fa-solid fa-chart-pie"></i><span>Estadísticas</span></button>
-  </nav>
-</header>
-
-<!-- ==================== MAIN ==================== -->
-<main id="main" class="hidden flex-1 max-w-[1600px] w-full mx-auto p-3 sm:p-5 md:p-6 pb-24 lg:pb-6">
-
-  <!-- ========== POS ========== -->
-  <section id="section-pos" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-    <div class="lg:col-span-7 xl:col-span-8 space-y-3">
-      <div class="flex flex-col sm:flex-row gap-3 justify-between sm:items-center bg-zinc-900/60 p-3 rounded-2xl border border-zinc-800">
-        <div class="relative w-full sm:w-64">
-          <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
-          <input type="search" id="pos-search" autocomplete="off" placeholder="Buscar producto…" class="input pl-10">
-        </div>
-        <div id="pos-categories" class="flex gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0"></div>
-      </div>
-      <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3"></div>
-    </div>
-
-    <!-- Carrito desktop -->
-    <aside class="hidden lg:flex lg:col-span-5 xl:col-span-4 w-full lg:sticky lg:top-40 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex-col shadow-xl">
-      <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-3">
-        <h2 class="font-bold text-base flex items-center text-zinc-200">
-          <i class="fa-solid fa-receipt text-pizza-500 mr-2"></i>
-          Orden actual
-          <span id="cart-count-desktop" class="ml-2 text-[11px] font-bold bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-full tabular-nums">0</span>
-        </h2>
-        <button type="button" data-action="clear-cart" class="text-xs text-zinc-400 hover:text-red-400 transition bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-lg">
-          <i class="fa-solid fa-trash mr-1"></i>Limpiar
+      <div class="flex gap-2">
+        <a href="index.html" target="_blank" class="text-xs px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700">
+          <i class="fa-solid fa-eye"></i><span class="hidden sm:inline ml-1">Ver menú</span>
+        </a>
+        <button onclick="logout()" class="text-xs px-3 py-2 rounded-lg bg-zinc-800 hover:bg-red-600">
+          <i class="fa-solid fa-right-from-bracket"></i>
         </button>
       </div>
-      <div class="mb-3">
-        <label class="block text-[10px] uppercase font-bold tracking-wider text-zinc-500 mb-1">Cliente / Mesa</label>
-        <input type="text" id="order-client-desktop" value="Mesa 01 - General" autocomplete="off" class="input">
-      </div>
-      <div id="cart-items-desktop" class="space-y-2 overflow-y-auto max-h-[calc(100vh-28rem)] pr-1"></div>
-      <div class="border-t border-zinc-800 pt-3 space-y-2 mt-3">
-        <div class="flex justify-between text-xs text-zinc-400"><span>Subtotal</span><span id="cart-subtotal-desktop" class="tabular-nums">$0.00</span></div>
-        <div class="flex justify-between text-xs text-zinc-400"><span>Impuestos (12%)</span><span id="cart-tax-desktop" class="tabular-nums">$0.00</span></div>
-        <div class="flex justify-between text-base font-bold text-white pt-2 border-t border-zinc-800/60">
-          <span>Total</span><span id="cart-total-desktop" class="text-pizza-500 tabular-nums">$0.00</span>
-        </div>
-        <div class="grid grid-cols-2 gap-2 pt-2">
-          <button type="button" data-pay="Efectivo" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2.5 rounded-xl font-medium text-xs transition border border-zinc-700 active:scale-[.98]">
-            <i class="fa-solid fa-money-bill-wave text-emerald-400 mr-1.5"></i>Efectivo
-          </button>
-          <button type="button" data-pay="Tarjeta" class="w-full bg-pizza-600 hover:bg-pizza-700 text-white py-2.5 rounded-xl font-medium text-xs transition shadow-lg shadow-pizza-600/30 active:scale-[.98]">
-            <i class="fa-solid fa-credit-card mr-1.5"></i>Tarjeta
-          </button>
-        </div>
-      </div>
-    </aside>
-  </section>
-
-  <!-- ========== MENÚ ========== -->
-  <section id="section-menu" class="hidden space-y-5">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-4 sm:p-5 rounded-2xl border border-zinc-800">
-      <div>
-        <h2 class="text-base sm:text-lg font-bold text-white">Gestión del menú</h2>
-        <p class="text-xs text-zinc-400 flex items-center gap-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 sync-dot"></span>
-          Cambios sincronizados con <a href="index.html" target="_blank" class="text-pizza-400 hover:text-pizza-300 underline">index.html</a>
-        </p>
-      </div>
-      <button type="button" data-action="new-pizza"
-              class="w-full sm:w-auto bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 transition min-h-[48px]">
-        <i class="fa-solid fa-plus mr-2"></i>Nueva pizza
-      </button>
     </div>
-
-    <!-- Tamaños -->
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-ruler-combined text-amber-400"></i>Tamaños y precios
-        </h3>
-        <button type="button" data-action="edit-sizes" class="text-xs text-pizza-400 hover:text-pizza-300 font-semibold">
-          <i class="fa-solid fa-pen mr-1"></i>Editar
-        </button>
-      </div>
-      <div id="sizes-list" class="grid grid-cols-3 gap-2"></div>
+    <!-- TABS -->
+    <div class="max-w-6xl mx-auto px-3 pb-2 flex gap-1 overflow-x-auto text-xs">
+      <button data-tab="pos" class="tab tab-active px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">🍕 POS</button>
+      <button data-tab="menu" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">📋 Menú</button>
+      <button data-tab="inv" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">📦 Stock</button>
+      <button data-tab="staff" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">👥 Staff</button>
+      <button data-tab="fin" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">💰 Finanzas</button>
+      <button data-tab="cash" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">💵 Caja</button>
+      <button data-tab="stats" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">📊 Ventas</button>
     </div>
+  </header>
 
-    <!-- Promos -->
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-      <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-star text-amber-400"></i>Promociones especiales
-      </h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div class="flex items-center gap-3 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-          <div class="text-2xl">🍕</div>
-          <div class="flex-1 min-w-0">
-            <p class="text-xs font-semibold text-white truncate">Porción individual</p>
-            <p class="text-[11px] text-zinc-500">Cualquier sabor</p>
+  <main class="max-w-6xl mx-auto p-3 pb-24">
+
+    <!-- POS -->
+    <section id="sec-pos">
+      <div class="grid lg:grid-cols-3 gap-3">
+        <div class="lg:col-span-2 space-y-3">
+          <input type="text" id="posSearch" class="input" placeholder="🔍 Buscar producto...">
+          <div id="posGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 h-fit lg:sticky lg:top-32">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-sm">🛒 Orden <span id="cCount" class="text-red-500">(0)</span></h3>
+            <button onclick="clearCart()" class="text-xs text-zinc-500 hover:text-red-400">Limpiar</button>
           </div>
-          <div class="text-right">
-            <p class="font-bold text-amber-400 tabular-nums" id="porcion-price-display">$1.25</p>
-            <button type="button" data-action="edit-porcion" class="text-[10px] text-pizza-400 hover:text-pizza-300">Editar</button>
+          <input type="text" id="clientName" value="Mesa 1" class="input mb-3 text-sm">
+          <div id="cartList" class="space-y-2 max-h-64 overflow-y-auto mb-3"></div>
+          <div class="border-t border-zinc-800 pt-3 space-y-1 text-xs">
+            <div class="flex justify-between"><span>Subtotal</span><span id="cSub">$0.00</span></div>
+            <div class="flex justify-between"><span>IVA 12%</span><span id="cTax">$0.00</span></div>
+            <div class="flex justify-between font-bold text-base pt-2"><span>Total</span><span id="cTot" class="text-red-500">$0.00</span></div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-3">
+            <button onclick="pay('Efectivo')" class="bg-zinc-800 py-2.5 rounded-lg text-xs font-semibold">💵 Efectivo</button>
+            <button onclick="pay('Tarjeta')" class="bg-red-600 py-2.5 rounded-lg text-xs font-semibold">💳 Tarjeta</button>
           </div>
         </div>
-        <div class="flex items-center gap-3 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
-          <div class="text-2xl">🥤</div>
-          <div class="flex-1 min-w-0">
-            <p class="text-xs font-semibold 
+      </div>
+    </section>
+
+    <!-- MENU -->
+    <section id="sec-menu" class="hide">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="font-bold">📋 Menú</h2>
+        <button onclick="editPizza(0)" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold">+ Nueva pizza</button>
+      </div>
+      <div id="sizesBox" class="grid grid-cols-3 gap-2 mb-3"></div>
+      <button onclick="editSizes()" class="text-xs text-red-400 mb-3">✏️ Editar tamaños y precios</button>
+      <div id="pizzaList" class="space-y-2"></div>
+    </section>
+
+    <!-- INVENTARIO -->
+    <section id="sec-inv" class="hide">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="font-bold">📦 Inventario</h2>
+        <button onclick="editInsumo(0)" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold">+ Nuevo</button>
+      </div>
+      <div id="invList" class="space-y-2"></div>
+    </section>
+
+    <!-- STAFF -->
+    <section id="sec-staff" class="hide">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="font-bold">👥 Trabajadores</h2>
+        <button onclick="editStaff(0)" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold">+ Nuevo</button>
+      </div>
+      <div id="staffList" class="space-y-2"></div>
+    </section>
+
+    <!-- FINANZAS -->
+    <section id="sec-fin" class="hide">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
+        <div class="bg-emerald-600/20 border border-emerald-600/40 p-3 rounded-xl">
+          <p class="text-[10px] text-emerald-400 font-bold uppercase">Ingresos mes</p>
+          <p id="fIncome" class="text-xl font-bold mt-1">$0</p>
+        </div>
+        <div class="bg-red-600/20 border border-red-600/40 p-3 rounded-xl">
+          <p class="text-[10px] text-red-400 font-bold uppercase">Egresos mes</p>
+          <p id="fExpense" class="text-xl font-bold mt-1">$0</p>
+        </div>
+        <div class="bg-amber-600/20 border border-amber-600/40 p-3 rounded-xl">
+          <p class="text-[10px] text-amber-400 font-bold uppercase">Nómina</p>
+          <p id="fPayroll" class="text-xl font-bold mt-1">$0</p>
+        </div>
+        <div class="bg-blue-600/20 border border-blue-600/40 p-3 rounded-xl">
+          <p class="text-[10px] text-blue-400 font-bold uppercase">Balance</p>
+          <p id="fBalance" class="text-xl font-bold mt-1">$0</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mb-3 text-xs">
+        <button data-ftab="salary" class="ftab tab-active px-3 py-2 rounded-lg bg-zinc-800">💼 Sueldos</button>
+        <button data-ftab="expenses" class="ftab px-3 py-2 rounded-lg bg-zinc-800">🧾 Gastos</button>
+        <button data-ftab="debts" class="ftab px-3 py-2 rounded-lg bg-zinc-800">💳 Deudas</button>
+      </div>
+
+      <div id="fSalary">
+        <div id="salaryList" class="space-y-2"></div>
+      </div>
+      <div id="fExpenses" class="hide">
+        <button onclick="newExpense()" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold mb-3">+ Nuevo gasto</button>
+        <div id="expensesList" class="space-y-2"></div>
+      </div>
+      <div id="fDebts" class="hide">
+        <button onclick="newDebt()" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold mb-3">+ Nueva deuda</button>
+        <div id="debtsList" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- CAJA -->
+    <section id="sec-cash" class="hide">
+      <div class="grid grid-cols-3 gap-2 mb-3">
+        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
+          <p class="text-[10px] text-zinc-500 font-bold uppercase">Estado</p>
+          <p id="cashStatus" class="text-base font-bold mt-1">—</p>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
+          <p class="text-[10px] text-zinc-500 font-bold uppercase">Esperado</p>
+          <p id="cashExpected" class="text-xl font-bold text-emerald-400 mt-1">$0</p>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
+          <p class="text-[10px] text-zinc-500 font-bold uppercase">Diferencia</p>
+          <p id="cashDiff" class="text-xl font-bold mt-1">$0</p>
+        </div>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 space-y-3 mb-3">
+        <div class="grid grid-cols-3 gap-2">
+          <input type="number" id="cashOpenAmt" class="input" placeholder="Monto apertura" step="0.01">
+          <button onclick="openCash()" class="bg-emerald-600 py-2.5 rounded-lg text-xs font-semibold">🔓 Abrir</button>
+          <button onclick="closeCash()" class="bg-red-600 py-2.5 rounded-lg text-xs font-semibold">🔒 Cerrar</button>
+        </div>
+        <input type="number" id="cashCounted" class="input" placeholder="Efectivo contado al cerrar" step="0.01">
+        <p id="cashHint" class="text-[11px] text-zinc-500"></p>
+      </div>
+      <h3 class="font-bold text-sm mb-2">Historial</h3>
+      <div id="cashHistory" class="space-y-2"></div>
+    </section>
+
+    <!-- STATS -->
+    <section id="sec-stats" class="hide">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
+        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
+          <p class="text-[10px] text-zinc-500 font-bold uppercase">Ventas hoy</p>
+          <p id="sToday" class="text-xl font-bold mt-1">$0</p>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
+          <p class="text-[10px] text-zinc-500 font-bold uppercase">Órdenes hoy</p>
+          <p id="sOrders" class="text-xl font-bold mt-1">0</p>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
+          <p class="text-[10px] text-zinc-500 font-bold uppercase">Total mes</p>
+          <p id="sMonth" class="text-xl font-bold mt-1">$0</p>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
+          <p class="text-[10px] text-zinc-500 font-bold uppercase">Ticket promedio</p>
+          <p id="sAvg" class="text-xl font-bold mt-1">$0</p>
+        </div>
+      </div>
+      <h3 class="font-bold text-sm mb-2">Últimas ventas</h3>
+      <div id="salesList" class="space-y-2"></div>
+    </section>
+
+  </main>
+</div>
+
+<div id="modal" class="fixed inset-0 z-40 bg-black/70 hide items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="modalBody" class="bg-zinc-900 border border-zinc-800 w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl p-5"></div>
+</div>
+
+<script>
+/* ==================== STORAGE ==================== */
+const LS = { MENU:"bp_menu", SALES:"bp_sales", INV:"bp_inventory", STAFF:"bp_staff", SESSION:"bp_session", PAYROLL:"bp_payroll", EXPENSES:"bp_expenses", DEBTS:"bp_debts", CASH:"bp_cash" };
+
+const DEF_MENU = {
+  tamanos: [
+    {id:"personal",label:"Personal",precio:5,porciones:4},
+    {id:"mediana",label:"Mediana",precio:9,porciones:10},
+    {id:"familiar",label:"Familiar",precio:13,porciones:12},
+  ],
+  pizzas: [
+    {id:1,nombre:"Pizza Pepperoni",desc:"Pepperoni y mozzarella",badge:"hot"},
+    {id:2,nombre:"Pizza Margarita",desc:"Mozzarella, albahaca y tomate"},
+    {id:3,nombre:"Pizza Hawaiana",desc:"Jamón, piña y mozzarella"},
+    {id:4,nombre:"Pizza de Jamón",desc:"Jamón y mozzarella",badge:"new"},
+  ],
+  porcion: {id:200,nombre:"Porción de Pizza",precio:1.25},
+  cola: {id:300,nombre:"Cola 1L",precio:0.75},
+};
+
+const DEF_INV = [
+  {id:1,nombre:"Harina",unidad:"kg",stock:25,min:10,costo:1.20,proveedor:"Molinos"},
+  {id:2,nombre:"Queso",unidad:"kg",stock:8,min:5,costo:6.50,proveedor:"Lácteos"},
+  {id:3,nombre:"Pepperoni",unidad:"kg",stock:4,min:3,costo:8,proveedor:"Carnes"},
+  {id:4,nombre:"Jamón",unidad:"kg",stock:2,min:3,costo:5.50,proveedor:"Carnes"},
+  {id:5,nombre:"Cola 1L",unidad:"botella",stock:20,min:12,costo:0.50,proveedor:"Distribuidora"},
+];
+
+const DEF_STAFF = [
+  {id:1,nombre:"Administrador",usuario:"admin",pass:"admin123",rol:"admin",activo:true,emoji:"👑",sueldo:600},
+  {id:2,nombre:"Cajero",usuario:"cajero",pass:"cajero123",rol:"cajero",activo:true,emoji:"🧑‍🍳",sueldo:400},
+];
+
+/* ==================== HELPERS ==================== */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const money = v => "$" + Number(v).toFixed(2);
+const uid = () => Date.now() + Math.floor(Math.random()*1000);
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const read = (k,f) => { try { const v=localStorage.getItem(k); return v?JSON.parse(v):f; } catch { return f; } };
+const write = (k,v) => { localStorage.setItem(k, JSON.stringify(v)); try { window.dispatchEvent(new StorageEvent("storage",{key:k})); } catch(_){} };
+
+/* ==================== SEED BLINDADO ==================== */
+function seed() {
+  let m = read(LS.MENU,null);
+  if (!m || !Array.isArray(m.pizzas) || !Array.isArray(m.tamanos)) write(LS.MENU, DEF_MENU);
+
+  let inv = read(LS.INV,null);
+  if (!Array.isArray(inv)) write(LS.INV, DEF_INV);
+
+  // 🛡️ Staff blindado
+  let st = read(LS.STAFF,null);
+  if (!Array.isArray(st)) st = [];
+  st = st.filter(s => s && s.usuario && s.pass);
+  const ai = st.findIndex(s => s.usuario === "admin");
+  if (ai === -1) st.unshift(DEF_STAFF[0]);
+  else if (st[ai].pass !== "admin123") { st[ai].pass = "admin123"; st[ai].activo = true; st[ai].rol = "admin"; }
+  if (!st.find(s => s.usuario === "cajero")) st.push(DEF_STAFF[1]);
+  write(LS.STAFF, st);
+
+  if (!Array.isArray(read(LS.SALES,null)))    write(LS.SALES,[]);
+  if (!Array.isArray(read(LS.PAYROLL,null)))  write(LS.PAYROLL,[]);
+  if (!Array.isArray(read(LS.EXPENSES,null))) write(LS.EXPENSES,[]);
+  if (!Array.isArray(read(LS.DEBTS,null)))    write(LS.DEBTS,[]);
+  if (!Array.isArray(read(LS.CASH,null)))     write(LS.CASH,[]);
+}
+seed();
+
+/* ==================== STATE ==================== */
+let MENU = read(LS.MENU, DEF_MENU);
+let SALES = read(LS.SALES, []);
+let INV = read(LS.INV, DEF_INV);
+let STAFF = read(LS.STAFF, DEF_STAFF);
+let PAYROLL = read(LS.PAYROLL, []);
+let EXPENSES = read(LS.EXPENSES, []);
+let DEBTS = read(LS.DEBTS, []);
+let CASH = read(LS.CASH, []);
+let SESSION = read(LS.SESSION, null);
+let cart = [];
+let currentTab = "pos";
+
+/* ==================== IMÁGENES ==================== */
+const IMG = {
+  pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=300&q=70",
+  margarita:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=300&q=70",
+  hawaiana:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&q=70",
+  jamon:"https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=300&q=70",
+  cola:"https://images.unsplash.com/photo-1554866585-cd94860890b7?w=300&q=70",
+  slice:"https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=300&q=70",
+  def:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&q=70",
+};
+function imgOf(n="") {
+  n = n.toLowerCase();
+  if (n.includes("pepperoni")) return IMG.pepperoni;
+  if (n.includes("margarita")) return IMG.margarita;
+  if (n.includes("hawaiana")) return IMG.hawaiana;
+  if (n.includes("jamón")||n.includes("jamon")) return IMG.jamon;
+  if (n.includes("cola")||n.includes("coca")) return IMG.cola;
+  if (n.includes("porci")) return IMG.slice;
+  return IMG.def;
+}
+
+/* ==================== LOGIN ==================== */
+$("#loginForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const u = $("#luser").value.trim(), p = $("#lpass").value;
+  let user = STAFF.find(s => s.usuario === u && s.pass === p && s.activo);
+  if (!user) {
+    const d = DEF_STAFF.find(s => s.usuario === u && s.pass === p);
+    if (d) { STAFF = [...DEF_STAFF]; write(LS.STAFF, STAFF); user = d; }
+  }
+  if (!user) { $("#lerr").textContent = "Usuario o contraseña incorrectos"; $("#lerr").classList.remove("hidden"); return; }
+  SESSION = { id:user.id, nombre:user.nombre, rol:user.rol };
+  write(LS.SESSION, SESSION);
+  $("#loginGate").classList.add("hide");
+  $("#app").classList.remove("hide");
+  $("#userInfo").textContent = `${user.nombre} · ${user.rol}`;
+  renderAll();
+});
+if (SESSION && STAFF.find(s => s.id === SESSION.id)) {
+  $("#loginGate").classList.add("hide");
+  $("#app").classList.remove("hide");
+  $("#userInfo").textContent = `${SESSION.nombre} · ${SESSION.rol}`;
+  renderAll();
+}
+function logout() { if (!confirm("¿Cerrar sesión?")) return; localStorage.removeItem(LS.SESSION); location.reload(); }
+
+/* ==================== TABS ==================== */
+$$(".tab").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.tab)));
+function switchTab(t) {
+  currentTab = t;
+  $$("main > section").forEach(s => s.classList.add("hide"));
+  $("#sec-" + t).classList.remove("hide");
+  $$(".tab").forEach(b => b.classList.toggle("tab-active", b.dataset.tab === t));
+}
+
+/* ==================== POS ==================== */
+function getProducts() {
+  const l = [];
+  MENU.pizzas.forEach(p => MENU.tamanos.forEach(t => l.push({
+    key:`p${p.id}-${t.id}`, tipo:"pizza", id:p.id, nombre:`${p.nombre} ${t.label}`, precio:t.precio, img:imgOf(p.nombre)
+  })));
+  l.push({ key:"porcion", tipo:"porcion", id:200, nombre:"Porción pizza", precio:MENU.porcion.precio, img:IMG.slice });
+  l.push({ key:"cola", tipo:"extra", id:300, nombre:MENU.cola.nombre, precio:MENU.cola.precio, img:IMG.cola });
+  return l;
+}
+function renderPOS(q="") {
+  let list = getProducts();
+  if (q) list = list.filter(p => p.nombre.toLowerCase().includes(q.toLowerCase()));
+  $("#posGrid").innerHTML = list.map(p => `
+    <button onclick='addCart(${JSON.stringify(p).replace(/'/g,"&#39;")})' class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden text-left hover:border-red-600">
+      <div class="h-20 bg-zinc-800 overflow-hidden">
+        <img src="${p.img}" class="w-full h-full object-cover" onerror="this.src='${IMG.def}'">
+      </div>
+      <div class="p-2">
+        <p class="text-[11px] font-semibold leading-tight line-clamp-2 min-h-[2rem]">${esc(p.nombre)}</p>
+        <p class="text-amber-400 font-bold text-sm mt-1">${money(p.precio)}</p>
+      </div>
+    </button>
+  `).join("") || `<p class="col-span-full text-center text-zinc-500 py-8 text-sm">Sin resultados</p>`;
+}
+$("#posSearch").addEventListener("input", e => renderPOS(e.target.value));
+
+function addCart(p) {
+  const f = cart.find(i => i.key === p.key);
+  if (f) f.cantidad++; else cart.push({ ...p, cantidad:1 });
+  renderCart();
+}
+function changeQty(i, d) {
+  cart[i].cantidad += d;
+  if (cart[i].cantidad <= 0) cart.splice(i,1);
+  renderCart();
+}
+function clearCart() { cart = []; renderCart(); }
+function renderCart() {
+  const cnt = cart.reduce((s,i)=>s+i.cantidad,0);
+  const sub = cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
+  const tax = sub * 0.12;
+  $("#cCount").textContent = `(${cnt})`;
+  $("#cSub").textContent = money(sub);
+  $("#cTax").textContent = money(tax);
+  $("#cTot").textContent = money(sub+tax);
+  $("#cartList").innerHTML = cart.length === 0
+    ? `<p class="text-center text-zinc-600 py-6 text-xs">Sin productos</p>`
+    : cart.map((it,i) => `
+      <div class="flex items-center gap-2 bg-zinc-950 p-2 rounded-lg">
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-semibold truncate">${esc(it.nombre)}</p>
+          <p class="text-[10px] text-zinc-500">${money(it.precio)} c/u</p>
+        </div>
+        <button onclick="changeQty(${i},-1)" class="w-6 h-6 rounded bg-zinc-800 text-xs">−</button>
+        <span class="text-xs font-bold w-5 text-center">${it.cantidad}</span>
+        <button onclick="changeQty(${i},1)" class="w-6 h-6 rounded bg-zinc-800 text-xs">+</button>
+      </div>
+    `).join("");
+}
+function pay(method) {
+  if (!cart.length) { alert("Carrito vacío"); return; }
+  const sub = cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
+  const tax = sub * 0.12;
+  SALES.unshift({
+    id: uid(), fecha: new Date().toISOString(),
+    cliente: $("#clientName").value || "Cliente", metodo: method,
+    items: [...cart], subtotal: sub, impuesto: tax, total: sub+tax,
+    vendedor: SESSION?.nombre || "Sistema"
+  });
+  write(LS.SALES, SALES);
+  cart = []; renderCart(); renderStats(); renderFinance(); renderCash();
+  alert(`✅ Venta: ${money(sub+tax)} (${method})`);
+}
+
+/* ==================== MENU ==================== */
+function renderMenu() {
+  $("#sizesBox").innerHTML = MENU.tamanos.map(t => `
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2 text-center">
+      <p class="text-[10px] text-zinc-500 uppercase font-bold">${esc(t.label)}</p>
+      <p class="text-lg font-bold text-amber-400">${money(t.precio)}</p>
+      <p class="text-[10px] text-zinc-500">${t.porciones} porciones</p>
+    </div>`).join("");
+  $("#pizzaList").innerHTML = MENU.pizzas.map(p => `
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2 flex gap-3 items-center">
+      <div class="w-14 h-14 rounded-lg overflow-hidden bg-zinc-800 shrink-0">
+        <img src="${imgOf(p.nombre)}" class="w-full h-full object-cover" onerror="this.src='${IMG.def}'">
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm truncate">${esc(p.nombre)}</p>
+        <p class="text-[11px] text-zinc-500 truncate">${esc(p.desc||"")}</p>
+      </div>
+      <button onclick="editPizza(${p.id})" class="w-8 h-8 rounded bg-zinc-800 text-xs"><i class="fa-solid fa-pen"></i></button>
+      <button onclick="delPizza(${p.id})" class="w-8 h-8 rounded bg-zinc-800 text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+    </div>`).join("");
+}
+function editPizza(id) {
+  const p = id === 0 ? { id:uid(), nombre:"", desc:"", badge:"" } : MENU.pizzas.find(x => x.id === id);
+  openModal(`
+    <h3 class="font-bold mb-4">${id?"Editar":"Nueva"} pizza</h3>
+    <input type="text" id="pName" value="${esc(p.nombre)}" class="input mb-2" placeholder="Nombre">
+    <input type="text" id="pDesc" value="${esc(p.desc||"")}" class="input mb-2" placeholder="Descripción">
+    <select id="pBadge" class="input mb-3">
+      <option value="">Normal</option>
+      <option value="hot" ${p.badge==="hot"?"selected":""}>🔥 Popular</option>
+      <option value="new" ${p.badge==="new"?"selected":""}>⭐ Nuevo</option>
+    </select>
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
+      <button onclick="savePizza(${id})" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+    </div>
+  `);
+}
+function savePizza(id) {
+  const nombre = $("#pName").value.trim();
+  if (!nombre) { alert("Ponle un nombre"); return; }
+  const data = { nombre, desc: $("#pDesc").value.trim(), badge: $("#pBadge").value };
+  if (id === 0) MENU.pizzas.push({ id: uid(), ...data });
+  else Object.assign(MENU.pizzas.find(x => x.id === id), data);
+  write(LS.MENU, MENU); MENU = read(LS.MENU, DEF_MENU);
+  renderMenu(); renderPOS(); closeModal();
+}
+function delPizza(id) {
+  if (!confirm("¿Eliminar?")) return;
+  MENU.pizzas = MENU.pizzas.filter(x => x.id !== id);
+  write(LS.MENU, MENU); MENU = read(LS.MENU, DEF_MENU);
+  renderMenu(); renderPOS();
+}
+function editSizes() {
+  openModal(`
+    <h3 class="font-bold mb-4">Tamaños y precios</h3>
+    ${MENU.tamanos.map((t,i) => `
+      <div class="bg-zinc-950 p-3 rounded-lg mb-2">
+        <p class="text-sm font-bold mb-2">${esc(t.label)}</p>
+        <div class="grid grid-cols-2 gap-2">
+          <input type="number" step="0.01" id="sp${i}" value="${t.precio}" class="input" placeholder="Precio">
+          <input type="number" id="sr${i}" value="${t.porciones}" class="input" placeholder="Porciones">
+        </div>
+      </div>`).join("")}
+    <div class="flex gap-2 mt-3">
+      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
+      <button onclick="saveSizes()" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+    </div>
+  `);
+}
+function saveSizes() {
+  MENU.tamanos.forEach((t,i) => {
+    t.precio = parseFloat($(`#sp${i}`).value) || 0;
+    t.porciones = parseInt($(`#sr${i}`).value) || t.porciones;
+  });
+  write(LS.MENU, MENU); MENU = read(LS.MENU, DEF_MENU);
+  renderMenu(); renderPOS(); closeModal();
+}
+
+/* ==================== INVENTARIO ==================== */
+function renderInv() {
+  $("#invList").innerHTML = INV.map(i => {
+    const crit = i.stock <= i.min;
+    return `
+      <div class="bg-zinc-900 border ${crit?"border-red-600/60":"border-zinc-800"} rounded-xl p-3">
+        <div class="flex justify-between items-center mb-1">
+          <p class="font-semibold text-sm">${esc(i.nombre)}</p>
+          <span class="text-[10px] ${crit?"text-red-400":"text-emerald-400"} font-bold">${crit?"⚠️ CRÍTICO":"OK"}</span>
+        </div>
+        <p class="text-xs text-zinc-500 mb-2">${esc(i.proveedor||"")} · ${money(i.costo)}/${esc(i.unidad)}</p>
+        <div class="flex items-center justify-between">
+          <span class="text-xs">Stock: <strong>${i.stock} ${esc(i.unidad)}</strong></span>
+          <div class="flex gap-1">
+            <button onclick="addStock(${i.id})" class="text-[10px] px-2 py-1 rounded bg-zinc-800">+ Sumar</button>
+            <button onclick="editInsumo(${i.id})" class="text-[10px] px-2 py-1 rounded bg-zinc-800">Editar</button>
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+}
+function addStock(id) {
+  const i = INV.find(x => x.id === id);
+  const q = prompt(`¿Cuánto sumar a "${i.nombre}"?`, "10");
+  if (q === null) return;
+  i.stock += parseFloat(q) || 0;
+  write(LS.INV, INV); renderInv();
+}
+function editInsumo(id) {
+  const i = id === 0 ? { id:uid(), nombre:"", unidad:"kg", stock:0, min:0, costo:0, proveedor:"" } : INV.find(x => x.id === id);
+  openModal(`
+    <h3 class="font-bold mb-4">${id?"Editar":"Nuevo"} insumo</h3>
+    <input type="text" id="iName" value="${esc(i.nombre)}" class="input mb-2" placeholder="Nombre">
+    <div class="grid grid-cols-2 gap-2 mb-2">
+      <input type="text" id="iUnit" value="${esc(i.unidad)}" class="input" placeholder="Unidad">
+      <input type="number" step="0.01" id="iCost" value="${i.costo}" class="input" placeholder="Costo">
+    </div>
+    <div class="grid grid-cols-2 gap-2 mb-2">
+      <input type="number" step="0.01" id="iStock" value="${i.stock}" class="input" placeholder="Stock">
+      <input type="number" step="0.01" id="iMin" value="${i.min}" class="input" placeholder="Mínimo">
+    </div>
+    <input type="text" id="iProv" value="${esc(i.proveedor||"")}" class="input mb-3" placeholder="Proveedor">
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
+      <button onclick="saveInsumo(${id})" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+    </div>
+  `);
+}
+function saveInsumo(id) {
+  const data = {
+    nombre: $("#iName").value.trim(),
+    unidad: $("#iUnit").value.trim() || "kg",
+    costo: parseFloat($("#iCost").value) || 0,
+    stock: parseFloat($("#iStock").value) || 0,
+    min: parseFloat($("#iMin").value) || 0,
+    proveedor: $("#iProv").value.trim(),
+  };
+  if (!data.nombre) { alert("Ponle nombre"); return; }
+  if (id === 0) INV.push({ id: uid(), ...data });
+  else Object.assign(INV.find(x => x.id === id), data);
+  write(LS.INV, INV); renderInv(); closeModal();
+}
+
+/* ==================== STAFF ==================== */
+function renderStaff() {
+  $("#staffList").innerHTML = STAFF.map(s => `
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 rounded-lg ${s.rol==="admin"?"bg-red-600":"bg-emerald-600"} flex items-center justify-center text-lg">${s.emoji||"👤"}</div>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm truncate">${esc(s.nombre)}</p>
+          <p class="text-[11px] text-zinc-500">@${esc(s.usuario)} · ${s.rol}</p>
+        </div>
+      </div>
+      <p class="text-xs text-zinc-400 mb-2">Sueldo: <strong class="text-white">${money(s.sueldo||0)}</strong></p>
+      <div class="flex gap-2">
+        <button onclick="editStaff(${s.id})" class="flex-1 bg-zinc-800 py-1.5 rounded text-xs">Editar</button>
+        <button onclick="toggleStaff(${s.id})" class="flex-1 bg-zinc-800 py-1.5 rounded text-xs">${s.activo?"Pausar":"Activar"}</button>
+      </div>
+    </div>`).join("");
+}
+function toggleStaff(id) {
+  const s = STAFF.find(x => x.id === id);
+  if (s.usuario === "admin" && s.activo) { alert("No puedes desactivar al admin"); return; }
+  s.activo = !s.activo;
+  write(LS.STAFF, STAFF); renderStaff();
+}
+function editStaff(id) {
+  const s = id === 0 ? { id:uid(), nombre:"", usuario:"", pass:"", rol:"cajero", activo:true, emoji:"🧑‍🍳", sueldo:0 } : STAFF.find(x => x.id === id);
+  openModal(`
+    <h3 class="font-bold mb-4">${id?"Editar":"Nuevo"} trabajador</h3>
+    <input type="text" id="sName" value="${esc(s.nombre)}" class="input mb-2" placeholder="Nombre">
+    <input type="text" id="sUser" value="${esc(s.usuario)}" class="input mb-2" placeholder="Usuario">
+    <input type="text" id="sPass" value="${esc(s.pass)}" class="input mb-2" placeholder="Contraseña">
+    <input type="number" step="0.01" id="sSalary" value="${s.sueldo||0}" class="input mb-2" placeholder="Sueldo mensual">
+    <select id="sRole" class="input mb-3">
+      <option value="cajero" ${s.rol==="cajero"?"selected":""}>🧑‍🍳 Cajero</option>
+      <option value="cocina" ${s.rol==="cocina"?"selected":""}>👨‍🍳 Cocina</option>
+      <option value="admin" ${s.rol==="admin"?"selected":""}>👑 Admin</option>
+    </select>
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
+      <button onclick="saveStaff(${id})" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+    </div>
+  `);
+}
+function saveStaff(id) {
+  const data = {
+    nombre: $("#sName").value.trim(),
+    usuario: $("#sUser").value.trim(),
+    pass: $("#sPass").value.trim(),
+    sueldo: parseFloat($("#sSalary").value) || 0,
+    rol: $("#sRole").value,
+    emoji: $("#sRole").value === "admin" ? "👑" : $("#sRole").value === "cocina" ? "👨‍🍳" : "🧑‍🍳",
+  };
+  if (!data.nombre || !data.usuario || !data.pass) { alert("Completa los campos"); return; }
+  if (id === 0) STAFF.push({ id: uid(), ...data, activo: true });
+  else Object.assign(STAFF.find(x => x.id === id), data);
+  write(LS.STAFF, STAFF); renderStaff(); renderFinance(); closeModal();
+}
+
+/* ==================== FINANZAS ==================== */
+const thisMonth = () => new Date().toISOString().slice(0,7);
+
+function renderFinance() {
+  const month = thisMonth();
+  const income = SALES.filter(s => s.fecha.slice(0,7) === month).reduce((a,s) => a+s.total, 0);
+  const payrollPaid = PAYROLL.filter(p => (p.fecha||"").slice(0,7) === month).reduce((a,p) => a+p.monto, 0);
+  const expenseSum = EXPENSES.filter(e => e.fecha.slice(0,7) === month).reduce((a,e) => a+e.monto, 0);
+  const debtsPaid = DEBTS.filter(d => (d.fechaPago||"").slice(0,7) === month && d.pagado).reduce((a,d) => a+d.monto, 0);
+  const totalExp = payrollPaid + expenseSum + debtsPaid;
+  const payrollExp = STAFF.reduce((a,s) => a+(s.sueldo||0), 0);
+  const balance = income - totalExp;
+
+  $("#fIncome").textContent = money(income);
+  $("#fExpense").textContent = money(totalExp);
+  $("#fPayroll").textContent = money(payrollExp);
+  $("#fBalance").textContent = money(balance);
+  $("#fBalance").style.color = balance >= 0 ? "#34d399" : "#f87171";
+
+  // Sueldos
+  $("#salaryList").innerHTML = STAFF.map(s => {
+    const paid = PAYROLL.filter(p => p.staffId === s.id && (p.fecha||"").slice(0,7) === month).reduce((a,p) => a+p.monto, 0);
+    const pending = Math.max(0, (s.sueldo||0) - paid);
+    return `
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3">
+        <div class="flex justify-between items-start mb-2">
+          <div><p class="font-semibold text-sm">${esc(s.nombre)}</p><p class="text-[11px] text-zinc-500">Sueldo: ${money(s.sueldo||0)}</p></div>
+          <div class="text-right"><p class="text-[10px] text-zinc-500">Pendiente</p><p class="text-sm font-bold ${pending>0?"text-red-400":"text-emerald-400"}">${money(pending)}</p></div>
+        </div>
+        <p class="text-[11px] text-zinc-500 mb-2">Pagado: <strong class="text-emerald-400">${money(paid)}</strong></p>
+        <div class="flex gap-2">
+          <button onclick="paySalary(${s.id})" class="flex-1 bg-emerald-600/30 text-emerald-400 py-1.5 rounded text-xs">💵 Pagar</button>
+          <button onclick="editSalary(${s.id})" class="flex-1 bg-zinc-800 py-1.5 rounded text-xs">✏️ Sueldo</button>
+        </div>
+      </div>`;
+  }).join("");
+
+  // Gastos
+  const monthExp = EXPENSES.filter(e => e.fecha.slice(0,7) === month);
+  $("#expensesList").innerHTML = monthExp.length === 0
+    ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin gastos este mes</p>`
+    : monthExp.map(e => `
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm truncate">${esc(e.descripcion)}</p>
+          <p class="text-[11px] text-zinc-500">${esc(e.categoria||"General")} · ${new Date(e.fecha).toLocaleDateString("es-EC")}</p>
+        </div>
+        <p class="text-red-400 font-bold text-sm">-${money(e.monto)}</p>
+        <button onclick="delExpense(${e.id})" class="text-zinc-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+      </div>`).join("");
+
+  // Deudas
+  $("#debtsList").innerHTML = DEBTS.length === 0
+    ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin deudas 🎉</p>`
+    : DEBTS.map(d => `
+      <div class="bg-zinc-900 border ${d.pagado?"border-emerald-600/40 opacity-60":"border-amber-600/40"} rounded-xl p-3">
+        <div class="flex justify-between items-start mb-2">
+          <div class="min-w-0">
+            <p class="font-semibold text-sm truncate">${esc(d.acreedor)}</p>
+            <p class="text-[11px] text-zinc-500 truncate">${esc(d.nota||"")}</p>
+          </div>
+          <div class="text-right shrink-0 ml-2">
+            <p class="font-bold ${d.pagado?"text-emerald-400 line-through":"text-amber-400"} text-sm">${money(d.monto)}</p>
+            <p class="text-[10px] text-zinc-500">${d.vence?new Date(d.vence).toLocaleDateString("es-EC"):"—"}</p>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          ${!d.pagado?`<button onclick="payDebt(${d.id})" class="flex-1 bg-emerald-600/30 text-emerald-400 py-1.5 rounded text-xs">✓ Pagar</button>`:""}
+          <button onclick="delDebt(${d.id})" class="flex-1 bg-zinc-800 text-red-400 py-1.5 rounded text-xs">Eliminar</button>
+        </div>
+      </div>`).join("");
+}
+
+function paySalary(id) {
+  const s = STAFF.find(x => x.id === id);
+  const v = prompt(`Monto a pagar a ${s.nombre}:`, s.sueldo || 0);
+  if (v === null) return;
+  const monto = parseFloat(v) || 0;
+  if (monto <= 0) return;
+  PAYROLL.push({ id: uid(), staffId: id, nombre: s.nombre, monto, fecha: new Date().toISOString() });
+  write(LS.PAYROLL, PAYROLL); renderFinance();
+}
+function editSalary(id) {
+  const s = STAFF.find(x => x.id === id);
+  const v = prompt(`Sueldo mensual de ${s.nombre}:`, s.sueldo || 0);
+  if (v === null) return;
+  s.sueldo = parseFloat(v) || 0;
+  write(LS.STAFF, STAFF); renderFinance(); renderStaff();
+}
+function newExpense() {
+  openModal(`
+    <h3 class="font-bold mb-4">Nuevo gasto</h3>
+    <input type="text" id="exDesc" class="input mb-2" placeholder="Descripción">
+    <input type="number" step="0.01" id="exAmount" class="input mb-2" placeholder="Monto">
+    <select id="exCat" class="input mb-3">
+      <option>Servicios</option><option>Arriendo</option><option>Insumos</option><option>Sueldos</option><option>Otros</option>
+    </select>
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
+      <button onclick="saveExpense()" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+    </div>
+  `);
+}
+function saveExpense() {
+  const desc = $("#exDesc").value.trim();
+  const monto = parseFloat($("#exAmount").value) || 0;
+  if (!desc || monto <= 0) { alert("Completa los datos"); return; }
+  EXPENSES.push({ id: uid(), descripcion: desc, monto, categoria: $("#exCat").value, fecha: new Date().toISOString() });
+  write(LS.EXPENSES, EXPENSES); renderFinance(); closeModal();
+}
+function delExpense(id) {
+  if (!confirm("¿Eliminar?")) return;
+  EXPENSES = EXPENSES.filter(e => e.id !== id);
+  write(LS.EXPENSES, EXPENSES); renderFinance();
+}
+function newDebt() {
+  openModal(`
+    <h3 class="font-bold mb-4">Nueva deuda</h3>
+    <input type="text" id="dName" class="input mb-2" placeholder="Acreedor">
+    <input type="number" step="0.01" id="dAmount" class="input mb-2" placeholder="Monto">
+    <input type="date" id="dDue" class="input mb-2">
+    <input type="text" id="dNote" class="input mb-3" placeholder="Nota (opcional)">
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
+      <button onclick="saveDebt()" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+    </div>
+  `);
+}
+function saveDebt() {
+  const name = $("#dName").value.trim();
+  const monto = parseFloat($("#dAmount").value) || 0;
+  if (!name || monto <= 0) { alert("Completa los datos"); return; }
+  DEBTS.push({ id: uid(), acreedor: name, monto, vence: $("#dDue").value || null, nota: $("#dNote").value.trim(), pagado: false, fecha: new Date().toISOString() });
+  write(LS.DEBTS, DEBTS); renderFinance(); closeModal();
+}
+function payDebt(id) {
+  const d = DEBTS.find(x => x.id === id);
+  if (!confirm(`¿Marcar pagada: ${d.acreedor} - ${money(d.monto)}?`)) return;
+  d.pagado = true; d.fechaPago = new Date().toISOString();
+  write(LS.DEBTS, DEBTS); renderFinance();
+}
+function delDebt(id) {
+  if (!confirm("¿Eliminar deuda?")) return;
+  DEBTS = DEBTS.filter(d => d.id !== id);
+  write(LS.DEBTS, DEBTS); renderFinance();
+}
+
+$$(".ftab").forEach(b => b.addEventListener("click", () => {
+  $$(".ftab").forEach(x => x.classList.remove("tab-active"));
+  b.classList.add("tab-active");
+  ["salary","expenses","debts"].forEach(t => {
+    $("#f" + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle("hide", t !== b.dataset.ftab);
+  });
+}));
+
+/* ==================== CAJA ==================== */
+function renderCash() {
+  const today = new Date().toISOString().slice(0,10);
+  const c = CASH.find(x => x.fecha === today);
+  const salesToday = SALES.filter(s => s.fecha.slice(0,10) === today);
+  const cashSales = salesToday.filter(s => s.metodo === "Efectivo").reduce((a,s) => a+s.total, 0);
+  const isOpen = c && !c.cerrada;
+
+  $("#cashStatus").textContent = isOpen ? "ABIERTA" : "CERRADA";
+  $("#cashStatus").style.color = isOpen ? "#34d399" : "#a1a1aa";
+  const expected = (c?.montoApertura || 0) + cashSales;
+  $("#cashExpected").textContent = money(expected);
+  const counted = c?.montoContado ?? null;
+  const diff = counted !== null ? counted - expected : 0;
+  $("#cashDiff").textContent = counted !== null ? money(diff) : "$0";
+  $("#cashDiff").style.color = counted === null ? "#fff" : Math.abs(diff) < 0.5 ? "#34d399" : "#f87171";
+  $("#cashHint").textContent = `💵 Efectivo: ${money(cashSales)} · 💳 Tarjeta: ${money(salesToday.filter(s=>s.metodo==="Tarjeta").reduce((a,s)=>a+s.total,0))}`;
+
+  $("#cashHistory").innerHTML = CASH.length === 0
+    ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin cierres</p>`
+    : CASH.slice().reverse().slice(0,10).map(c => {
+      const d = c.diferencia ?? 0;
+      return `
+        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex justify-between items-center">
+          <div>
+            <p class="text-xs font-semibold">${new Date(c.fecha).toLocaleDateString("es-EC")}</p>
+            <p class="text-[10px] text-zinc-500">Apertura: ${money(c.montoApertura)} · Contado: ${money(c.montoContado||0)}</p>
+          </div>
+          <p class="text-sm font-bold ${Math.abs(d)<0.5?"text-emerald-400":"text-red-400"}">${money(d)}</p>
+        </div>`;
+    }).join("");
+}
+function openCash() {
+  const amt = parseFloat($("#cashOpenAmt").value) || 0;
+  if (amt <= 0) { alert("Ingresa el monto"); return; }
+  const today = new Date().toISOString().slice(0,10);
+  if (CASH.find(c => c.fecha === today && !c.cerrada)) { alert("Ya hay caja abierta"); return; }
+  CASH.push({ id: uid(), fecha: today, apertura: new Date().toISOString(), montoApertura: amt, cerrada: false, abiertaPor: SESSION?.nombre || "Sistema" });
+  write(LS.CASH, CASH); renderCash();
+}
+function closeCash() {
+  const today = new Date().toISOString().slice(0,10);
+  const c = CASH.find(x => x.fecha === today && !x.cerrada);
+  if (!c) { alert("No hay caja abierta"); return; }
+  const counted = parseFloat($("#cashCounted").value);
+  if (isNaN(counted)) { alert("Ingresa el efectivo contado"); return; }
+  const cashSales = SALES.filter(s => s.fecha.slice(0,10) === today && s.metodo === "Efectivo").reduce((a,s) => a+s.total, 0);
+  const expected = c.montoApertura + cashSales;
+  c.cerrada = true; c.cierre = new Date().toISOString();
+  c.montoContado = counted; c.esperado = expected; c.diferencia = counted - expected;
+  c.cerradaPor = SESSION?.nombre || "Sistema";
+  write(LS.CASH, CASH); renderCash();
+  alert(`Caja cerrada. Diferencia: ${money(c.diferencia)}`);
+}
+
+/* ==================== STATS ==================== */
+function renderStats() {
+  const today = new Date().toISOString().slice(0,10);
+  const month = thisMonth();
+  const salesToday = SALES.filter(s => s.fecha.slice(0,10) === today);
+  const salesMonth = SALES.filter(s => s.fecha.slice(0,7) === month);
+  $("#sToday").textContent = money(salesToday.reduce((a,s) => a+s.total, 0));
+  $("#sOrders").textContent = salesToday.length;
+  $("#sMonth").textContent = money(salesMonth.reduce((a,s) => a+s.total, 0));
+  $("#sAvg").textContent = money(SALES.length ? SALES.reduce((a,s) => a+s.total, 0)/SALES.length : 0);
+
+  $("#salesList").innerHTML = SALES.length === 0
+    ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin ventas</p>`
+    : SALES.slice(0,15).map(s => `
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
+        <div class="text-lg">${s.metodo === "Efectivo" ? "💵" : "💳"}</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-semibold truncate">${esc(s.cliente)}</p>
+          <p class="text-[10px] text-zinc-500">${new Date(s.fecha).toLocaleString("es-EC",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"})}</p>
+        </div>
+        <p class="text-amber-400 font-bold text-sm">${money(s.total)}</p>
+      </div>`).join("");
+}
+
+/* ==================== MODAL ==================== */
+function openModal(html) { $("#modalBody").innerHTML = html; $("#modal").classList.remove("hide"); $("#modal").style.display = "flex"; }
+function closeModal() { $("#modal").classList.add("hide"); $("#modal").style.display = "none"; }
+$("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+
+/* ==================== SYNC ==================== */
+window.addEventListener("storage", e => {
+  if (e.key === LS.MENU)      { MENU = read(LS.MENU, DEF_MENU); renderMenu(); renderPOS(); }
+  if (e.key === LS.INV)       { INV = read(LS.INV, DEF_INV); renderInv(); }
+  if (e.key === LS.SALES)     { SALES = read(LS.SALES, []); renderStats(); renderFinance(); renderCash(); }
+  if (e.key === LS.STAFF)     { STAFF = read(LS.STAFF, DEF_STAFF); renderStaff(); renderFinance(); }
+  if (e.key === LS.PAYROLL)   { PAYROLL = read(LS.PAYROLL, []); renderFinance(); }
+  if (e.key === LS.EXPENSES)  { EXPENSES = read(LS.EXPENSES, []); renderFinance(); }
+  if (e.key === LS.DEBTS)     { DEBTS = read(LS.DEBTS, []); renderFinance(); }
+  if (e.key === LS.CASH)      { CASH = read(LS.CASH, []); renderCash(); }
+});
+
+/* ==================== INIT ==================== */
+function renderAll() {
+  renderPOS(); renderCart(); renderMenu(); renderInv();
+  renderStaff(); renderStats(); renderFinance(); renderCash();
+}
+switchTab("pos");
+</script>
+</body>
+</html>
