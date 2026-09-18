@@ -63,7 +63,10 @@
                         <span class="font-bold text-base sm:text-lg">Brother's Pizza</span>
                     </div>
                     <div class="md:hidden flex items-center gap-2">
-                        <span id="mobileUserBadge" class="text-xs bg-white/10 px-2.5 py-1 rounded-full font-semibold"></span>
+                        <div id="mobileUserAvatarContainer" class="w-7 h-7 rounded-full overflow-hidden bg-white/10 flex items-center justify-center shrink-0">
+                            <!-- Avatar móvil inyectado -->
+                        </div>
+                        <span id="mobileUserBadge" class="text-xs bg-white/10 px-2.5 py-1 rounded-full font-semibold truncate max-w-[100px]"></span>
                         <button onclick="handleLogout()" title="Salir" class="text-red-400 p-2">
                             <i class="fa-solid fa-right-from-bracket text-lg"></i>
                         </button>
@@ -87,8 +90,8 @@
             <!-- PERFIL ESCRITORIO -->
             <div class="hidden md:flex pt-4 border-t border-white/10 items-center justify-between">
                 <div class="flex items-center gap-2.5 overflow-hidden">
-                    <div class="w-8 h-8 rounded-full bg-[#ff4757]/20 text-[#ff4757] flex items-center justify-center font-bold text-xs shrink-0">
-                        <i class="fa-solid fa-user"></i>
+                    <div id="desktopUserAvatarContainer" class="w-9 h-9 rounded-full overflow-hidden bg-[#ff4757]/20 text-[#ff4757] flex items-center justify-center font-bold text-xs shrink-0 border border-white/10">
+                        <!-- Avatar escritorio inyectado -->
                     </div>
                     <div class="truncate">
                         <p id="desktopUserName" class="text-xs font-bold truncate">Admin</p>
@@ -196,27 +199,11 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h1 class="text-xl sm:text-2xl font-bold">Gestión de Trabajadores y Permisos</h1>
-                        <p class="text-xs text-gray-400">Crea cuentas y delimita los accesos operativos del personal.</p>
+                        <p class="text-xs text-gray-400">Crea cuentas, asigna fotos de perfil y delimita los accesos operativos.</p>
                     </div>
                     <button onclick="openModalUsuario()" class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition w-full sm:w-auto">
                         <i class="fa-solid fa-user-plus"></i> Registrar Usuario
                     </button>
-                </div>
-
-                <!-- TARJETA EXPLICATIVA DE PERMISOS -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-[#1e1e1e] border border-white/10 p-5 rounded-2xl space-y-2">
-                        <div class="flex items-center gap-2 text-[#ff4757] font-bold text-sm">
-                            <i class="fa-solid fa-shield-halved"></i> Rol: Administrador
-                        </div>
-                        <p class="text-xs text-gray-400 leading-relaxed">Control total del sistema: visualiza finanzas, gestiona trabajadores, edita catálogos y modifica cualquier ajuste de la plataforma.</p>
-                    </div>
-                    <div class="bg-[#1e1e1e] border border-white/10 p-5 rounded-2xl space-y-2">
-                        <div class="flex items-center gap-2 text-[#2ed573] font-bold text-sm">
-                            <i class="fa-solid fa-cash-register"></i> Rol: Cajero
-                        </div>
-                        <p class="text-xs text-gray-400 leading-relaxed">Acceso limitado puramente operativo: registra pedidos, procesa cobros y ajusta stock de inventario. No visualiza reportes globales ni administra personal.</p>
-                    </div>
                 </div>
 
                 <div class="bg-[#1e1e1e] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
@@ -224,6 +211,7 @@
                         <table class="w-full text-left text-xs sm:text-sm">
                             <thead class="bg-black/25 uppercase text-gray-400 border-b border-white/10 text-[11px]">
                                 <tr>
+                                    <th class="p-3.5 sm:p-4">Foto</th>
                                     <th class="p-3.5 sm:p-4">Usuario</th>
                                     <th class="p-3.5 sm:p-4">Nombre / Alias</th>
                                     <th class="p-3.5 sm:p-4">Rol Asignado</th>
@@ -344,7 +332,7 @@
         </div>
     </div>
 
-    <!-- MODAL AGREGAR/EDITAR USUARIO (SOLO ADMIN) -->
+    <!-- MODAL AGREGAR/EDITAR USUARIO CON FOTO -->
     <div id="modalUsuario" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
         <div class="bg-[#1e1e1e] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
             <h3 id="modalUsuarioTitle" class="text-lg font-bold">Gestión de Usuario</h3>
@@ -355,12 +343,19 @@
                     <input type="text" id="usuarioNombre" required placeholder="Ej: Carlos Pérez" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
                 </div>
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1">Usuario de Acceso</label>
-                    <input type="text" id="usuarioUser" required placeholder="Ej: carlosp" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
+                    <label class="block text-xs text-gray-400 mb-1">URL de la Foto de Perfil (Opcional)</label>
+                    <input type="url" id="usuarioFoto" placeholder="https://ejemplo.com/foto.jpg" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
+                    <p class="text-[10px] text-gray-500 mt-1">Puedes pegar el enlace de una imagen pública de internet.</p>
                 </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Contraseña</label>
-                    <input type="password" id="usuarioPass" required placeholder="••••••••" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Usuario de Acceso</label>
+                        <input type="text" id="usuarioUser" required placeholder="Ej: carlosp" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Contraseña</label>
+                        <input type="password" id="usuarioPass" required placeholder="••••••••" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">Rol y Permisos</label>
@@ -388,8 +383,8 @@
         ];
 
         const defaultUsuarios = [
-            { id: 1, nombre: "Osvaldo (Admin)", user: "admin", pass: "admin123", rol: "Administrador" },
-            { id: 2, nombre: "Cajero Local", user: "cajero", pass: "cajero123", rol: "Cajero" }
+            { id: 1, nombre: "Osvaldo (Admin)", user: "admin", pass: "admin123", rol: "Administrador", foto: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" },
+            { id: 2, nombre: "Cajero Local", user: "cajero", pass: "cajero123", rol: "Cajero", foto: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80" }
         ];
 
         let inventario = JSON.parse(localStorage.getItem('bp_inventario')) || defaultInventario;
@@ -437,6 +432,14 @@
             document.getElementById('desktopUserName').innerText = usuarioActual.nombre;
             document.getElementById('desktopUserRole').innerText = usuarioActual.rol;
             document.getElementById('mobileUserBadge').innerText = usuarioActual.nombre;
+
+            // ACTUALIZAR AVATARES
+            const avatarHtml = usuarioActual.foto 
+                ? `<img src="${usuarioActual.foto}" alt="Avatar" class="w-full h-full object-cover">` 
+                : `<i class="fa-solid fa-user text-xs"></i>`;
+
+            document.getElementById('desktopUserAvatarContainer').innerHTML = avatarHtml;
+            document.getElementById('mobileUserAvatarContainer').innerHTML = avatarHtml;
 
             // APLICAR RESTRICCIONES SEGÚN ROL
             const tabUsuariosBtn = document.getElementById('btnTabUsuarios');
@@ -675,8 +678,13 @@
 
             usuarios.forEach(u => {
                 const badgeRol = u.rol === 'Administrador' ? 'bg-[#ff4757]/20 text-[#ff4757]' : 'bg-[#2ed573]/20 text-[#2ed573]';
+                const avatarMini = u.foto 
+                    ? `<img src="${u.foto}" class="w-9 h-9 rounded-full object-cover border border-white/10">` 
+                    : `<div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-gray-400"><i class="fa-solid fa-user text-xs"></i></div>`;
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-white/5 transition">
+                        <td class="p-3.5 sm:p-4">${avatarMini}</td>
                         <td class="p-3.5 sm:p-4 font-mono text-xs text-sky-400">${u.user}</td>
                         <td class="p-3.5 sm:p-4 font-semibold">${u.nombre}</td>
                         <td class="p-3.5 sm:p-4"><span class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${badgeRol}">${u.rol}</span></td>
@@ -694,6 +702,7 @@
             if (usuarioActual.rol !== 'Administrador') return;
             document.getElementById('usuarioId').value = '';
             document.getElementById('usuarioNombre').value = '';
+            document.getElementById('usuarioFoto').value = '';
             document.getElementById('usuarioUser').value = '';
             document.getElementById('usuarioPass').value = '';
             document.getElementById('modalUsuarioTitle').innerText = 'Nuevo Usuario';
@@ -710,6 +719,7 @@
             if (!item) return;
             document.getElementById('usuarioId').value = item.id;
             document.getElementById('usuarioNombre').value = item.nombre;
+            document.getElementById('usuarioFoto').value = item.foto || '';
             document.getElementById('usuarioUser').value = item.user;
             document.getElementById('usuarioPass').value = item.pass;
             document.getElementById('usuarioRol').value = item.rol;
@@ -722,22 +732,29 @@
             if (usuarioActual.rol !== 'Administrador') return;
             const id = document.getElementById('usuarioId').value;
             const nombre = document.getElementById('usuarioNombre').value.trim();
+            const foto = document.getElementById('usuarioFoto').value.trim();
             const user = document.getElementById('usuarioUser').value.trim();
             const pass = document.getElementById('usuarioPass').value.trim();
             const rol = document.getElementById('usuarioRol').value;
 
             if (id) {
                 const index = usuarios.findIndex(u => u.id == id);
-                usuarios[index] = { id: parseInt(id), nombre, user, pass, rol };
+                usuarios[index] = { id: parseInt(id), nombre, foto, user, pass, rol };
+                // Si el usuario editado es el mismo que está logueado actualmente, refrescar la sesión activa
+                if (usuarioActual.id == id) {
+                    usuarioActual = usuarios[index];
+                    localStorage.setItem('bp_session_user', JSON.stringify(usuarioActual));
+                }
             } else {
                 if (usuarios.some(u => u.user === user)) {
                     alert('Este nombre de usuario ya está registrado.');
                     return;
                 }
-                usuarios.push({ id: Date.now(), nombre, user, pass, rol });
+                usuarios.push({ id: Date.now(), nombre, foto, user, pass, rol });
             }
             closeModalUsuario();
             renderUsuarios();
+            showPanel();
         }
 
         function deleteUsuario(id) {
