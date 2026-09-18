@@ -53,6 +53,15 @@
   }
   .modal-card { animation: modal-in .18s ease-out; }
 
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  .shake { animation: shake .4s ease; }
+
   .tab-btn {
     display: flex; align-items: center; gap: .55rem; justify-content: center;
     padding: .65rem 1rem; border-radius: .75rem;
@@ -106,9 +115,44 @@
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-[70] focus:top-3 focus:left-3 focus:bg-pizza-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm">Saltar al contenido</a>
 
 <!-- ============================================================
+     PANTALLA DE INGRESO EMBEBIDA (evita el bucle de redirecciones)
+     ============================================================ -->
+<div id="loginGate" class="fixed inset-0 z-[100] bg-zinc-950 flex items-center justify-center p-4 hidden">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-8 shadow-2xl modal-card relative overflow-hidden">
+    <div class="absolute -top-16 -right-16 w-40 h-40 bg-pizza-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative text-center mb-6">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-pizza-600 to-amber-500 text-white mb-3 shadow-lg">
+        <i class="fa-solid fa-pizza-slice text-2xl" aria-hidden="true"></i>
+      </div>
+      <h2 class="text-xl font-bold text-white">Brother's Pizza</h2>
+      <p class="text-xs text-zinc-400 mt-1">Acceso al panel administrativo</p>
+    </div>
+
+    <form id="loginGateForm" class="space-y-4 relative" novalidate>
+      <div>
+        <label for="gate-user" class="block text-xs text-zinc-400 mb-1.5">Usuario</label>
+        <input type="text" id="gate-user" required autocomplete="username" autofocus
+               class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
+      </div>
+      <div>
+        <label for="gate-pass" class="block text-xs text-zinc-400 mb-1.5">Contraseña</label>
+        <input type="password" id="gate-pass" required autocomplete="current-password"
+               class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
+      </div>
+      <div id="gate-error" class="hidden text-rose-400 text-xs text-center bg-rose-500/10 border border-rose-500/20 py-2 rounded-lg"></div>
+      <button type="submit" class="w-full bg-pizza-600 hover:bg-pizza-700 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-pizza-600/30">
+        Ingresar
+      </button>
+      <a href="index.html" class="block text-center text-xs text-zinc-400 hover:text-white transition pt-1">← Volver al sitio público</a>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
      HEADER
      ============================================================ -->
-<header class="glass-panel sticky top-0 z-40 border-b border-zinc-800">
+<header id="appHeader" class="glass-panel sticky top-0 z-40 border-b border-zinc-800">
   <div class="max-w-[1600px] mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
     <div class="flex items-center gap-3 min-w-0">
       <div class="bg-gradient-to-tr from-pizza-600 to-amber-500 p-2.5 rounded-xl text-white shadow-lg glow-effect shrink-0">
@@ -121,7 +165,6 @@
     </div>
 
     <div class="flex items-center gap-2">
-      <!-- Volver al sitio público -->
       <a href="index.html" title="Volver al sitio público"
          class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 text-xs font-medium transition">
         <i class="fa-solid fa-house text-[11px]" aria-hidden="true"></i>
@@ -132,7 +175,6 @@
         <i class="fa-solid fa-house text-xs" aria-hidden="true"></i>
       </a>
 
-      <!-- Usuario -->
       <div class="hidden md:flex items-center gap-2.5 pl-3 border-l border-zinc-800">
         <div id="userAvatar" class="h-9 w-9 rounded-xl bg-gradient-to-br from-pizza-500 to-amber-600 grid place-items-center font-bold text-white shadow text-xs">?</div>
         <div class="text-right leading-tight">
@@ -143,7 +185,6 @@
         </div>
       </div>
 
-      <!-- Cerrar sesión -->
       <button type="button" data-action="logout" title="Cerrar sesión"
               class="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-red-400 hover:border-red-500/30 transition">
         <i class="fa-solid fa-right-from-bracket text-sm" aria-hidden="true"></i>
@@ -151,7 +192,6 @@
     </div>
   </div>
 
-  <!-- Nav tabs -->
   <nav class="max-w-[1600px] mx-auto px-3 sm:px-6 pb-3 flex gap-1.5 overflow-x-auto" aria-label="Secciones del panel">
     <button type="button" data-tab="pos" class="tab-btn is-active">
       <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span>Punto de Venta</span>
@@ -178,7 +218,6 @@
 
   <!-- =================== SECCIÓN POS =================== -->
   <section id="section-pos" class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
-
     <div class="lg:col-span-7 xl:col-span-8 space-y-4">
       <div class="flex flex-col sm:flex-row gap-3 justify-between sm:items-center bg-zinc-900/60 p-3.5 rounded-2xl border border-zinc-800">
         <div class="relative w-full sm:w-72">
@@ -189,7 +228,6 @@
         </div>
         <div id="pos-categories" class="flex gap-2 overflow-x-auto pb-1 sm:pb-0" role="group" aria-label="Filtrar categoría"></div>
       </div>
-
       <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"></div>
     </div>
 
@@ -245,7 +283,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900/70 p-5 rounded-2xl border border-zinc-800">
       <div>
         <h2 class="text-lg font-bold text-white">Manipulación y control del menú</h2>
-        <p class="text-xs text-zinc-400">Agrega, edita o elimina productos del catálogo. Los cambios se guardan al instante.</p>
+        <p class="text-xs text-zinc-400">Los cambios se sincronizan automáticamente con el sitio público.</p>
       </div>
       <button type="button" data-action="new-product"
               class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 hover:opacity-95 active:scale-[.98] transition">
@@ -274,8 +312,6 @@
 
   <!-- =================== SECCIÓN INVENTARIO =================== -->
   <section id="section-inventory" class="hidden space-y-5">
-
-    <!-- Sub-tabs -->
     <div class="flex flex-wrap gap-2 bg-zinc-900/70 p-1.5 rounded-xl border border-zinc-800 w-fit">
       <button type="button" class="sub-tab is-active" data-subtab="insumos">
         <i class="fa-solid fa-boxes-stacked mr-1.5" aria-hidden="true"></i>Materia prima
@@ -285,9 +321,7 @@
       </button>
     </div>
 
-    <!-- Panel: Insumos -->
     <div id="subtab-insumos" class="space-y-5">
-      <!-- KPIs -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
           <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Insumos totales</p>
@@ -345,12 +379,11 @@
       </div>
     </div>
 
-    <!-- Panel: Proveedores -->
     <div id="subtab-proveedores" class="hidden space-y-5">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-5 rounded-2xl border border-zinc-800">
         <div>
           <h2 class="text-lg font-bold text-white">Proveedores registrados</h2>
-          <p class="text-xs text-zinc-400">Administra contactos y su información de contacto.</p>
+          <p class="text-xs text-zinc-400">Administra contactos e información.</p>
         </div>
         <button type="button" data-action="new-supplier"
                 class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-pizza-600/20 hover:opacity-95 transition">
@@ -402,7 +435,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-5 rounded-2xl border border-zinc-800">
       <div>
         <h2 class="text-lg font-bold text-white">Trabajadores y credenciales</h2>
-        <p class="text-xs text-zinc-400">Crea cuentas, asigna roles y controla turnos, salarios y acceso al sistema.</p>
+        <p class="text-xs text-zinc-400">Los cambios se sincronizan con el inicio de sesión público.</p>
       </div>
       <button type="button" data-action="new-employee"
               class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-pizza-600/20 hover:opacity-95 transition">
@@ -531,7 +564,7 @@
 </main>
 
 <!-- ============================================================
-     MODAL GENÉRICO (reutilizado por varias entidades)
+     MODAL GENÉRICO
      ============================================================ -->
 <div id="entity-modal" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
      role="dialog" aria-modal="true" aria-labelledby="entity-title">
@@ -556,7 +589,7 @@
   </div>
 </div>
 
-<!-- Modal de confirmación -->
+<!-- CONFIRMACIÓN -->
 <div id="confirm-modal" class="modal-backdrop fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
      role="dialog" aria-modal="true" aria-labelledby="confirm-title">
   <div class="modal-card bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl">
@@ -578,12 +611,12 @@
   </div>
 </div>
 
-<!-- Ajuste rápido de stock -->
+<!-- AJUSTE RÁPIDO DE STOCK -->
 <div id="stock-modal" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
      role="dialog" aria-modal="true" aria-labelledby="stock-title">
   <div class="modal-card bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
     <h3 id="stock-title" class="text-base font-bold text-white mb-1">Ajuste rápido de stock</h3>
-    <p class="text-xs text-zinc-400 mb-5">Suma o resta unidades al inventario sin abrir la ficha completa.</p>
+    <p class="text-xs text-zinc-400 mb-5">Suma o resta unidades al inventario.</p>
     <div class="space-y-4">
       <div>
         <label for="stock-insumo" class="block text-xs text-zinc-400 mb-1">Insumo</label>
@@ -615,13 +648,12 @@
   </div>
 </div>
 
-<!-- Toasts -->
 <div id="toast-host" class="fixed bottom-5 right-5 z-[80] flex flex-col items-end gap-2 pointer-events-none"
      role="status" aria-live="polite"></div>
 
 <script>
 /* =========================================================================
-   Brother's Pizza · Panel Admin v3.0
+   Brother's Pizza · Panel Admin v3.1 (login embebido + sincronización)
    ========================================================================= */
 (() => {
   'use strict';
@@ -657,7 +689,11 @@
     SUPPLIERS: 'bp_suppliers_v3',
     EMPLOYEES: 'bp_employees_v3',
     ORDERS:    'bp_orders_v3',
-    SESSION:   'bp_session_user'
+    SESSION:   'bp_session_user',
+    // Claves compartidas con index.html
+    PUB_MENU:    'bp_menu',
+    PUB_USERS:   'bp_usuarios',
+    PUB_SESSION: 'bp_sesion_activa'
   };
 
   const loadJSON = (k, fb) => {
@@ -718,17 +754,171 @@
   let salesChart = null;
   let categoryChart = null;
   let confirmResolver = null;
-  let currentEntity = null; // { type, id, mode }
+  let currentEntity = null;
+  let panelStarted = false;
 
-  /* --------------------------- Sesión --------------------------- */
-  function requireSession() {
-    const s = loadJSON(KEYS.SESSION, null);
-    if (!s) {
-      window.location.href = 'index.html';
-      return false;
+  /* =========================================================================
+     SESIÓN
+     ========================================================================= */
+  function normalizeSession(s) {
+    if (!s) return null;
+    return {
+      id:    s.id,
+      name:  s.name || s.nombre || s.user || 'Usuario',
+      user:  s.user,
+      role:  s.role || s.rol || 'Cajero',
+      photo: s.photo || s.foto || ''
+    };
+  }
+
+  function getSession() {
+    return normalizeSession(
+      loadJSON(KEYS.SESSION, null) || loadJSON(KEYS.PUB_SESSION, null)
+    );
+  }
+
+  function saveSession(s) {
+    saveJSON(KEYS.SESSION, s);
+    saveJSON(KEYS.PUB_SESSION, s);
+  }
+
+  function clearSession() {
+    localStorage.removeItem(KEYS.SESSION);
+    localStorage.removeItem(KEYS.PUB_SESSION);
+  }
+
+  function showLoginGate() {
+    const gate = $('#loginGate');
+    const header = $('#appHeader');
+    const main = $('#main');
+    if (gate) gate.classList.remove('hidden');
+    if (header) header.classList.add('hidden');
+    if (main) main.classList.add('hidden');
+    setTimeout(() => $('#gate-user')?.focus(), 60);
+  }
+
+  function hideLoginGate() {
+    const gate = $('#loginGate');
+    const header = $('#appHeader');
+    const main = $('#main');
+    if (gate) gate.classList.add('hidden');
+    if (header) header.classList.remove('hidden');
+    if (main) main.classList.remove('hidden');
+  }
+
+  function handleGateLogin(e) {
+    e.preventDefault();
+    const user = $('#gate-user').value.trim();
+    const pass = $('#gate-pass').value.trim();
+    const err = $('#gate-error');
+    const form = $('#loginGateForm');
+
+    if (!user || !pass) {
+      err.textContent = 'Completa usuario y contraseña.';
+      err.classList.remove('hidden');
+      return;
     }
-    state.session = s;
-    return true;
+
+    const fromEmployees = state.employees || [];
+    const fromPublic = loadJSON(KEYS.PUB_USERS, []) || [];
+    const all = [...fromEmployees, ...fromPublic];
+    const seen = new Set();
+    const unique = all.filter(u => {
+      const k = String(u.id) + '|' + String(u.user);
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+
+    const found = unique.find(u =>
+      String(u.user) === user &&
+      String(u.pass ?? u.password ?? '') === pass
+    );
+
+    if (!found) {
+      err.textContent = 'Usuario o contraseña incorrectos.';
+      err.classList.remove('hidden');
+      form.classList.add('shake');
+      setTimeout(() => form.classList.remove('shake'), 500);
+      $('#gate-pass').select();
+      return;
+    }
+
+    err.classList.add('hidden');
+    const session = normalizeSession(found);
+    saveSession(session);
+    state.session = session;
+    hideLoginGate();
+    startPanel();
+    toast(`Bienvenido, ${session.name}`, `Has ingresado como ${session.role}.`);
+  }
+
+  /* =========================================================================
+     SINCRONIZACIÓN con index.html
+     ========================================================================= */
+  const CATS_TO_ADMIN  = { 'pizzas':'pizza', 'bebidas':'bebida', 'extras':'extra' };
+  const CATS_TO_PUBLIC = { pizza:'Pizzas', bebida:'Bebidas', extra:'Extras' };
+
+  function menuToProduct(m) {
+    const cat = CATS_TO_ADMIN[String(m.categoria || '').toLowerCase()] ||
+                (['pizza','bebida','extra'].includes(m.categoria) ? m.categoria : 'pizza');
+    return {
+      id: m.id,
+      name: m.nombre || '',
+      category: cat,
+      price: Number(m.precio) || 0,
+      cost: Number(m.costo) || 0,
+      icon: m.icon || 'fa-pizza-slice',
+      imagen: m.imagen || ''
+    };
+  }
+
+  function productToMenu(p) {
+    return {
+      id: p.id,
+      nombre: p.name,
+      categoria: CATS_TO_PUBLIC[p.category] || p.category,
+      precio: Number(p.price) || 0,
+      costo: Number(p.cost) || 0,
+      imagen: p.imagen || ''
+    };
+  }
+
+  function userToEmployee(u) {
+    return {
+      id: u.id,
+      name: u.nombre || u.name || '',
+      user: u.user || '',
+      pass: u.pass || u.password || '',
+      role: u.rol || u.role || 'Cajero',
+      shift: u.shift || 'Completo',
+      phone: u.phone || '',
+      salary: Number(u.salary) || 0,
+      photo: u.foto || u.photo || '',
+      active: u.active !== false,
+      hireDate: u.hireDate || new Date().toISOString().slice(0, 10)
+    };
+  }
+
+  function employeeToUser(e) {
+    return {
+      id: e.id,
+      nombre: e.name,
+      user: e.user,
+      pass: e.pass,
+      rol: e.role,
+      foto: e.photo || ''
+    };
+  }
+
+  function saveProductsShared() {
+    saveJSON(KEYS.PRODUCTS, state.products);
+    saveJSON(KEYS.PUB_MENU, state.products.map(productToMenu));
+  }
+
+  function saveEmployeesShared() {
+    saveJSON(KEYS.EMPLOYEES, state.employees);
+    saveJSON(KEYS.PUB_USERS, state.employees.map(employeeToUser));
   }
 
   /* --------------------------- Toasts --------------------------- */
@@ -736,7 +926,6 @@
     const host = $('#toast-host');
     const el = document.createElement('div');
     const isError = type === 'error';
-
     el.className = 'pointer-events-auto flex items-start gap-3 bg-zinc-900/95 border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-2xl backdrop-blur translate-y-3 opacity-0 transition-all duration-300 max-w-xs';
     el.innerHTML = `
       <div class="${isError ? 'text-rose-400' : 'text-emerald-400'} pt-0.5 shrink-0">
@@ -790,7 +979,7 @@
   }
 
   /* =========================================================================
-     TABS PRINCIPALES
+     TABS
      ========================================================================= */
   function switchTab(tab) {
     ['pos', 'products', 'inventory', 'employees', 'stats'].forEach(id => {
@@ -856,7 +1045,6 @@
     `).join('');
   }
 
-  /* -------- Carrito -------- */
   const cartSubtotal = () => round2(state.cart.reduce((s, i) => s + i.price * i.qty, 0));
 
   function addToCart(id) {
@@ -903,17 +1091,14 @@
           </div>
           <div class="flex items-center gap-0.5 bg-zinc-900 px-1 py-1 rounded-lg border border-zinc-800 shrink-0">
             <button type="button" data-action="qty-dec" data-id="${item.id}"
-                    class="w-6 h-6 grid place-items-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition"
-                    aria-label="Restar">−</button>
+                    class="w-6 h-6 grid place-items-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition" aria-label="Restar">−</button>
             <span class="text-xs font-bold text-white w-6 text-center tabular-nums">${item.qty}</span>
             <button type="button" data-action="qty-inc" data-id="${item.id}"
-                    class="w-6 h-6 grid place-items-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition"
-                    aria-label="Sumar">+</button>
+                    class="w-6 h-6 grid place-items-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition" aria-label="Sumar">+</button>
           </div>
           <span class="text-xs font-bold text-pizza-500 w-16 text-right tabular-nums shrink-0">${money(item.price * item.qty)}</span>
           <button type="button" data-action="remove-item" data-id="${item.id}"
-                  class="w-6 h-6 grid place-items-center text-zinc-500 hover:text-red-400 rounded transition shrink-0"
-                  aria-label="Eliminar">
+                  class="w-6 h-6 grid place-items-center text-zinc-500 hover:text-red-400 rounded transition shrink-0" aria-label="Eliminar">
             <i class="fa-solid fa-xmark text-xs" aria-hidden="true"></i>
           </button>
         </div>
@@ -953,28 +1138,22 @@
 
     renderCart();
     toast('Venta registrada', `${order.client} · ${money(total)}`);
-
-    // Descuenta insumos aproximados (ejemplo: 1 pizza = 1 masa + 0.25kg queso)
     discountStockForOrder(items);
     renderInventory();
   }
 
-  /** Descuento ilustrativo de stock: por cada pizza, resta 1 masa y 0.25 kg de queso. */
   function discountStockForOrder(items) {
     const pizzas = items.filter(i => i.category === 'pizza').reduce((s, i) => s + i.qty, 0);
     if (!pizzas) return;
-
     const masa  = state.insumos.find(i => /masa/i.test(i.name));
     const queso = state.insumos.find(i => /queso/i.test(i.name));
-
     if (masa)  masa.quantity  = Math.max(0, round2(masa.quantity  - pizzas));
     if (queso) queso.quantity = Math.max(0, round2(queso.quantity - pizzas * 0.25));
-
     saveJSON(KEYS.INSUMOS, state.insumos);
   }
 
   /* =========================================================================
-     PRODUCTOS (MENÚ)
+     PRODUCTOS
      ========================================================================= */
   function renderProductsTable() {
     const tbody = $('#admin-product-table');
@@ -1017,7 +1196,7 @@
   }
 
   /* =========================================================================
-     INVENTARIO (insumos + proveedores)
+     INVENTARIO
      ========================================================================= */
   function renderInventoryKPIs() {
     const totalValue = state.insumos.reduce((s, i) => s + i.quantity * i.cost, 0);
@@ -1192,13 +1371,11 @@
       fields: [
         { key: 'name',     label: 'Nombre',      type: 'text',   required: true, placeholder: 'Ej: Pizza Hawaiana' },
         { key: 'category', label: 'Categoría',   type: 'select', required: true, options: [
-          { value: 'pizza',  label: 'Pizza' },
-          { value: 'bebida', label: 'Bebida' },
-          { value: 'extra',  label: 'Extra' }
+          { value: 'pizza',  label: 'Pizza' }, { value: 'bebida', label: 'Bebida' }, { value: 'extra', label: 'Extra' }
         ]},
-        { key: 'price',    label: 'Precio (USD)', type: 'number', step: '0.01', min: 0, required: true },
-        { key: 'cost',     label: 'Costo (USD)',  type: 'number', step: '0.01', min: 0, required: false, default: 0 },
-        { key: 'icon',     label: 'Icono (FontAwesome o emoji)', type: 'text', required: true, default: 'fa-pizza-slice',
+        { key: 'price', label: 'Precio (USD)', type: 'number', step: '0.01', min: 0, required: true },
+        { key: 'cost',  label: 'Costo (USD)',  type: 'number', step: '0.01', min: 0, required: false, default: 0 },
+        { key: 'icon',  label: 'Icono (FontAwesome o emoji)', type: 'text', required: true, default: 'fa-pizza-slice',
           hint: 'Ej: <code>fa-pizza-slice</code> o 🍕' }
       ]
     },
@@ -1206,18 +1383,15 @@
       title: 'Insumo / Materia prima',
       subtitle: 'Registra stock, costos y proveedor.',
       fields: [
-        { key: 'name',       label: 'Nombre',             type: 'text',   required: true },
-        { key: 'quantity',   label: 'Cantidad actual',    type: 'number', step: '0.01', min: 0, required: true },
-        { key: 'minStock',   label: 'Stock mínimo',       type: 'number', step: '0.01', min: 0, required: true },
-        { key: 'unit',       label: 'Unidad de medida',   type: 'select', required: true, options: [
-          { value: 'Unidades', label: 'Unidades' },
-          { value: 'Kg',       label: 'Kilogramos' },
-          { value: 'Litros',   label: 'Litros' },
-          { value: 'Cajas',    label: 'Cajas' },
-          { value: 'Paquetes', label: 'Paquetes' }
+        { key: 'name',     label: 'Nombre',           type: 'text',   required: true },
+        { key: 'quantity', label: 'Cantidad actual',  type: 'number', step: '0.01', min: 0, required: true },
+        { key: 'minStock', label: 'Stock mínimo',     type: 'number', step: '0.01', min: 0, required: true },
+        { key: 'unit',     label: 'Unidad de medida', type: 'select', required: true, options: [
+          { value: 'Unidades', label: 'Unidades' }, { value: 'Kg', label: 'Kilogramos' },
+          { value: 'Litros', label: 'Litros' }, { value: 'Cajas', label: 'Cajas' }, { value: 'Paquetes', label: 'Paquetes' }
         ]},
-        { key: 'cost',       label: 'Costo unitario (USD)', type: 'number', step: '0.01', min: 0, required: true },
-        { key: 'supplierId', label: 'Proveedor',          type: 'dynamicSelect', source: 'suppliers',
+        { key: 'cost', label: 'Costo unitario (USD)', type: 'number', step: '0.01', min: 0, required: true },
+        { key: 'supplierId', label: 'Proveedor', type: 'dynamicSelect', source: 'suppliers',
           hint: 'Selecciona quién suministra este insumo.' }
       ]
     },
@@ -1236,26 +1410,24 @@
       title: 'Trabajador',
       subtitle: 'Datos personales, credenciales y turno.',
       fields: [
-        { key: 'name',    label: 'Nombre completo',  type: 'text', required: true },
-        { key: 'user',    label: 'Usuario de acceso', type: 'text', required: true, hint: 'Sin espacios, único.' },
-        { key: 'pass',    label: 'Contraseña',        type: 'text', required: true, minLength: 4 },
-        { key: 'role',    label: 'Rol',               type: 'select', required: true, options: [
+        { key: 'name', label: 'Nombre completo',  type: 'text', required: true },
+        { key: 'user', label: 'Usuario de acceso', type: 'text', required: true, hint: 'Sin espacios, único.' },
+        { key: 'pass', label: 'Contraseña',        type: 'text', required: true, minLength: 4 },
+        { key: 'role', label: 'Rol', type: 'select', required: true, options: [
           { value: 'Administrador', label: 'Administrador (control total)' },
           { value: 'Cajero',        label: 'Cajero (POS)' },
           { value: 'Cocinero',      label: 'Cocinero' },
           { value: 'Repartidor',    label: 'Repartidor' }
         ]},
-        { key: 'shift',   label: 'Turno',  type: 'select', required: false, options: [
-          { value: 'Completo', label: 'Completo' },
-          { value: 'Mañana',   label: 'Mañana' },
-          { value: 'Tarde',    label: 'Tarde' },
-          { value: 'Noche',    label: 'Noche' }
+        { key: 'shift', label: 'Turno', type: 'select', required: false, options: [
+          { value: 'Completo', label: 'Completo' }, { value: 'Mañana', label: 'Mañana' },
+          { value: 'Tarde', label: 'Tarde' }, { value: 'Noche', label: 'Noche' }
         ]},
-        { key: 'phone',   label: 'Teléfono',  type: 'text', required: false },
-        { key: 'salary',  label: 'Salario mensual (USD)', type: 'number', step: '0.01', min: 0, required: false, default: 0 },
-        { key: 'hireDate',label: 'Fecha de ingreso', type: 'date', required: false },
-        { key: 'photo',   label: 'URL de foto (opcional)', type: 'url', required: false },
-        { key: 'active',  label: 'Activo', type: 'checkbox', default: true }
+        { key: 'phone',    label: 'Teléfono',  type: 'text', required: false },
+        { key: 'salary',   label: 'Salario mensual (USD)', type: 'number', step: '0.01', min: 0, required: false, default: 0 },
+        { key: 'hireDate', label: 'Fecha de ingreso', type: 'date', required: false },
+        { key: 'photo',    label: 'URL de foto (opcional)', type: 'url', required: false },
+        { key: 'active',   label: 'Activo', type: 'checkbox', default: true }
       ]
     }
   };
@@ -1263,15 +1435,12 @@
   function openEntityModal({ type, id = null, mode = 'new' }) {
     const def = ENTITY_FORMS[type];
     if (!def) return;
-
     currentEntity = { type, id, mode };
-
     const title = mode === 'edit' ? `Editar ${def.title}` : `Nuevo ${def.title}`;
     $('#entity-title').textContent = title;
     $('#entity-subtitle').textContent = def.subtitle;
 
     const data = mode === 'edit' ? findEntity(type, id) : null;
-
     const form = $('#entity-form');
     form.innerHTML = def.fields.map(f => {
       const value = data ? (data[f.key] ?? f.default ?? '') : (f.default ?? '');
@@ -1344,8 +1513,7 @@
 
   function findEntity(type, id) {
     const map = { product: 'products', insumo: 'insumos', supplier: 'suppliers', employee: 'employees' };
-    const key = map[type];
-    return state[key].find(x => x.id === id);
+    return state[map[type]].find(x => x.id === id);
   }
 
   function saveEntity(e) {
@@ -1377,13 +1545,11 @@
       data[f.key] = v;
     }
 
-    // Validaciones de negocio específicas
     if (type === 'employee') {
       const dup = state.employees.find(x => x.user === data.user && x.id !== id);
       if (dup) return toast('Usuario duplicado', `"${data.user}" ya existe.`, 'error');
       if ((data.pass || '').length < 4) return toast('Contraseña muy corta', 'Debe tener al menos 4 caracteres.', 'error');
 
-      // No permitir dejar el sistema sin admins
       if (id && data.role !== 'Administrador') {
         const self = state.employees.find(x => x.id === id);
         if (self && self.role === 'Administrador' &&
@@ -1400,10 +1566,9 @@
       const idx = state[key].findIndex(x => x.id === id);
       if (idx > -1) {
         state[key][idx] = { ...state[key][idx], ...data };
-        // Sincroniza sesión si edité mi propio usuario
         if (type === 'employee' && state.session?.id === id) {
-          state.session = { ...state.session, ...data };
-          saveJSON(KEYS.SESSION, state.session);
+          state.session = { ...state.session, ...normalizeSession(data) };
+          saveSession(state.session);
           renderUserChip();
         }
       }
@@ -1413,15 +1578,14 @@
       toast('Creado', `${def.title} agregado.`);
     }
 
-    saveJSON(KEYS[key.toUpperCase()], state[key]);
+    if (key === 'products') saveProductsShared();
+    else if (key === 'employees') saveEmployeesShared();
+    else saveJSON(KEYS[key.toUpperCase()], state[key]);
 
     closeModal('entity-modal');
     renderAll();
   }
 
-  /* =========================================================================
-     ELIMINAR ENTIDADES
-     ========================================================================= */
   async function deleteEntity(type, id) {
     const map = { product: 'products', insumo: 'insumos', supplier: 'suppliers', employee: 'employees' };
     const key = map[type];
@@ -1429,7 +1593,6 @@
     const item = state[key].find(x => x.id === id);
     if (!item) return;
 
-    // Reglas especiales
     if (type === 'employee') {
       if (state.session?.id === id) return toast('No permitido', 'No puedes eliminar tu propia cuenta.', 'error');
       if (item.role === 'Administrador' && state.employees.filter(x => x.role === 'Administrador').length === 1) {
@@ -1450,7 +1613,10 @@
 
     state[key] = state[key].filter(x => x.id !== id);
     if (type === 'product') state.cart = state.cart.filter(i => i.id !== id);
-    saveJSON(KEYS[key.toUpperCase()], state[key]);
+
+    if (key === 'products') saveProductsShared();
+    else if (key === 'employees') saveEmployeesShared();
+    else saveJSON(KEYS[key.toUpperCase()], state[key]);
 
     renderAll();
     toast('Eliminado', `"${item.name}" fue removido.`);
@@ -1464,7 +1630,6 @@
     sel.innerHTML = state.insumos.length
       ? state.insumos.map(i => `<option value="${i.id}">${esc(i.name)} — actual: ${i.quantity} ${esc(i.unit)}</option>`).join('')
       : '<option value="">Sin insumos registrados</option>';
-
     $('#stock-qty').value = 1;
     $('#stock-op').value = 'add';
     updateStockPreview();
@@ -1475,14 +1640,12 @@
     const id = Number($('#stock-insumo').value);
     const insumo = state.insumos.find(i => i.id === id);
     if (!insumo) { $('#stock-preview').textContent = ''; return; }
-
     const op = $('#stock-op').value;
     const q = Number($('#stock-qty').value) || 0;
     let nuevo = insumo.quantity;
     if (op === 'add') nuevo = insumo.quantity + q;
     if (op === 'sub') nuevo = Math.max(0, insumo.quantity - q);
     if (op === 'set') nuevo = q;
-
     $('#stock-preview').innerHTML = `Stock actual: <b class="text-white">${insumo.quantity} ${esc(insumo.unit)}</b> → nuevo: <b class="text-pizza-400">${round2(nuevo)} ${esc(insumo.unit)}</b>`;
   }
 
@@ -1490,7 +1653,6 @@
     const id = Number($('#stock-insumo').value);
     const insumo = state.insumos.find(i => i.id === id);
     if (!insumo) return toast('Sin insumo', 'Selecciona un insumo válido.', 'error');
-
     const op = $('#stock-op').value;
     const q = Number($('#stock-qty').value) || 0;
     if (q < 0) return toast('Cantidad inválida', '', 'error');
@@ -1513,30 +1675,24 @@
   function computeStats() {
     const today = new Date();
     const yest = new Date(); yest.setDate(yest.getDate() - 1);
-
     const todayOrders = state.orders.filter(o => sameDay(new Date(o.date), today));
     const yestOrders  = state.orders.filter(o => sameDay(new Date(o.date), yest));
-
     const total = round2(todayOrders.reduce((s, o) => s + o.total, 0));
     const prevTotal = round2(yestOrders.reduce((s, o) => s + o.total, 0));
     const count = todayOrders.length;
-
     const productQty = new Map();
     todayOrders.forEach(o => o.items.forEach(i => {
       productQty.set(i.name, (productQty.get(i.name) || 0) + i.qty);
     }));
     const top = [...productQty.entries()].sort((a, b) => b[1] - a[1])[0] || null;
-
     let delta = null;
     if (prevTotal > 0) delta = ((total - prevTotal) / prevTotal) * 100;
     else if (total > 0) delta = 100;
-
     return { total, count, avg: count ? total / count : 0, top, delta, prevCount: yestOrders.length, todayOrders };
   }
 
   function renderDashboard() {
     const s = computeStats();
-
     $('#stat-sales').textContent = money(s.total);
     if (s.delta === null) {
       $('#stat-sales-sub').textContent = s.total > 0 ? 'Primer día con ventas' : 'Sin movimientos';
@@ -1552,7 +1708,6 @@
     $('#stat-top-sub').textContent = s.top ? `${s.top[1]} unidades hoy` : 'Sin datos';
     $('#stat-avg').textContent = money(s.avg);
     $('#stat-avg-sub').textContent = s.count ? `En ${s.count} orden${s.count === 1 ? '' : 'es'}` : 'Hoy';
-
     renderRecentOrders(s.todayOrders);
     updateCharts(s.todayOrders);
   }
@@ -1638,7 +1793,6 @@
 
   function updateCharts(todayOrders) {
     if (!salesChart || !categoryChart) return;
-
     const labels = [], data = [];
     for (let h = HOUR_FROM; h <= HOUR_TO; h++) {
       labels.push(`${String(h).padStart(2, '0')}:00`);
@@ -1661,23 +1815,17 @@
      ========================================================================= */
   function exportCSV() {
     if (!state.orders.length) return toast('Sin datos', 'No hay órdenes para exportar.', 'error');
-
     const header = ['Fecha', 'Hora', 'Cliente', 'Atendido por', 'Método', 'Artículos', 'Subtotal', 'IVA', 'Total'];
     const rows = state.orders.map(o => {
       const d = new Date(o.date);
       return [
         d.toLocaleDateString('es-EC'),
         d.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' }),
-        o.client,
-        o.employeeName || '',
-        o.method,
+        o.client, o.employeeName || '', o.method,
         o.items.map(i => `${i.qty}x ${i.name}`).join(' | '),
-        o.subtotal.toFixed(2),
-        o.tax.toFixed(2),
-        o.total.toFixed(2)
+        o.subtotal.toFixed(2), o.tax.toFixed(2), o.total.toFixed(2)
       ];
     });
-
     const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n');
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -1690,17 +1838,17 @@
   }
 
   /* =========================================================================
-     CIERRE DE SESIÓN
+     CERRAR SESIÓN
      ========================================================================= */
   async function logout() {
     const ok = await confirmAction({
       title: 'Cerrar sesión',
-      message: '¿Deseas salir del panel de administración? Volverás a la página pública.',
+      message: '¿Deseas salir del panel? Volverás a la página pública.',
       confirmText: 'Cerrar sesión',
       danger: false
     });
     if (!ok) return;
-    localStorage.removeItem(KEYS.SESSION);
+    clearSession();
     window.location.href = 'index.html';
   }
 
@@ -1712,7 +1860,6 @@
     if (!s) return;
     $('#userName').textContent = s.name;
     $('#userRole').innerHTML = `<i class="fa-solid fa-circle text-[6px] mr-1"></i>${esc(s.role)}`;
-
     const initials = (s.name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
     const el = $('#userAvatar');
     if (s.photo) {
@@ -1724,7 +1871,7 @@
   }
 
   function applyRolePermissions() {
-    const isAdmin = state.session?.role === 'Administrador';
+    const isAdmin = String(state.session?.role || '').toLowerCase() === 'administrador';
     $$('[data-role="admin"]').forEach(el => el.classList.toggle('hidden', !isAdmin));
     if (!isAdmin) {
       const active = $('.tab-btn.is-active')?.dataset.tab;
@@ -1747,13 +1894,11 @@
      EVENTOS
      ========================================================================= */
   function bindEvents() {
-    // Tabs
     $$('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
       if (btn.classList.contains('hidden')) return;
       switchTab(btn.dataset.tab);
     }));
 
-    // Sub-tabs inventario
     $$('.sub-tab').forEach(btn => btn.addEventListener('click', () => {
       state.subtab = btn.dataset.subtab;
       $$('.sub-tab').forEach(b => b.classList.toggle('is-active', b === btn));
@@ -1761,7 +1906,6 @@
       $('#subtab-proveedores').classList.toggle('hidden', state.subtab !== 'proveedores');
     }));
 
-    // POS: filtros
     $('#pos-categories').addEventListener('click', e => {
       const btn = e.target.closest('[data-cat]');
       if (!btn) return;
@@ -1770,20 +1914,17 @@
       renderPOSCatalog();
     });
 
-    // POS: búsqueda
     $('#pos-search').addEventListener('input', debounce(e => {
       state.search = e.target.value;
       renderPOSCatalog();
     }));
 
-    // POS: agregar al carrito
     $('#pos-product-grid').addEventListener('click', e => {
       const btn = e.target.closest('[data-action="add-to-cart"]');
       if (!btn) return;
       addToCart(Number(btn.dataset.id));
     });
 
-    // Carrito
     $('#cart-items').addEventListener('click', e => {
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
@@ -1795,17 +1936,14 @@
       }
     });
 
-    // Cobrar
     $$('[data-pay]').forEach(b => b.addEventListener('click', () => checkout(b.dataset.pay)));
 
-    // Vaciar carrito
     $('[data-action="clear-cart"]').addEventListener('click', async () => {
       if (!state.cart.length) return toast('Carrito vacío', '', 'error');
       const ok = await confirmAction({ title: 'Vaciar orden', message: '¿Eliminar todos los productos?', confirmText: 'Vaciar' });
       if (ok) { clearCart(); toast('Orden vaciada', 'Se eliminaron los productos.'); }
     });
 
-    // Productos
     $('[data-action="new-product"]').addEventListener('click', () => openEntityModal({ type: 'product', mode: 'new' }));
     $('#admin-product-table').addEventListener('click', e => {
       const btn = e.target.closest('[data-action]');
@@ -1815,7 +1953,6 @@
       else if (btn.dataset.action === 'delete-product') deleteEntity('product', id);
     });
 
-    // Inventario
     $('[data-action="new-insumo"]').addEventListener('click', () => openEntityModal({ type: 'insumo', mode: 'new' }));
     $('[data-action="adjust-stock"]').addEventListener('click', openStockModal);
     $('[data-action="apply-stock-adjust"]').addEventListener('click', applyStockAdjust);
@@ -1831,7 +1968,6 @@
       else if (btn.dataset.action === 'delete-insumo') deleteEntity('insumo', id);
     });
 
-    // Proveedores
     $('[data-action="new-supplier"]').addEventListener('click', () => openEntityModal({ type: 'supplier', mode: 'new' }));
     $('#suppliers-table').addEventListener('click', e => {
       const btn = e.target.closest('[data-action]');
@@ -1841,7 +1977,6 @@
       else if (btn.dataset.action === 'delete-supplier') deleteEntity('supplier', id);
     });
 
-    // Trabajadores
     $('[data-action="new-employee"]').addEventListener('click', () => openEntityModal({ type: 'employee', mode: 'new' }));
     $('#employees-table').addEventListener('click', e => {
       const btn = e.target.closest('[data-action]');
@@ -1851,10 +1986,8 @@
       else if (btn.dataset.action === 'delete-employee') deleteEntity('employee', id);
     });
 
-    // Formulario genérico
     $('#entity-form').addEventListener('submit', saveEntity);
 
-    // Cierre de modales
     $$('[data-close-modal]').forEach(btn =>
       btn.addEventListener('click', () => closeModal(btn.dataset.closeModal))
     );
@@ -1867,14 +2000,12 @@
       if (open) closeModal(open.id);
     });
 
-    // Confirmación
     $('#confirm-modal').addEventListener('click', e => {
       const btn = e.target.closest('[data-confirm]');
       if (!btn) return;
       resolveConfirm(btn.dataset.confirm === 'ok');
     });
 
-    // Estadísticas
     $('[data-action="export-csv"]').addEventListener('click', exportCSV);
     $('[data-action="reset-demo"]').addEventListener('click', async () => {
       const ok = await confirmAction({
@@ -1883,14 +2014,15 @@
         confirmText: 'Reiniciar'
       });
       if (!ok) return;
-      Object.values(KEYS).forEach(k => { if (k !== KEYS.SESSION) localStorage.removeItem(k); });
+      Object.values(KEYS).forEach(k => {
+        if (k !== KEYS.SESSION && k !== KEYS.PUB_SESSION) localStorage.removeItem(k);
+      });
       initData();
       renderAll();
       renderDashboard();
       toast('Datos restaurados', 'El panel volvió al estado de demostración.');
     });
 
-    // Eliminar orden
     $('#recent-orders').addEventListener('click', async e => {
       const btn = e.target.closest('[data-action="delete-order"]');
       if (!btn) return;
@@ -1902,39 +2034,73 @@
       toast('Registro eliminado', 'La venta fue removida.');
     });
 
-    // Logout
     $$('[data-action="logout"]').forEach(b => b.addEventListener('click', logout));
+
+    // Login gate
+    const loginForm = $('#loginGateForm');
+    if (loginForm) loginForm.addEventListener('submit', handleGateLogin);
   }
 
   /* =========================================================================
      INICIALIZACIÓN
      ========================================================================= */
   function initData() {
-    state.products  = loadJSON(KEYS.PRODUCTS, null)  || DEFAULTS.products.map(p => ({ ...p }));
+    // Productos: priorizar menú público si existe
+    const pubMenu = loadJSON(KEYS.PUB_MENU, null);
+    const admProducts = loadJSON(KEYS.PRODUCTS, null);
+    if (Array.isArray(pubMenu) && pubMenu.length) {
+      state.products = pubMenu.map(menuToProduct);
+    } else if (Array.isArray(admProducts) && admProducts.length) {
+      state.products = admProducts;
+    } else {
+      state.products = DEFAULTS.products.map(p => ({ ...p }));
+    }
+
+    // Empleados: priorizar usuarios públicos si existen
+    const pubUsers = loadJSON(KEYS.PUB_USERS, null);
+    const admEmployees = loadJSON(KEYS.EMPLOYEES, null);
+    if (Array.isArray(pubUsers) && pubUsers.length) {
+      state.employees = pubUsers.map(userToEmployee);
+    } else if (Array.isArray(admEmployees) && admEmployees.length) {
+      state.employees = admEmployees;
+    } else {
+      state.employees = DEFAULTS.employees.map(e => ({ ...e }));
+    }
+
     state.suppliers = loadJSON(KEYS.SUPPLIERS, null) || DEFAULTS.suppliers.map(s => ({ ...s }));
     state.insumos   = loadJSON(KEYS.INSUMOS, null)   || DEFAULTS.insumos.map(i => ({ ...i }));
-    state.employees = loadJSON(KEYS.EMPLOYEES, null) || DEFAULTS.employees.map(e => ({ ...e }));
     state.orders    = loadJSON(KEYS.ORDERS, [])      || [];
 
-    // Persistir defaults si era la primera vez
-    if (!localStorage.getItem(KEYS.PRODUCTS))  saveJSON(KEYS.PRODUCTS,  state.products);
+    // Persistir defaults si faltaban (usando sincronización)
+    if (!localStorage.getItem(KEYS.PRODUCTS)) saveProductsShared();
+    if (!localStorage.getItem(KEYS.EMPLOYEES)) saveEmployeesShared();
     if (!localStorage.getItem(KEYS.SUPPLIERS)) saveJSON(KEYS.SUPPLIERS, state.suppliers);
     if (!localStorage.getItem(KEYS.INSUMOS))   saveJSON(KEYS.INSUMOS,   state.insumos);
-    if (!localStorage.getItem(KEYS.EMPLOYEES)) saveJSON(KEYS.EMPLOYEES, state.employees);
   }
 
-  function init() {
-    if (!requireSession()) return;
+  function startPanel() {
+    if (panelStarted) return;
+    panelStarted = true;
     initData();
     renderUserChip();
     applyRolePermissions();
     renderAll();
-    bindEvents();
+    if (state.session.role !== 'Administrador') switchTab('pos');
+  }
 
-    // Si el usuario viene de una sesión de Cajero, mostrar solo POS/Inventario
-    if (state.session.role !== 'Administrador') {
-      switchTab('pos');
+  function init() {
+    const s = getSession();
+    if (!s) {
+      // Sin sesión: mostrar formulario embebido, NO redirigir
+      // Cargamos datos primero para poder validar contra la lista de usuarios
+      initData();
+      bindEvents();
+      showLoginGate();
+      return;
     }
+    state.session = s;
+    bindEvents();
+    startPanel();
   }
 
   document.addEventListener('DOMContentLoaded', init);
