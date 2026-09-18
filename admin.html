@@ -2,10 +2,14 @@
 <html lang="es" class="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="theme-color" content="#09090b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Panel Admin · Brother's Pizza</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   tailwind.config = {
     darkMode: 'class',
@@ -21,24 +25,27 @@
 </script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 
 <style>
+  :root {
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: env(safe-area-inset-top, 0px);
+  }
   * { -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Inter', system-ui, sans-serif; }
+  body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: .02em; }
 
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: #18181b; }
   ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 999px; }
-  ::-webkit-scrollbar-thumb:hover { background: #52525b; }
 
   .glass-panel {
-    background: rgba(9, 9, 11, .82);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(9, 9, 11, .88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
 
   @keyframes pulse-glow {
@@ -48,10 +55,16 @@
   .glow-effect { animation: pulse-glow 3s ease-in-out infinite; }
 
   @keyframes modal-in {
-    from { opacity: 0; transform: translateY(10px) scale(.97); }
+    from { opacity: 0; transform: translateY(20px) scale(.97); }
     to   { opacity: 1; transform: none; }
   }
-  .modal-card { animation: modal-in .18s ease-out; }
+  .modal-card { animation: modal-in .22s cubic-bezier(.22,1,.36,1); }
+
+  @keyframes slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  .slide-up { animation: slide-up .3s cubic-bezier(.22,1,.36,1); }
 
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
@@ -62,52 +75,177 @@
   }
   .shake { animation: shake .4s ease; }
 
-  .tab-btn {
-    display: flex; align-items: center; gap: .55rem; justify-content: center;
-    padding: .65rem 1rem; border-radius: .75rem;
-    font-size: .8rem; font-weight: 500; color: #a1a1aa;
-    white-space: nowrap; transition: all .2s ease; flex: 1;
+  @keyframes pop-in {
+    from { opacity: 0; transform: scale(.9); }
+    to   { opacity: 1; transform: scale(1); }
   }
-  .tab-btn:hover { color: #fff; background: #27272a; }
-  .tab-btn.is-active {
-    background: #dc2626; color: #fff;
-    box-shadow: 0 4px 14px rgba(220, 38, 38, .3);
-  }
-  @media (min-width: 1024px) {
-    .tab-btn { flex: none; }
-  }
+  .pop-in { animation: pop-in .25s ease-out; }
 
-  .category-btn {
-    padding: .45rem .85rem; border-radius: .75rem;
-    font-size: .75rem; font-weight: 500;
-    background: #27272a; color: #d4d4d8;
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .toast-in { animation: toast-in .25s ease-out; }
+
+  /* Tabs */
+  .tab-btn {
+    display: flex; align-items: center; gap: .5rem; justify-content: center;
+    padding: .7rem 1rem; border-radius: .75rem;
+    font-size: .8rem; font-weight: 600; color: #a1a1aa;
     white-space: nowrap; transition: all .2s ease;
   }
-  .category-btn:hover { background: #3f3f46; }
+  .tab-btn:hover { color: #fff; background: #27272a; }
+  .tab-btn.is-active { background: #dc2626; color: #fff; box-shadow: 0 4px 14px rgba(220, 38, 38, .3); }
+
+  .category-btn {
+    padding: .5rem .9rem; border-radius: .75rem;
+    font-size: .75rem; font-weight: 600;
+    background: #27272a; color: #d4d4d8;
+    white-space: nowrap; transition: all .2s ease;
+    min-height: 36px;
+  }
   .category-btn.is-active { background: #dc2626; color: #fff; box-shadow: 0 4px 14px rgba(220, 38, 38, .28); }
+
+  .sub-tab {
+    padding: .55rem .95rem; border-radius: .65rem;
+    font-size: .75rem; font-weight: 700;
+    color: #a1a1aa; transition: all .2s ease;
+  }
+  .sub-tab.is-active { background: #3f3f46; color: #fff; }
 
   .tabular-nums { font-variant-numeric: tabular-nums; }
 
-  .badge {
-    display: inline-flex; align-items: center; gap: .25rem;
-    padding: .2rem .55rem; border-radius: 999px;
-    font-size: .65rem; font-weight: 700;
-  }
-
-  .sub-tab {
-    padding: .5rem .9rem; border-radius: .65rem;
-    font-size: .75rem; font-weight: 600;
-    color: #a1a1aa; transition: all .2s ease;
-  }
-  .sub-tab:hover { color: #fff; background: #27272a; }
-  .sub-tab.is-active { background: #3f3f46; color: #fff; }
-
-  /* Animación sutil de sincronización */
   @keyframes sync-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: .35; }
   }
   .sync-dot { animation: sync-pulse 2s ease-in-out infinite; }
+
+  /* Mobile bottom nav */
+  .mobile-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(9,9,11,.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid #27272a;
+    padding-bottom: var(--safe-bottom);
+    display: grid; grid-template-columns: repeat(5, 1fr);
+  }
+  @media (min-width: 1024px) { .mobile-nav { display: none; } }
+
+  .mobile-nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; padding: 10px 4px 8px;
+    color: #71717a; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .03em;
+    text-decoration: none; position: relative;
+    transition: color .25s ease; min-height: 62px;
+    background: transparent; border: none; cursor: pointer;
+  }
+  .mobile-nav-item i { font-size: 19px; }
+  .mobile-nav-item:active { transform: scale(.94); }
+  .mobile-nav-item.active { color: #ef4444; }
+  .mobile-nav-item.active::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 30px; height: 3px; border-radius: 0 0 6px 6px;
+    background: linear-gradient(90deg, #ef4444, #f59e0b);
+  }
+  .mobile-nav-badge {
+    position: absolute; top: 4px; right: calc(50% - 24px);
+    background: #ef4444; color: #fff;
+    font-size: 9px; font-weight: 900;
+    min-width: 18px; height: 18px; border-radius: 9px;
+    display: grid; place-items: center;
+    padding: 0 5px;
+    border: 2px solid #09090b;
+  }
+  .mobile-nav-badge.empty { display: none; }
+
+  /* Cart bottom sheet mobile */
+  .cart-sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    background: #12121c; border-radius: 26px 26px 0 0;
+    border-top: 1px solid #27272a;
+    max-height: 90vh; display: flex; flex-direction: column;
+    transform: translateY(100%);
+    transition: transform .35s cubic-bezier(.22,1,.36,1);
+    padding-bottom: var(--safe-bottom);
+    box-shadow: 0 -20px 60px rgba(0,0,0,.6);
+  }
+  .cart-sheet.open { transform: translateY(0); }
+  @media (min-width: 1024px) { .cart-sheet { display: none !important; } }
+
+  .cart-backdrop {
+    position: fixed; inset: 0; z-index: 55;
+    background: rgba(0,0,0,.7);
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s ease;
+  }
+  .cart-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  /* Mobile cart FAB */
+  .cart-fab-mobile {
+    position: fixed; bottom: calc(72px + var(--safe-bottom)); right: 14px;
+    z-index: 45; width: 62px; height: 62px; border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444, #f59e0b);
+    color: white; display: grid; place-items: center;
+    box-shadow: 0 12px 30px rgba(239,68,68,.5);
+    transform: translateY(140%); transition: transform .35s cubic-bezier(.22,1,.36,1);
+    border: none; cursor: pointer;
+  }
+  .cart-fab-mobile.show { transform: translateY(0); }
+  .cart-fab-mobile:active { transform: translateY(0) scale(.92); }
+  @media (min-width: 1024px) { .cart-fab-mobile { display: none; } }
+
+  /* POS product card */
+  .pos-card {
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    cursor: pointer;
+  }
+  .pos-card:active { transform: scale(.96); }
+  @media (min-width: 1024px) {
+    .pos-card:hover { transform: translateY(-4px); border-color: rgba(239,68,68,.6); box-shadow: 0 20px 40px -15px rgba(239,68,68,.4); }
+  }
+
+  /* Input base */
+  .input {
+    width: 100%; background: #09090b; border: 1px solid #3f3f46;
+    border-radius: .75rem; padding: .65rem .9rem; font-size: .875rem;
+    color: #e4e4e7; outline: none; transition: border-color .2s;
+  }
+  .input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
+
+  /* Product list row mobile */
+  .product-row {
+    display: grid; grid-template-columns: 60px 1fr auto; gap: 12px;
+    padding: 12px; background: #18181b; border: 1px solid #27272a;
+    border-radius: 16px; align-items: center;
+  }
+  @media (min-width: 768px) { .product-row { display: none; } }
+
+  /* Modal fullscreen on mobile */
+  .modal-fullscreen {
+    position: fixed; inset: 0; z-index: 80;
+    background: rgba(0,0,0,.75);
+    display: flex; align-items: flex-end; justify-content: center;
+  }
+  @media (min-width: 768px) {
+    .modal-fullscreen { align-items: center; }
+  }
+  .modal-panel {
+    background: #18181b; border: 1px solid #27272a;
+    border-radius: 26px 26px 0 0;
+    width: 100%; max-height: 92vh; overflow-y: auto;
+    padding: 24px 20px calc(24px + var(--safe-bottom));
+    animation: slide-up .3s cubic-bezier(.22,1,.36,1);
+  }
+  @media (min-width: 768px) {
+    .modal-panel {
+      border-radius: 20px; max-width: 520px;
+      max-height: 88vh; padding: 24px;
+      animation: modal-in .22s ease-out;
+    }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -117,20 +255,18 @@
   }
 </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col antialiased">
-
-<a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-[70] focus:top-3 focus:left-3 focus:bg-pizza-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm">Saltar al contenido</a>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
 
 <!-- ============================================================
-     PANTALLA DE INGRESO EMBEBIDA
+     LOGIN GATE
      ============================================================ -->
-<div id="loginGate" class="fixed inset-0 z-[100] bg-zinc-950 flex items-center justify-center p-4 hidden">
-  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-8 shadow-2xl modal-card relative overflow-hidden">
+<div id="loginGate" class="fixed inset-0 z-[100] bg-zinc-950 flex items-center justify-center p-4">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-7 shadow-2xl modal-card relative overflow-hidden">
     <div class="absolute -top-16 -right-16 w-40 h-40 bg-pizza-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="relative text-center mb-6">
       <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-pizza-600 to-amber-500 text-white mb-3 shadow-lg">
-        <i class="fa-solid fa-pizza-slice text-2xl" aria-hidden="true"></i>
+        <i class="fa-solid fa-pizza-slice text-2xl"></i>
       </div>
       <h2 class="text-xl font-bold text-white">Brother's Pizza</h2>
       <p class="text-xs text-zinc-400 mt-1">Acceso al panel administrativo</p>
@@ -139,19 +275,22 @@
     <form id="loginGateForm" class="space-y-4 relative" novalidate>
       <div>
         <label for="gate-user" class="block text-xs text-zinc-400 mb-1.5">Usuario</label>
-        <input type="text" id="gate-user" required autocomplete="username" autofocus
-               class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
+        <input type="text" id="gate-user" required autocomplete="username"
+               class="input" placeholder="admin">
       </div>
       <div>
         <label for="gate-pass" class="block text-xs text-zinc-400 mb-1.5">Contraseña</label>
         <input type="password" id="gate-pass" required autocomplete="current-password"
-               class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
+               class="input" placeholder="••••••">
       </div>
       <div id="gate-error" class="hidden text-rose-400 text-xs text-center bg-rose-500/10 border border-rose-500/20 py-2 rounded-lg"></div>
       <button type="submit" class="w-full bg-pizza-600 hover:bg-pizza-700 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-pizza-600/30">
-        Ingresar
+        <i class="fa-solid fa-right-to-bracket mr-2"></i>Ingresar
       </button>
       <a href="index.html" class="block text-center text-xs text-zinc-400 hover:text-white transition pt-1">← Volver al sitio público</a>
+      <p class="text-[10px] text-zinc-600 text-center pt-2 border-t border-zinc-800">
+        Demo: <span class="text-zinc-400 font-mono">admin</span> / <span class="text-zinc-400 font-mono">admin123</span>
+      </p>
     </form>
   </div>
 </div>
@@ -159,16 +298,16 @@
 <!-- ============================================================
      HEADER
      ============================================================ -->
-<header id="appHeader" class="glass-panel sticky top-0 z-40 border-b border-zinc-800">
+<header id="appHeader" class="hidden glass-panel sticky top-0 z-40 border-b border-zinc-800" style="padding-top: var(--safe-top);">
   <div class="max-w-[1600px] mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
     <div class="flex items-center gap-3 min-w-0">
       <div class="bg-gradient-to-tr from-pizza-600 to-amber-500 p-2.5 rounded-xl text-white shadow-lg glow-effect shrink-0">
-        <i class="fa-solid fa-pizza-slice text-lg" aria-hidden="true"></i>
+        <i class="fa-solid fa-pizza-slice text-lg"></i>
       </div>
       <div class="min-w-0">
         <h1 class="text-base sm:text-lg font-bold tracking-tight text-white leading-tight truncate">Brother's Pizza</h1>
         <p class="text-[10px] sm:text-xs text-zinc-400 truncate flex items-center gap-2">
-          Panel Administrativo &amp; POS Pro
+          Panel Admin
           <span class="hidden md:inline-flex items-center gap-1.5 text-emerald-400">
             <span class="sync-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
             Sincronizado
@@ -178,53 +317,49 @@
     </div>
 
     <div class="flex items-center gap-2">
-      <a href="index.html" target="_blank" rel="noopener" title="Abrir el menú público en una pestaña nueva"
+      <a href="index.html" target="_blank" rel="noopener" title="Ver menú público"
          class="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-pizza-600 to-amber-600 text-white hover:opacity-95 text-xs font-semibold transition shadow-lg shadow-pizza-600/30">
-        <i class="fa-solid fa-arrow-up-right-from-square text-[11px]" aria-hidden="true"></i>
+        <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
         <span>Ver menú público</span>
       </a>
-      <a href="index.html" title="Volver al sitio público"
-         class="hidden sm:flex md:hidden items-center gap-2 px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 text-xs font-medium transition">
-        <i class="fa-solid fa-house text-[11px]" aria-hidden="true"></i>
-        <span>Volver al sitio</span>
-      </a>
-      <a href="index.html" title="Volver al sitio público"
-         class="sm:hidden p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white transition">
-        <i class="fa-solid fa-house text-xs" aria-hidden="true"></i>
+      <a href="index.html" title="Ver menú público"
+         class="md:hidden p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white transition">
+        <i class="fa-solid fa-house text-xs"></i>
       </a>
 
       <div class="hidden md:flex items-center gap-2.5 pl-3 border-l border-zinc-800">
         <div id="userAvatar" class="h-9 w-9 rounded-xl bg-gradient-to-br from-pizza-500 to-amber-600 grid place-items-center font-bold text-white shadow text-xs">?</div>
         <div class="text-right leading-tight">
           <span id="userName" class="block text-xs font-semibold text-zinc-200">—</span>
-          <span id="userRole" class="block text-[10px] text-emerald-400">
-            <i class="fa-solid fa-circle text-[6px] mr-1" aria-hidden="true"></i>En línea
+          <span class="block text-[10px] text-emerald-400">
+            <i class="fa-solid fa-circle text-[6px] mr-1"></i>En línea
           </span>
         </div>
       </div>
 
       <button type="button" data-action="logout" title="Cerrar sesión"
-              class="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-red-400 hover:border-red-500/30 transition">
-        <i class="fa-solid fa-right-from-bracket text-sm" aria-hidden="true"></i>
+              class="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-red-400 hover:border-red-500/30 transition">
+        <i class="fa-solid fa-right-from-bracket text-sm"></i>
       </button>
     </div>
   </div>
 
-  <nav class="max-w-[1600px] mx-auto px-3 sm:px-6 pb-3 flex gap-1.5 overflow-x-auto" aria-label="Secciones del panel">
+  <!-- Desktop tabs -->
+  <nav class="hidden lg:flex max-w-[1600px] mx-auto px-6 pb-3 gap-1.5 overflow-x-auto" aria-label="Secciones">
     <button type="button" data-tab="pos" class="tab-btn is-active">
-      <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span>Punto de Venta</span>
+      <i class="fa-solid fa-cash-register"></i><span>Punto de Venta</span>
     </button>
-    <button type="button" data-tab="products" class="tab-btn" data-role="admin">
-      <i class="fa-solid fa-utensils" aria-hidden="true"></i><span>Menú</span>
+    <button type="button" data-tab="menu" class="tab-btn">
+      <i class="fa-solid fa-utensils"></i><span>Menú</span>
     </button>
-    <button type="button" data-tab="inventory" class="tab-btn" data-role="admin">
-      <i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Inventario</span>
+    <button type="button" data-tab="inventory" class="tab-btn">
+      <i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span>
     </button>
-    <button type="button" data-tab="employees" class="tab-btn" data-role="admin">
-      <i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Trabajadores</span>
+    <button type="button" data-tab="staff" class="tab-btn">
+      <i class="fa-solid fa-users-gear"></i><span>Trabajadores</span>
     </button>
-    <button type="button" data-tab="stats" class="tab-btn" data-role="admin">
-      <i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Estadísticas</span>
+    <button type="button" data-tab="stats" class="tab-btn">
+      <i class="fa-solid fa-chart-pie"></i><span>Estadísticas</span>
     </button>
   </nav>
 </header>
@@ -232,2022 +367,1501 @@
 <!-- ============================================================
      MAIN
      ============================================================ -->
-<main id="main" class="flex-1 max-w-[1600px] w-full mx-auto p-3 sm:p-5 md:p-6">
+<main id="main" class="hidden flex-1 max-w-[1600px] w-full mx-auto p-3 sm:p-5 md:p-6 pb-24 lg:pb-6">
 
-  <!-- =================== SECCIÓN POS =================== -->
-  <section id="section-pos" class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
-    <div class="lg:col-span-7 xl:col-span-8 space-y-4">
-      <div class="flex flex-col sm:flex-row gap-3 justify-between sm:items-center bg-zinc-900/60 p-3.5 rounded-2xl border border-zinc-800">
-        <div class="relative w-full sm:w-72">
-          <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm" aria-hidden="true"></i>
+  <!-- ================ POS ================ -->
+  <section id="section-pos" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+    <!-- Catálogo -->
+    <div class="lg:col-span-7 xl:col-span-8 space-y-3">
+      <div class="flex flex-col sm:flex-row gap-3 justify-between sm:items-center bg-zinc-900/60 p-3 rounded-2xl border border-zinc-800">
+        <div class="relative w-full sm:w-64">
+          <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
           <input type="search" id="pos-search" autocomplete="off" placeholder="Buscar producto…"
-                 aria-label="Buscar producto en el catálogo"
-                 class="w-full bg-zinc-950 border border-zinc-700 rounded-xl pl-10 pr-4 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-pizza-500 focus:ring-1 focus:ring-pizza-500/40 transition">
+                 class="input pl-10">
         </div>
-        <div id="pos-categories" class="flex gap-2 overflow-x-auto pb-1 sm:pb-0" role="group" aria-label="Filtrar categoría"></div>
+        <div id="pos-categories" class="flex gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0"></div>
       </div>
-      <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"></div>
+      <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3"></div>
     </div>
 
-    <aside class="lg:col-span-5 xl:col-span-4 w-full lg:sticky lg:top-40 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col shadow-xl" aria-label="Orden actual">
+    <!-- Carrito desktop -->
+    <aside class="hidden lg:flex lg:col-span-5 xl:col-span-4 w-full lg:sticky lg:top-40 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex-col shadow-xl">
       <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-3">
         <h2 class="font-bold text-base flex items-center text-zinc-200">
-          <i class="fa-solid fa-receipt text-pizza-500 mr-2" aria-hidden="true"></i>
+          <i class="fa-solid fa-receipt text-pizza-500 mr-2"></i>
           Orden actual
-          <span id="cart-count" class="ml-2 text-[11px] font-bold bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-full tabular-nums">0</span>
+          <span id="cart-count-desktop" class="ml-2 text-[11px] font-bold bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-full tabular-nums">0</span>
         </h2>
         <button type="button" data-action="clear-cart"
-                class="text-xs text-zinc-400 hover:text-red-400 transition-colors bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-lg">
-          <i class="fa-solid fa-trash mr-1" aria-hidden="true"></i>Limpiar
+                class="text-xs text-zinc-400 hover:text-red-400 transition bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-lg">
+          <i class="fa-solid fa-trash mr-1"></i>Limpiar
         </button>
       </div>
 
       <div class="mb-3">
-        <label for="order-client" class="block text-[10px] uppercase font-bold tracking-wider text-zinc-500 mb-1">Cliente / Mesa</label>
-        <input type="text" id="order-client" value="Mesa 01 - General" autocomplete="off"
-               class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
+        <label class="block text-[10px] uppercase font-bold tracking-wider text-zinc-500 mb-1">Cliente / Mesa</label>
+        <input type="text" id="order-client-desktop" value="Mesa 01 - General" autocomplete="off" class="input">
       </div>
 
-      <div id="cart-items" class="space-y-2 overflow-y-auto max-h-[45vh] lg:max-h-[calc(100vh-27rem)] pr-1"></div>
+      <div id="cart-items-desktop" class="space-y-2 overflow-y-auto max-h-[calc(100vh-28rem)] pr-1"></div>
 
       <div class="border-t border-zinc-800 pt-3 space-y-2 mt-3">
-        <div class="flex justify-between text-xs text-zinc-400">
-          <span>Subtotal</span><span id="cart-subtotal" class="tabular-nums">$0.00</span>
-        </div>
-        <div class="flex justify-between text-xs text-zinc-400">
-          <span>Impuestos (12%)</span><span id="cart-tax" class="tabular-nums">$0.00</span>
-        </div>
+        <div class="flex justify-between text-xs text-zinc-400"><span>Subtotal</span><span id="cart-subtotal-desktop" class="tabular-nums">$0.00</span></div>
+        <div class="flex justify-between text-xs text-zinc-400"><span>Impuestos (12%)</span><span id="cart-tax-desktop" class="tabular-nums">$0.00</span></div>
         <div class="flex justify-between text-base font-bold text-white pt-2 border-t border-zinc-800/60">
-          <span>Total a pagar</span>
-          <span id="cart-total" class="text-pizza-500 tabular-nums">$0.00</span>
+          <span>Total</span><span id="cart-total-desktop" class="text-pizza-500 tabular-nums">$0.00</span>
         </div>
-
         <div class="grid grid-cols-2 gap-2 pt-2">
-          <button type="button" data-pay="Efectivo"
-                  class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2.5 rounded-xl font-medium text-xs transition-colors border border-zinc-700 active:scale-[.98]">
-            <i class="fa-solid fa-money-bill-wave text-emerald-400 mr-1.5" aria-hidden="true"></i>Efectivo
+          <button type="button" data-pay="Efectivo" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2.5 rounded-xl font-medium text-xs transition border border-zinc-700 active:scale-[.98]">
+            <i class="fa-solid fa-money-bill-wave text-emerald-400 mr-1.5"></i>Efectivo
           </button>
-          <button type="button" data-pay="Tarjeta"
-                  class="w-full bg-pizza-600 hover:bg-pizza-700 text-white py-2.5 rounded-xl font-medium text-xs transition-colors shadow-lg shadow-pizza-600/30 active:scale-[.98]">
-            <i class="fa-solid fa-credit-card mr-1.5" aria-hidden="true"></i>Tarjeta / QR
+          <button type="button" data-pay="Tarjeta" class="w-full bg-pizza-600 hover:bg-pizza-700 text-white py-2.5 rounded-xl font-medium text-xs transition shadow-lg shadow-pizza-600/30 active:scale-[.98]">
+            <i class="fa-solid fa-credit-card mr-1.5"></i>Tarjeta
           </button>
         </div>
       </div>
     </aside>
   </section>
 
-  <!-- =================== SECCIÓN MENÚ =================== -->
-  <section id="section-products" class="hidden space-y-5">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900/70 p-5 rounded-2xl border border-zinc-800">
+  <!-- ================ MENÚ ================ -->
+  <section id="section-menu" class="hidden space-y-5">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-4 sm:p-5 rounded-2xl border border-zinc-800">
       <div>
-        <h2 class="text-lg font-bold text-white">Manipulación y control del menú</h2>
-        <p class="text-xs text-zinc-400">
-          Los cambios se sincronizan automáticamente con el sitio público.
-          <a href="index.html" target="_blank" rel="noopener" class="text-pizza-400 hover:text-pizza-300 underline ml-1">
-            Ver menú público →
-          </a>
-        </p>
+        <h2 class="text-base sm:text-lg font-bold text-white">Gestión del menú</h2>
+        <p class="text-xs text-zinc-400">Los cambios se sincronizan automáticamente con el sitio público.</p>
       </div>
-      <button type="button" data-action="new-product"
-              class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 hover:opacity-95 active:scale-[.98] transition">
-        <i class="fa-solid fa-plus mr-2" aria-hidden="true"></i>Nuevo producto
+      <button type="button" data-action="new-pizza"
+              class="w-full sm:w-auto bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 active:scale-[.98] transition min-h-[48px]">
+        <i class="fa-solid fa-plus mr-2"></i>Nueva pizza
       </button>
     </div>
 
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-zinc-300 min-w-[820px]">
+    <!-- Tamaños -->
+    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-ruler-combined text-amber-400"></i>Tamaños y precios
+        </h3>
+        <button type="button" data-action="edit-sizes" class="text-xs text-pizza-400 hover:text-pizza-300 font-semibold">
+          <i class="fa-solid fa-pen mr-1"></i>Editar
+        </button>
+      </div>
+      <div id="sizes-list" class="grid grid-cols-3 gap-2"></div>
+    </div>
+
+    <!-- Extras especiales -->
+    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-5">
+      <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-star text-amber-400"></i>Promociones especiales
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="flex items-center gap-3 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+          <div class="text-2xl">🍕</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-semibold text-white truncate">Porción individual</p>
+            <p class="text-[11px] text-zinc-500">Cualquier sabor</p>
+          </div>
+          <div class="text-right">
+            <p class="font-bold text-amber-400 tabular-nums" id="porcion-price-display">$1.25</p>
+            <button type="button" data-action="edit-porcion" class="text-[10px] text-pizza-400 hover:text-pizza-300">Editar</button>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+          <div class="text-2xl">🥤</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-semibold text-white truncate">Cola 1L</p>
+            <p class="text-[11px] text-zinc-500">Adicional especial</p>
+          </div>
+          <div class="text-right">
+            <p class="font-bold text-amber-400 tabular-nums" id="cola-price-display">$0.75</p>
+            <button type="button" data-action="edit-cola" class="text-[10px] text-pizza-400 hover:text-pizza-300">Editar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Productos: cards en mobile, tabla en desktop -->
+    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden">
+      <div class="p-4 border-b border-zinc-800">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-pizza-slice text-pizza-500"></i>
+          Pizzas en el menú
+          <span id="menu-count" class="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full tabular-nums">0</span>
+        </h3>
+      </div>
+
+      <!-- Cards mobile -->
+      <div id="menu-list-mobile" class="md:hidden p-3 space-y-2"></div>
+
+      <!-- Table desktop -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="w-full text-left text-sm text-zinc-300 min-w-[700px]">
           <thead class="bg-zinc-950/80 text-xs uppercase text-zinc-400 border-b border-zinc-800">
             <tr>
               <th class="py-3 px-4 font-semibold">Producto</th>
-              <th class="py-3 px-4 font-semibold">Categoría</th>
-              <th class="py-3 px-4 font-semibold">Precio</th>
-              <th class="py-3 px-4 font-semibold">Costo</th>
-              <th class="py-3 px-4 font-semibold">Margen</th>
+              <th class="py-3 px-4 font-semibold">Estado</th>
+              <th class="py-3 px-4 font-semibold">Precios</th>
               <th class="py-3 px-4 font-semibold text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody id="admin-product-table" class="divide-y divide-zinc-800/60"></tbody>
+          <tbody id="menu-table-body" class="divide-y divide-zinc-800/60"></tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- =================== SECCIÓN INVENTARIO =================== -->
-  <section id="section-inventory" class="hidden space-y-5">
-    <div class="flex flex-wrap gap-2 bg-zinc-900/70 p-1.5 rounded-xl border border-zinc-800 w-fit">
-      <button type="button" class="sub-tab is-active" data-subtab="insumos">
-        <i class="fa-solid fa-boxes-stacked mr-1.5" aria-hidden="true"></i>Materia prima
-      </button>
-      <button type="button" class="sub-tab" data-subtab="proveedores">
-        <i class="fa-solid fa-truck-field mr-1.5" aria-hidden="true"></i>Proveedores
-      </button>
-    </div>
-
-    <div id="subtab-insumos" class="space-y-5">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-          <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Insumos totales</p>
-          <h3 id="inv-kpi-total" class="text-2xl font-bold text-white mt-1 tabular-nums">0</h3>
-        </div>
-        <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-          <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Stock crítico</p>
-          <h3 id="inv-kpi-critical" class="text-2xl font-bold text-red-400 mt-1 tabular-nums">0</h3>
-        </div>
-        <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-          <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Valor inventario</p>
-          <h3 id="inv-kpi-value" class="text-2xl font-bold text-emerald-400 mt-1 tabular-nums">$0.00</h3>
-        </div>
-        <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-          <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Proveedores</p>
-          <h3 id="inv-kpi-suppliers" class="text-2xl font-bold text-amber-400 mt-1 tabular-nums">0</h3>
-        </div>
+  <!-- ================ INVENTARIO ================ -->
+  <section id="section-inventory" class="hidden space-y-4">
+    <!-- KPIs -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
+        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Insumos totales</p>
+        <h3 id="inv-kpi-total" class="text-2xl font-bold text-white mt-1 tabular-nums">0</h3>
       </div>
-
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-5 rounded-2xl border border-zinc-800">
-        <div>
-          <h2 class="text-lg font-bold text-white">Control de materia prima</h2>
-          <p class="text-xs text-zinc-400">Supervisa stock, costos y proveedores en tiempo real.</p>
-        </div>
-        <div class="flex gap-2 flex-wrap">
-          <button type="button" data-action="adjust-stock"
-                  class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3.5 py-2.5 rounded-xl text-xs font-semibold border border-zinc-700 transition">
-            <i class="fa-solid fa-arrows-up-down mr-1.5" aria-hidden="true"></i>Ajuste rápido
-          </button>
-          <button type="button" data-action="new-insumo"
-                  class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-pizza-600/20 hover:opacity-95 transition">
-            <i class="fa-solid fa-plus mr-1.5" aria-hidden="true"></i>Nuevo insumo
-          </button>
-        </div>
+      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
+        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Stock crítico</p>
+        <h3 id="inv-kpi-critical" class="text-2xl font-bold text-red-400 mt-1 tabular-nums">0</h3>
       </div>
-
-      <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-zinc-300 min-w-[820px]">
-            <thead class="bg-zinc-950/80 text-xs uppercase text-zinc-400 border-b border-zinc-800">
-              <tr>
-                <th class="py-3 px-4 font-semibold">Insumo</th>
-                <th class="py-3 px-4 font-semibold">Stock</th>
-                <th class="py-3 px-4 font-semibold">Mínimo</th>
-                <th class="py-3 px-4 font-semibold">Unidad</th>
-                <th class="py-3 px-4 font-semibold">Costo/u</th>
-                <th class="py-3 px-4 font-semibold">Proveedor</th>
-                <th class="py-3 px-4 font-semibold">Estado</th>
-                <th class="py-3 px-4 font-semibold text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="inventory-table" class="divide-y divide-zinc-800/60"></tbody>
-          </table>
-        </div>
+      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
+        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Valor inventario</p>
+        <h3 id="inv-kpi-value" class="text-2xl font-bold text-emerald-400 mt-1 tabular-nums">$0</h3>
+      </div>
+      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
+        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Proveedores</p>
+        <h3 id="inv-kpi-suppliers" class="text-2xl font-bold text-amber-400 mt-1 tabular-nums">0</h3>
       </div>
     </div>
 
-    <div id="subtab-proveedores" class="hidden space-y-5">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-5 rounded-2xl border border-zinc-800">
-        <div>
-          <h2 class="text-lg font-bold text-white">Proveedores registrados</h2>
-          <p class="text-xs text-zinc-400">Administra contactos e información.</p>
+    <!-- Chart stock -->
+    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
+      <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-chart-bar text-pizza-500"></i>Nivel de stock por insumo
+      </h3>
+      <div class="h-64"><canvas id="chart-stock"></canvas></div>
+    </div>
+
+    <!-- Botones -->
+    <div class="flex flex-wrap gap-2">
+      <button type="button" data-action="new-insumo"
+              class="flex-1 sm:flex-none bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 active:scale-[.98] transition min-h-[48px]">
+        <i class="fa-solid fa-plus mr-2"></i>Nuevo insumo
+      </button>
+      <button type="button" data-action="replenish-all"
+              class="flex-1 sm:flex-none bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-4 py-3 rounded-xl text-sm font-semibold border border-zinc-700 transition min-h-[48px]">
+        <i class="fa-solid fa-rotate mr-2"></i>Reabastecer críticos
+      </button>
+    </div>
+
+    <!-- Lista insumos -->
+    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden">
+      <div class="p-4 border-b border-zinc-800">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-boxes-stacked text-amber-400"></i>Materia prima
+        </h3>
+      </div>
+      <div id="inventory-list" class="p-3 space-y-2"></div>
+    </div>
+  </section>
+
+  <!-- ================ TRABAJADORES ================ -->
+  <section id="section-staff" class="hidden space-y-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-4 sm:p-5 rounded-2xl border border-zinc-800">
+      <div>
+        <h2 class="text-base sm:text-lg font-bold text-white">Equipo de trabajo</h2>
+        <p class="text-xs text-zinc-400">Gestiona usuarios, roles y accesos.</p>
+      </div>
+      <button type="button" data-action="new-staff"
+              class="w-full sm:w-auto bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 active:scale-[.98] transition min-h-[48px]">
+        <i class="fa-solid fa-user-plus mr-2"></i>Nuevo trabajador
+      </button>
+    </div>
+
+    <div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+  </section>
+
+  <!-- ================ ESTADÍSTICAS ================ -->
+  <section id="section-stats" class="hidden space-y-4">
+    <!-- KPIs principales -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="bg-gradient-to-br from-pizza-600/20 to-transparent border border-pizza-600/30 p-4 rounded-2xl">
+        <div class="flex items-center justify-between mb-1">
+          <p class="text-[10px] uppercase font-bold tracking-wider text-pizza-400">Ventas hoy</p>
+          <i class="fa-solid fa-arrow-trend-up text-pizza-400 text-xs"></i>
         </div>
-        <button type="button" data-action="new-supplier"
-                class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-pizza-600/20 hover:opacity-95 transition">
-          <i class="fa-solid fa-plus mr-1.5" aria-hidden="true"></i>Nuevo proveedor
+        <h3 id="stat-today" class="text-2xl font-bold text-white tabular-nums">$0</h3>
+        <p id="stat-today-orders" class="text-[10px] text-zinc-500 mt-0.5">0 órdenes</p>
+      </div>
+      <div class="bg-gradient-to-br from-emerald-600/20 to-transparent border border-emerald-600/30 p-4 rounded-2xl">
+        <div class="flex items-center justify-between mb-1">
+          <p class="text-[10px] uppercase font-bold tracking-wider text-emerald-400">Ventas semana</p>
+          <i class="fa-solid fa-calendar-week text-emerald-400 text-xs"></i>
+        </div>
+        <h3 id="stat-week" class="text-2xl font-bold text-white tabular-nums">$0</h3>
+        <p id="stat-week-orders" class="text-[10px] text-zinc-500 mt-0.5">0 órdenes</p>
+      </div>
+      <div class="bg-gradient-to-br from-amber-600/20 to-transparent border border-amber-600/30 p-4 rounded-2xl">
+        <div class="flex items-center justify-between mb-1">
+          <p class="text-[10px] uppercase font-bold tracking-wider text-amber-400">Ticket promedio</p>
+          <i class="fa-solid fa-receipt text-amber-400 text-xs"></i>
+        </div>
+        <h3 id="stat-avg" class="text-2xl font-bold text-white tabular-nums">$0</h3>
+        <p class="text-[10px] text-zinc-500 mt-0.5">por orden</p>
+      </div>
+      <div class="bg-gradient-to-br from-blue-600/20 to-transparent border border-blue-600/30 p-4 rounded-2xl">
+        <div class="flex items-center justify-between mb-1">
+          <p class="text-[10px] uppercase font-bold tracking-wider text-blue-400">Producto top</p>
+          <i class="fa-solid fa-crown text-blue-400 text-xs"></i>
+        </div>
+        <h3 id="stat-top" class="text-sm font-bold text-white truncate">—</h3>
+        <p id="stat-top-count" class="text-[10px] text-zinc-500 mt-0.5">0 vendidos</p>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
+        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-chart-line text-pizza-500"></i>Ventas últimos 7 días
+        </h3>
+        <div class="h-56"><canvas id="chart-sales"></canvas></div>
+      </div>
+      <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
+        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-chart-pie text-amber-400"></i>Método de pago
+        </h3>
+        <div class="h-56"><canvas id="chart-payments"></canvas></div>
+      </div>
+    </div>
+
+    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
+      <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-ranking-star text-emerald-400"></i>Top 5 productos más vendidos
+      </h3>
+      <div class="h-64"><canvas id="chart-top"></canvas></div>
+    </div>
+
+    <!-- Historial -->
+    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden">
+      <div class="p-4 border-b border-zinc-800 flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-zinc-400"></i>Últimas ventas
+        </h3>
+        <button type="button" data-action="clear-sales" class="text-[10px] text-zinc-500 hover:text-red-400">
+          <i class="fa-solid fa-trash mr-1"></i>Limpiar historial
         </button>
       </div>
-
-      <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-zinc-300 min-w-[720px]">
-            <thead class="bg-zinc-950/80 text-xs uppercase text-zinc-400 border-b border-zinc-800">
-              <tr>
-                <th class="py-3 px-4 font-semibold">Proveedor</th>
-                <th class="py-3 px-4 font-semibold">Contacto</th>
-                <th class="py-3 px-4 font-semibold">Teléfono</th>
-                <th class="py-3 px-4 font-semibold">Email</th>
-                <th class="py-3 px-4 font-semibold">Insumos</th>
-                <th class="py-3 px-4 font-semibold text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="suppliers-table" class="divide-y divide-zinc-800/60"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =================== SECCIÓN TRABAJADORES =================== -->
-  <section id="section-employees" class="hidden space-y-5">
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Total</p>
-        <h3 id="emp-kpi-total" class="text-2xl font-bold text-white mt-1 tabular-nums">0</h3>
-      </div>
-      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Activos</p>
-        <h3 id="emp-kpi-active" class="text-2xl font-bold text-emerald-400 mt-1 tabular-nums">0</h3>
-      </div>
-      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Administradores</p>
-        <h3 id="emp-kpi-admins" class="text-2xl font-bold text-pizza-500 mt-1 tabular-nums">0</h3>
-      </div>
-      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Nómina mensual</p>
-        <h3 id="emp-kpi-payroll" class="text-2xl font-bold text-amber-400 mt-1 tabular-nums">$0.00</h3>
-      </div>
-    </div>
-
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-5 rounded-2xl border border-zinc-800">
-      <div>
-        <h2 class="text-lg font-bold text-white">Trabajadores y credenciales</h2>
-        <p class="text-xs text-zinc-400">Los cambios se sincronizan con el inicio de sesión público.</p>
-      </div>
-      <button type="button" data-action="new-employee"
-              class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-lg shadow-pizza-600/20 hover:opacity-95 transition">
-        <i class="fa-solid fa-user-plus mr-1.5" aria-hidden="true"></i>Registrar trabajador
-      </button>
-    </div>
-
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-zinc-300 min-w-[900px]">
-          <thead class="bg-zinc-950/80 text-xs uppercase text-zinc-400 border-b border-zinc-800">
-            <tr>
-              <th class="py-3 px-4 font-semibold">Trabajador</th>
-              <th class="py-3 px-4 font-semibold">Usuario</th>
-              <th class="py-3 px-4 font-semibold">Rol</th>
-              <th class="py-3 px-4 font-semibold">Turno</th>
-              <th class="py-3 px-4 font-semibold">Teléfono</th>
-              <th class="py-3 px-4 font-semibold">Salario</th>
-              <th class="py-3 px-4 font-semibold">Estado</th>
-              <th class="py-3 px-4 font-semibold text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="employees-table" class="divide-y divide-zinc-800/60"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- =================== SECCIÓN ESTADÍSTICAS =================== -->
-  <section id="section-stats" class="hidden space-y-5">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <article class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl flex items-center justify-between gap-4">
-        <div class="min-w-0">
-          <p class="text-xs text-zinc-400 font-medium">Ventas de hoy</p>
-          <h3 id="stat-sales" class="text-2xl font-bold text-white mt-1 tabular-nums">$0.00</h3>
-          <p id="stat-sales-sub" class="text-[11px] text-zinc-500 mt-1">Sin movimientos</p>
-        </div>
-        <div class="bg-pizza-500/10 text-pizza-500 p-3.5 rounded-xl border border-pizza-500/20 shrink-0">
-          <i class="fa-solid fa-chart-line text-xl" aria-hidden="true"></i>
-        </div>
-      </article>
-
-      <article class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl flex items-center justify-between gap-4">
-        <div class="min-w-0">
-          <p class="text-xs text-zinc-400 font-medium">Órdenes procesadas</p>
-          <h3 id="stat-orders" class="text-2xl font-bold text-white mt-1 tabular-nums">0</h3>
-          <p id="stat-orders-sub" class="text-[11px] text-zinc-500 mt-1">Hoy</p>
-        </div>
-        <div class="bg-amber-500/10 text-amber-500 p-3.5 rounded-xl border border-amber-500/20 shrink-0">
-          <i class="fa-solid fa-receipt text-xl" aria-hidden="true"></i>
-        </div>
-      </article>
-
-      <article class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl flex items-center justify-between gap-4">
-        <div class="min-w-0">
-          <p class="text-xs text-zinc-400 font-medium">Producto más vendido</p>
-          <h3 id="stat-top" class="text-base font-bold text-white mt-1 truncate">—</h3>
-          <p id="stat-top-sub" class="text-[11px] text-zinc-500 mt-1">Sin datos</p>
-        </div>
-        <div class="bg-rose-500/10 text-rose-500 p-3.5 rounded-xl border border-rose-500/20 shrink-0">
-          <i class="fa-solid fa-pizza-slice text-xl" aria-hidden="true"></i>
-        </div>
-      </article>
-
-      <article class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl flex items-center justify-between gap-4">
-        <div class="min-w-0">
-          <p class="text-xs text-zinc-400 font-medium">Ticket promedio</p>
-          <h3 id="stat-avg" class="text-2xl font-bold text-white mt-1 tabular-nums">$0.00</h3>
-          <p id="stat-avg-sub" class="text-[11px] text-zinc-500 mt-1">Hoy</p>
-        </div>
-        <div class="bg-emerald-500/10 text-emerald-400 p-3.5 rounded-xl border border-emerald-500/20 shrink-0">
-          <i class="fa-solid fa-wallet text-xl" aria-hidden="true"></i>
-        </div>
-      </article>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl">
-        <h3 class="text-sm font-bold text-white mb-4">
-          <i class="fa-solid fa-chart-bar text-pizza-500 mr-2" aria-hidden="true"></i>Ventas por hora (hoy)
-        </h3>
-        <div class="h-64 relative"><canvas id="salesChart" aria-label="Ventas por hora" role="img"></canvas></div>
-      </div>
-      <div class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl">
-        <h3 class="text-sm font-bold text-white mb-4">
-          <i class="fa-solid fa-chart-pie text-amber-500 mr-2" aria-hidden="true"></i>Ingresos por categoría (hoy)
-        </h3>
-        <div class="h-64 relative"><canvas id="categoryChart" aria-label="Ingresos por categoría" role="img"></canvas></div>
-      </div>
-    </div>
-
-    <div class="bg-zinc-900/70 border border-zinc-800 rounded-2xl overflow-hidden">
-      <div class="flex flex-wrap gap-3 justify-between items-center p-5 border-b border-zinc-800">
-        <h3 class="text-sm font-bold text-white">
-          <i class="fa-solid fa-clock-rotate-left text-zinc-400 mr-2" aria-hidden="true"></i>Órdenes recientes
-        </h3>
-        <div class="flex gap-2">
-          <button type="button" data-action="export-csv"
-                  class="text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-2 rounded-xl border border-zinc-700 transition">
-            <i class="fa-solid fa-file-csv mr-1.5" aria-hidden="true"></i>Exportar CSV
-          </button>
-          <button type="button" data-action="reset-demo"
-                  class="text-xs font-medium bg-red-500/10 hover:bg-red-500/20 text-red-400 px-3 py-2 rounded-xl border border-red-500/20 transition">
-            <i class="fa-solid fa-rotate-left mr-1.5" aria-hidden="true"></i>Reiniciar demo
-          </button>
-        </div>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left min-w-[640px]">
-          <thead class="bg-zinc-950/60 text-[10px] uppercase text-zinc-500 border-b border-zinc-800">
-            <tr>
-              <th class="py-2.5 px-3 font-semibold">Hora</th>
-              <th class="py-2.5 px-3 font-semibold">Cliente</th>
-              <th class="py-2.5 px-3 font-semibold">Atendido por</th>
-              <th class="py-2.5 px-3 font-semibold">Método</th>
-              <th class="py-2.5 px-3 font-semibold">Ítems</th>
-              <th class="py-2.5 px-3 font-semibold text-right">Total</th>
-              <th class="py-2.5 px-3 font-semibold text-right"></th>
-            </tr>
-          </thead>
-          <tbody id="recent-orders"></tbody>
-        </table>
-      </div>
+      <div id="sales-history" class="p-3 space-y-2 max-h-96 overflow-y-auto"></div>
     </div>
   </section>
 </main>
 
-<!-- ============================================================
-     MODAL GENÉRICO
-     ============================================================ -->
-<div id="entity-modal" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-     role="dialog" aria-modal="true" aria-labelledby="entity-title">
-  <div class="modal-card bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
-    <div class="flex items-start justify-between gap-3 mb-5">
-      <div>
-        <h3 id="entity-title" class="text-base font-bold text-white">Entidad</h3>
-        <p id="entity-subtitle" class="text-xs text-zinc-400 mt-0.5">Completa los datos.</p>
-      </div>
-      <button type="button" data-close-modal="entity-modal"
-              class="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-800 transition" aria-label="Cerrar">
-        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+<!-- ================ MOBILE BOTTOM NAV ================ -->
+<nav class="mobile-nav hidden" id="mobileNav">
+  <button type="button" class="mobile-nav-item active" data-tab="pos">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>POS</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-tab="menu">
+    <i class="fa-solid fa-utensils"></i>
+    <span>Menú</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-tab="inventory">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    <span>Stock</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-tab="staff">
+    <i class="fa-solid fa-users-gear"></i>
+    <span>Staff</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-tab="stats">
+    <i class="fa-solid fa-chart-pie"></i>
+    <span>Stats</span>
+  </button>
+</nav>
+
+<!-- ================ MOBILE CART FAB ================ -->
+<button type="button" id="mobileCartFab" class="cart-fab-mobile">
+  <i class="fa-solid fa-bag-shopping text-2xl"></i>
+  <span id="mobileCartBadge" class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-black rounded-full w-6 h-6 grid place-items-center border-2 border-zinc-950">0</span>
+</button>
+
+<!-- ================ CART SHEET (mobile) ================ -->
+<div class="cart-backdrop" id="cartBackdrop"></div>
+<div class="cart-sheet" id="cartSheet">
+  <div class="w-10 h-1 bg-zinc-700 rounded-full mx-auto mt-2"></div>
+  <div class="px-5 pt-3 pb-3 flex items-center justify-between border-b border-zinc-800">
+    <div>
+      <h3 class="font-display text-2xl">ORDEN ACTUAL</h3>
+      <p class="text-[11px] text-zinc-500" id="cartSubtitleMobile">Sin productos</p>
+    </div>
+    <button type="button" id="closeCartSheet" class="w-10 h-10 rounded-xl bg-zinc-800 grid place-items-center text-zinc-400 hover:text-white">
+      <i class="fa-solid fa-xmark text-lg"></i>
+    </button>
+  </div>
+
+  <div class="px-5 py-3 border-b border-zinc-800">
+    <label class="block text-[10px] uppercase font-bold tracking-wider text-zinc-500 mb-1">Cliente / Mesa</label>
+    <input type="text" id="order-client-mobile" value="Mesa 01 - General" class="input">
+  </div>
+
+  <div id="cart-items-mobile" class="flex-1 overflow-y-auto px-5 py-3 space-y-2"></div>
+
+  <div class="border-t border-zinc-800 px-5 py-4 space-y-2" style="padding-bottom: calc(16px + var(--safe-bottom));">
+    <div class="flex justify-between text-xs text-zinc-400"><span>Subtotal</span><span id="cart-subtotal-mobile" class="tabular-nums">$0.00</span></div>
+    <div class="flex justify-between text-xs text-zinc-400"><span>Impuestos (12%)</span><span id="cart-tax-mobile" class="tabular-nums">$0.00</span></div>
+    <div class="flex justify-between text-lg font-bold text-white pt-2 border-t border-zinc-800">
+      <span>Total</span><span id="cart-total-mobile" class="text-pizza-500 tabular-nums">$0.00</span>
+    </div>
+    <div class="grid grid-cols-2 gap-2 pt-2">
+      <button type="button" data-pay="Efectivo" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-3 rounded-xl font-medium text-xs transition border border-zinc-700 active:scale-[.98] min-h-[48px]">
+        <i class="fa-solid fa-money-bill-wave text-emerald-400 mr-1.5"></i>Efectivo
+      </button>
+      <button type="button" data-pay="Tarjeta" class="w-full bg-pizza-600 hover:bg-pizza-700 text-white py-3 rounded-xl font-medium text-xs transition shadow-lg shadow-pizza-600/30 active:scale-[.98] min-h-[48px]">
+        <i class="fa-solid fa-credit-card mr-1.5"></i>Tarjeta
       </button>
     </div>
-    <form id="entity-form" novalidate class="space-y-4"></form>
-    <div class="flex justify-end gap-3 pt-5 border-t border-zinc-800 mt-5">
-      <button type="button" data-close-modal="entity-modal"
-              class="px-4 py-2 rounded-xl text-xs font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition">Cancelar</button>
-      <button type="submit" form="entity-form"
-              class="px-5 py-2 rounded-xl text-xs font-semibold bg-pizza-600 text-white hover:bg-pizza-700 shadow transition">Guardar</button>
-    </div>
   </div>
 </div>
 
-<!-- CONFIRMACIÓN -->
-<div id="confirm-modal" class="modal-backdrop fixed inset-0 z-[60] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-     role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-  <div class="modal-card bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl">
-    <div class="flex items-start gap-3">
-      <div class="bg-red-500/10 text-red-400 p-2.5 rounded-xl border border-red-500/20 shrink-0">
-        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+<!-- ================ MODAL ================ -->
+<div id="modalRoot" class="modal-fullscreen hidden" style="display:none">
+  <div class="modal-panel" id="modalPanel"></div>
+</div>
+
+<!-- ================ TOASTS ================ -->
+<div id="toastContainer" class="fixed top-20 right-3 left-3 md:left-auto md:right-6 z-[90] space-y-2 pointer-events-none"></div>
+
+<script>
+/* =========================================================
+   💾 CAPA DE DATOS (localStorage)
+   ========================================================= */
+const LS = {
+  MENU: "bp_menu",
+  SALES: "bp_sales",
+  INVENTORY: "bp_inventory",
+  STAFF: "bp_staff",
+  SESSION: "bp_session",
+};
+
+const DEFAULT_MENU = {
+  version: 2,
+  config: {
+    whatsapp: "593984113081",
+    telefono: "098 411 3081",
+    horaApertura: 17,
+    horaCierre: 22.5,
+    envioGratisDesde: 5.00,
+    compraMinima: 5.00,
+  },
+  tamanos: [
+    { id: "personal", label: "Personal", precio: 5.00,  porciones: 4 },
+    { id: "mediana",  label: "Mediana",  precio: 9.00,  porciones: 10 },
+    { id: "familiar", label: "Familiar", precio: 13.00, porciones: 12 },
+  ],
+  pizzas: [
+    { id: 1, nombre: "Pizza Pepperoni", desc: "Clásica con pepperoni, mozzarella y salsa de tomate artesanal.", badge: "hot", rating: 5 },
+    { id: 2, nombre: "Pizza Margarita", desc: "Mozzarella fresca, albahaca y tomate.", rating: 5 },
+    { id: 3, nombre: "Pizza Hawaiana",  desc: "Jamón, piña y mozzarella.", rating: 5 },
+    { id: 4, nombre: "Pizza de Jamón",  desc: "Jamón de primera calidad con mozzarella.", badge: "new", rating: 5 },
+  ],
+  porcion: { id: 200, nombre: "Porción de Pizza", precio: 1.25 },
+  cola:    { id: 300, nombre: "Cola 1L", precio: 0.75 },
+};
+
+const DEFAULT_INVENTORY = [
+  { id: 1, nombre: "Harina", unidad: "kg", stock: 25, min: 10, costo: 1.20, proveedor: "Molinos Andinos" },
+  { id: 2, nombre: "Queso Mozzarella", unidad: "kg", stock: 8, min: 5, costo: 6.50, proveedor: "Lácteos Biblán" },
+  { id: 3, nombre: "Salsa de Tomate", unidad: "L", stock: 12, min: 5, costo: 2.20, proveedor: "Del Monte" },
+  { id: 4, nombre: "Pepperoni", unidad: "kg", stock: 4, min: 3, costo: 8.00, proveedor: "Carnes Pérez" },
+  { id: 5, nombre: "Jamón", unidad: "kg", stock: 2, min: 3, costo: 5.50, proveedor: "Carnes Pérez" },
+  { id: 6, nombre: "Piña enlatada", unidad: "kg", stock: 3, min: 2, costo: 3.00, proveedor: "Del Monte" },
+  { id: 7, nombre: "Cola 1L", unidad: "botella", stock: 20, min: 12, costo: 0.50, proveedor: "Distribuidora Sur" },
+  { id: 8, nombre: "Cajas pizza", unidad: "unidad", stock: 45, min: 20, costo: 0.15, proveedor: "Empaques EC" },
+];
+
+const DEFAULT_STAFF = [
+  { id: 1, nombre: "Administrador", usuario: "admin", pass: "admin123", rol: "admin", activo: true },
+  { id: 2, nombre: "Carlos Pérez", usuario: "carlos", pass: "1234", rol: "cajero", activo: true },
+];
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const $ = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const money = v => "$" + Number(v).toFixed(2);
+const uid = () => Date.now() + Math.floor(Math.random() * 1000);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+function readLS(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch { return fallback; }
+}
+function writeLS(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+  // Disparar evento para otras pestañas
+  window.dispatchEvent(new StorageEvent("storage", { key, newValue: JSON.stringify(val) }));
+}
+
+let MENU = readLS(LS.MENU, DEFAULT_MENU);
+let SALES = readLS(LS.SALES, []);
+let INVENTORY = readLS(LS.INVENTORY, DEFAULT_INVENTORY);
+let STAFF = readLS(LS.STAFF, DEFAULT_STAFF);
+let SESSION = readLS(LS.SESSION, null);
+
+/* =========================================================
+   UTILIDADES UI
+   ========================================================= */
+function toast(msg, type = "success") {
+  const cont = $("#toastContainer");
+  const el = document.createElement("div");
+  const isError = type === "error";
+  el.className = `toast-in pointer-events-auto rounded-2xl px-4 py-3 shadow-2xl backdrop-blur-md border text-xs font-semibold flex items-center gap-2.5 max-w-md ml-auto ${
+    isError ? "bg-red-500/15 border-red-500/40 text-red-300"
+            : "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
+  }`;
+  el.innerHTML = `<i class="fa-solid ${isError ? "fa-circle-exclamation" : "fa-circle-check"} text-base"></i><span>${esc(msg)}</span>`;
+  cont.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = "opacity .3s, transform .3s";
+    el.style.opacity = "0";
+    el.style.transform = "translateY(-10px)";
+    setTimeout(() => el.remove(), 300);
+  }, 2800);
+}
+
+function openModal(html) {
+  const root = $("#modalRoot");
+  $("#modalPanel").innerHTML = html;
+  root.classList.remove("hidden");
+  root.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+function closeModal() {
+  const root = $("#modalRoot");
+  root.classList.add("hidden");
+  root.style.display = "none";
+  document.body.style.overflow = "";
+  $("#modalPanel").innerHTML = "";
+}
+$("#modalRoot").addEventListener("click", e => { if (e.target.id === "modalRoot") closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCartSheet(); } });
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+function tryLogin(user, pass) {
+  const found = STAFF.find(s => s.usuario === user && s.pass === pass && s.activo);
+  return found || null;
+}
+$("#loginGateForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const u = $("#gate-user").value.trim();
+  const p = $("#gate-pass").value;
+  const user = tryLogin(u, p);
+  const err = $("#gate-error");
+  if (!user) {
+    err.textContent = "Usuario o contraseña incorrectos";
+    err.classList.remove("hidden");
+    $("#loginGateForm").classList.add("shake");
+    setTimeout(() => $("#loginGateForm").classList.remove("shake"), 400);
+    return;
+  }
+  err.classList.add("hidden");
+  SESSION = { id: user.id, nombre: user.nombre, usuario: user.usuario, rol: user.rol, hora: Date.now() };
+  writeLS(LS.SESSION, SESSION);
+  showApp();
+  toast(`Bienvenido, ${user.nombre}`);
+});
+
+function showApp() {
+  $("#loginGate").style.display = "none";
+  $("#appHeader").classList.remove("hidden");
+  $("#main").classList.remove("hidden");
+  $("#mobileNav").classList.remove("hidden");
+  $("#userName").textContent = SESSION.nombre;
+  $("#userAvatar").textContent = SESSION.nombre.charAt(0).toUpperCase();
+  renderAll();
+  initCharts();
+}
+
+function logout() {
+  if (!confirm("¿Cerrar sesión?")) return;
+  localStorage.removeItem(LS.SESSION);
+  SESSION = null;
+  location.reload();
+}
+document.querySelector("[data-action='logout']").addEventListener("click", logout);
+
+/* =========================================================
+   NAVEGACIÓN
+   ========================================================= */
+let currentTab = "pos";
+function switchTab(tab) {
+  currentTab = tab;
+  $$("section[id^='section-']").forEach(s => s.classList.add("hidden"));
+  const target = $("#section-" + tab);
+  if (target) target.classList.remove("hidden");
+
+  // Desktop tabs
+  $$(".tab-btn").forEach(t => t.classList.toggle("is-active", t.dataset.tab === tab));
+  // Mobile nav
+  $$(".mobile-nav-item").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+
+  // Reflow de charts
+  setTimeout(() => { Object.values(charts).forEach(c => c && c.resize()); }, 100);
+}
+
+$$("[data-tab]").forEach(btn => {
+  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+});
+
+/* =========================================================
+   CARRITO / ORDEN ACTUAL
+   ========================================================= */
+let cart = [];
+let currentCategory = "todos";
+let currentSearch = "";
+
+function cartCount() { return cart.reduce((s, i) => s + i.cantidad, 0); }
+function cartSubtotal() { return cart.reduce((s, i) => s + i.precio * i.cantidad, 0); }
+function cartTax() { return cartSubtotal() * 0.12; }
+function cartTotal() { return cartSubtotal() + cartTax(); }
+
+function addToCart(item) {
+  const found = cart.find(i => i.key === item.key);
+  if (found) found.cantidad++;
+  else cart.push({ ...item, cantidad: 1 });
+  renderCart();
+  toast(`${item.nombre} agregado`);
+}
+function changeQty(idx, delta) {
+  cart[idx].cantidad += delta;
+  if (cart[idx].cantidad <= 0) cart.splice(idx, 1);
+  renderCart();
+}
+function clearCart() {
+  if (!cart.length) return;
+  cart = [];
+  renderCart();
+  toast("Orden limpiada");
+}
+
+function renderCart() {
+  const count = cartCount();
+  const sub = cartSubtotal();
+  const tax = cartTax();
+  const tot = cartTotal();
+
+  // Actualizar todos los contadores
+  ["#cart-count-desktop", "#mobileCartBadge"].forEach(sel => {
+    const el = $(sel);
+    if (el) { el.textContent = count; el.classList.toggle("empty", count === 0); }
+  });
+
+  // Totales
+  ["desktop", "mobile"].forEach(sfx => {
+    const s = $("#cart-subtotal-" + sfx); if (s) s.textContent = money(sub);
+    const t = $("#cart-tax-" + sfx); if (t) t.textContent = money(tax);
+    const g = $("#cart-total-" + sfx); if (g) g.textContent = money(tot);
+  });
+  $("#cartSubtitleMobile").textContent = count === 0 ? "Sin productos" : `${count} ${count === 1 ? "producto" : "productos"}`;
+
+  // FAB
+  $("#mobileCartFab").classList.toggle("show", count > 0);
+
+  // Render items en ambos contenedores
+  const html = count === 0
+    ? `<div class="text-center py-10 text-zinc-500">
+         <div class="text-5xl mb-2">🛒</div>
+         <p class="text-sm">Sin productos</p>
+         <p class="text-xs mt-1">Toca un producto del catálogo</p>
+       </div>`
+    : cart.map((item, idx) => `
+      <div class="flex items-center gap-3 p-3 bg-zinc-950 border border-zinc-800 rounded-xl">
+        <div class="w-10 h-10 rounded-lg bg-zinc-900 grid place-items-center text-lg shrink-0">${item.emoji || "🍕"}</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-white truncate">${esc(item.nombre)}</p>
+          <p class="text-[11px] text-zinc-500">${money(item.precio)} c/u</p>
+        </div>
+        <div class="flex items-center gap-1">
+          <button type="button" class="w-7 h-7 rounded-lg bg-zinc-800 text-white grid place-items-center text-xs active:bg-red-500" data-qty="-1" data-idx="${idx}">
+            <i class="fa-solid fa-minus"></i>
+          </button>
+          <span class="text-sm font-bold min-w-[22px] text-center tabular-nums">${item.cantidad}</span>
+          <button type="button" class="w-7 h-7 rounded-lg bg-zinc-800 text-white grid place-items-center text-xs active:bg-emerald-500" data-qty="1" data-idx="${idx}">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
       </div>
+    `).join("");
+
+  ["#cart-items-desktop", "#cart-items-mobile"].forEach(sel => {
+    const el = $(sel);
+    if (el) el.innerHTML = html;
+  });
+
+  // Listeners qty
+  $$("[data-qty]").forEach(b => {
+    b.addEventListener("click", () => changeQty(Number(b.dataset.idx), Number(b.dataset.qty)));
+  });
+}
+
+/* Registrar venta */
+function registerSale(method) {
+  if (!cart.length) { toast("Agrega productos primero", "error"); return; }
+  const clientDesktop = $("#order-client-desktop")?.value || "Cliente";
+  const clientMobile = $("#order-client-mobile")?.value || "Cliente";
+  const client = clientMobile || clientDesktop;
+
+  const sale = {
+    id: uid(),
+    fecha: new Date().toISOString(),
+    cliente: client,
+    metodo: method,
+    items: cart.map(i => ({ ...i })),
+    subtotal: cartSubtotal(),
+    impuesto: cartTax(),
+    total: cartTotal(),
+    vendedor: SESSION.nombre,
+  };
+
+  SALES.unshift(sale);
+  writeLS(LS.SALES, SALES);
+
+  // Descontar inventario aproximado
+  sale.items.forEach(item => {
+    // Descuento simple: si es pizza, descontar 1 de queso y 1 de harina
+    if (item.tipo === "pizza") {
+      const q = INVENTORY.find(i => /queso/i.test(i.nombre));
+      if (q) q.stock = Math.max(0, +(q.stock - 0.3).toFixed(2));
+      const h = INVENTORY.find(i => /harina/i.test(i.nombre));
+      if (h) h.stock = Math.max(0, +(h.stock - 0.4).toFixed(2));
+    }
+    if (/cola/i.test(item.nombre)) {
+      const c = INVENTORY.find(i => /cola/i.test(i.nombre));
+      if (c) c.stock = Math.max(0, c.stock - item.cantidad);
+    }
+  });
+  writeLS(LS.INVENTORY, INVENTORY);
+
+  cart = [];
+  renderCart();
+  renderInventory();
+  renderStats();
+  closeCartSheet();
+  toast(`Venta registrada: ${money(sale.total)} (${method})`);
+}
+
+$$("[data-pay]").forEach(b => {
+  b.addEventListener("click", () => registerSale(b.dataset.pay));
+});
+
+$("[data-action='clear-cart']").addEventListener("click", clearCart);
+
+/* =========================================================
+   CART SHEET mobile
+   ========================================================= */
+function openCartSheet() {
+  $("#cartSheet").classList.add("open");
+  $("#cartBackdrop").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeCartSheet() {
+  $("#cartSheet").classList.remove("open");
+  $("#cartBackdrop").classList.remove("open");
+  document.body.style.overflow = "";
+}
+$("#mobileCartFab").addEventListener("click", openCartSheet);
+$("#closeCartSheet").addEventListener("click", closeCartSheet);
+$("#cartBackdrop").addEventListener("click", closeCartSheet);
+
+/* =========================================================
+   POS: GRID DE PRODUCTOS
+   ========================================================= */
+function getPOSProducts() {
+  let list = [];
+  MENU.pizzas.forEach(p => {
+    // Por cada pizza, generar un botón por tamaño
+    MENU.tamanos.forEach(t => {
+      list.push({
+        key: `pizza-${p.id}-${t.id}`,
+        tipo: "pizza",
+        id: p.id,
+        nombre: `${p.nombre} ${t.label}`,
+        precio: t.precio,
+        emoji: "🍕",
+        categoria: "pizzas",
+        badge: p.badge,
+      });
+    });
+  });
+  // Porción
+  list.push({
+    key: "porcion",
+    tipo: "porcion",
+    id: MENU.porcion.id,
+    nombre: "Porción de pizza",
+    precio: MENU.porcion.precio,
+    emoji: "🍕",
+    categoria: "especiales",
+  });
+  // Cola
+  list.push({
+    key: "cola",
+    tipo: "extra",
+    id: MENU.cola.id,
+    nombre: MENU.cola.nombre,
+    precio: MENU.cola.precio,
+    emoji: "🥤",
+    categoria: "bebidas",
+    badge: "promo",
+  });
+  return list;
+}
+
+function getCategories() {
+  const cats = new Set(getPOSProducts().map(p => p.categoria));
+  return ["todos", ...[...cats]];
+}
+
+function renderPOS() {
+  // Categorías
+  const catCont = $("#pos-categories");
+  catCont.innerHTML = getCategories().map(c => `
+    <button type="button" data-cat="${c}" class="category-btn ${c === currentCategory ? "is-active" : ""}">
+      ${c === "todos" ? "🍽️ Todos" : c.charAt(0).toUpperCase() + c.slice(1)}
+    </button>
+  `).join("");
+  $$("#pos-categories [data-cat]").forEach(b => {
+    b.addEventListener("click", () => { currentCategory = b.dataset.cat; renderPOS(); });
+  });
+
+  // Filtrar
+  let list = getPOSProducts();
+  if (currentCategory !== "todos") list = list.filter(p => p.categoria === currentCategory);
+  if (currentSearch.trim()) {
+    const q = currentSearch.toLowerCase();
+    list = list.filter(p => p.nombre.toLowerCase().includes(q));
+  }
+
+  const grid = $("#pos-product-grid");
+  if (!list.length) {
+    grid.innerHTML = `<div class="col-span-full text-center py-12 text-zinc-500">
+      <div class="text-5xl mb-2">🔍</div><p>Sin resultados</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(p => `
+    <button type="button" class="pos-card bg-zinc-900 border border-zinc-800 rounded-2xl p-3 text-left flex flex-col gap-2" data-key="${p.key}">
+      <div class="text-3xl text-center">${p.emoji}</div>
+      <p class="text-xs font-semibold text-white leading-tight line-clamp-2 min-h-[2rem]">${esc(p.nombre)}</p>
+      <p class="font-display text-xl text-amber-400 mt-auto">${money(p.precio)}</p>
+    </button>
+  `).join("");
+
+  $$("#pos-product-grid .pos-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const p = list.find(x => x.key === card.dataset.key);
+      if (p) addToCart(p);
+    });
+  });
+}
+
+$("#pos-search").addEventListener("input", e => { currentSearch = e.target.value; renderPOS(); });
+
+/* =========================================================
+   MENÚ: RENDER Y EDICIÓN
+   ========================================================= */
+function renderMenuAdmin() {
+  // Tamaños
+  $("#sizes-list").innerHTML = MENU.tamanos.map(t => `
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-center">
+      <p class="text-[10px] uppercase font-bold text-zinc-500">${esc(t.label)}</p>
+      <p class="font-display text-2xl text-amber-400">${money(t.precio)}</p>
+      <p class="text-[10px] text-zinc-500">${t.porciones} porciones</p>
+    </div>
+  `).join("");
+
+  // Precios especiales
+  $("#porcion-price-display").textContent = money(MENU.porcion.precio);
+  $("#cola-price-display").textContent = money(MENU.cola.precio);
+
+  // Contador
+  $("#menu-count").textContent = MENU.pizzas.length;
+
+  // Lista mobile (cards)
+  const mobileCont = $("#menu-list-mobile");
+  mobileCont.innerHTML = MENU.pizzas.map(p => `
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pizza-600 to-amber-500 grid place-items-center text-xl shrink-0">🍕</div>
       <div class="flex-1 min-w-0">
-        <h3 id="confirm-title" class="text-sm font-bold text-white">Confirmar acción</h3>
-        <p id="confirm-message" class="text-xs text-zinc-400 mt-1">¿Estás seguro?</p>
+        <p class="text-sm font-semibold text-white truncate">${esc(p.nombre)}</p>
+        <p class="text-[11px] text-zinc-500 truncate">${esc(p.desc || "")}</p>
+      </div>
+      <div class="flex gap-1">
+        <button type="button" class="w-9 h-9 rounded-lg bg-zinc-800 text-zinc-300 grid place-items-center text-xs" data-edit-pizza="${p.id}">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button type="button" class="w-9 h-9 rounded-lg bg-zinc-800 text-red-400 grid place-items-center text-xs" data-del-pizza="${p.id}">
+          <i class="fa-solid fa-trash"></i>
+        </button>
       </div>
     </div>
-    <div class="flex justify-end gap-2 mt-5">
-      <button type="button" data-confirm="cancel"
-              class="px-4 py-2 rounded-xl text-xs font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition">Cancelar</button>
-      <button type="button" id="confirm-ok" data-confirm="ok"
-              class="px-4 py-2 rounded-xl text-xs font-semibold bg-red-600 text-white hover:bg-red-700 shadow transition">Eliminar</button>
-    </div>
-  </div>
-</div>
+  `).join("");
 
-<!-- AJUSTE RÁPIDO DE STOCK -->
-<div id="stock-modal" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-     role="dialog" aria-modal="true" aria-labelledby="stock-title">
-  <div class="modal-card bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
-    <h3 id="stock-title" class="text-base font-bold text-white mb-1">Ajuste rápido de stock</h3>
-    <p class="text-xs text-zinc-400 mb-5">Suma o resta unidades al inventario.</p>
-    <div class="space-y-4">
+  // Tabla desktop
+  $("#menu-table-body").innerHTML = MENU.pizzas.map(p => `
+    <tr class="hover:bg-zinc-800/40 transition">
+      <td class="py-3 px-4">
+        <div class="font-semibold text-white">${esc(p.nombre)}</div>
+        <div class="text-[11px] text-zinc-500 max-w-xs truncate">${esc(p.desc || "")}</div>
+      </td>
+      <td class="py-3 px-4">
+        ${p.badge === "hot" ? '<span class="badge bg-pizza-600/20 text-pizza-400">🔥 Popular</span>' : ""}
+        ${p.badge === "new" ? '<span class="badge bg-emerald-600/20 text-emerald-400">⭐ Nuevo</span>' : ""}
+        ${!p.badge ? '<span class="badge bg-zinc-800 text-zinc-400">Normal</span>' : ""}
+      </td>
+      <td class="py-3 px-4 text-xs text-zinc-400">
+        P: ${money(MENU.tamanos[0].precio)} · M: ${money(MENU.tamanos[1].precio)} · F: ${money(MENU.tamanos[2].precio)}
+      </td>
+      <td class="py-3 px-4 text-right">
+        <button type="button" class="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 mr-1" data-edit-pizza="${p.id}">
+          <i class="fa-solid fa-pen text-[10px] mr-1"></i>Editar
+        </button>
+        <button type="button" class="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-red-500/20 text-xs text-red-400" data-del-pizza="${p.id}">
+          <i class="fa-solid fa-trash text-[10px]"></i>
+        </button>
+      </td>
+    </tr>
+  `).join("");
+
+  // Listeners
+  $$("[data-edit-pizza]").forEach(b => b.addEventListener("click", () => editPizza(Number(b.dataset.editPizza))));
+  $$("[data-del-pizza]").forEach(b => b.addEventListener("click", () => deletePizza(Number(b.dataset.delPizza))));
+}
+
+function saveMenu() {
+  writeLS(LS.MENU, MENU);
+  renderPOS();
+  renderMenuAdmin();
+}
+
+function editPizza(id) {
+  const p = id === 0 ? { id: uid(), nombre: "", desc: "", badge: "" } : MENU.pizzas.find(x => x.id === id);
+  if (!p) return;
+
+  openModal(`
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-lg font-bold text-white">${id ? "Editar" : "Nueva"} pizza</h3>
+      <button type="button" id="m-close" class="w-9 h-9 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <form id="m-pizza-form" class="space-y-4">
       <div>
-        <label for="stock-insumo" class="block text-xs text-zinc-400 mb-1">Insumo</label>
-        <select id="stock-insumo" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500"></select>
+        <label class="block text-xs text-zinc-400 mb-1.5">Nombre</label>
+        <input type="text" id="m-name" value="${esc(p.nombre)}" required class="input" placeholder="Pizza Pepperoni">
+      </div>
+      <div>
+        <label class="block text-xs text-zinc-400 mb-1.5">Descripción</label>
+        <textarea id="m-desc" rows="2" class="input" placeholder="Ingredientes…">${esc(p.desc || "")}</textarea>
+      </div>
+      <div>
+        <label class="block text-xs text-zinc-400 mb-1.5">Etiqueta</label>
+        <select id="m-badge" class="input">
+          <option value="" ${!p.badge ? "selected" : ""}>Normal</option>
+          <option value="hot" ${p.badge === "hot" ? "selected" : ""}>🔥 Popular</option>
+          <option value="new" ${p.badge === "new" ? "selected" : ""}>⭐ Nuevo</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button type="button" id="m-cancel" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-3 rounded-xl text-sm font-semibold transition">Cancelar</button>
+        <button type="submit" class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/30">${id ? "Guardar" : "Crear"}</button>
+      </div>
+    </form>
+  `);
+
+  $("#m-close").addEventListener("click", closeModal);
+  $("#m-cancel").addEventListener("click", closeModal);
+  $("#m-pizza-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const nombre = $("#m-name").value.trim();
+    const desc = $("#m-desc").value.trim();
+    const badge = $("#m-badge").value;
+    if (!nombre) { toast("Ponle un nombre", "error"); return; }
+
+    if (id === 0) {
+      MENU.pizzas.push({ id: uid(), nombre, desc, badge, rating: 5 });
+      toast("Pizza agregada al menú público ✨");
+    } else {
+      Object.assign(MENU.pizzas.find(x => x.id === id), { nombre, desc, badge });
+      toast("Pizza actualizada");
+    }
+    saveMenu();
+    closeModal();
+  });
+}
+
+function deletePizza(id) {
+  const p = MENU.pizzas.find(x => x.id === id);
+  if (!p) return;
+  if (!confirm(`¿Eliminar "${p.nombre}" del menú?`)) return;
+  MENU.pizzas = MENU.pizzas.filter(x => x.id !== id);
+  saveMenu();
+  toast("Pizza eliminada");
+}
+
+$$("[data-action='new-pizza']").forEach(b => b.addEventListener("click", () => editPizza(0)));
+
+/* Editar tamaños */
+$("[data-action='edit-sizes']").addEventListener("click", () => {
+  openModal(`
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-lg font-bold text-white">Tamaños y precios</h3>
+      <button type="button" id="m-close" class="w-9 h-9 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="m-sizes-form" class="space-y-3">
+      ${MENU.tamanos.map((t, i) => `
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-white">${t.label}</span>
+            <span class="text-[10px] text-zinc-500">${t.porciones} porciones</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] text-zinc-500 mb-1">Precio</label>
+              <input type="number" step="0.01" min="0" class="input" data-size-price="${i}" value="${t.precio}">
+            </div>
+            <div>
+              <label class="block text-[10px] text-zinc-500 mb-1">Porciones</label>
+              <input type="number" min="1" class="input" data-size-portions="${i}" value="${t.porciones}">
+            </div>
+          </div>
+        </div>
+      `).join("")}
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button type="button" id="m-cancel" class="bg-zinc-800 text-zinc-200 py-3 rounded-xl text-sm font-semibold">Cancelar</button>
+        <button type="submit" class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white py-3 rounded-xl text-sm font-semibold">Guardar</button>
+      </div>
+    </form>
+  `);
+  $("#m-close").addEventListener("click", closeModal);
+  $("#m-cancel").addEventListener("click", closeModal);
+  $("#m-sizes-form").addEventListener("submit", e => {
+    e.preventDefault();
+    MENU.tamanos.forEach((t, i) => {
+      t.precio = parseFloat($(`[data-size-price="${i}"]`).value) || 0;
+      t.porciones = parseInt($(`[data-size-portions="${i}"]`).value) || t.porciones;
+    });
+    saveMenu();
+    closeModal();
+    toast("Tamaños actualizados");
+  });
+});
+
+$("[data-action='edit-porcion']").addEventListener("click", () => {
+  const val = prompt("Precio de la porción individual:", MENU.porcion.precio);
+  if (val === null) return;
+  MENU.porcion.precio = parseFloat(val) || MENU.porcion.precio;
+  saveMenu();
+  toast("Precio de porción actualizado");
+});
+
+$("[data-action='edit-cola']").addEventListener("click", () => {
+  const val = prompt("Precio de la cola 1L:", MENU.cola.precio);
+  if (val === null) return;
+  MENU.cola.precio = parseFloat(val) || MENU.cola.precio;
+  saveMenu();
+  toast("Precio de la cola actualizado");
+});
+
+/* =========================================================
+   INVENTARIO
+   ========================================================= */
+function renderInventory() {
+  // KPIs
+  const total = INVENTORY.length;
+  const critical = INVENTORY.filter(i => i.stock <= i.min).length;
+  const value = INVENTORY.reduce((s, i) => s + i.stock * i.costo, 0);
+  const suppliers = new Set(INVENTORY.map(i => i.proveedor)).size;
+
+  $("#inv-kpi-total").textContent = total;
+  $("#inv-kpi-critical").textContent = critical;
+  $("#inv-kpi-value").textContent = money(value);
+  $("#inv-kpi-suppliers").textContent = suppliers;
+
+  // Lista
+  $("#inventory-list").innerHTML = INVENTORY.map(i => {
+    const isCrit = i.stock <= i.min;
+    const pct = Math.min(100, (i.stock / (i.min * 3)) * 100);
+    return `
+      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 ${isCrit ? "border-red-500/40" : ""}">
+        <div class="flex items-start gap-3 mb-2">
+          <div class="w-10 h-10 rounded-lg ${isCrit ? "bg-red-500/20 text-red-400" : "bg-zinc-800 text-zinc-300"} grid place-items-center shrink-0">
+            <i class="fa-solid ${isCrit ? "fa-triangle-exclamation" : "fa-box"}"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-semibold text-white truncate">${esc(i.nombre)}</p>
+              <span class="text-[10px] ${isCrit ? "text-red-400" : "text-zinc-500"} font-bold shrink-0">
+                ${isCrit ? "CRÍTICO" : "OK"}
+              </span>
+            </div>
+            <p class="text-[11px] text-zinc-500 truncate">${esc(i.proveedor || "")}</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-xs mb-2">
+          <span class="text-zinc-400">Stock: <strong class="text-white tabular-nums">${i.stock} ${esc(i.unidad)}</strong></span>
+          <span class="text-zinc-500 tabular-nums">${money(i.costo)}/${esc(i.unidad)}</span>
+        </div>
+        <div class="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+          <div class="h-full ${isCrit ? "bg-red-500" : "bg-emerald-500"} transition-all" style="width:${pct}%"></div>
+        </div>
+        <div class="flex gap-1.5 mt-2">
+          <button type="button" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] py-1.5 rounded-lg font-semibold" data-stock-add="${i.id}">
+            <i class="fa-solid fa-plus text-[10px] mr-1"></i>Sumar
+          </button>
+          <button type="button" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] py-1.5 rounded-lg font-semibold" data-edit-insumo="${i.id}">
+            <i class="fa-solid fa-pen text-[10px] mr-1"></i>Editar
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // Listeners
+  $$("[data-stock-add]").forEach(b => b.addEventListener("click", () => {
+    const id = Number(b.dataset.stockAdd);
+    const i = INVENTORY.find(x => x.id === id);
+    const q = prompt(`¿Cuánto sumar a "${i.nombre}"? (actual: ${i.stock} ${i.unidad})`, "10");
+    if (q === null) return;
+    i.stock += parseFloat(q) || 0;
+    writeLS(LS.INVENTORY, INVENTORY);
+    renderInventory();
+    updateStockChart();
+    toast("Stock actualizado");
+  }));
+  $$("[data-edit-insumo]").forEach(b => b.addEventListener("click", () => editInsumo(Number(b.dataset.editInsumo))));
+
+  // Chart
+  updateStockChart();
+}
+
+function editInsumo(id) {
+  const ins = id === 0 ? { id: uid(), nombre: "", unidad: "kg", stock: 0, min: 0, costo: 0, proveedor: "" } : INVENTORY.find(x => x.id === id);
+  if (!ins) return;
+
+  openModal(`
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-lg font-bold text-white">${id ? "Editar" : "Nuevo"} insumo</h3>
+      <button type="button" id="m-close" class="w-9 h-9 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="m-insumo-form" class="space-y-3">
+      <div>
+        <label class="block text-xs text-zinc-400 mb-1.5">Nombre</label>
+        <input type="text" id="i-name" value="${esc(ins.nombre)}" required class="input">
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label for="stock-op" class="block text-xs text-zinc-400 mb-1">Operación</label>
-          <select id="stock-op" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
-            <option value="add">Sumar (+)</option>
-            <option value="sub">Restar (−)</option>
-            <option value="set">Fijar valor (=)</option>
-          </select>
+          <label class="block text-xs text-zinc-400 mb-1.5">Unidad</label>
+          <input type="text" id="i-unit" value="${esc(ins.unidad)}" class="input">
         </div>
         <div>
-          <label for="stock-qty" class="block text-xs text-zinc-400 mb-1">Cantidad</label>
-          <input type="number" step="0.01" min="0" id="stock-qty" value="1"
-                 class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
+          <label class="block text-xs text-zinc-400 mb-1.5">Costo</label>
+          <input type="number" step="0.01" id="i-cost" value="${ins.costo}" class="input">
         </div>
       </div>
-      <p id="stock-preview" class="text-xs text-zinc-500 bg-zinc-950/60 border border-zinc-800 rounded-xl px-3 py-2"></p>
-    </div>
-    <div class="flex justify-end gap-3 pt-5 border-t border-zinc-800 mt-5">
-      <button type="button" data-close-modal="stock-modal"
-              class="px-4 py-2 rounded-xl text-xs font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition">Cancelar</button>
-      <button type="button" data-action="apply-stock-adjust"
-              class="px-5 py-2 rounded-xl text-xs font-semibold bg-pizza-600 text-white hover:bg-pizza-700 shadow transition">Aplicar</button>
-    </div>
-  </div>
-</div>
-
-<div id="toast-host" class="fixed bottom-5 right-5 z-[80] flex flex-col items-end gap-2 pointer-events-none"
-     role="status" aria-live="polite"></div>
-
-<script>
-/* =========================================================================
-   Brother's Pizza · Panel Admin v3.2
-   - Login embebido
-   - Sincronización en vivo con el sitio público
-   - Editor completo del menú (imagen, descripción, visibilidad, duplicar)
-   ========================================================================= */
-(() => {
-  'use strict';
-
-  /* --------------------------- Helpers --------------------------- */
-  const $  = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-
-  const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
-                              .format(Number(n) || 0);
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
-    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-  const round2 = n => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
-  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  const TAX_RATE = 0.12;
-  const HOUR_FROM = 11, HOUR_TO = 23;
-
-  const debounce = (fn, ms = 180) => {
-    let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
-  };
-
-  const iconHtml = icon => {
-    const raw = String(icon ?? '').trim();
-    const cls = raw.replace(/^fa-solid\s+/i, '').replace(/[^a-zA-Z0-9-]/g, '');
-    if (cls.startsWith('fa-')) return `<i class="fa-solid ${cls}" aria-hidden="true"></i>`;
-    return `<span aria-hidden="true">${esc(raw)}</span>`;
-  };
-
-  /* --------------------------- Storage --------------------------- */
-  const KEYS = {
-    PRODUCTS:  'bp_products_v3',
-    INSUMOS:   'bp_insumos_v3',
-    SUPPLIERS: 'bp_suppliers_v3',
-    EMPLOYEES: 'bp_employees_v3',
-    ORDERS:    'bp_orders_v3',
-    SESSION:   'bp_session_user',
-    // Claves compartidas con index.html
-    PUB_MENU:    'bp_menu',
-    PUB_USERS:   'bp_usuarios',
-    PUB_SESSION: 'bp_sesion_activa'
-  };
-
-  const loadJSON = (k, fb) => {
-    try { const r = localStorage.getItem(k); return r ? JSON.parse(r) ?? fb : fb; }
-    catch { return fb; }
-  };
-  const saveJSON = (k, v) => {
-    try { localStorage.setItem(k, JSON.stringify(v)); }
-    catch (e) { console.warn('[Brother\'s Pizza]', e); }
-  };
-
-  /* --------------------------- Datos demo --------------------------- */
-  const DEFAULTS = {
-    products: [
-      { id: 1, name: 'Pizza Pepperoni Suprema', description: 'Pepperoni, mozzarella y orégano.', category: 'pizza',  price: 14.99, cost: 6.50, icon: 'fa-pizza-slice', imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&auto=format&fit=crop&q=80', visible: true },
-      { id: 2, name: 'Pizza Hawaiana Clásica',  description: 'Jamón, piña y queso fundido.',     category: 'pizza',  price: 13.50, cost: 5.80, icon: 'fa-pizza-slice', imagen: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop&q=80', visible: true },
-      { id: 3, name: 'Pizza Cuatro Quesos',     description: 'Mozzarella, parmesano, azul y cheddar.', category: 'pizza', price: 16.00, cost: 7.20, icon: 'fa-cheese', imagen: 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=500&auto=format&fit=crop&q=80', visible: true },
-      { id: 4, name: 'Pizza Carne & BBQ',       description: 'Carne, tocino, cebolla y salsa BBQ.', category: 'pizza', price: 17.50, cost: 8.00, icon: 'fa-fire', imagen: 'https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=500&auto=format&fit=crop&q=80', visible: true },
-      { id: 5, name: 'Coca-Cola 1.5L',          description: '',  category: 'bebida', price: 3.00,  cost: 1.20, icon: 'fa-bottle-droplet', imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=80', visible: true },
-      { id: 6, name: 'Cerveza Artesanal IPA',   description: '',  category: 'bebida', price: 4.50,  cost: 2.00, icon: 'fa-beer-mug-empty', imagen: '', visible: true },
-      { id: 7, name: 'Jugo Natural Maracuyá',   description: '',  category: 'bebida', price: 2.50,  cost: 0.90, icon: 'fa-cup-straw', imagen: '', visible: true },
-      { id: 8, name: 'Pan de Ajo con Queso',    description: 'Pan horneado con mantequilla de ajo.', category: 'extra', price: 4.99, cost: 1.50, icon: 'fa-bread-slice', imagen: '', visible: true },
-      { id: 9, name: 'Alitas BBQ x8',           description: 'Alitas glaseadas en salsa BBQ.', category: 'extra', price: 8.99, cost: 4.20, icon: 'fa-drumstick-bite', imagen: '', visible: true }
-    ],
-    suppliers: [
-      { id: 1, name: 'Distribuidora Lácteos Andina', contact: 'María López', phone: '098 765 4321', email: 'ventas@lacteosandina.ec', notes: 'Entrega los martes' },
-      { id: 2, name: 'Carnes Don Pedro',             contact: 'Pedro Ruiz',  phone: '099 111 2233', email: 'pedro@carnesdp.com',     notes: 'Factura al día' },
-      { id: 3, name: 'Bebidas del Austro',           contact: 'Luis Mora',   phone: '097 555 8899', email: 'pedidos@baustro.ec',     notes: 'Pago a 15 días' }
-    ],
-    insumos: [
-      { id: 1, name: 'Masa (bollos)',      quantity: 120, minStock: 30,  unit: 'Unidades', cost: 0.35, supplierId: 2 },
-      { id: 2, name: 'Queso Mozzarella',   quantity: 18,  minStock: 5,   unit: 'Kg',       cost: 7.80, supplierId: 1 },
-      { id: 3, name: 'Pepperoni',          quantity: 4.5, minStock: 2,   unit: 'Kg',       cost: 9.50, supplierId: 2 },
-      { id: 4, name: 'Salsa de tomate',    quantity: 12,  minStock: 3,   unit: 'Litros',   cost: 2.10, supplierId: 1 },
-      { id: 5, name: 'Cajas para pizza',   quantity: 25,  minStock: 40,  unit: 'Unidades', cost: 0.22, supplierId: 3 }
-    ],
-    employees: [
-      { id: 1, name: 'Osvaldo Ramírez', user: 'admin',  pass: 'admin123',  role: 'Administrador', shift: 'Completo',  phone: '098 411 3081', salary: 650, photo: '', active: true,  hireDate: '2024-01-15' },
-      { id: 2, name: 'Cajero Local',    user: 'cajero', pass: 'cajero123', role: 'Cajero',        shift: 'Tarde',     phone: '099 100 2000', salary: 450, photo: '', active: true,  hireDate: '2024-06-01' },
-      { id: 3, name: 'Chef Principal',  user: 'chef',   pass: 'chef1234',  role: 'Cocinero',      shift: 'Noche',     phone: '098 777 5555', salary: 550, photo: '', active: true,  hireDate: '2023-11-20' }
-    ]
-  };
-
-  /* --------------------------- Estado --------------------------- */
-  let state = {
-    products:  [],
-    insumos:   [],
-    suppliers: [],
-    employees: [],
-    orders:    [],
-    session:   null,
-    cart:      [],
-    filter:    'all',
-    search:    '',
-    subtab:    'insumos'
-  };
-
-  let salesChart = null;
-  let categoryChart = null;
-  let confirmResolver = null;
-  let currentEntity = null;
-  let panelStarted = false;
-
-  /* =========================================================================
-     SESIÓN
-     ========================================================================= */
-  function normalizeSession(s) {
-    if (!s) return null;
-    return {
-      id:    s.id,
-      name:  s.name || s.nombre || s.user || 'Usuario',
-      user:  s.user,
-      role:  s.role || s.rol || 'Cajero',
-      photo: s.photo || s.foto || ''
-    };
-  }
-
-  function getSession() {
-    return normalizeSession(
-      loadJSON(KEYS.SESSION, null) || loadJSON(KEYS.PUB_SESSION, null)
-    );
-  }
-
-  function saveSession(s) {
-    saveJSON(KEYS.SESSION, s);
-    saveJSON(KEYS.PUB_SESSION, s);
-  }
-
-  function clearSession() {
-    localStorage.removeItem(KEYS.SESSION);
-    localStorage.removeItem(KEYS.PUB_SESSION);
-  }
-
-  function showLoginGate() {
-    const gate = $('#loginGate');
-    const header = $('#appHeader');
-    const main = $('#main');
-    if (gate) gate.classList.remove('hidden');
-    if (header) header.classList.add('hidden');
-    if (main) main.classList.add('hidden');
-    setTimeout(() => $('#gate-user')?.focus(), 60);
-  }
-
-  function hideLoginGate() {
-    const gate = $('#loginGate');
-    const header = $('#appHeader');
-    const main = $('#main');
-    if (gate) gate.classList.add('hidden');
-    if (header) header.classList.remove('hidden');
-    if (main) main.classList.remove('hidden');
-  }
-
-  function handleGateLogin(e) {
-    e.preventDefault();
-    const user = $('#gate-user').value.trim();
-    const pass = $('#gate-pass').value.trim();
-    const err = $('#gate-error');
-    const form = $('#loginGateForm');
-
-    if (!user || !pass) {
-      err.textContent = 'Completa usuario y contraseña.';
-      err.classList.remove('hidden');
-      return;
-    }
-
-    const fromEmployees = state.employees || [];
-    const fromPublic = loadJSON(KEYS.PUB_USERS, []) || [];
-    const all = [...fromEmployees, ...fromPublic];
-    const seen = new Set();
-    const unique = all.filter(u => {
-      const k = String(u.id) + '|' + String(u.user);
-      if (seen.has(k)) return false;
-      seen.add(k);
-      return true;
-    });
-
-    const found = unique.find(u =>
-      String(u.user) === user &&
-      String(u.pass ?? u.password ?? '') === pass
-    );
-
-    if (!found) {
-      err.textContent = 'Usuario o contraseña incorrectos.';
-      err.classList.remove('hidden');
-      form.classList.add('shake');
-      setTimeout(() => form.classList.remove('shake'), 500);
-      $('#gate-pass').select();
-      return;
-    }
-
-    err.classList.add('hidden');
-    const session = normalizeSession(found);
-    saveSession(session);
-    state.session = session;
-    hideLoginGate();
-    startPanel();
-    toast(`Bienvenido, ${session.name}`, `Has ingresado como ${session.role}.`);
-  }
-
-  /* =========================================================================
-     SINCRONIZACIÓN con index.html
-     ========================================================================= */
-  const CATS_TO_ADMIN  = { 'pizzas':'pizza', 'bebidas':'bebida', 'extras':'extra' };
-  const CATS_TO_PUBLIC = { pizza:'Pizzas', bebida:'Bebidas', extra:'Extras' };
-
-  function menuToProduct(m) {
-    const cat = CATS_TO_ADMIN[String(m.categoria || '').toLowerCase()] ||
-                (['pizza','bebida','extra'].includes(m.categoria) ? m.categoria : 'pizza');
-    return {
-      id: m.id,
-      name: m.nombre || '',
-      description: m.descripcion || '',
-      category: cat,
-      price: Number(m.precio) || 0,
-      cost: Number(m.costo) || 0,
-      icon: m.icon || 'fa-pizza-slice',
-      imagen: m.imagen || '',
-      visible: m.visible !== false
-    };
-  }
-
-  function productToMenu(p) {
-    return {
-      id: p.id,
-      nombre: p.name,
-      descripcion: p.description || '',
-      categoria: CATS_TO_PUBLIC[p.category] || p.category,
-      precio: Number(p.price) || 0,
-      costo: Number(p.cost) || 0,
-      imagen: p.imagen || '',
-      icon: p.icon || 'fa-pizza-slice',
-      visible: p.visible !== false
-    };
-  }
-
-  function userToEmployee(u) {
-    return {
-      id: u.id,
-      name: u.nombre || u.name || '',
-      user: u.user || '',
-      pass: u.pass || u.password || '',
-      role: u.rol || u.role || 'Cajero',
-      shift: u.shift || 'Completo',
-      phone: u.phone || '',
-      salary: Number(u.salary) || 0,
-      photo: u.foto || u.photo || '',
-      active: u.active !== false,
-      hireDate: u.hireDate || new Date().toISOString().slice(0, 10)
-    };
-  }
-
-  function employeeToUser(e) {
-    return {
-      id: e.id,
-      nombre: e.name,
-      user: e.user,
-      pass: e.pass,
-      rol: e.role,
-      foto: e.photo || ''
-    };
-  }
-
-  function saveProductsShared() {
-    saveJSON(KEYS.PRODUCTS, state.products);
-    saveJSON(KEYS.PUB_MENU, state.products
-      .filter(p => p.visible !== false)
-      .map(productToMenu));
-  }
-
-  function saveEmployeesShared() {
-    saveJSON(KEYS.EMPLOYEES, state.employees);
-    saveJSON(KEYS.PUB_USERS, state.employees.map(employeeToUser));
-  }
-
-  /* --------------------------- Toasts --------------------------- */
-  function toast(title, message, type = 'success') {
-    const host = $('#toast-host');
-    const el = document.createElement('div');
-    const isError = type === 'error';
-    el.className = 'pointer-events-auto flex items-start gap-3 bg-zinc-900/95 border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-2xl backdrop-blur translate-y-3 opacity-0 transition-all duration-300 max-w-xs';
-    el.innerHTML = `
-      <div class="${isError ? 'text-rose-400' : 'text-emerald-400'} pt-0.5 shrink-0">
-        <i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'} text-lg" aria-hidden="true"></i>
-      </div>
-      <div class="min-w-0">
-        <p class="text-xs font-bold">${esc(title)}</p>
-        <p class="text-[11px] text-zinc-400 break-words">${esc(message)}</p>
-      </div>`;
-    host.appendChild(el);
-    requestAnimationFrame(() => el.classList.remove('translate-y-3', 'opacity-0'));
-    setTimeout(() => {
-      el.classList.add('translate-y-3', 'opacity-0');
-      setTimeout(() => el.remove(), 320);
-    }, 3400);
-  }
-
-  /* --------------------------- Modales --------------------------- */
-  function openModal(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.classList.remove('hidden');
-    m.classList.add('flex');
-    const target = m.querySelector('input, select, textarea, button');
-    if (target) setTimeout(() => target.focus(), 40);
-  }
-  function closeModal(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.classList.add('hidden');
-    m.classList.remove('flex');
-  }
-
-  function confirmAction({ title = 'Confirmar acción', message = '¿Estás seguro?', confirmText = 'Eliminar', danger = true } = {}) {
-    return new Promise(resolve => {
-      confirmResolver = resolve;
-      $('#confirm-title').textContent = title;
-      $('#confirm-message').textContent = message;
-      const ok = $('#confirm-ok');
-      ok.textContent = confirmText;
-      ok.className = danger
-        ? 'px-4 py-2 rounded-xl text-xs font-semibold bg-red-600 text-white hover:bg-red-700 shadow transition'
-        : 'px-4 py-2 rounded-xl text-xs font-semibold bg-pizza-600 text-white hover:bg-pizza-700 shadow transition';
-      openModal('confirm-modal');
-      ok.focus();
-    });
-  }
-  function resolveConfirm(v) {
-    closeModal('confirm-modal');
-    if (confirmResolver) { const r = confirmResolver; confirmResolver = null; r(v); }
-  }
-
-  /* =========================================================================
-     TABS
-     ========================================================================= */
-  function switchTab(tab) {
-    ['pos', 'products', 'inventory', 'employees', 'stats'].forEach(id => {
-      document.getElementById('section-' + id).classList.toggle('hidden', id !== tab);
-    });
-    $$('.tab-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tab === tab));
-
-    if (tab === 'stats') {
-      if (!salesChart) initCharts();
-      else requestAnimationFrame(() => { salesChart.resize(); categoryChart.resize(); });
-      renderDashboard();
-    }
-  }
-
-  /* =========================================================================
-     POS
-     ========================================================================= */
-  function renderCategoriesPos() {
-    const host = $('#pos-categories');
-    const cats = ['all', ...new Set(state.products.map(p => p.category))];
-    const labels = { all: 'Todos', pizza: 'Pizzas', bebida: 'Bebidas', extra: 'Extras' };
-    host.innerHTML = cats.map(c => `
-      <button type="button" class="category-btn ${state.filter === c ? 'is-active' : ''}" data-cat="${esc(c)}">
-        ${labels[c] || esc(c.charAt(0).toUpperCase() + c.slice(1))}
-      </button>
-    `).join('');
-  }
-
-  function renderPOSCatalog() {
-    const grid = $('#pos-product-grid');
-    const q = state.search.trim().toLowerCase();
-
-    const list = state.products.filter(p =>
-      (state.filter === 'all' || p.category === state.filter) &&
-      (!q || p.name.toLowerCase().includes(q))
-    );
-
-    if (!list.length) {
-      grid.innerHTML = `
-        <div class="col-span-full text-center py-12 text-zinc-500 text-sm">
-          <i class="fa-solid fa-magnifying-glass text-3xl block mb-2 opacity-40" aria-hidden="true"></i>
-          No se encontraron productos
-        </div>`;
-      return;
-    }
-
-    grid.innerHTML = list.map(p => `
-      <button type="button" data-action="add-to-cart" data-id="${p.id}"
-        class="group text-left bg-zinc-900/80 hover:bg-zinc-800/90 border border-zinc-800 hover:border-pizza-500/60 p-3.5 rounded-2xl flex flex-col justify-between gap-3 transition-all duration-200 shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-pizza-500 active:scale-[.98]">
-        <div class="flex justify-between items-start gap-2">
-          <span class="bg-zinc-800 group-hover:bg-pizza-500/20 text-zinc-300 group-hover:text-pizza-500 p-2.5 rounded-xl transition-colors text-base">
-            ${iconHtml(p.icon)}
-          </span>
-          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-zinc-950 text-zinc-400 border border-zinc-800">
-            ${esc(p.category)}
-          </span>
-        </div>
-        <div class="min-w-0">
-          <h4 class="font-semibold text-sm text-white truncate" title="${esc(p.name)}">${esc(p.name)}</h4>
-          <span class="text-pizza-500 font-bold text-base tabular-nums">${money(p.price)}</span>
-        </div>
-      </button>
-    `).join('');
-  }
-
-  const cartSubtotal = () => round2(state.cart.reduce((s, i) => s + i.price * i.qty, 0));
-
-  function addToCart(id) {
-    const p = state.products.find(x => x.id === id);
-    if (!p) return;
-    const ex = state.cart.find(i => i.id === id);
-    if (ex) ex.qty += 1;
-    else state.cart.push({ id: p.id, name: p.name, category: p.category, price: p.price, qty: 1 });
-    renderCart();
-  }
-  function changeQty(id, delta) {
-    const item = state.cart.find(i => i.id === id);
-    if (!item) return;
-    item.qty += delta;
-    if (item.qty <= 0) state.cart = state.cart.filter(i => i.id !== id);
-    renderCart();
-  }
-  function removeFromCart(id) {
-    state.cart = state.cart.filter(i => i.id !== id);
-    renderCart();
-  }
-  function clearCart() {
-    state.cart = [];
-    renderCart();
-  }
-
-  function renderCart() {
-    const wrap = $('#cart-items');
-    const qty = state.cart.reduce((s, i) => s + i.qty, 0);
-    $('#cart-count').textContent = qty;
-
-    if (!state.cart.length) {
-      wrap.innerHTML = `
-        <div class="text-center py-12 text-zinc-500 text-sm">
-          <i class="fa-solid fa-basket-shopping text-3xl mb-2 block opacity-40" aria-hidden="true"></i>
-          El carrito está vacío
-        </div>`;
-    } else {
-      wrap.innerHTML = state.cart.map(item => `
-        <div class="flex items-center gap-2 bg-zinc-950/60 border border-zinc-800/80 p-2.5 rounded-xl">
-          <div class="flex-1 min-w-0">
-            <p class="text-xs font-semibold text-white truncate" title="${esc(item.name)}">${esc(item.name)}</p>
-            <p class="text-[11px] text-zinc-500">${item.qty} × ${money(item.price)}</p>
-          </div>
-          <div class="flex items-center gap-0.5 bg-zinc-900 px-1 py-1 rounded-lg border border-zinc-800 shrink-0">
-            <button type="button" data-action="qty-dec" data-id="${item.id}"
-                    class="w-6 h-6 grid place-items-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition" aria-label="Restar">−</button>
-            <span class="text-xs font-bold text-white w-6 text-center tabular-nums">${item.qty}</span>
-            <button type="button" data-action="qty-inc" data-id="${item.id}"
-                    class="w-6 h-6 grid place-items-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded transition" aria-label="Sumar">+</button>
-          </div>
-          <span class="text-xs font-bold text-pizza-500 w-16 text-right tabular-nums shrink-0">${money(item.price * item.qty)}</span>
-          <button type="button" data-action="remove-item" data-id="${item.id}"
-                  class="w-6 h-6 grid place-items-center text-zinc-500 hover:text-red-400 rounded transition shrink-0" aria-label="Eliminar">
-            <i class="fa-solid fa-xmark text-xs" aria-hidden="true"></i>
-          </button>
-        </div>
-      `).join('');
-    }
-
-    const sub = cartSubtotal();
-    const tax = round2(sub * TAX_RATE);
-    $('#cart-subtotal').textContent = money(sub);
-    $('#cart-tax').textContent = money(tax);
-    $('#cart-total').textContent = money(sub + tax);
-  }
-
-  function checkout(method) {
-    if (!state.cart.length) {
-      toast('Atención', 'Agrega productos antes de cobrar.', 'error');
-      return;
-    }
-    const items = state.cart.map(i => ({ ...i }));
-    const subtotal = cartSubtotal();
-    const tax = round2(subtotal * TAX_RATE);
-    const total = round2(subtotal + tax);
-
-    const order = {
-      id: uid(),
-      date: new Date().toISOString(),
-      client: ($('#order-client').value || '').trim() || 'General',
-      method,
-      items, subtotal, tax, total,
-      employeeId: state.session?.id || null,
-      employeeName: state.session?.name || 'Admin'
-    };
-
-    state.orders.unshift(order);
-    state.cart = [];
-    saveJSON(KEYS.ORDERS, state.orders);
-
-    renderCart();
-    toast('Venta registrada', `${order.client} · ${money(total)}`);
-    discountStockForOrder(items);
-    renderInventory();
-  }
-
-  function discountStockForOrder(items) {
-    const pizzas = items.filter(i => i.category === 'pizza').reduce((s, i) => s + i.qty, 0);
-    if (!pizzas) return;
-    const masa  = state.insumos.find(i => /masa/i.test(i.name));
-    const queso = state.insumos.find(i => /queso/i.test(i.name));
-    if (masa)  masa.quantity  = Math.max(0, round2(masa.quantity  - pizzas));
-    if (queso) queso.quantity = Math.max(0, round2(queso.quantity - pizzas * 0.25));
-    saveJSON(KEYS.INSUMOS, state.insumos);
-  }
-
-  /* =========================================================================
-     PRODUCTOS
-     ========================================================================= */
-  function renderProductsTable() {
-    const tbody = $('#admin-product-table');
-    if (!state.products.length) {
-      tbody.innerHTML = `<tr><td colspan="6" class="py-10 text-center text-zinc-500 text-sm">No hay productos en el menú.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = state.products.map(p => {
-      const cost = Number(p.cost) || 0;
-      const margin = p.price > 0 ? ((p.price - cost) / p.price) * 100 : 0;
-      const marginColor = margin >= 50 ? 'text-emerald-400' : margin >= 30 ? 'text-amber-400' : 'text-rose-400';
-      const hidden = p.visible === false;
-      const thumb = p.imagen
-        ? `<img src="${esc(p.imagen)}" alt="" class="w-10 h-10 rounded-lg object-cover border border-zinc-700"
-                onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'w-10 h-10 rounded-lg bg-zinc-800 grid place-items-center text-pizza-500',innerHTML:'<i class=\\'fa-solid fa-pizza-slice\\'></i>'}))">`
-        : `<span class="w-10 h-10 rounded-lg bg-zinc-800 grid place-items-center text-pizza-500">${iconHtml(p.icon)}</span>`;
-
-      return `
-        <tr class="hover:bg-zinc-900/40 transition-colors ${hidden ? 'opacity-60' : ''}">
-          <td class="py-3 px-4">
-            <div class="flex items-center gap-3">
-              ${thumb}
-              <div class="min-w-0">
-                <p class="font-medium text-white truncate">
-                  ${esc(p.name)}
-                  ${hidden ? '<span class="badge bg-zinc-800 text-zinc-400 border border-zinc-700 ml-1">Oculto</span>' : ''}
-                </p>
-                ${p.description ? `<p class="text-[11px] text-zinc-500 truncate max-w-[240px]">${esc(p.description)}</p>` : ''}
-              </div>
-            </div>
-          </td>
-          <td class="py-3 px-4 capitalize">
-            <span class="px-2.5 py-1 rounded-lg bg-zinc-950 text-xs text-zinc-400 border border-zinc-800">${esc(p.category)}</span>
-          </td>
-          <td class="py-3 px-4 font-bold text-pizza-500 tabular-nums">${money(p.price)}</td>
-          <td class="py-3 px-4 text-zinc-400 tabular-nums">${money(cost)}</td>
-          <td class="py-3 px-4 font-semibold tabular-nums ${marginColor}">${margin.toFixed(1)}%</td>
-          <td class="py-3 px-4 text-right whitespace-nowrap">
-            <button type="button" data-action="toggle-product" data-id="${p.id}"
-                    title="${hidden ? 'Mostrar en el sitio público' : 'Ocultar del sitio público'}"
-                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition">
-              <i class="fa-solid ${hidden ? 'fa-eye-slash' : 'fa-eye'}" aria-hidden="true"></i>
-            </button>
-            <button type="button" data-action="duplicate-product" data-id="${p.id}" title="Duplicar"
-                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ml-2">
-              <i class="fa-solid fa-copy" aria-hidden="true"></i>
-            </button>
-            <button type="button" data-action="edit-product" data-id="${p.id}" title="Editar"
-                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ml-2">
-              <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
-            </button>
-            <button type="button" data-action="delete-product" data-id="${p.id}" title="Eliminar"
-                    class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ml-2">
-              <i class="fa-solid fa-trash" aria-hidden="true"></i>
-            </button>
-          </td>
-        </tr>`;
-    }).join('');
-  }
-
-  /* =========================================================================
-     INVENTARIO
-     ========================================================================= */
-  function renderInventoryKPIs() {
-    const totalValue = state.insumos.reduce((s, i) => s + i.quantity * i.cost, 0);
-    const critical = state.insumos.filter(i => i.quantity <= i.minStock).length;
-    $('#inv-kpi-total').textContent = state.insumos.length;
-    $('#inv-kpi-critical').textContent = critical;
-    $('#inv-kpi-value').textContent = money(totalValue);
-    $('#inv-kpi-suppliers').textContent = state.suppliers.length;
-  }
-
-  function renderInventoryTable() {
-    const tbody = $('#inventory-table');
-    if (!state.insumos.length) {
-      tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center text-zinc-500 text-sm">No hay insumos registrados.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = state.insumos.map(i => {
-      const critico = i.quantity <= i.minStock;
-      const medio = !critico && i.quantity <= i.minStock * 1.5;
-      const badgeCls = critico
-        ? 'bg-red-500/15 text-red-400 border border-red-500/30'
-        : medio ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
-      const badgeTxt = critico ? 'Crítico' : medio ? 'Bajo' : 'Óptimo';
-      const supplier = state.suppliers.find(s => s.id === i.supplierId);
-
-      return `
-        <tr class="hover:bg-zinc-900/40 transition-colors">
-          <td class="py-3 px-4 font-medium text-white">${esc(i.name)}</td>
-          <td class="py-3 px-4 font-bold tabular-nums ${critico ? 'text-red-400' : 'text-white'}">${i.quantity}</td>
-          <td class="py-3 px-4 text-zinc-400 tabular-nums">${i.minStock}</td>
-          <td class="py-3 px-4 text-zinc-400">${esc(i.unit)}</td>
-          <td class="py-3 px-4 text-zinc-400 tabular-nums">${money(i.cost)}</td>
-          <td class="py-3 px-4 text-zinc-400">${supplier ? esc(supplier.name) : '<span class="text-zinc-600">—</span>'}</td>
-          <td class="py-3 px-4"><span class="badge ${badgeCls}">${badgeTxt}</span></td>
-          <td class="py-3 px-4 text-right whitespace-nowrap">
-            <button type="button" data-action="edit-insumo" data-id="${i.id}"
-                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition">
-              <i class="fa-solid fa-pen" aria-hidden="true"></i>
-            </button>
-            <button type="button" data-action="delete-insumo" data-id="${i.id}"
-                    class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ml-2">
-              <i class="fa-solid fa-trash" aria-hidden="true"></i>
-            </button>
-          </td>
-        </tr>`;
-    }).join('');
-  }
-
-  function renderSuppliersTable() {
-    const tbody = $('#suppliers-table');
-    if (!state.suppliers.length) {
-      tbody.innerHTML = `<tr><td colspan="6" class="py-10 text-center text-zinc-500 text-sm">No hay proveedores registrados.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = state.suppliers.map(s => {
-      const count = state.insumos.filter(i => i.supplierId === s.id).length;
-      return `
-        <tr class="hover:bg-zinc-900/40 transition-colors">
-          <td class="py-3 px-4 font-medium text-white">${esc(s.name)}</td>
-          <td class="py-3 px-4 text-zinc-400">${esc(s.contact || '—')}</td>
-          <td class="py-3 px-4 text-zinc-400 tabular-nums">${esc(s.phone || '—')}</td>
-          <td class="py-3 px-4 text-zinc-400 text-xs">${esc(s.email || '—')}</td>
-          <td class="py-3 px-4">
-            <span class="badge bg-zinc-800 text-zinc-300 border border-zinc-700">${count} insumo${count === 1 ? '' : 's'}</span>
-          </td>
-          <td class="py-3 px-4 text-right whitespace-nowrap">
-            <button type="button" data-action="edit-supplier" data-id="${s.id}"
-                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition">
-              <i class="fa-solid fa-pen" aria-hidden="true"></i>
-            </button>
-            <button type="button" data-action="delete-supplier" data-id="${s.id}"
-                    class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ml-2">
-              <i class="fa-solid fa-trash" aria-hidden="true"></i>
-            </button>
-          </td>
-        </tr>`;
-    }).join('');
-  }
-
-  function renderInventory() {
-    renderInventoryKPIs();
-    renderInventoryTable();
-    renderSuppliersTable();
-  }
-
-  /* =========================================================================
-     TRABAJADORES
-     ========================================================================= */
-  function renderEmployeesKPIs() {
-    const total = state.employees.length;
-    const activos = state.employees.filter(e => e.active).length;
-    const admins = state.employees.filter(e => e.role === 'Administrador').length;
-    const nomina = state.employees.filter(e => e.active).reduce((s, e) => s + (Number(e.salary) || 0), 0);
-    $('#emp-kpi-total').textContent = total;
-    $('#emp-kpi-active').textContent = activos;
-    $('#emp-kpi-admins').textContent = admins;
-    $('#emp-kpi-payroll').textContent = money(nomina);
-  }
-
-  function renderEmployeesTable() {
-    const tbody = $('#employees-table');
-    if (!state.employees.length) {
-      tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center text-zinc-500 text-sm">No hay trabajadores registrados.</td></tr>`;
-      return;
-    }
-
-    const roleColors = {
-      'Administrador': 'bg-pizza-500/15 text-pizza-400 border border-pizza-500/30',
-      'Cajero':        'bg-sky-500/15 text-sky-400 border border-sky-500/30',
-      'Cocinero':      'bg-amber-500/15 text-amber-400 border border-amber-500/30',
-      'Repartidor':    'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-    };
-
-    tbody.innerHTML = state.employees.map(e => {
-      const rc = roleColors[e.role] || 'bg-zinc-800 text-zinc-300 border border-zinc-700';
-      const initials = (e.name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
-      const avatar = e.photo
-        ? `<img src="${esc(e.photo)}" alt="" class="w-9 h-9 rounded-lg object-cover border border-zinc-700" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-9 h-9 rounded-lg bg-zinc-800 grid place-items-center text-[10px] font-bold text-zinc-300',textContent:'${esc(initials)}'}))">`
-        : `<div class="w-9 h-9 rounded-lg bg-gradient-to-br from-pizza-500/40 to-amber-500/30 grid place-items-center text-[10px] font-bold text-white border border-zinc-700">${esc(initials)}</div>`;
-
-      const isSelf = state.session && state.session.id === e.id;
-      const isLastAdmin = e.role === 'Administrador' && state.employees.filter(x => x.role === 'Administrador').length === 1;
-
-      return `
-        <tr class="hover:bg-zinc-900/40 transition-colors">
-          <td class="py-3 px-4">
-            <div class="flex items-center gap-3">
-              ${avatar}
-              <div class="min-w-0">
-                <p class="font-medium text-white truncate">${esc(e.name)} ${isSelf ? '<span class="text-[10px] text-emerald-400">(tú)</span>' : ''}</p>
-                <p class="text-[10px] text-zinc-500">Ingresó: ${esc(e.hireDate || '—')}</p>
-              </div>
-            </div>
-          </td>
-          <td class="py-3 px-4 text-zinc-400 font-mono text-xs">${esc(e.user)}</td>
-          <td class="py-3 px-4"><span class="badge ${rc}">${esc(e.role)}</span></td>
-          <td class="py-3 px-4 text-zinc-400 text-xs">${esc(e.shift || '—')}</td>
-          <td class="py-3 px-4 text-zinc-400 text-xs tabular-nums">${esc(e.phone || '—')}</td>
-          <td class="py-3 px-4 font-semibold text-emerald-400 tabular-nums">${money(e.salary)}</td>
-          <td class="py-3 px-4">
-            ${e.active
-              ? '<span class="badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"><i class="fa-solid fa-circle text-[5px]"></i> Activo</span>'
-              : '<span class="badge bg-zinc-800 text-zinc-400 border border-zinc-700">Inactivo</span>'}
-          </td>
-          <td class="py-3 px-4 text-right whitespace-nowrap">
-            <button type="button" data-action="edit-employee" data-id="${e.id}"
-                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition">
-              <i class="fa-solid fa-pen" aria-hidden="true"></i>
-            </button>
-            <button type="button" data-action="delete-employee" data-id="${e.id}"
-                    ${(isSelf || isLastAdmin) ? 'disabled title="No puedes eliminar este registro"' : ''}
-                    class="ml-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
-                      (isSelf || isLastAdmin)
-                        ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed'
-                        : 'bg-red-500/10 hover:bg-red-500/20 text-red-400'
-                    }">
-              <i class="fa-solid fa-trash" aria-hidden="true"></i>
-            </button>
-          </td>
-        </tr>`;
-    }).join('');
-  }
-
-  /* =========================================================================
-     MODAL GENÉRICO
-     ========================================================================= */
-  const ENTITY_FORMS = {
-    product: {
-      title: 'Producto del menú',
-      subtitle: 'Los cambios se publican automáticamente en el sitio público.',
-      fields: [
-        { key: 'name',        label: 'Nombre',            type: 'text',     required: true,  placeholder: 'Ej: Pizza Hawaiana' },
-        { key: 'description', label: 'Descripción corta', type: 'textarea', required: false, rows: 2,
-          placeholder: 'Ingredientes, tamaño o detalles…' },
-        { key: 'category',    label: 'Categoría',         type: 'select',   required: true,  options: [
-            { value: 'pizza',  label: 'Pizza'  },
-            { value: 'bebida', label: 'Bebida' },
-            { value: 'extra',  label: 'Extra'  }
-        ]},
-        { key: 'price', label: 'Precio (USD)',  type: 'number', step: '0.01', min: 0, required: true },
-        { key: 'cost',  label: 'Costo (USD)',   type: 'number', step: '0.01', min: 0, required: false, default: 0 },
-        { key: 'imagen', label: 'Imagen (URL)', type: 'imageUrl', required: false,
-          hint: 'Pega un enlace directo a la imagen (Unsplash, tu CDN, etc.). Se verá en el menú público.' },
-        { key: 'icon',  label: 'Icono (FontAwesome o emoji)', type: 'text', required: false, default: 'fa-pizza-slice',
-          hint: 'Ej: <code>fa-pizza-slice</code> o 🍕. Se usa en el POS.' },
-        { key: 'visible', label: 'Mostrar en el menú público', type: 'checkbox', default: true }
-      ]
-    },
-    insumo: {
-      title: 'Insumo / Materia prima',
-      subtitle: 'Registra stock, costos y proveedor.',
-      fields: [
-        { key: 'name',     label: 'Nombre',           type: 'text',   required: true },
-        { key: 'quantity', label: 'Cantidad actual',  type: 'number', step: '0.01', min: 0, required: true },
-        { key: 'minStock', label: 'Stock mínimo',     type: 'number', step: '0.01', min: 0, required: true },
-        { key: 'unit',     label: 'Unidad de medida', type: 'select', required: true, options: [
-          { value: 'Unidades', label: 'Unidades' }, { value: 'Kg', label: 'Kilogramos' },
-          { value: 'Litros', label: 'Litros' }, { value: 'Cajas', label: 'Cajas' }, { value: 'Paquetes', label: 'Paquetes' }
-        ]},
-        { key: 'cost', label: 'Costo unitario (USD)', type: 'number', step: '0.01', min: 0, required: true },
-        { key: 'supplierId', label: 'Proveedor', type: 'dynamicSelect', source: 'suppliers',
-          hint: 'Selecciona quién suministra este insumo.' }
-      ]
-    },
-    supplier: {
-      title: 'Proveedor',
-      subtitle: 'Datos del contacto y notas.',
-      fields: [
-        { key: 'name',    label: 'Nombre / Razón social', type: 'text', required: true },
-        { key: 'contact', label: 'Persona de contacto',   type: 'text', required: false },
-        { key: 'phone',   label: 'Teléfono',              type: 'text', required: true },
-        { key: 'email',   label: 'Email',                 type: 'email', required: false },
-        { key: 'notes',   label: 'Notas',                 type: 'textarea', required: false, rows: 2 }
-      ]
-    },
-    employee: {
-      title: 'Trabajador',
-      subtitle: 'Datos personales, credenciales y turno.',
-      fields: [
-        { key: 'name', label: 'Nombre completo',  type: 'text', required: true },
-        { key: 'user', label: 'Usuario de acceso', type: 'text', required: true, hint: 'Sin espacios, único.' },
-        { key: 'pass', label: 'Contraseña',        type: 'text', required: true, minLength: 4 },
-        { key: 'role', label: 'Rol', type: 'select', required: true, options: [
-          { value: 'Administrador', label: 'Administrador (control total)' },
-          { value: 'Cajero',        label: 'Cajero (POS)' },
-          { value: 'Cocinero',      label: 'Cocinero' },
-          { value: 'Repartidor',    label: 'Repartidor' }
-        ]},
-        { key: 'shift', label: 'Turno', type: 'select', required: false, options: [
-          { value: 'Completo', label: 'Completo' }, { value: 'Mañana', label: 'Mañana' },
-          { value: 'Tarde', label: 'Tarde' }, { value: 'Noche', label: 'Noche' }
-        ]},
-        { key: 'phone',    label: 'Teléfono',  type: 'text', required: false },
-        { key: 'salary',   label: 'Salario mensual (USD)', type: 'number', step: '0.01', min: 0, required: false, default: 0 },
-        { key: 'hireDate', label: 'Fecha de ingreso', type: 'date', required: false },
-        { key: 'photo',    label: 'URL de foto (opcional)', type: 'url', required: false },
-        { key: 'active',   label: 'Activo', type: 'checkbox', default: true }
-      ]
-    }
-  };
-
-  function openEntityModal({ type, id = null, mode = 'new' }) {
-    const def = ENTITY_FORMS[type];
-    if (!def) return;
-    currentEntity = { type, id, mode };
-    const title = mode === 'edit' ? `Editar ${def.title}` : `Nuevo ${def.title}`;
-    $('#entity-title').textContent = title;
-    $('#entity-subtitle').textContent = def.subtitle;
-
-    const data = mode === 'edit' ? findEntity(type, id) : null;
-    const form = $('#entity-form');
-    form.innerHTML = def.fields.map(f => {
-      const value = data ? (data[f.key] ?? f.default ?? '') : (f.default ?? '');
-      const reqAttr = f.required ? 'required' : '';
-      const hintHtml = f.hint ? `<p class="text-[11px] text-zinc-500 mt-1">${f.hint}</p>` : '';
-
-      if (f.type === 'select') {
-        return `
-          <div>
-            <label for="fld-${f.key}" class="block text-xs text-zinc-400 mb-1">${esc(f.label)}${f.required ? ' *' : ''}</label>
-            <select id="fld-${f.key}" name="${f.key}" ${reqAttr}
-                    class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
-              ${f.options.map(o => `<option value="${esc(o.value)}" ${String(value) === String(o.value) ? 'selected' : ''}>${esc(o.label)}</option>`).join('')}
-            </select>
-            ${hintHtml}
-          </div>`;
-      }
-
-      if (f.type === 'dynamicSelect') {
-        const src = state[f.source] || [];
-        const opts = src.map(o => `<option value="${o.id}" ${String(value) === String(o.id) ? 'selected' : ''}>${esc(o.name)}</option>`).join('');
-        return `
-          <div>
-            <label for="fld-${f.key}" class="block text-xs text-zinc-400 mb-1">${esc(f.label)}</label>
-            <select id="fld-${f.key}" name="${f.key}"
-                    class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
-              <option value="">— Sin proveedor —</option>
-              ${opts}
-            </select>
-            ${hintHtml}
-          </div>`;
-      }
-
-      if (f.type === 'textarea') {
-        return `
-          <div>
-            <label for="fld-${f.key}" class="block text-xs text-zinc-400 mb-1">${esc(f.label)}</label>
-            <textarea id="fld-${f.key}" name="${f.key}" rows="${f.rows || 3}" ${reqAttr}
-                      placeholder="${esc(f.placeholder || '')}"
-                      class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500 resize-none">${esc(value)}</textarea>
-            ${hintHtml}
-          </div>`;
-      }
-
-      if (f.type === 'checkbox') {
-        return `
-          <label class="flex items-center gap-3 text-xs text-zinc-300 cursor-pointer select-none bg-zinc-950/60 border border-zinc-800 rounded-xl px-3.5 py-2.5">
-            <input type="checkbox" id="fld-${f.key}" name="${f.key}" ${value ? 'checked' : ''} class="accent-pizza-600 w-4 h-4">
-            <span>${esc(f.label)}</span>
-          </label>`;
-      }
-
-      if (f.type === 'imageUrl') {
-        return `
-          <div>
-            <label for="fld-${f.key}" class="block text-xs text-zinc-400 mb-1">${esc(f.label)}</label>
-            <div class="flex gap-3 items-start">
-              <div class="w-20 h-20 rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden shrink-0 grid place-items-center">
-                <img id="fld-${f.key}-preview"
-                     src="${esc(value) || ''}"
-                     alt=""
-                     class="w-full h-full object-cover ${value ? '' : 'hidden'}"
-                     onerror="this.classList.add('hidden')">
-                <i id="fld-${f.key}-placeholder"
-                   class="fa-solid fa-image text-zinc-600 text-lg ${value ? 'hidden' : ''}"
-                   aria-hidden="true"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <input type="url" id="fld-${f.key}" name="${f.key}" value="${esc(value)}"
-                       placeholder="https://…"
-                       class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500 focus:ring-1 focus:ring-pizza-500/40">
-                ${f.hint ? `<p class="text-[11px] text-zinc-500 mt-1">${f.hint}</p>` : ''}
-              </div>
-            </div>
-          </div>`;
-      }
-
-      const extra = [
-        f.step ? `step="${f.step}"` : '',
-        f.min !== undefined ? `min="${f.min}"` : '',
-        f.minLength ? `minlength="${f.minLength}"` : '',
-        f.placeholder ? `placeholder="${esc(f.placeholder)}"` : ''
-      ].join(' ');
-
-      return `
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <label for="fld-${f.key}" class="block text-xs text-zinc-400 mb-1">${esc(f.label)}${f.required ? ' *' : ''}</label>
-          <input type="${f.type}" id="fld-${f.key}" name="${f.key}" value="${esc(value)}" ${reqAttr} ${extra}
-                 class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500 focus:ring-1 focus:ring-pizza-500/40">
-          ${hintHtml}
-        </div>`;
-    }).join('');
-
-    // Preview en vivo de la imagen
-    const imgInput = form.querySelector('input[name="imagen"]');
-    if (imgInput) {
-      const preview = form.querySelector('#fld-imagen-preview');
-      const placeholder = form.querySelector('#fld-imagen-placeholder');
-      imgInput.addEventListener('input', () => {
-        const url = imgInput.value.trim();
-        if (!url) {
-          preview.classList.add('hidden');
-          placeholder.classList.remove('hidden');
-          return;
-        }
-        preview.src = url;
-        preview.classList.remove('hidden');
-        preview.onerror = () => { preview.classList.add('hidden'); placeholder.classList.remove('hidden'); };
-        preview.onload  = () => { preview.classList.remove('hidden'); placeholder.classList.add('hidden'); };
-        placeholder.classList.add('hidden');
-      });
-    }
-
-    openModal('entity-modal');
-  }
-
-  function findEntity(type, id) {
-    const map = { product: 'products', insumo: 'insumos', supplier: 'suppliers', employee: 'employees' };
-    return state[map[type]].find(x => x.id === id);
-  }
-
-  function saveEntity(e) {
+          <label class="block text-xs text-zinc-400 mb-1.5">Stock actual</label>
+          <input type="number" step="0.01" id="i-stock" value="${ins.stock}" class="input">
+        </div>
+        <div>
+          <label class="block text-xs text-zinc-400 mb-1.5">Mínimo</label>
+          <input type="number" step="0.01" id="i-min" value="${ins.min}" class="input">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs text-zinc-400 mb-1.5">Proveedor</label>
+        <input type="text" id="i-prov" value="${esc(ins.proveedor || "")}" class="input">
+      </div>
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button type="button" id="m-cancel" class="bg-zinc-800 text-zinc-200 py-3 rounded-xl text-sm font-semibold">Cancelar</button>
+        <button type="submit" class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white py-3 rounded-xl text-sm font-semibold">Guardar</button>
+      </div>
+    </form>
+  `);
+  $("#m-close").addEventListener("click", closeModal);
+  $("#m-cancel").addEventListener("click", closeModal);
+  $("#m-insumo-form").addEventListener("submit", e => {
     e.preventDefault();
-    if (!currentEntity) return;
-
-    const { type, id, mode } = currentEntity;
-    const def = ENTITY_FORMS[type];
-    const form = $('#entity-form');
-    const formData = new FormData(form);
-    const data = {};
-
-    for (const f of def.fields) {
-      let v = formData.get(f.key);
-      if (f.type === 'checkbox') v = form.elements[f.key].checked;
-      else if (f.type === 'number') v = v === '' ? 0 : Number(v);
-      else if (f.type === 'dynamicSelect') v = v === '' ? null : Number(v);
-      else v = typeof v === 'string' ? v.trim() : v;
-
-      if (f.required && (v === '' || v === null)) {
-        toast('Datos incompletos', `El campo "${f.label}" es obligatorio.`, 'error');
-        form.elements[f.key]?.focus();
-        return;
-      }
-      if (f.type === 'number' && (Number.isNaN(v) || v < (f.min ?? -Infinity))) {
-        toast('Valor inválido', `"${f.label}" no es válido.`, 'error');
-        return;
-      }
-      data[f.key] = v;
-    }
-
-    if (type === 'employee') {
-      const dup = state.employees.find(x => x.user === data.user && x.id !== id);
-      if (dup) return toast('Usuario duplicado', `"${data.user}" ya existe.`, 'error');
-      if ((data.pass || '').length < 4) return toast('Contraseña muy corta', 'Debe tener al menos 4 caracteres.', 'error');
-
-      if (id && data.role !== 'Administrador') {
-        const self = state.employees.find(x => x.id === id);
-        if (self && self.role === 'Administrador' &&
-            state.employees.filter(x => x.role === 'Administrador').length === 1) {
-          return toast('No permitido', 'Debe existir al menos un administrador.', 'error');
-        }
-      }
-    }
-
-    const map = { product: 'products', insumo: 'insumos', supplier: 'suppliers', employee: 'employees' };
-    const key = map[type];
-
-    if (mode === 'edit') {
-      const idx = state[key].findIndex(x => x.id === id);
-      if (idx > -1) {
-        state[key][idx] = { ...state[key][idx], ...data };
-        if (type === 'employee' && state.session?.id === id) {
-          state.session = { ...state.session, ...normalizeSession(data) };
-          saveSession(state.session);
-          renderUserChip();
-        }
-      }
-      toast('Actualizado', `${def.title} guardado correctamente.`);
-    } else {
-      state[key].push({ id: Date.now(), ...data });
-      toast('Creado', `${def.title} agregado.`);
-    }
-
-    if (key === 'products') saveProductsShared();
-    else if (key === 'employees') saveEmployeesShared();
-    else saveJSON(KEYS[key.toUpperCase()], state[key]);
-
-    closeModal('entity-modal');
-    renderAll();
-  }
-
-  async function deleteEntity(type, id) {
-    const map = { product: 'products', insumo: 'insumos', supplier: 'suppliers', employee: 'employees' };
-    const key = map[type];
-    const def = ENTITY_FORMS[type];
-    const item = state[key].find(x => x.id === id);
-    if (!item) return;
-
-    if (type === 'employee') {
-      if (state.session?.id === id) return toast('No permitido', 'No puedes eliminar tu propia cuenta.', 'error');
-      if (item.role === 'Administrador' && state.employees.filter(x => x.role === 'Administrador').length === 1) {
-        return toast('No permitido', 'Debe existir al menos un administrador.', 'error');
-      }
-    }
-    if (type === 'supplier') {
-      const used = state.insumos.some(i => i.supplierId === id);
-      if (used) return toast('No permitido', 'Este proveedor tiene insumos asignados.', 'error');
-    }
-
-    const ok = await confirmAction({
-      title: `Eliminar ${def.title.toLowerCase()}`,
-      message: `¿Eliminar "${item.name}"? Esta acción no se puede deshacer.`,
-      confirmText: 'Eliminar'
-    });
-    if (!ok) return;
-
-    state[key] = state[key].filter(x => x.id !== id);
-    if (type === 'product') state.cart = state.cart.filter(i => i.id !== id);
-
-    if (key === 'products') saveProductsShared();
-    else if (key === 'employees') saveEmployeesShared();
-    else saveJSON(KEYS[key.toUpperCase()], state[key]);
-
-    renderAll();
-    toast('Eliminado', `"${item.name}" fue removido.`);
-  }
-
-  /* =========================================================================
-     AJUSTE RÁPIDO DE STOCK
-     ========================================================================= */
-  function openStockModal() {
-    const sel = $('#stock-insumo');
-    sel.innerHTML = state.insumos.length
-      ? state.insumos.map(i => `<option value="${i.id}">${esc(i.name)} — actual: ${i.quantity} ${esc(i.unit)}</option>`).join('')
-      : '<option value="">Sin insumos registrados</option>';
-    $('#stock-qty').value = 1;
-    $('#stock-op').value = 'add';
-    updateStockPreview();
-    openModal('stock-modal');
-  }
-
-  function updateStockPreview() {
-    const id = Number($('#stock-insumo').value);
-    const insumo = state.insumos.find(i => i.id === id);
-    if (!insumo) { $('#stock-preview').textContent = ''; return; }
-    const op = $('#stock-op').value;
-    const q = Number($('#stock-qty').value) || 0;
-    let nuevo = insumo.quantity;
-    if (op === 'add') nuevo = insumo.quantity + q;
-    if (op === 'sub') nuevo = Math.max(0, insumo.quantity - q);
-    if (op === 'set') nuevo = q;
-    $('#stock-preview').innerHTML = `Stock actual: <b class="text-white">${insumo.quantity} ${esc(insumo.unit)}</b> → nuevo: <b class="text-pizza-400">${round2(nuevo)} ${esc(insumo.unit)}</b>`;
-  }
-
-  function applyStockAdjust() {
-    const id = Number($('#stock-insumo').value);
-    const insumo = state.insumos.find(i => i.id === id);
-    if (!insumo) return toast('Sin insumo', 'Selecciona un insumo válido.', 'error');
-    const op = $('#stock-op').value;
-    const q = Number($('#stock-qty').value) || 0;
-    if (q < 0) return toast('Cantidad inválida', '', 'error');
-
-    if (op === 'add') insumo.quantity = round2(insumo.quantity + q);
-    else if (op === 'sub') insumo.quantity = round2(Math.max(0, insumo.quantity - q));
-    else insumo.quantity = round2(q);
-
-    saveJSON(KEYS.INSUMOS, state.insumos);
-    closeModal('stock-modal');
+    const data = {
+      nombre: $("#i-name").value.trim(),
+      unidad: $("#i-unit").value.trim() || "kg",
+      costo: parseFloat($("#i-cost").value) || 0,
+      stock: parseFloat($("#i-stock").value) || 0,
+      min: parseFloat($("#i-min").value) || 0,
+      proveedor: $("#i-prov").value.trim(),
+    };
+    if (!data.nombre) { toast("Ponle un nombre", "error"); return; }
+    if (id === 0) INVENTORY.push({ id: uid(), ...data });
+    else Object.assign(INVENTORY.find(x => x.id === id), data);
+    writeLS(LS.INVENTORY, INVENTORY);
     renderInventory();
-    toast('Stock actualizado', `${insumo.name}: ${insumo.quantity} ${insumo.unit}`);
-  }
+    closeModal();
+    toast("Insumo guardado");
+  });
+}
 
-  /* =========================================================================
-     ESTADÍSTICAS
-     ========================================================================= */
-  const sameDay = (a, b) => a.toDateString() === b.toDateString();
+$$("[data-action='new-insumo']").forEach(b => b.addEventListener("click", () => editInsumo(0)));
 
-  function computeStats() {
-    const today = new Date();
-    const yest = new Date(); yest.setDate(yest.getDate() - 1);
-    const todayOrders = state.orders.filter(o => sameDay(new Date(o.date), today));
-    const yestOrders  = state.orders.filter(o => sameDay(new Date(o.date), yest));
-    const total = round2(todayOrders.reduce((s, o) => s + o.total, 0));
-    const prevTotal = round2(yestOrders.reduce((s, o) => s + o.total, 0));
-    const count = todayOrders.length;
-    const productQty = new Map();
-    todayOrders.forEach(o => o.items.forEach(i => {
-      productQty.set(i.name, (productQty.get(i.name) || 0) + i.qty);
-    }));
-    const top = [...productQty.entries()].sort((a, b) => b[1] - a[1])[0] || null;
-    let delta = null;
-    if (prevTotal > 0) delta = ((total - prevTotal) / prevTotal) * 100;
-    else if (total > 0) delta = 100;
-    return { total, count, avg: count ? total / count : 0, top, delta, prevCount: yestOrders.length, todayOrders };
-  }
+$("[data-action='replenish-all']").forEach(b => b.addEventListener("click", () => {
+  const crit = INVENTORY.filter(i => i.stock <= i.min);
+  if (!crit.length) { toast("No hay insumos críticos"); return; }
+  if (!confirm(`¿Reabastecer ${crit.length} insumo(s) crítico(s)?`)) return;
+  crit.forEach(i => { i.stock = i.min * 3; });
+  writeLS(LS.INVENTORY, INVENTORY);
+  renderInventory();
+  toast(`${crit.length} insumo(s) reabastecidos`);
+}));
 
-  function renderDashboard() {
-    const s = computeStats();
-    $('#stat-sales').textContent = money(s.total);
-    if (s.delta === null) {
-      $('#stat-sales-sub').textContent = s.total > 0 ? 'Primer día con ventas' : 'Sin movimientos';
-      $('#stat-sales-sub').className = 'text-[11px] text-zinc-500 mt-1';
-    } else {
-      const up = s.delta >= 0;
-      $('#stat-sales-sub').innerHTML = `<i class="fa-solid fa-arrow-${up ? 'up' : 'down'} mr-1"></i>${Math.abs(s.delta).toFixed(1)}% vs ayer`;
-      $('#stat-sales-sub').className = `text-[11px] mt-1 font-semibold ${up ? 'text-emerald-400' : 'text-rose-400'}`;
+/* =========================================================
+   STAFF
+   ========================================================= */
+function renderStaff() {
+  $("#staff-grid").innerHTML = STAFF.map(s => `
+    <div class="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pizza-500 to-amber-600 grid place-items-center text-white font-bold text-lg shrink-0">
+          ${s.nombre.charAt(0).toUpperCase()}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold text-white truncate">${esc(s.nombre)}</p>
+          <p class="text-[11px] text-zinc-500 truncate">@${esc(s.usuario)}</p>
+        </div>
+        <span class="badge ${s.rol === "admin" ? "bg-pizza-600/20 text-pizza-400" : "bg-zinc-800 text-zinc-400"}">
+          ${s.rol === "admin" ? "👑 Admin" : "🧑‍🍳 Staff"}
+        </span>
+      </div>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-[11px] ${s.activo ? "text-emerald-400" : "text-red-400"}">
+          <i class="fa-solid fa-circle text-[6px] mr-1"></i>${s.activo ? "Activo" : "Inactivo"}
+        </span>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2 rounded-lg text-xs font-semibold" data-edit-staff="${s.id}">
+          <i class="fa-solid fa-pen text-[10px] mr-1"></i>Editar
+        </button>
+        <button type="button" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2 rounded-lg text-xs font-semibold" data-toggle-staff="${s.id}">
+          ${s.activo ? '<i class="fa-solid fa-pause text-[10px] mr-1"></i>Pausar' : '<i class="fa-solid fa-play text-[10px] mr-1"></i>Activar'}
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  $$("[data-edit-staff]").forEach(b => b.addEventListener("click", () => editStaff(Number(b.dataset.editStaff))));
+  $$("[data-toggle-staff]").forEach(b => b.addEventListener("click", () => {
+    const id = Number(b.dataset.toggleStaff);
+    const s = STAFF.find(x => x.id === id);
+    if (s.usuario === "admin" && s.activo) { toast("No puedes desactivar al admin principal", "error"); return; }
+    s.activo = !s.activo;
+    writeLS(LS.STAFF, STAFF);
+    renderStaff();
+    toast(s.activo ? "Trabajador activado" : "Trabajador pausado");
+  }));
+}
+
+function editStaff(id) {
+  const s = id === 0 ? { id: uid(), nombre: "", usuario: "", pass: "", rol: "cajero", activo: true } : STAFF.find(x => x.id === id);
+  if (!s) return;
+
+  openModal(`
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-lg font-bold text-white">${id ? "Editar" : "Nuevo"} trabajador</h3>
+      <button type="button" id="m-close" class="w-9 h-9 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="m-staff-form" class="space-y-3">
+      <div>
+        <label class="block text-xs text-zinc-400 mb-1.5">Nombre completo</label>
+        <input type="text" id="s-name" value="${esc(s.nombre)}" required class="input">
+      </div>
+      <div>
+        <label class="block text-xs text-zinc-400 mb-1.5">Usuario</label>
+        <input type="text" id="s-user" value="${esc(s.usuario)}" required class="input">
+      </div>
+      <div>
+        <label class="block text-xs text-zinc-400 mb-1.5">Contraseña</label>
+        <input type="text" id="s-pass" value="${esc(s.pass)}" required class="input">
+      </div>
+      <div>
+        <label class="block text-xs text-zinc-400 mb-1.5">Rol</label>
+        <select id="s-role" class="input">
+          <option value="cajero" ${s.rol === "cajero" ? "selected" : ""}>Cajero</option>
+          <option value="cocina" ${s.rol === "cocina" ? "selected" : ""}>Cocina</option>
+          <option value="admin" ${s.rol === "admin" ? "selected" : ""}>Administrador</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button type="button" id="m-cancel" class="bg-zinc-800 text-zinc-200 py-3 rounded-xl text-sm font-semibold">Cancelar</button>
+        <button type="submit" class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white py-3 rounded-xl text-sm font-semibold">Guardar</button>
+      </div>
+    </form>
+  `);
+  $("#m-close").addEventListener("click", closeModal);
+  $("#m-cancel").addEventListener("click", closeModal);
+  $("#m-staff-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const data = {
+      nombre: $("#s-name").value.trim(),
+      usuario: $("#s-user").value.trim(),
+      pass: $("#s-pass").value.trim(),
+      rol: $("#s-role").value,
+    };
+    if (!data.nombre || !data.usuario || !data.pass) { toast("Completa todos los campos", "error"); return; }
+    if (id === 0) STAFF.push({ id: uid(), ...data, activo: true });
+    else Object.assign(STAFF.find(x => x.id === id), data);
+    writeLS(LS.STAFF, STAFF);
+    renderStaff();
+    closeModal();
+    toast("Trabajador guardado");
+  });
+}
+
+$$("[data-action='new-staff']").forEach(b => b.addEventListener("click", () => editStaff(0)));
+
+/* =========================================================
+   ESTADÍSTICAS + CHARTS
+   ========================================================= */
+const charts = {};
+
+function getStatsData() {
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+
+  const salesToday = SALES.filter(s => s.fecha.slice(0, 10) === today);
+  const weekAgo = new Date(now.getTime() - 7 * 86400000);
+  const salesWeek = SALES.filter(s => new Date(s.fecha) >= weekAgo);
+
+  const sum = arr => arr.reduce((a, s) => a + s.total, 0);
+
+  // Top producto
+  const counts = {};
+  SALES.forEach(s => s.items.forEach(i => {
+    const k = i.nombre;
+    counts[k] = (counts[k] || 0) + i.cantidad;
+  }));
+  const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0] || ["—", 0];
+
+  return {
+    todayTotal: sum(salesToday),
+    todayCount: salesToday.length,
+    weekTotal: sum(salesWeek),
+    weekCount: salesWeek.length,
+    avgTicket: SALES.length ? sum(SALES) / SALES.length : 0,
+    top: top[0],
+    topCount: top[1],
+  };
+}
+
+function renderStats() {
+  const d = getStatsData();
+  $("#stat-today").textContent = money(d.todayTotal);
+  $("#stat-today-orders").textContent = `${d.todayCount} órdenes`;
+  $("#stat-week").textContent = money(d.weekTotal);
+  $("#stat-week-orders").textContent = `${d.weekCount} órdenes`;
+  $("#stat-avg").textContent = money(d.avgTicket);
+  $("#stat-top").textContent = d.top.slice(0, 22);
+  $("#stat-top-count").textContent = `${d.topCount} vendidos`;
+
+  // Historial
+  $("#sales-history").innerHTML = SALES.length === 0
+    ? `<div class="text-center py-8 text-zinc-500 text-sm">Sin ventas registradas</div>`
+    : SALES.slice(0, 20).map(s => `
+      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-zinc-900 grid place-items-center text-lg shrink-0">
+          ${s.metodo === "Efectivo" ? "💵" : "💳"}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-semibold text-white truncate">${esc(s.cliente)}</p>
+          <p class="text-[10px] text-zinc-500">${new Date(s.fecha).toLocaleString("es-EC", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short" })}</p>
+        </div>
+        <div class="text-right shrink-0">
+          <p class="font-bold text-amber-400 tabular-nums text-sm">${money(s.total)}</p>
+          <p class="text-[10px] text-zinc-500">${s.items.length} ítems</p>
+        </div>
+      </div>
+    `).join("");
+
+  updateCharts();
+}
+
+$("[data-action='clear-sales']").addEventListener("click", () => {
+  if (!confirm("¿Borrar todo el historial de ventas?")) return;
+  SALES = [];
+  writeLS(LS.SALES, SALES);
+  renderStats();
+  toast("Historial borrado");
+});
+
+/* ---------- CHARTS ---------- */
+function initCharts() {
+  const commonOpts = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: "#a1a1aa", font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: "#71717a", font: { size: 10 } }, grid: { color: "#27272a" } },
+      y: { ticks: { color: "#71717a", font: { size: 10 } }, grid: { color: "#27272a" } }
     }
-    $('#stat-orders').textContent = s.count;
-    $('#stat-orders-sub').textContent = `Ayer: ${s.prevCount} orden${s.prevCount === 1 ? '' : 'es'}`;
-    $('#stat-top').textContent = s.top ? s.top[0] : '—';
-    $('#stat-top-sub').textContent = s.top ? `${s.top[1]} unidades hoy` : 'Sin datos';
-    $('#stat-avg').textContent = money(s.avg);
-    $('#stat-avg-sub').textContent = s.count ? `En ${s.count} orden${s.count === 1 ? '' : 'es'}` : 'Hoy';
-    renderRecentOrders(s.todayOrders);
-    updateCharts(s.todayOrders);
-  }
+  };
 
-  function renderRecentOrders(orders) {
-    const tbody = $('#recent-orders');
-    const rows = orders.slice(0, 8);
-    if (!rows.length) {
-      tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-xs text-zinc-500">Sin órdenes registradas hoy.</td></tr>`;
-      return;
+  // Ventas 7 días
+  charts.sales = new Chart($("#chart-sales"), {
+    type: "line",
+    data: { labels: [], datasets: [{
+      label: "Ventas ($)", data: [],
+      borderColor: "#ef4444", backgroundColor: "rgba(239,68,68,.15)",
+      tension: .35, fill: true, borderWidth: 2, pointRadius: 4, pointBackgroundColor: "#ef4444"
+    }]},
+    options: commonOpts,
+  });
+
+  // Método de pago
+  charts.payments = new Chart($("#chart-payments"), {
+    type: "doughnut",
+    data: { labels: [], datasets: [{ data: [], backgroundColor: ["#10b981", "#ef4444", "#f59e0b"], borderWidth: 0 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: "65%",
+      plugins: { legend: { position: "bottom", labels: { color: "#a1a1aa", font: { size: 11 }, padding: 12 } } }
     }
-    tbody.innerHTML = rows.map(o => `
-      <tr class="border-b border-zinc-800/60 last:border-0 hover:bg-zinc-900/40 transition-colors">
-        <td class="py-2.5 px-3 text-xs text-zinc-400 whitespace-nowrap tabular-nums">
-          ${new Date(o.date).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })}
-        </td>
-        <td class="py-2.5 px-3 text-xs text-zinc-200 max-w-[140px] truncate">${esc(o.client)}</td>
-        <td class="py-2.5 px-3 text-xs text-zinc-400">${esc(o.employeeName || '—')}</td>
-        <td class="py-2.5 px-3">
-          <span class="text-[10px] px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700">${esc(o.method)}</span>
-        </td>
-        <td class="py-2.5 px-3 text-xs text-zinc-400 tabular-nums">${o.items.reduce((n, i) => n + i.qty, 0)}</td>
-        <td class="py-2.5 px-3 text-xs font-bold text-pizza-500 text-right tabular-nums">${money(o.total)}</td>
-        <td class="py-2.5 px-3 text-right">
-          <button data-action="delete-order" data-id="${o.id}"
-                  class="text-zinc-500 hover:text-red-400 p-1 rounded transition" aria-label="Eliminar">
-            <i class="fa-solid fa-trash text-[11px]" aria-hidden="true"></i>
-          </button>
-        </td>
-      </tr>
-    `).join('');
+  });
+
+  // Top 5
+  charts.top = new Chart($("#chart-top"), {
+    type: "bar",
+    data: { labels: [], datasets: [{ label: "Vendidos", data: [], backgroundColor: "#ef4444", borderRadius: 8 }] },
+    options: { ...commonOpts, indexAxis: "y" },
+  });
+
+  // Stock
+  charts.stock = new Chart($("#chart-stock"), {
+    type: "bar",
+    data: { labels: [], datasets: [{
+      label: "Stock", data: [], backgroundColor: [],
+      borderRadius: 8
+    }]},
+    options: commonOpts,
+  });
+
+  updateCharts();
+  updateStockChart();
+}
+
+function updateCharts() {
+  if (!charts.sales) return;
+
+  // Ventas últimos 7 días
+  const labels = [];
+  const totals = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    labels.push(d.toLocaleDateString("es-EC", { weekday: "short", day: "numeric" }));
+    const total = SALES.filter(s => s.fecha.slice(0, 10) === key).reduce((a, s) => a + s.total, 0);
+    totals.push(+total.toFixed(2));
   }
+  charts.sales.data.labels = labels;
+  charts.sales.data.datasets[0].data = totals;
+  charts.sales.update();
 
-  /* =========================================================================
-     GRÁFICOS
-     ========================================================================= */
-  function initCharts() {
-    if (typeof Chart === 'undefined') return;
-    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
-    Chart.defaults.color = '#a1a1aa';
-    const grid = 'rgba(255,255,255,0.05)';
+  // Métodos de pago
+  const methods = {};
+  SALES.forEach(s => methods[s.metodo] = (methods[s.metodo] || 0) + s.total);
+  charts.payments.data.labels = Object.keys(methods);
+  charts.payments.data.datasets[0].data = Object.values(methods).map(v => +v.toFixed(2));
+  charts.payments.update();
 
-    salesChart = new Chart($('#salesChart').getContext('2d'), {
-      type: 'line',
-      data: { labels: [], datasets: [{
-        label: 'Ventas (USD)', data: [],
-        borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, .12)',
-        borderWidth: 3, fill: true, tension: 0.4,
-        pointRadius: 3, pointBackgroundColor: '#ef4444', pointBorderColor: '#18181b', pointBorderWidth: 2
-      }]},
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false },
-          tooltip: { backgroundColor: '#18181b', borderColor: '#3f3f46', borderWidth: 1, padding: 10,
-            callbacks: { label: c => ` ${money(c.parsed.y)}` } }
-        },
-        scales: {
-          x: { grid: { color: grid }, ticks: { color: '#a1a1aa', maxRotation: 0 } },
-          y: { beginAtZero: true, grid: { color: grid }, ticks: { color: '#a1a1aa', callback: v => '$' + v } }
-        }
-      }
-    });
+  // Top 5
+  const counts = {};
+  SALES.forEach(s => s.items.forEach(i => {
+    const k = i.nombre.slice(0, 25);
+    counts[k] = (counts[k] || 0) + i.cantidad;
+  }));
+  const top5 = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  charts.top.data.labels = top5.map(x => x[0]);
+  charts.top.data.datasets[0].data = top5.map(x => x[1]);
+  charts.top.update();
+}
 
-    categoryChart = new Chart($('#categoryChart').getContext('2d'), {
-      type: 'doughnut',
-      data: { labels: ['Pizzas', 'Bebidas', 'Extras'], datasets: [{
-        data: [0, 0, 0],
-        backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-        borderWidth: 0, hoverOffset: 6
-      }]},
-      options: {
-        responsive: true, maintainAspectRatio: false, cutout: '62%',
-        plugins: {
-          legend: { position: 'bottom', labels: { color: '#a1a1aa', padding: 16, usePointStyle: true, pointStyle: 'circle', boxWidth: 8 } },
-          tooltip: { backgroundColor: '#18181b', borderColor: '#3f3f46', borderWidth: 1, padding: 10,
-            callbacks: { label: c => ` ${c.label}: ${money(c.parsed)}` } }
-        }
-      }
-    });
+function updateStockChart() {
+  if (!charts.stock) return;
+  charts.stock.data.labels = INVENTORY.map(i => i.nombre);
+  charts.stock.data.datasets[0].data = INVENTORY.map(i => i.stock);
+  charts.stock.data.datasets[0].backgroundColor = INVENTORY.map(i =>
+    i.stock <= i.min ? "#ef4444" : "#10b981"
+  );
+  charts.stock.update();
+}
+
+/* =========================================================
+   SYNC EN VIVO
+   ========================================================= */
+window.addEventListener("storage", e => {
+  if (e.key === LS.MENU) { MENU = readLS(LS.MENU, DEFAULT_MENU); renderPOS(); renderMenuAdmin(); }
+  if (e.key === LS.INVENTORY) { INVENTORY = readLS(LS.INVENTORY, DEFAULT_INVENTORY); renderInventory(); }
+  if (e.key === LS.SALES) { SALES = readLS(LS.SALES, []); renderStats(); }
+  if (e.key === LS.STAFF) { STAFF = readLS(LS.STAFF, DEFAULT_STAFF); renderStaff(); }
+});
+
+/* =========================================================
+   RENDER ALL
+   ========================================================= */
+function renderAll() {
+  renderPOS();
+  renderCart();
+  renderMenuAdmin();
+  renderInventory();
+  renderStaff();
+  renderStats();
+  switchTab("pos");
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  // Cargar tamaño menú en localStorage si no existe
+  if (!localStorage.getItem(LS.MENU)) writeLS(LS.MENU, MENU);
+  if (!localStorage.getItem(LS.INVENTORY)) writeLS(LS.INVENTORY, INVENTORY);
+  if (!localStorage.getItem(LS.STAFF)) writeLS(LS.STAFF, STAFF);
+
+  // Sesión activa
+  if (SESSION) showApp();
+  else {
+    $("#loginGate").style.display = "flex";
+    $("#gate-user").focus();
   }
+});
 
-  function updateCharts(todayOrders) {
-    if (!salesChart || !categoryChart) return;
-    const labels = [], data = [];
-    for (let h = HOUR_FROM; h <= HOUR_TO; h++) {
-      labels.push(`${String(h).padStart(2, '0')}:00`);
-      data.push(round2(todayOrders.filter(o => new Date(o.date).getHours() === h).reduce((s, o) => s + o.total, 0)));
-    }
-    salesChart.data.labels = labels;
-    salesChart.data.datasets[0].data = data;
-    salesChart.update();
-
-    const totals = { pizza: 0, bebida: 0, extra: 0 };
-    todayOrders.forEach(o => o.items.forEach(i => {
-      totals[i.category] = (totals[i.category] || 0) + i.price * i.qty;
-    }));
-    categoryChart.data.datasets[0].data = [round2(totals.pizza), round2(totals.bebida), round2(totals.extra)];
-    categoryChart.update();
-  }
-
-  /* =========================================================================
-     EXPORTAR CSV
-     ========================================================================= */
-  function exportCSV() {
-    if (!state.orders.length) return toast('Sin datos', 'No hay órdenes para exportar.', 'error');
-    const header = ['Fecha', 'Hora', 'Cliente', 'Atendido por', 'Método', 'Artículos', 'Subtotal', 'IVA', 'Total'];
-    const rows = state.orders.map(o => {
-      const d = new Date(o.date);
-      return [
-        d.toLocaleDateString('es-EC'),
-        d.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' }),
-        o.client, o.employeeName || '', o.method,
-        o.items.map(i => `${i.qty}x ${i.name}`).join(' | '),
-        o.subtotal.toFixed(2), o.tax.toFixed(2), o.total.toFixed(2)
-      ];
-    });
-    const csv = [header, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `brothers-pizza-ventas-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a); a.click(); a.remove();
-    URL.revokeObjectURL(url);
-    toast('Exportación lista', `${state.orders.length} registros descargados.`);
-  }
-
-  /* =========================================================================
-     CERRAR SESIÓN
-     ========================================================================= */
-  async function logout() {
-    const ok = await confirmAction({
-      title: 'Cerrar sesión',
-      message: '¿Deseas salir del panel? Volverás a la página pública.',
-      confirmText: 'Cerrar sesión',
-      danger: false
-    });
-    if (!ok) return;
-    clearSession();
-    window.location.href = 'index.html';
-  }
-
-  /* =========================================================================
-     RENDER GLOBAL
-     ========================================================================= */
-  function renderUserChip() {
-    const s = state.session;
-    if (!s) return;
-    $('#userName').textContent = s.name;
-    $('#userRole').innerHTML = `<i class="fa-solid fa-circle text-[6px] mr-1"></i>${esc(s.role)}`;
-    const initials = (s.name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
-    const el = $('#userAvatar');
-    if (s.photo) {
-      el.innerHTML = `<img src="${esc(s.photo)}" alt="" class="w-full h-full object-cover rounded-xl" onerror="this.replaceWith(document.createTextNode('${esc(initials)}'))">`;
-      el.classList.add('overflow-hidden');
-    } else {
-      el.textContent = initials;
-    }
-  }
-
-  function applyRolePermissions() {
-    const isAdmin = String(state.session?.role || '').toLowerCase() === 'administrador';
-    $$('[data-role="admin"]').forEach(el => el.classList.toggle('hidden', !isAdmin));
-    if (!isAdmin) {
-      const active = $('.tab-btn.is-active')?.dataset.tab;
-      if (active && active !== 'pos' && active !== 'inventory') switchTab('pos');
-    }
-  }
-
-  function renderAll() {
-    renderCategoriesPos();
-    renderPOSCatalog();
-    renderProductsTable();
-    renderInventory();
-    renderEmployeesKPIs();
-    renderEmployeesTable();
-    renderCart();
-    if (!$('#section-stats').classList.contains('hidden')) renderDashboard();
-  }
-
-  /* =========================================================================
-     EVENTOS
-     ========================================================================= */
-  function bindEvents() {
-    $$('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
-      if (btn.classList.contains('hidden')) return;
-      switchTab(btn.dataset.tab);
-    }));
-
-    $$('.sub-tab').forEach(btn => btn.addEventListener('click', () => {
-      state.subtab = btn.dataset.subtab;
-      $$('.sub-tab').forEach(b => b.classList.toggle('is-active', b === btn));
-      $('#subtab-insumos').classList.toggle('hidden', state.subtab !== 'insumos');
-      $('#subtab-proveedores').classList.toggle('hidden', state.subtab !== 'proveedores');
-    }));
-
-    $('#pos-categories').addEventListener('click', e => {
-      const btn = e.target.closest('[data-cat]');
-      if (!btn) return;
-      state.filter = btn.dataset.cat;
-      $$('.category-btn').forEach(b => b.classList.toggle('is-active', b === btn));
-      renderPOSCatalog();
-    });
-
-    $('#pos-search').addEventListener('input', debounce(e => {
-      state.search = e.target.value;
-      renderPOSCatalog();
-    }));
-
-    $('#pos-product-grid').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action="add-to-cart"]');
-      if (!btn) return;
-      addToCart(Number(btn.dataset.id));
-    });
-
-    $('#cart-items').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const id = Number(btn.dataset.id);
-      switch (btn.dataset.action) {
-        case 'qty-inc':     changeQty(id, 1); break;
-        case 'qty-dec':     changeQty(id, -1); break;
-        case 'remove-item': removeFromCart(id); break;
-      }
-    });
-
-    $$('[data-pay]').forEach(b => b.addEventListener('click', () => checkout(b.dataset.pay)));
-
-    $('[data-action="clear-cart"]').addEventListener('click', async () => {
-      if (!state.cart.length) return toast('Carrito vacío', '', 'error');
-      const ok = await confirmAction({ title: 'Vaciar orden', message: '¿Eliminar todos los productos?', confirmText: 'Vaciar' });
-      if (ok) { clearCart(); toast('Orden vaciada', 'Se eliminaron los productos.'); }
-    });
-
-    // ============== PRODUCTOS ==============
-    $('[data-action="new-product"]').addEventListener('click', () => openEntityModal({ type: 'product', mode: 'new' }));
-
-    $('#admin-product-table').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const id = Number(btn.dataset.id);
-      const action = btn.dataset.action;
-
-      if (action === 'edit-product') {
-        openEntityModal({ type: 'product', id, mode: 'edit' });
-      } else if (action === 'delete-product') {
-        deleteEntity('product', id);
-      } else if (action === 'duplicate-product') {
-        const p = state.products.find(x => x.id === id);
-        if (!p) return;
-        const copy = { ...p, id: Date.now(), name: `${p.name} (copia)` };
-        state.products.push(copy);
-        saveProductsShared();
-        renderAll();
-        toast('Producto duplicado', `"${p.name}" fue copiado al menú.`);
-      } else if (action === 'toggle-product') {
-        const p = state.products.find(x => x.id === id);
-        if (!p) return;
-        p.visible = p.visible === false;   // invierte el valor
-        saveProductsShared();
-        renderAll();
-        toast(
-          p.visible ? 'Producto visible' : 'Producto oculto',
-          `"${p.name}" ${p.visible ? 'ya aparece' : 'ya no aparece'} en el sitio público.`
-        );
-      }
-    });
-
-    // ============== INVENTARIO ==============
-    $('[data-action="new-insumo"]').addEventListener('click', () => openEntityModal({ type: 'insumo', mode: 'new' }));
-    $('[data-action="adjust-stock"]').addEventListener('click', openStockModal);
-    $('[data-action="apply-stock-adjust"]').addEventListener('click', applyStockAdjust);
-    $('#stock-insumo').addEventListener('change', updateStockPreview);
-    $('#stock-op').addEventListener('change', updateStockPreview);
-    $('#stock-qty').addEventListener('input', updateStockPreview);
-
-    $('#inventory-table').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const id = Number(btn.dataset.id);
-      if (btn.dataset.action === 'edit-insumo') openEntityModal({ type: 'insumo', id, mode: 'edit' });
-      else if (btn.dataset.action === 'delete-insumo') deleteEntity('insumo', id);
-    });
-
-    $('[data-action="new-supplier"]').addEventListener('click', () => openEntityModal({ type: 'supplier', mode: 'new' }));
-    $('#suppliers-table').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const id = Number(btn.dataset.id);
-      if (btn.dataset.action === 'edit-supplier') openEntityModal({ type: 'supplier', id, mode: 'edit' });
-      else if (btn.dataset.action === 'delete-supplier') deleteEntity('supplier', id);
-    });
-
-    // ============== EMPLEADOS ==============
-    $('[data-action="new-employee"]').addEventListener('click', () => openEntityModal({ type: 'employee', mode: 'new' }));
-    $('#employees-table').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn || btn.disabled) return;
-      const id = Number(btn.dataset.id);
-      if (btn.dataset.action === 'edit-employee') openEntityModal({ type: 'employee', id, mode: 'edit' });
-      else if (btn.dataset.action === 'delete-employee') deleteEntity('employee', id);
-    });
-
-    $('#entity-form').addEventListener('submit', saveEntity);
-
-    $$('[data-close-modal]').forEach(btn =>
-      btn.addEventListener('click', () => closeModal(btn.dataset.closeModal))
-    );
-    $$('.modal-backdrop').forEach(m => {
-      m.addEventListener('mousedown', e => { if (e.target === m) closeModal(m.id); });
-    });
-    document.addEventListener('keydown', e => {
-      if (e.key !== 'Escape') return;
-      const open = $$('.modal-backdrop.flex').find(m => !m.classList.contains('hidden'));
-      if (open) closeModal(open.id);
-    });
-
-    $('#confirm-modal').addEventListener('click', e => {
-      const btn = e.target.closest('[data-confirm]');
-      if (!btn) return;
-      resolveConfirm(btn.dataset.confirm === 'ok');
-    });
-
-    $('[data-action="export-csv"]').addEventListener('click', exportCSV);
-    $('[data-action="reset-demo"]').addEventListener('click', async () => {
-      const ok = await confirmAction({
-        title: 'Reiniciar datos',
-        message: 'Se restablecerán menú, inventario, proveedores, trabajadores y ventas a sus valores demo. ¿Continuar?',
-        confirmText: 'Reiniciar'
-      });
-      if (!ok) return;
-      Object.values(KEYS).forEach(k => {
-        if (k !== KEYS.SESSION && k !== KEYS.PUB_SESSION) localStorage.removeItem(k);
-      });
-      initData();
-      renderAll();
-      renderDashboard();
-      toast('Datos restaurados', 'El panel volvió al estado de demostración.');
-    });
-
-    $('#recent-orders').addEventListener('click', async e => {
-      const btn = e.target.closest('[data-action="delete-order"]');
-      if (!btn) return;
-      const ok = await confirmAction({ title: 'Eliminar venta', message: '¿Eliminar este registro del historial?', confirmText: 'Eliminar' });
-      if (!ok) return;
-      state.orders = state.orders.filter(o => o.id !== btn.dataset.id);
-      saveJSON(KEYS.ORDERS, state.orders);
-      renderDashboard();
-      toast('Registro eliminado', 'La venta fue removida.');
-    });
-
-    $$('[data-action="logout"]').forEach(b => b.addEventListener('click', logout));
-
-    // Login gate
-    const loginForm = $('#loginGateForm');
-    if (loginForm) loginForm.addEventListener('submit', handleGateLogin);
-
-    // Reaccionar a cambios en otra pestaña (por si editan el sitio público)
-    window.addEventListener('storage', e => {
-      if (e.key === KEYS.PUB_MENU) {
-        const pub = loadJSON(KEYS.PUB_MENU, null);
-        if (Array.isArray(pub)) {
-          state.products = pub.map(menuToProduct);
-          renderProductsTable();
-          renderPOSCatalog();
-          renderCategoriesPos();
-        }
-      }
-    });
-  }
-
-  /* =========================================================================
-     INICIALIZACIÓN
-     ========================================================================= */
-  function initData() {
-    // Productos: priorizar menú público si existe
-    const pubMenu = loadJSON(KEYS.PUB_MENU, null);
-    const admProducts = loadJSON(KEYS.PRODUCTS, null);
-    if (Array.isArray(admProducts) && admProducts.length) {
-      state.products = admProducts;
-    } else if (Array.isArray(pubMenu) && pubMenu.length) {
-      state.products = pubMenu.map(menuToProduct);
-    } else {
-      state.products = DEFAULTS.products.map(p => ({ ...p }));
-    }
-
-    // Empleados: priorizar usuarios públicos si existen
-    const pubUsers = loadJSON(KEYS.PUB_USERS, null);
-    const admEmployees = loadJSON(KEYS.EMPLOYEES, null);
-    if (Array.isArray(pubUsers) && pubUsers.length) {
-      state.employees = pubUsers.map(userToEmployee);
-    } else if (Array.isArray(admEmployees) && admEmployees.length) {
-      state.employees = admEmployees;
-    } else {
-      state.employees = DEFAULTS.employees.map(e => ({ ...e }));
-    }
-
-    state.suppliers = loadJSON(KEYS.SUPPLIERS, null) || DEFAULTS.suppliers.map(s => ({ ...s }));
-    state.insumos   = loadJSON(KEYS.INSUMOS, null)   || DEFAULTS.insumos.map(i => ({ ...i }));
-    state.orders    = loadJSON(KEYS.ORDERS, [])      || [];
-
-    // Persistir defaults si faltaban (usando sincronización)
-    if (!localStorage.getItem(KEYS.PRODUCTS)) saveProductsShared();
-    if (!localStorage.getItem(KEYS.EMPLOYEES)) saveEmployeesShared();
-    if (!localStorage.getItem(KEYS.SUPPLIERS)) saveJSON(KEYS.SUPPLIERS, state.suppliers);
-    if (!localStorage.getItem(KEYS.INSUMOS))   saveJSON(KEYS.INSUMOS,   state.insumos);
-  }
-
-  function startPanel() {
-    if (panelStarted) return;
-    panelStarted = true;
-    initData();
-    renderUserChip();
-    applyRolePermissions();
+// API pública por si la quieres usar desde la consola
+window.BPAdmin = {
+  MENU: () => readLS(LS.MENU, DEFAULT_MENU),
+  SALES: () => readLS(LS.SALES, []),
+  INVENTORY: () => readLS(LS.INVENTORY, DEFAULT_INVENTORY),
+  STAFF: () => readLS(LS.STAFF, DEFAULT_STAFF),
+  resetAll() {
+    Object.values(LS).forEach(k => localStorage.removeItem(k));
+    location.reload();
+  },
+  resetMenu() {
+    writeLS(LS.MENU, DEFAULT_MENU);
+    MENU = DEFAULT_MENU;
     renderAll();
-    if (state.session.role !== 'Administrador') switchTab('pos');
-  }
-
-  function init() {
-    const s = getSession();
-    if (!s) {
-      initData();
-      bindEvents();
-      showLoginGate();
-      return;
-    }
-    state.session = s;
-    bindEvents();
-    startPanel();
-  }
-
-  document.addEventListener('DOMContentLoaded', init);
-})();
+    toast("Menú restaurado");
+  },
+};
 </script>
 </body>
 </html>
