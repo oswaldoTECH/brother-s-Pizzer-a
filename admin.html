@@ -2,10 +2,8 @@
 <html lang="es" class="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#09090b">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Panel Admin · Brother's Pizza</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -13,14 +11,10 @@
 <script>
   tailwind.config = {
     darkMode: 'class',
-    theme: {
-      extend: {
-        colors: {
-          pizza: { 50:'#fff1f2', 400:'#fb7185', 500:'#ef4444', 600:'#dc2626', 700:'#b91c1c', 900:'#7f1d1d' }
-        },
-        fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
-      }
-    }
+    theme: { extend: {
+      colors: { pizza: { 400:'#fb7185', 500:'#ef4444', 600:'#dc2626', 700:'#b91c1c' } },
+      fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
+    }}
   };
 </script>
 
@@ -30,10 +24,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 
 <style>
-  :root {
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-top: env(safe-area-inset-top, 0px);
-  }
+  :root { --safe-bottom: env(safe-area-inset-bottom, 0px); --safe-top: env(safe-area-inset-top, 0px); }
   * { -webkit-tap-highlight-color: transparent; }
   body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
   .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: .02em; }
@@ -42,153 +33,78 @@
   ::-webkit-scrollbar-track { background: #18181b; }
   ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 999px; }
 
-  .glass-panel {
-    background: rgba(9, 9, 11, .88);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-  }
+  .glass-panel { background: rgba(9,9,11,.9); backdrop-filter: blur(14px); }
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, .25); }
-    50%      { box-shadow: 0 0 26px rgba(239, 68, 68, .55); }
+    0%, 100% { box-shadow: 0 0 15px rgba(239,68,68,.25); }
+    50%      { box-shadow: 0 0 26px rgba(239,68,68,.55); }
   }
   .glow-effect { animation: pulse-glow 3s ease-in-out infinite; }
 
-  @keyframes modal-in {
-    from { opacity: 0; transform: translateY(20px) scale(.97); }
-    to   { opacity: 1; transform: none; }
-  }
+  @keyframes modal-in { from { opacity: 0; transform: translateY(20px) scale(.97); } to { opacity: 1; transform: none; } }
   .modal-card { animation: modal-in .22s cubic-bezier(.22,1,.36,1); }
 
-  @keyframes slide-up {
-    from { transform: translateY(100%); }
-    to   { transform: translateY(0); }
-  }
+  @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
   .slide-up { animation: slide-up .3s cubic-bezier(.22,1,.36,1); }
 
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-5px); }
-    80% { transform: translateX(5px); }
-  }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);} 40%{transform:translateX(8px);} 60%{transform:translateX(-5px);} 80%{transform:translateX(5px);} }
   .shake { animation: shake .4s ease; }
 
-  @keyframes pop-in {
-    from { opacity: 0; transform: scale(.9); }
-    to   { opacity: 1; transform: scale(1); }
-  }
+  @keyframes pop-in { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
   .pop-in { animation: pop-in .25s ease-out; }
 
-  @keyframes toast-in {
-    from { opacity: 0; transform: translateY(-12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
   .toast-in { animation: toast-in .25s ease-out; }
 
-  /* Tabs */
-  .tab-btn {
-    display: flex; align-items: center; gap: .5rem; justify-content: center;
-    padding: .7rem 1rem; border-radius: .75rem;
-    font-size: .8rem; font-weight: 600; color: #a1a1aa;
-    white-space: nowrap; transition: all .2s ease;
-  }
+  .tab-btn { display: flex; align-items: center; gap: .5rem; justify-content: center; padding: .7rem 1rem; border-radius: .75rem; font-size: .8rem; font-weight: 600; color: #a1a1aa; white-space: nowrap; transition: all .2s; }
   .tab-btn:hover { color: #fff; background: #27272a; }
-  .tab-btn.is-active { background: #dc2626; color: #fff; box-shadow: 0 4px 14px rgba(220, 38, 38, .3); }
+  .tab-btn.is-active { background: #dc2626; color: #fff; box-shadow: 0 4px 14px rgba(220,38,38,.3); }
 
-  .category-btn {
-    padding: .5rem .9rem; border-radius: .75rem;
-    font-size: .75rem; font-weight: 600;
-    background: #27272a; color: #d4d4d8;
-    white-space: nowrap; transition: all .2s ease;
-    min-height: 36px;
-  }
-  .category-btn.is-active { background: #dc2626; color: #fff; box-shadow: 0 4px 14px rgba(220, 38, 38, .28); }
-
-  .sub-tab {
-    padding: .55rem .95rem; border-radius: .65rem;
-    font-size: .75rem; font-weight: 700;
-    color: #a1a1aa; transition: all .2s ease;
-  }
-  .sub-tab.is-active { background: #3f3f46; color: #fff; }
+  .category-btn { padding: .5rem .9rem; border-radius: .75rem; font-size: .75rem; font-weight: 600; background: #27272a; color: #d4d4d8; white-space: nowrap; transition: all .2s; min-height: 36px; }
+  .category-btn.is-active { background: #dc2626; color: #fff; }
 
   .tabular-nums { font-variant-numeric: tabular-nums; }
 
-  @keyframes sync-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: .35; }
-  }
+  @keyframes sync-pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
   .sync-dot { animation: sync-pulse 2s ease-in-out infinite; }
 
-  /* Mobile bottom nav */
   .mobile-nav {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
-    background: rgba(9,9,11,.96);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid #27272a;
-    padding-bottom: var(--safe-bottom);
+    background: rgba(9,9,11,.97); backdrop-filter: blur(16px);
+    border-top: 1px solid #27272a; padding-bottom: var(--safe-bottom);
     display: grid; grid-template-columns: repeat(5, 1fr);
   }
   @media (min-width: 1024px) { .mobile-nav { display: none; } }
 
   .mobile-nav-item {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; padding: 10px 4px 8px;
-    color: #71717a; font-size: 10px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .03em;
-    text-decoration: none; position: relative;
-    transition: color .25s ease; min-height: 62px;
-    background: transparent; border: none; cursor: pointer;
+    gap: 3px; padding: 10px 4px 8px; color: #71717a; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .03em; position: relative;
+    transition: color .25s; min-height: 62px; background: transparent; border: none; cursor: pointer;
   }
   .mobile-nav-item i { font-size: 19px; }
   .mobile-nav-item:active { transform: scale(.94); }
   .mobile-nav-item.active { color: #ef4444; }
-  .mobile-nav-item.active::before {
-    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    width: 30px; height: 3px; border-radius: 0 0 6px 6px;
-    background: linear-gradient(90deg, #ef4444, #f59e0b);
-  }
-  .mobile-nav-badge {
-    position: absolute; top: 4px; right: calc(50% - 24px);
-    background: #ef4444; color: #fff;
-    font-size: 9px; font-weight: 900;
-    min-width: 18px; height: 18px; border-radius: 9px;
-    display: grid; place-items: center;
-    padding: 0 5px;
-    border: 2px solid #09090b;
-  }
-  .mobile-nav-badge.empty { display: none; }
+  .mobile-nav-item.active::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:30px; height:3px; border-radius:0 0 6px 6px; background:linear-gradient(90deg,#ef4444,#f59e0b); }
 
-  /* Cart bottom sheet mobile */
   .cart-sheet {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
-    background: #12121c; border-radius: 26px 26px 0 0;
-    border-top: 1px solid #27272a;
+    background: #12121c; border-radius: 26px 26px 0 0; border-top: 1px solid #27272a;
     max-height: 90vh; display: flex; flex-direction: column;
-    transform: translateY(100%);
-    transition: transform .35s cubic-bezier(.22,1,.36,1);
-    padding-bottom: var(--safe-bottom);
-    box-shadow: 0 -20px 60px rgba(0,0,0,.6);
+    transform: translateY(100%); transition: transform .35s cubic-bezier(.22,1,.36,1);
+    padding-bottom: var(--safe-bottom); box-shadow: 0 -20px 60px rgba(0,0,0,.6);
   }
   .cart-sheet.open { transform: translateY(0); }
   @media (min-width: 1024px) { .cart-sheet { display: none !important; } }
 
-  .cart-backdrop {
-    position: fixed; inset: 0; z-index: 55;
-    background: rgba(0,0,0,.7);
-    opacity: 0; pointer-events: none;
-    transition: opacity .3s ease;
-  }
+  .cart-backdrop { position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,.7); opacity: 0; pointer-events: none; transition: opacity .3s; }
   .cart-backdrop.open { opacity: 1; pointer-events: auto; }
 
-  /* Mobile cart FAB */
   .cart-fab-mobile {
     position: fixed; bottom: calc(72px + var(--safe-bottom)); right: 14px;
     z-index: 45; width: 62px; height: 62px; border-radius: 50%;
-    background: linear-gradient(135deg, #ef4444, #f59e0b);
-    color: white; display: grid; place-items: center;
+    background: linear-gradient(135deg, #ef4444, #f59e0b); color: white;
+    display: grid; place-items: center;
     box-shadow: 0 12px 30px rgba(239,68,68,.5);
     transform: translateY(140%); transition: transform .35s cubic-bezier(.22,1,.36,1);
     border: none; cursor: pointer;
@@ -197,69 +113,40 @@
   .cart-fab-mobile:active { transform: translateY(0) scale(.92); }
   @media (min-width: 1024px) { .cart-fab-mobile { display: none; } }
 
-  /* POS product card */
-  .pos-card {
-    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-    cursor: pointer;
-  }
+  .pos-card { transition: transform .2s, border-color .2s, box-shadow .2s; cursor: pointer; overflow: hidden; position: relative; }
   .pos-card:active { transform: scale(.96); }
+  .pos-card .pos-img { transition: transform .4s ease; }
   @media (min-width: 1024px) {
     .pos-card:hover { transform: translateY(-4px); border-color: rgba(239,68,68,.6); box-shadow: 0 20px 40px -15px rgba(239,68,68,.4); }
+    .pos-card:hover .pos-img { transform: scale(1.08); }
   }
 
-  /* Input base */
-  .input {
-    width: 100%; background: #09090b; border: 1px solid #3f3f46;
-    border-radius: .75rem; padding: .65rem .9rem; font-size: .875rem;
-    color: #e4e4e7; outline: none; transition: border-color .2s;
-  }
+  .input { width: 100%; background: #09090b; border: 1px solid #3f3f46; border-radius: .75rem; padding: .65rem .9rem; font-size: .875rem; color: #e4e4e7; outline: none; transition: border-color .2s; }
   .input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
 
-  /* Product list row mobile */
-  .product-row {
-    display: grid; grid-template-columns: 60px 1fr auto; gap: 12px;
-    padding: 12px; background: #18181b; border: 1px solid #27272a;
-    border-radius: 16px; align-items: center;
-  }
-  @media (min-width: 768px) { .product-row { display: none; } }
-
-  /* Modal fullscreen on mobile */
-  .modal-fullscreen {
-    position: fixed; inset: 0; z-index: 80;
-    background: rgba(0,0,0,.75);
-    display: flex; align-items: flex-end; justify-content: center;
-  }
-  @media (min-width: 768px) {
-    .modal-fullscreen { align-items: center; }
-  }
+  .modal-fullscreen { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.75); display: flex; align-items: flex-end; justify-content: center; }
+  @media (min-width: 768px) { .modal-fullscreen { align-items: center; } }
   .modal-panel {
     background: #18181b; border: 1px solid #27272a;
-    border-radius: 26px 26px 0 0;
-    width: 100%; max-height: 92vh; overflow-y: auto;
+    border-radius: 26px 26px 0 0; width: 100%; max-height: 92vh; overflow-y: auto;
     padding: 24px 20px calc(24px + var(--safe-bottom));
     animation: slide-up .3s cubic-bezier(.22,1,.36,1);
   }
   @media (min-width: 768px) {
-    .modal-panel {
-      border-radius: 20px; max-width: 520px;
-      max-height: 88vh; padding: 24px;
-      animation: modal-in .22s ease-out;
-    }
+    .modal-panel { border-radius: 20px; max-width: 520px; max-height: 88vh; padding: 24px; animation: modal-in .22s ease-out; }
   }
 
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: .001ms !important;
-      transition-duration: .001ms !important;
-    }
+    *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
   }
 </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen">
 
-<!-- ============================================================
-     LOGIN GATE
-     ============================================================ -->
+<!-- ==================== LOGIN ==================== -->
 <div id="loginGate" class="fixed inset-0 z-[100] bg-zinc-950 flex items-center justify-center p-4">
   <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-7 shadow-2xl modal-card relative overflow-hidden">
     <div class="absolute -top-16 -right-16 w-40 h-40 bg-pizza-600/15 rounded-full blur-3xl pointer-events-none"></div>
@@ -275,29 +162,34 @@
     <form id="loginGateForm" class="space-y-4 relative" novalidate>
       <div>
         <label for="gate-user" class="block text-xs text-zinc-400 mb-1.5">Usuario</label>
-        <input type="text" id="gate-user" required autocomplete="username"
-               class="input" placeholder="admin">
+        <input type="text" id="gate-user" required autocomplete="username" class="input" placeholder="admin">
       </div>
       <div>
         <label for="gate-pass" class="block text-xs text-zinc-400 mb-1.5">Contraseña</label>
-        <input type="password" id="gate-pass" required autocomplete="current-password"
-               class="input" placeholder="••••••">
+        <input type="password" id="gate-pass" required autocomplete="current-password" class="input" placeholder="••••••">
       </div>
       <div id="gate-error" class="hidden text-rose-400 text-xs text-center bg-rose-500/10 border border-rose-500/20 py-2 rounded-lg"></div>
       <button type="submit" class="w-full bg-pizza-600 hover:bg-pizza-700 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-pizza-600/30">
         <i class="fa-solid fa-right-to-bracket mr-2"></i>Ingresar
       </button>
       <a href="index.html" class="block text-center text-xs text-zinc-400 hover:text-white transition pt-1">← Volver al sitio público</a>
-      <p class="text-[10px] text-zinc-600 text-center pt-2 border-t border-zinc-800">
-        Demo: <span class="text-zinc-400 font-mono">admin</span> / <span class="text-zinc-400 font-mono">admin123</span>
-      </p>
     </form>
+
+    <div class="mt-5 pt-4 border-t border-zinc-800 space-y-2">
+      <p class="text-[10px] uppercase tracking-wider text-zinc-500 font-bold text-center">Cuentas de prueba</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" data-fill="admin" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2 rounded-lg text-[11px] font-semibold transition">
+          👑 Administrador
+        </button>
+        <button type="button" data-fill="cajero" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2 rounded-lg text-[11px] font-semibold transition">
+          🧑‍🍳 Cajero / Ventas
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ============================================================
-     HEADER
-     ============================================================ -->
+<!-- ==================== HEADER ==================== -->
 <header id="appHeader" class="hidden glass-panel sticky top-0 z-40 border-b border-zinc-800" style="padding-top: var(--safe-top);">
   <div class="max-w-[1600px] mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
     <div class="flex items-center gap-3 min-w-0">
@@ -310,7 +202,7 @@
           Panel Admin
           <span class="hidden md:inline-flex items-center gap-1.5 text-emerald-400">
             <span class="sync-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            Sincronizado
+            Sincronizado con el menú público
           </span>
         </p>
       </div>
@@ -318,12 +210,12 @@
 
     <div class="flex items-center gap-2">
       <a href="index.html" target="_blank" rel="noopener" title="Ver menú público"
-         class="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-pizza-600 to-amber-600 text-white hover:opacity-95 text-xs font-semibold transition shadow-lg shadow-pizza-600/30">
+         class="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-pizza-600 to-amber-600 text-white text-xs font-semibold transition shadow-lg shadow-pizza-600/30">
         <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
         <span>Ver menú público</span>
       </a>
-      <a href="index.html" title="Ver menú público"
-         class="md:hidden p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white transition">
+      <a href="index.html" title="Volver al sitio público"
+         class="md:hidden p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 transition">
         <i class="fa-solid fa-house text-xs"></i>
       </a>
 
@@ -331,53 +223,36 @@
         <div id="userAvatar" class="h-9 w-9 rounded-xl bg-gradient-to-br from-pizza-500 to-amber-600 grid place-items-center font-bold text-white shadow text-xs">?</div>
         <div class="text-right leading-tight">
           <span id="userName" class="block text-xs font-semibold text-zinc-200">—</span>
-          <span class="block text-[10px] text-emerald-400">
-            <i class="fa-solid fa-circle text-[6px] mr-1"></i>En línea
-          </span>
+          <span id="userRoleLabel" class="block text-[10px] text-emerald-400">En línea</span>
         </div>
       </div>
 
       <button type="button" data-action="logout" title="Cerrar sesión"
-              class="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-red-400 hover:border-red-500/30 transition">
+              class="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-red-400 transition">
         <i class="fa-solid fa-right-from-bracket text-sm"></i>
       </button>
     </div>
   </div>
 
-  <!-- Desktop tabs -->
   <nav class="hidden lg:flex max-w-[1600px] mx-auto px-6 pb-3 gap-1.5 overflow-x-auto" aria-label="Secciones">
-    <button type="button" data-tab="pos" class="tab-btn is-active">
-      <i class="fa-solid fa-cash-register"></i><span>Punto de Venta</span>
-    </button>
-    <button type="button" data-tab="menu" class="tab-btn">
-      <i class="fa-solid fa-utensils"></i><span>Menú</span>
-    </button>
-    <button type="button" data-tab="inventory" class="tab-btn">
-      <i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span>
-    </button>
-    <button type="button" data-tab="staff" class="tab-btn">
-      <i class="fa-solid fa-users-gear"></i><span>Trabajadores</span>
-    </button>
-    <button type="button" data-tab="stats" class="tab-btn">
-      <i class="fa-solid fa-chart-pie"></i><span>Estadísticas</span>
-    </button>
+    <button type="button" data-tab="pos" class="tab-btn is-active"><i class="fa-solid fa-cash-register"></i><span>Punto de Venta</span></button>
+    <button type="button" data-tab="menu" class="tab-btn"><i class="fa-solid fa-utensils"></i><span>Menú</span></button>
+    <button type="button" data-tab="inventory" class="tab-btn"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></button>
+    <button type="button" data-tab="staff" class="tab-btn"><i class="fa-solid fa-users-gear"></i><span>Trabajadores</span></button>
+    <button type="button" data-tab="stats" class="tab-btn"><i class="fa-solid fa-chart-pie"></i><span>Estadísticas</span></button>
   </nav>
 </header>
 
-<!-- ============================================================
-     MAIN
-     ============================================================ -->
+<!-- ==================== MAIN ==================== -->
 <main id="main" class="hidden flex-1 max-w-[1600px] w-full mx-auto p-3 sm:p-5 md:p-6 pb-24 lg:pb-6">
 
-  <!-- ================ POS ================ -->
+  <!-- ========== POS ========== -->
   <section id="section-pos" class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-    <!-- Catálogo -->
     <div class="lg:col-span-7 xl:col-span-8 space-y-3">
       <div class="flex flex-col sm:flex-row gap-3 justify-between sm:items-center bg-zinc-900/60 p-3 rounded-2xl border border-zinc-800">
         <div class="relative w-full sm:w-64">
           <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
-          <input type="search" id="pos-search" autocomplete="off" placeholder="Buscar producto…"
-                 class="input pl-10">
+          <input type="search" id="pos-search" autocomplete="off" placeholder="Buscar producto…" class="input pl-10">
         </div>
         <div id="pos-categories" class="flex gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0"></div>
       </div>
@@ -392,19 +267,15 @@
           Orden actual
           <span id="cart-count-desktop" class="ml-2 text-[11px] font-bold bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-full tabular-nums">0</span>
         </h2>
-        <button type="button" data-action="clear-cart"
-                class="text-xs text-zinc-400 hover:text-red-400 transition bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-lg">
+        <button type="button" data-action="clear-cart" class="text-xs text-zinc-400 hover:text-red-400 transition bg-zinc-800 hover:bg-zinc-700 px-2.5 py-1 rounded-lg">
           <i class="fa-solid fa-trash mr-1"></i>Limpiar
         </button>
       </div>
-
       <div class="mb-3">
         <label class="block text-[10px] uppercase font-bold tracking-wider text-zinc-500 mb-1">Cliente / Mesa</label>
         <input type="text" id="order-client-desktop" value="Mesa 01 - General" autocomplete="off" class="input">
       </div>
-
       <div id="cart-items-desktop" class="space-y-2 overflow-y-auto max-h-[calc(100vh-28rem)] pr-1"></div>
-
       <div class="border-t border-zinc-800 pt-3 space-y-2 mt-3">
         <div class="flex justify-between text-xs text-zinc-400"><span>Subtotal</span><span id="cart-subtotal-desktop" class="tabular-nums">$0.00</span></div>
         <div class="flex justify-between text-xs text-zinc-400"><span>Impuestos (12%)</span><span id="cart-tax-desktop" class="tabular-nums">$0.00</span></div>
@@ -423,21 +294,24 @@
     </aside>
   </section>
 
-  <!-- ================ MENÚ ================ -->
+  <!-- ========== MENÚ ========== -->
   <section id="section-menu" class="hidden space-y-5">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-4 sm:p-5 rounded-2xl border border-zinc-800">
       <div>
         <h2 class="text-base sm:text-lg font-bold text-white">Gestión del menú</h2>
-        <p class="text-xs text-zinc-400">Los cambios se sincronizan automáticamente con el sitio público.</p>
+        <p class="text-xs text-zinc-400 flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 sync-dot"></span>
+          Cambios sincronizados con <a href="index.html" target="_blank" class="text-pizza-400 hover:text-pizza-300 underline">index.html</a>
+        </p>
       </div>
       <button type="button" data-action="new-pizza"
-              class="w-full sm:w-auto bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 active:scale-[.98] transition min-h-[48px]">
+              class="w-full sm:w-auto bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 transition min-h-[48px]">
         <i class="fa-solid fa-plus mr-2"></i>Nueva pizza
       </button>
     </div>
 
     <!-- Tamaños -->
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-5">
+    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
       <div class="flex items-center justify-between mb-3">
         <h3 class="text-sm font-bold text-white flex items-center gap-2">
           <i class="fa-solid fa-ruler-combined text-amber-400"></i>Tamaños y precios
@@ -449,8 +323,8 @@
       <div id="sizes-list" class="grid grid-cols-3 gap-2"></div>
     </div>
 
-    <!-- Extras especiales -->
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-5">
+    <!-- Promos -->
+    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
       <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
         <i class="fa-solid fa-star text-amber-400"></i>Promociones especiales
       </h3>
@@ -469,1399 +343,4 @@
         <div class="flex items-center gap-3 bg-zinc-950 p-3 rounded-xl border border-zinc-800">
           <div class="text-2xl">🥤</div>
           <div class="flex-1 min-w-0">
-            <p class="text-xs font-semibold text-white truncate">Cola 1L</p>
-            <p class="text-[11px] text-zinc-500">Adicional especial</p>
-          </div>
-          <div class="text-right">
-            <p class="font-bold text-amber-400 tabular-nums" id="cola-price-display">$0.75</p>
-            <button type="button" data-action="edit-cola" class="text-[10px] text-pizza-400 hover:text-pizza-300">Editar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Productos: cards en mobile, tabla en desktop -->
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden">
-      <div class="p-4 border-b border-zinc-800">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-pizza-slice text-pizza-500"></i>
-          Pizzas en el menú
-          <span id="menu-count" class="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full tabular-nums">0</span>
-        </h3>
-      </div>
-
-      <!-- Cards mobile -->
-      <div id="menu-list-mobile" class="md:hidden p-3 space-y-2"></div>
-
-      <!-- Table desktop -->
-      <div class="hidden md:block overflow-x-auto">
-        <table class="w-full text-left text-sm text-zinc-300 min-w-[700px]">
-          <thead class="bg-zinc-950/80 text-xs uppercase text-zinc-400 border-b border-zinc-800">
-            <tr>
-              <th class="py-3 px-4 font-semibold">Producto</th>
-              <th class="py-3 px-4 font-semibold">Estado</th>
-              <th class="py-3 px-4 font-semibold">Precios</th>
-              <th class="py-3 px-4 font-semibold text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="menu-table-body" class="divide-y divide-zinc-800/60"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================ INVENTARIO ================ -->
-  <section id="section-inventory" class="hidden space-y-4">
-    <!-- KPIs -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Insumos totales</p>
-        <h3 id="inv-kpi-total" class="text-2xl font-bold text-white mt-1 tabular-nums">0</h3>
-      </div>
-      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Stock crítico</p>
-        <h3 id="inv-kpi-critical" class="text-2xl font-bold text-red-400 mt-1 tabular-nums">0</h3>
-      </div>
-      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Valor inventario</p>
-        <h3 id="inv-kpi-value" class="text-2xl font-bold text-emerald-400 mt-1 tabular-nums">$0</h3>
-      </div>
-      <div class="bg-zinc-900/70 border border-zinc-800 p-4 rounded-2xl">
-        <p class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Proveedores</p>
-        <h3 id="inv-kpi-suppliers" class="text-2xl font-bold text-amber-400 mt-1 tabular-nums">0</h3>
-      </div>
-    </div>
-
-    <!-- Chart stock -->
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-      <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-chart-bar text-pizza-500"></i>Nivel de stock por insumo
-      </h3>
-      <div class="h-64"><canvas id="chart-stock"></canvas></div>
-    </div>
-
-    <!-- Botones -->
-    <div class="flex flex-wrap gap-2">
-      <button type="button" data-action="new-insumo"
-              class="flex-1 sm:flex-none bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 active:scale-[.98] transition min-h-[48px]">
-        <i class="fa-solid fa-plus mr-2"></i>Nuevo insumo
-      </button>
-      <button type="button" data-action="replenish-all"
-              class="flex-1 sm:flex-none bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-4 py-3 rounded-xl text-sm font-semibold border border-zinc-700 transition min-h-[48px]">
-        <i class="fa-solid fa-rotate mr-2"></i>Reabastecer críticos
-      </button>
-    </div>
-
-    <!-- Lista insumos -->
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden">
-      <div class="p-4 border-b border-zinc-800">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-boxes-stacked text-amber-400"></i>Materia prima
-        </h3>
-      </div>
-      <div id="inventory-list" class="p-3 space-y-2"></div>
-    </div>
-  </section>
-
-  <!-- ================ TRABAJADORES ================ -->
-  <section id="section-staff" class="hidden space-y-4">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-zinc-900/70 p-4 sm:p-5 rounded-2xl border border-zinc-800">
-      <div>
-        <h2 class="text-base sm:text-lg font-bold text-white">Equipo de trabajo</h2>
-        <p class="text-xs text-zinc-400">Gestiona usuarios, roles y accesos.</p>
-      </div>
-      <button type="button" data-action="new-staff"
-              class="w-full sm:w-auto bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 active:scale-[.98] transition min-h-[48px]">
-        <i class="fa-solid fa-user-plus mr-2"></i>Nuevo trabajador
-      </button>
-    </div>
-
-    <div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-  </section>
-
-  <!-- ================ ESTADÍSTICAS ================ -->
-  <section id="section-stats" class="hidden space-y-4">
-    <!-- KPIs principales -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      <div class="bg-gradient-to-br from-pizza-600/20 to-transparent border border-pizza-600/30 p-4 rounded-2xl">
-        <div class="flex items-center justify-between mb-1">
-          <p class="text-[10px] uppercase font-bold tracking-wider text-pizza-400">Ventas hoy</p>
-          <i class="fa-solid fa-arrow-trend-up text-pizza-400 text-xs"></i>
-        </div>
-        <h3 id="stat-today" class="text-2xl font-bold text-white tabular-nums">$0</h3>
-        <p id="stat-today-orders" class="text-[10px] text-zinc-500 mt-0.5">0 órdenes</p>
-      </div>
-      <div class="bg-gradient-to-br from-emerald-600/20 to-transparent border border-emerald-600/30 p-4 rounded-2xl">
-        <div class="flex items-center justify-between mb-1">
-          <p class="text-[10px] uppercase font-bold tracking-wider text-emerald-400">Ventas semana</p>
-          <i class="fa-solid fa-calendar-week text-emerald-400 text-xs"></i>
-        </div>
-        <h3 id="stat-week" class="text-2xl font-bold text-white tabular-nums">$0</h3>
-        <p id="stat-week-orders" class="text-[10px] text-zinc-500 mt-0.5">0 órdenes</p>
-      </div>
-      <div class="bg-gradient-to-br from-amber-600/20 to-transparent border border-amber-600/30 p-4 rounded-2xl">
-        <div class="flex items-center justify-between mb-1">
-          <p class="text-[10px] uppercase font-bold tracking-wider text-amber-400">Ticket promedio</p>
-          <i class="fa-solid fa-receipt text-amber-400 text-xs"></i>
-        </div>
-        <h3 id="stat-avg" class="text-2xl font-bold text-white tabular-nums">$0</h3>
-        <p class="text-[10px] text-zinc-500 mt-0.5">por orden</p>
-      </div>
-      <div class="bg-gradient-to-br from-blue-600/20 to-transparent border border-blue-600/30 p-4 rounded-2xl">
-        <div class="flex items-center justify-between mb-1">
-          <p class="text-[10px] uppercase font-bold tracking-wider text-blue-400">Producto top</p>
-          <i class="fa-solid fa-crown text-blue-400 text-xs"></i>
-        </div>
-        <h3 id="stat-top" class="text-sm font-bold text-white truncate">—</h3>
-        <p id="stat-top-count" class="text-[10px] text-zinc-500 mt-0.5">0 vendidos</p>
-      </div>
-    </div>
-
-    <!-- Gráficos -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-chart-line text-pizza-500"></i>Ventas últimos 7 días
-        </h3>
-        <div class="h-56"><canvas id="chart-sales"></canvas></div>
-      </div>
-      <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-chart-pie text-amber-400"></i>Método de pago
-        </h3>
-        <div class="h-56"><canvas id="chart-payments"></canvas></div>
-      </div>
-    </div>
-
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4">
-      <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-ranking-star text-emerald-400"></i>Top 5 productos más vendidos
-      </h3>
-      <div class="h-64"><canvas id="chart-top"></canvas></div>
-    </div>
-
-    <!-- Historial -->
-    <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden">
-      <div class="p-4 border-b border-zinc-800 flex items-center justify-between">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-clock-rotate-left text-zinc-400"></i>Últimas ventas
-        </h3>
-        <button type="button" data-action="clear-sales" class="text-[10px] text-zinc-500 hover:text-red-400">
-          <i class="fa-solid fa-trash mr-1"></i>Limpiar historial
-        </button>
-      </div>
-      <div id="sales-history" class="p-3 space-y-2 max-h-96 overflow-y-auto"></div>
-    </div>
-  </section>
-</main>
-
-<!-- ================ MOBILE BOTTOM NAV ================ -->
-<nav class="mobile-nav hidden" id="mobileNav">
-  <button type="button" class="mobile-nav-item active" data-tab="pos">
-    <i class="fa-solid fa-cash-register"></i>
-    <span>POS</span>
-  </button>
-  <button type="button" class="mobile-nav-item" data-tab="menu">
-    <i class="fa-solid fa-utensils"></i>
-    <span>Menú</span>
-  </button>
-  <button type="button" class="mobile-nav-item" data-tab="inventory">
-    <i class="fa-solid fa-boxes-stacked"></i>
-    <span>Stock</span>
-  </button>
-  <button type="button" class="mobile-nav-item" data-tab="staff">
-    <i class="fa-solid fa-users-gear"></i>
-    <span>Staff</span>
-  </button>
-  <button type="button" class="mobile-nav-item" data-tab="stats">
-    <i class="fa-solid fa-chart-pie"></i>
-    <span>Stats</span>
-  </button>
-</nav>
-
-<!-- ================ MOBILE CART FAB ================ -->
-<button type="button" id="mobileCartFab" class="cart-fab-mobile">
-  <i class="fa-solid fa-bag-shopping text-2xl"></i>
-  <span id="mobileCartBadge" class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-black rounded-full w-6 h-6 grid place-items-center border-2 border-zinc-950">0</span>
-</button>
-
-<!-- ================ CART SHEET (mobile) ================ -->
-<div class="cart-backdrop" id="cartBackdrop"></div>
-<div class="cart-sheet" id="cartSheet">
-  <div class="w-10 h-1 bg-zinc-700 rounded-full mx-auto mt-2"></div>
-  <div class="px-5 pt-3 pb-3 flex items-center justify-between border-b border-zinc-800">
-    <div>
-      <h3 class="font-display text-2xl">ORDEN ACTUAL</h3>
-      <p class="text-[11px] text-zinc-500" id="cartSubtitleMobile">Sin productos</p>
-    </div>
-    <button type="button" id="closeCartSheet" class="w-10 h-10 rounded-xl bg-zinc-800 grid place-items-center text-zinc-400 hover:text-white">
-      <i class="fa-solid fa-xmark text-lg"></i>
-    </button>
-  </div>
-
-  <div class="px-5 py-3 border-b border-zinc-800">
-    <label class="block text-[10px] uppercase font-bold tracking-wider text-zinc-500 mb-1">Cliente / Mesa</label>
-    <input type="text" id="order-client-mobile" value="Mesa 01 - General" class="input">
-  </div>
-
-  <div id="cart-items-mobile" class="flex-1 overflow-y-auto px-5 py-3 space-y-2"></div>
-
-  <div class="border-t border-zinc-800 px-5 py-4 space-y-2" style="padding-bottom: calc(16px + var(--safe-bottom));">
-    <div class="flex justify-between text-xs text-zinc-400"><span>Subtotal</span><span id="cart-subtotal-mobile" class="tabular-nums">$0.00</span></div>
-    <div class="flex justify-between text-xs text-zinc-400"><span>Impuestos (12%)</span><span id="cart-tax-mobile" class="tabular-nums">$0.00</span></div>
-    <div class="flex justify-between text-lg font-bold text-white pt-2 border-t border-zinc-800">
-      <span>Total</span><span id="cart-total-mobile" class="text-pizza-500 tabular-nums">$0.00</span>
-    </div>
-    <div class="grid grid-cols-2 gap-2 pt-2">
-      <button type="button" data-pay="Efectivo" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-3 rounded-xl font-medium text-xs transition border border-zinc-700 active:scale-[.98] min-h-[48px]">
-        <i class="fa-solid fa-money-bill-wave text-emerald-400 mr-1.5"></i>Efectivo
-      </button>
-      <button type="button" data-pay="Tarjeta" class="w-full bg-pizza-600 hover:bg-pizza-700 text-white py-3 rounded-xl font-medium text-xs transition shadow-lg shadow-pizza-600/30 active:scale-[.98] min-h-[48px]">
-        <i class="fa-solid fa-credit-card mr-1.5"></i>Tarjeta
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ================ MODAL ================ -->
-<div id="modalRoot" class="modal-fullscreen hidden" style="display:none">
-  <div class="modal-panel" id="modalPanel"></div>
-</div>
-
-<!-- ================ TOASTS ================ -->
-<div id="toastContainer" class="fixed top-20 right-3 left-3 md:left-auto md:right-6 z-[90] space-y-2 pointer-events-none"></div>
-
-<script>
-/* =========================================================
-   💾 CAPA DE DATOS (localStorage)
-   ========================================================= */
-const LS = {
-  MENU: "bp_menu",
-  SALES: "bp_sales",
-  INVENTORY: "bp_inventory",
-  STAFF: "bp_staff",
-  SESSION: "bp_session",
-};
-
-const DEFAULT_MENU = {
-  version: 2,
-  config: {
-    whatsapp: "593984113081",
-    telefono: "098 411 3081",
-    horaApertura: 17,
-    horaCierre: 22.5,
-    envioGratisDesde: 5.00,
-    compraMinima: 5.00,
-  },
-  tamanos: [
-    { id: "personal", label: "Personal", precio: 5.00,  porciones: 4 },
-    { id: "mediana",  label: "Mediana",  precio: 9.00,  porciones: 10 },
-    { id: "familiar", label: "Familiar", precio: 13.00, porciones: 12 },
-  ],
-  pizzas: [
-    { id: 1, nombre: "Pizza Pepperoni", desc: "Clásica con pepperoni, mozzarella y salsa de tomate artesanal.", badge: "hot", rating: 5 },
-    { id: 2, nombre: "Pizza Margarita", desc: "Mozzarella fresca, albahaca y tomate.", rating: 5 },
-    { id: 3, nombre: "Pizza Hawaiana",  desc: "Jamón, piña y mozzarella.", rating: 5 },
-    { id: 4, nombre: "Pizza de Jamón",  desc: "Jamón de primera calidad con mozzarella.", badge: "new", rating: 5 },
-  ],
-  porcion: { id: 200, nombre: "Porción de Pizza", precio: 1.25 },
-  cola:    { id: 300, nombre: "Cola 1L", precio: 0.75 },
-};
-
-const DEFAULT_INVENTORY = [
-  { id: 1, nombre: "Harina", unidad: "kg", stock: 25, min: 10, costo: 1.20, proveedor: "Molinos Andinos" },
-  { id: 2, nombre: "Queso Mozzarella", unidad: "kg", stock: 8, min: 5, costo: 6.50, proveedor: "Lácteos Biblán" },
-  { id: 3, nombre: "Salsa de Tomate", unidad: "L", stock: 12, min: 5, costo: 2.20, proveedor: "Del Monte" },
-  { id: 4, nombre: "Pepperoni", unidad: "kg", stock: 4, min: 3, costo: 8.00, proveedor: "Carnes Pérez" },
-  { id: 5, nombre: "Jamón", unidad: "kg", stock: 2, min: 3, costo: 5.50, proveedor: "Carnes Pérez" },
-  { id: 6, nombre: "Piña enlatada", unidad: "kg", stock: 3, min: 2, costo: 3.00, proveedor: "Del Monte" },
-  { id: 7, nombre: "Cola 1L", unidad: "botella", stock: 20, min: 12, costo: 0.50, proveedor: "Distribuidora Sur" },
-  { id: 8, nombre: "Cajas pizza", unidad: "unidad", stock: 45, min: 20, costo: 0.15, proveedor: "Empaques EC" },
-];
-
-const DEFAULT_STAFF = [
-  { id: 1, nombre: "Administrador", usuario: "admin", pass: "admin123", rol: "admin", activo: true },
-  { id: 2, nombre: "Carlos Pérez", usuario: "carlos", pass: "1234", rol: "cajero", activo: true },
-];
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-const $ = (s, c = document) => c.querySelector(s);
-const $$ = (s, c = document) => [...c.querySelectorAll(s)];
-const money = v => "$" + Number(v).toFixed(2);
-const uid = () => Date.now() + Math.floor(Math.random() * 1000);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-
-function readLS(key, fallback) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
-  catch { return fallback; }
-}
-function writeLS(key, val) {
-  localStorage.setItem(key, JSON.stringify(val));
-  // Disparar evento para otras pestañas
-  window.dispatchEvent(new StorageEvent("storage", { key, newValue: JSON.stringify(val) }));
-}
-
-let MENU = readLS(LS.MENU, DEFAULT_MENU);
-let SALES = readLS(LS.SALES, []);
-let INVENTORY = readLS(LS.INVENTORY, DEFAULT_INVENTORY);
-let STAFF = readLS(LS.STAFF, DEFAULT_STAFF);
-let SESSION = readLS(LS.SESSION, null);
-
-/* =========================================================
-   UTILIDADES UI
-   ========================================================= */
-function toast(msg, type = "success") {
-  const cont = $("#toastContainer");
-  const el = document.createElement("div");
-  const isError = type === "error";
-  el.className = `toast-in pointer-events-auto rounded-2xl px-4 py-3 shadow-2xl backdrop-blur-md border text-xs font-semibold flex items-center gap-2.5 max-w-md ml-auto ${
-    isError ? "bg-red-500/15 border-red-500/40 text-red-300"
-            : "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
-  }`;
-  el.innerHTML = `<i class="fa-solid ${isError ? "fa-circle-exclamation" : "fa-circle-check"} text-base"></i><span>${esc(msg)}</span>`;
-  cont.appendChild(el);
-  setTimeout(() => {
-    el.style.transition = "opacity .3s, transform .3s";
-    el.style.opacity = "0";
-    el.style.transform = "translateY(-10px)";
-    setTimeout(() => el.remove(), 300);
-  }, 2800);
-}
-
-function openModal(html) {
-  const root = $("#modalRoot");
-  $("#modalPanel").innerHTML = html;
-  root.classList.remove("hidden");
-  root.style.display = "flex";
-  document.body.style.overflow = "hidden";
-}
-function closeModal() {
-  const root = $("#modalRoot");
-  root.classList.add("hidden");
-  root.style.display = "none";
-  document.body.style.overflow = "";
-  $("#modalPanel").innerHTML = "";
-}
-$("#modalRoot").addEventListener("click", e => { if (e.target.id === "modalRoot") closeModal(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCartSheet(); } });
-
-/* =========================================================
-   LOGIN
-   ========================================================= */
-function tryLogin(user, pass) {
-  const found = STAFF.find(s => s.usuario === user && s.pass === pass && s.activo);
-  return found || null;
-}
-$("#loginGateForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const u = $("#gate-user").value.trim();
-  const p = $("#gate-pass").value;
-  const user = tryLogin(u, p);
-  const err = $("#gate-error");
-  if (!user) {
-    err.textContent = "Usuario o contraseña incorrectos";
-    err.classList.remove("hidden");
-    $("#loginGateForm").classList.add("shake");
-    setTimeout(() => $("#loginGateForm").classList.remove("shake"), 400);
-    return;
-  }
-  err.classList.add("hidden");
-  SESSION = { id: user.id, nombre: user.nombre, usuario: user.usuario, rol: user.rol, hora: Date.now() };
-  writeLS(LS.SESSION, SESSION);
-  showApp();
-  toast(`Bienvenido, ${user.nombre}`);
-});
-
-function showApp() {
-  $("#loginGate").style.display = "none";
-  $("#appHeader").classList.remove("hidden");
-  $("#main").classList.remove("hidden");
-  $("#mobileNav").classList.remove("hidden");
-  $("#userName").textContent = SESSION.nombre;
-  $("#userAvatar").textContent = SESSION.nombre.charAt(0).toUpperCase();
-  renderAll();
-  initCharts();
-}
-
-function logout() {
-  if (!confirm("¿Cerrar sesión?")) return;
-  localStorage.removeItem(LS.SESSION);
-  SESSION = null;
-  location.reload();
-}
-document.querySelector("[data-action='logout']").addEventListener("click", logout);
-
-/* =========================================================
-   NAVEGACIÓN
-   ========================================================= */
-let currentTab = "pos";
-function switchTab(tab) {
-  currentTab = tab;
-  $$("section[id^='section-']").forEach(s => s.classList.add("hidden"));
-  const target = $("#section-" + tab);
-  if (target) target.classList.remove("hidden");
-
-  // Desktop tabs
-  $$(".tab-btn").forEach(t => t.classList.toggle("is-active", t.dataset.tab === tab));
-  // Mobile nav
-  $$(".mobile-nav-item").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
-
-  // Reflow de charts
-  setTimeout(() => { Object.values(charts).forEach(c => c && c.resize()); }, 100);
-}
-
-$$("[data-tab]").forEach(btn => {
-  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
-});
-
-/* =========================================================
-   CARRITO / ORDEN ACTUAL
-   ========================================================= */
-let cart = [];
-let currentCategory = "todos";
-let currentSearch = "";
-
-function cartCount() { return cart.reduce((s, i) => s + i.cantidad, 0); }
-function cartSubtotal() { return cart.reduce((s, i) => s + i.precio * i.cantidad, 0); }
-function cartTax() { return cartSubtotal() * 0.12; }
-function cartTotal() { return cartSubtotal() + cartTax(); }
-
-function addToCart(item) {
-  const found = cart.find(i => i.key === item.key);
-  if (found) found.cantidad++;
-  else cart.push({ ...item, cantidad: 1 });
-  renderCart();
-  toast(`${item.nombre} agregado`);
-}
-function changeQty(idx, delta) {
-  cart[idx].cantidad += delta;
-  if (cart[idx].cantidad <= 0) cart.splice(idx, 1);
-  renderCart();
-}
-function clearCart() {
-  if (!cart.length) return;
-  cart = [];
-  renderCart();
-  toast("Orden limpiada");
-}
-
-function renderCart() {
-  const count = cartCount();
-  const sub = cartSubtotal();
-  const tax = cartTax();
-  const tot = cartTotal();
-
-  // Actualizar todos los contadores
-  ["#cart-count-desktop", "#mobileCartBadge"].forEach(sel => {
-    const el = $(sel);
-    if (el) { el.textContent = count; el.classList.toggle("empty", count === 0); }
-  });
-
-  // Totales
-  ["desktop", "mobile"].forEach(sfx => {
-    const s = $("#cart-subtotal-" + sfx); if (s) s.textContent = money(sub);
-    const t = $("#cart-tax-" + sfx); if (t) t.textContent = money(tax);
-    const g = $("#cart-total-" + sfx); if (g) g.textContent = money(tot);
-  });
-  $("#cartSubtitleMobile").textContent = count === 0 ? "Sin productos" : `${count} ${count === 1 ? "producto" : "productos"}`;
-
-  // FAB
-  $("#mobileCartFab").classList.toggle("show", count > 0);
-
-  // Render items en ambos contenedores
-  const html = count === 0
-    ? `<div class="text-center py-10 text-zinc-500">
-         <div class="text-5xl mb-2">🛒</div>
-         <p class="text-sm">Sin productos</p>
-         <p class="text-xs mt-1">Toca un producto del catálogo</p>
-       </div>`
-    : cart.map((item, idx) => `
-      <div class="flex items-center gap-3 p-3 bg-zinc-950 border border-zinc-800 rounded-xl">
-        <div class="w-10 h-10 rounded-lg bg-zinc-900 grid place-items-center text-lg shrink-0">${item.emoji || "🍕"}</div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold text-white truncate">${esc(item.nombre)}</p>
-          <p class="text-[11px] text-zinc-500">${money(item.precio)} c/u</p>
-        </div>
-        <div class="flex items-center gap-1">
-          <button type="button" class="w-7 h-7 rounded-lg bg-zinc-800 text-white grid place-items-center text-xs active:bg-red-500" data-qty="-1" data-idx="${idx}">
-            <i class="fa-solid fa-minus"></i>
-          </button>
-          <span class="text-sm font-bold min-w-[22px] text-center tabular-nums">${item.cantidad}</span>
-          <button type="button" class="w-7 h-7 rounded-lg bg-zinc-800 text-white grid place-items-center text-xs active:bg-emerald-500" data-qty="1" data-idx="${idx}">
-            <i class="fa-solid fa-plus"></i>
-          </button>
-        </div>
-      </div>
-    `).join("");
-
-  ["#cart-items-desktop", "#cart-items-mobile"].forEach(sel => {
-    const el = $(sel);
-    if (el) el.innerHTML = html;
-  });
-
-  // Listeners qty
-  $$("[data-qty]").forEach(b => {
-    b.addEventListener("click", () => changeQty(Number(b.dataset.idx), Number(b.dataset.qty)));
-  });
-}
-
-/* Registrar venta */
-function registerSale(method) {
-  if (!cart.length) { toast("Agrega productos primero", "error"); return; }
-  const clientDesktop = $("#order-client-desktop")?.value || "Cliente";
-  const clientMobile = $("#order-client-mobile")?.value || "Cliente";
-  const client = clientMobile || clientDesktop;
-
-  const sale = {
-    id: uid(),
-    fecha: new Date().toISOString(),
-    cliente: client,
-    metodo: method,
-    items: cart.map(i => ({ ...i })),
-    subtotal: cartSubtotal(),
-    impuesto: cartTax(),
-    total: cartTotal(),
-    vendedor: SESSION.nombre,
-  };
-
-  SALES.unshift(sale);
-  writeLS(LS.SALES, SALES);
-
-  // Descontar inventario aproximado
-  sale.items.forEach(item => {
-    // Descuento simple: si es pizza, descontar 1 de queso y 1 de harina
-    if (item.tipo === "pizza") {
-      const q = INVENTORY.find(i => /queso/i.test(i.nombre));
-      if (q) q.stock = Math.max(0, +(q.stock - 0.3).toFixed(2));
-      const h = INVENTORY.find(i => /harina/i.test(i.nombre));
-      if (h) h.stock = Math.max(0, +(h.stock - 0.4).toFixed(2));
-    }
-    if (/cola/i.test(item.nombre)) {
-      const c = INVENTORY.find(i => /cola/i.test(i.nombre));
-      if (c) c.stock = Math.max(0, c.stock - item.cantidad);
-    }
-  });
-  writeLS(LS.INVENTORY, INVENTORY);
-
-  cart = [];
-  renderCart();
-  renderInventory();
-  renderStats();
-  closeCartSheet();
-  toast(`Venta registrada: ${money(sale.total)} (${method})`);
-}
-
-$$("[data-pay]").forEach(b => {
-  b.addEventListener("click", () => registerSale(b.dataset.pay));
-});
-
-$("[data-action='clear-cart']").addEventListener("click", clearCart);
-
-/* =========================================================
-   CART SHEET mobile
-   ========================================================= */
-function openCartSheet() {
-  $("#cartSheet").classList.add("open");
-  $("#cartBackdrop").classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-function closeCartSheet() {
-  $("#cartSheet").classList.remove("open");
-  $("#cartBackdrop").classList.remove("open");
-  document.body.style.overflow = "";
-}
-$("#mobileCartFab").addEventListener("click", openCartSheet);
-$("#closeCartSheet").addEventListener("click", closeCartSheet);
-$("#cartBackdrop").addEventListener("click", closeCartSheet);
-
-/* =========================================================
-   POS: GRID DE PRODUCTOS
-   ========================================================= */
-function getPOSProducts() {
-  let list = [];
-  MENU.pizzas.forEach(p => {
-    // Por cada pizza, generar un botón por tamaño
-    MENU.tamanos.forEach(t => {
-      list.push({
-        key: `pizza-${p.id}-${t.id}`,
-        tipo: "pizza",
-        id: p.id,
-        nombre: `${p.nombre} ${t.label}`,
-        precio: t.precio,
-        emoji: "🍕",
-        categoria: "pizzas",
-        badge: p.badge,
-      });
-    });
-  });
-  // Porción
-  list.push({
-    key: "porcion",
-    tipo: "porcion",
-    id: MENU.porcion.id,
-    nombre: "Porción de pizza",
-    precio: MENU.porcion.precio,
-    emoji: "🍕",
-    categoria: "especiales",
-  });
-  // Cola
-  list.push({
-    key: "cola",
-    tipo: "extra",
-    id: MENU.cola.id,
-    nombre: MENU.cola.nombre,
-    precio: MENU.cola.precio,
-    emoji: "🥤",
-    categoria: "bebidas",
-    badge: "promo",
-  });
-  return list;
-}
-
-function getCategories() {
-  const cats = new Set(getPOSProducts().map(p => p.categoria));
-  return ["todos", ...[...cats]];
-}
-
-function renderPOS() {
-  // Categorías
-  const catCont = $("#pos-categories");
-  catCont.innerHTML = getCategories().map(c => `
-    <button type="button" data-cat="${c}" class="category-btn ${c === currentCategory ? "is-active" : ""}">
-      ${c === "todos" ? "🍽️ Todos" : c.charAt(0).toUpperCase() + c.slice(1)}
-    </button>
-  `).join("");
-  $$("#pos-categories [data-cat]").forEach(b => {
-    b.addEventListener("click", () => { currentCategory = b.dataset.cat; renderPOS(); });
-  });
-
-  // Filtrar
-  let list = getPOSProducts();
-  if (currentCategory !== "todos") list = list.filter(p => p.categoria === currentCategory);
-  if (currentSearch.trim()) {
-    const q = currentSearch.toLowerCase();
-    list = list.filter(p => p.nombre.toLowerCase().includes(q));
-  }
-
-  const grid = $("#pos-product-grid");
-  if (!list.length) {
-    grid.innerHTML = `<div class="col-span-full text-center py-12 text-zinc-500">
-      <div class="text-5xl mb-2">🔍</div><p>Sin resultados</p></div>`;
-    return;
-  }
-
-  grid.innerHTML = list.map(p => `
-    <button type="button" class="pos-card bg-zinc-900 border border-zinc-800 rounded-2xl p-3 text-left flex flex-col gap-2" data-key="${p.key}">
-      <div class="text-3xl text-center">${p.emoji}</div>
-      <p class="text-xs font-semibold text-white leading-tight line-clamp-2 min-h-[2rem]">${esc(p.nombre)}</p>
-      <p class="font-display text-xl text-amber-400 mt-auto">${money(p.precio)}</p>
-    </button>
-  `).join("");
-
-  $$("#pos-product-grid .pos-card").forEach(card => {
-    card.addEventListener("click", () => {
-      const p = list.find(x => x.key === card.dataset.key);
-      if (p) addToCart(p);
-    });
-  });
-}
-
-$("#pos-search").addEventListener("input", e => { currentSearch = e.target.value; renderPOS(); });
-
-/* =========================================================
-   MENÚ: RENDER Y EDICIÓN
-   ========================================================= */
-function renderMenuAdmin() {
-  // Tamaños
-  $("#sizes-list").innerHTML = MENU.tamanos.map(t => `
-    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-center">
-      <p class="text-[10px] uppercase font-bold text-zinc-500">${esc(t.label)}</p>
-      <p class="font-display text-2xl text-amber-400">${money(t.precio)}</p>
-      <p class="text-[10px] text-zinc-500">${t.porciones} porciones</p>
-    </div>
-  `).join("");
-
-  // Precios especiales
-  $("#porcion-price-display").textContent = money(MENU.porcion.precio);
-  $("#cola-price-display").textContent = money(MENU.cola.precio);
-
-  // Contador
-  $("#menu-count").textContent = MENU.pizzas.length;
-
-  // Lista mobile (cards)
-  const mobileCont = $("#menu-list-mobile");
-  mobileCont.innerHTML = MENU.pizzas.map(p => `
-    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
-      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pizza-600 to-amber-500 grid place-items-center text-xl shrink-0">🍕</div>
-      <div class="flex-1 min-w-0">
-        <p class="text-sm font-semibold text-white truncate">${esc(p.nombre)}</p>
-        <p class="text-[11px] text-zinc-500 truncate">${esc(p.desc || "")}</p>
-      </div>
-      <div class="flex gap-1">
-        <button type="button" class="w-9 h-9 rounded-lg bg-zinc-800 text-zinc-300 grid place-items-center text-xs" data-edit-pizza="${p.id}">
-          <i class="fa-solid fa-pen"></i>
-        </button>
-        <button type="button" class="w-9 h-9 rounded-lg bg-zinc-800 text-red-400 grid place-items-center text-xs" data-del-pizza="${p.id}">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </div>
-    </div>
-  `).join("");
-
-  // Tabla desktop
-  $("#menu-table-body").innerHTML = MENU.pizzas.map(p => `
-    <tr class="hover:bg-zinc-800/40 transition">
-      <td class="py-3 px-4">
-        <div class="font-semibold text-white">${esc(p.nombre)}</div>
-        <div class="text-[11px] text-zinc-500 max-w-xs truncate">${esc(p.desc || "")}</div>
-      </td>
-      <td class="py-3 px-4">
-        ${p.badge === "hot" ? '<span class="badge bg-pizza-600/20 text-pizza-400">🔥 Popular</span>' : ""}
-        ${p.badge === "new" ? '<span class="badge bg-emerald-600/20 text-emerald-400">⭐ Nuevo</span>' : ""}
-        ${!p.badge ? '<span class="badge bg-zinc-800 text-zinc-400">Normal</span>' : ""}
-      </td>
-      <td class="py-3 px-4 text-xs text-zinc-400">
-        P: ${money(MENU.tamanos[0].precio)} · M: ${money(MENU.tamanos[1].precio)} · F: ${money(MENU.tamanos[2].precio)}
-      </td>
-      <td class="py-3 px-4 text-right">
-        <button type="button" class="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 mr-1" data-edit-pizza="${p.id}">
-          <i class="fa-solid fa-pen text-[10px] mr-1"></i>Editar
-        </button>
-        <button type="button" class="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-red-500/20 text-xs text-red-400" data-del-pizza="${p.id}">
-          <i class="fa-solid fa-trash text-[10px]"></i>
-        </button>
-      </td>
-    </tr>
-  `).join("");
-
-  // Listeners
-  $$("[data-edit-pizza]").forEach(b => b.addEventListener("click", () => editPizza(Number(b.dataset.editPizza))));
-  $$("[data-del-pizza]").forEach(b => b.addEventListener("click", () => deletePizza(Number(b.dataset.delPizza))));
-}
-
-function saveMenu() {
-  writeLS(LS.MENU, MENU);
-  renderPOS();
-  renderMenuAdmin();
-}
-
-function editPizza(id) {
-  const p = id === 0 ? { id: uid(), nombre: "", desc: "", badge: "" } : MENU.pizzas.find(x => x.id === id);
-  if (!p) return;
-
-  openModal(`
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="text-lg font-bold text-white">${id ? "Editar" : "Nueva"} pizza</h3>
-      <button type="button" id="m-close" class="w-9 h-9 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <form id="m-pizza-form" class="space-y-4">
-      <div>
-        <label class="block text-xs text-zinc-400 mb-1.5">Nombre</label>
-        <input type="text" id="m-name" value="${esc(p.nombre)}" required class="input" placeholder="Pizza Pepperoni">
-      </div>
-      <div>
-        <label class="block text-xs text-zinc-400 mb-1.5">Descripción</label>
-        <textarea id="m-desc" rows="2" class="input" placeholder="Ingredientes…">${esc(p.desc || "")}</textarea>
-      </div>
-      <div>
-        <label class="block text-xs text-zinc-400 mb-1.5">Etiqueta</label>
-        <select id="m-badge" class="input">
-          <option value="" ${!p.badge ? "selected" : ""}>Normal</option>
-          <option value="hot" ${p.badge === "hot" ? "selected" : ""}>🔥 Popular</option>
-          <option value="new" ${p.badge === "new" ? "selected" : ""}>⭐ Nuevo</option>
-        </select>
-      </div>
-      <div class="grid grid-cols-2 gap-3 pt-2">
-        <button type="button" id="m-cancel" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-3 rounded-xl text-sm font-semibold transition">Cancelar</button>
-        <button type="submit" class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white py-3 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/30">${id ? "Guardar" : "Crear"}</button>
-      </div>
-    </form>
-  `);
-
-  $("#m-close").addEventListener("click", closeModal);
-  $("#m-cancel").addEventListener("click", closeModal);
-  $("#m-pizza-form").addEventListener("submit", e => {
-    e.preventDefault();
-    const nombre = $("#m-name").value.trim();
-    const desc = $("#m-desc").value.trim();
-    const badge = $("#m-badge").value;
-    if (!nombre) { toast("Ponle un nombre", "error"); return; }
-
-    if (id === 0) {
-      MENU.pizzas.push({ id: uid(), nombre, desc, badge, rating: 5 });
-      toast("Pizza agregada al menú público ✨");
-    } else {
-      Object.assign(MENU.pizzas.find(x => x.id === id), { nombre, desc, badge });
-      toast("Pizza actualizada");
-    }
-    saveMenu();
-    closeModal();
-  });
-}
-
-function deletePizza(id) {
-  const p = MENU.pizzas.find(x => x.id === id);
-  if (!p) return;
-  if (!confirm(`¿Eliminar "${p.nombre}" del menú?`)) return;
-  MENU.pizzas = MENU.pizzas.filter(x => x.id !== id);
-  saveMenu();
-  toast("Pizza eliminada");
-}
-
-$$("[data-action='new-pizza']").forEach(b => b.addEventListener("click", () => editPizza(0)));
-
-/* Editar tamaños */
-$("[data-action='edit-sizes']").addEventListener("click", () => {
-  openModal(`
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="text-lg font-bold text-white">Tamaños y precios</h3>
-      <button type="button" id="m-close" class="w-9 h-9 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <form id="m-sizes-form" class="space-y-3">
-      ${MENU.tamanos.map((t, i) => `
-        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-bold text-white">${t.label}</span>
-            <span class="text-[10px] text-zinc-500">${t.porciones} porciones</span>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] text-zinc-500 mb-1">Precio</label>
-              <input type="number" step="0.01" min="0" class="input" data-size-price="${i}" value="${t.precio}">
-            </div>
-            <div>
-              <label class="block text-[10px] text-zinc-500 mb-1">Porciones</label>
-              <input type="number" min="1" class="input" data-size-portions="${i}" value="${t.porciones}">
-            </div>
-          </div>
-        </div>
-      `).join("")}
-      <div class="grid grid-cols-2 gap-3 pt-2">
-        <button type="button" id="m-cancel" class="bg-zinc-800 text-zinc-200 py-3 rounded-xl text-sm font-semibold">Cancelar</button>
-        <button type="submit" class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white py-3 rounded-xl text-sm font-semibold">Guardar</button>
-      </div>
-    </form>
-  `);
-  $("#m-close").addEventListener("click", closeModal);
-  $("#m-cancel").addEventListener("click", closeModal);
-  $("#m-sizes-form").addEventListener("submit", e => {
-    e.preventDefault();
-    MENU.tamanos.forEach((t, i) => {
-      t.precio = parseFloat($(`[data-size-price="${i}"]`).value) || 0;
-      t.porciones = parseInt($(`[data-size-portions="${i}"]`).value) || t.porciones;
-    });
-    saveMenu();
-    closeModal();
-    toast("Tamaños actualizados");
-  });
-});
-
-$("[data-action='edit-porcion']").addEventListener("click", () => {
-  const val = prompt("Precio de la porción individual:", MENU.porcion.precio);
-  if (val === null) return;
-  MENU.porcion.precio = parseFloat(val) || MENU.porcion.precio;
-  saveMenu();
-  toast("Precio de porción actualizado");
-});
-
-$("[data-action='edit-cola']").addEventListener("click", () => {
-  const val = prompt("Precio de la cola 1L:", MENU.cola.precio);
-  if (val === null) return;
-  MENU.cola.precio = parseFloat(val) || MENU.cola.precio;
-  saveMenu();
-  toast("Precio de la cola actualizado");
-});
-
-/* =========================================================
-   INVENTARIO
-   ========================================================= */
-function renderInventory() {
-  // KPIs
-  const total = INVENTORY.length;
-  const critical = INVENTORY.filter(i => i.stock <= i.min).length;
-  const value = INVENTORY.reduce((s, i) => s + i.stock * i.costo, 0);
-  const suppliers = new Set(INVENTORY.map(i => i.proveedor)).size;
-
-  $("#inv-kpi-total").textContent = total;
-  $("#inv-kpi-critical").textContent = critical;
-  $("#inv-kpi-value").textContent = money(value);
-  $("#inv-kpi-suppliers").textContent = suppliers;
-
-  // Lista
-  $("#inventory-list").innerHTML = INVENTORY.map(i => {
-    const isCrit = i.stock <= i.min;
-    const pct = Math.min(100, (i.stock / (i.min * 3)) * 100);
-    return `
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 ${isCrit ? "border-red-500/40" : ""}">
-        <div class="flex items-start gap-3 mb-2">
-          <div class="w-10 h-10 rounded-lg ${isCrit ? "bg-red-500/20 text-red-400" : "bg-zinc-800 text-zinc-300"} grid place-items-center shrink-0">
-            <i class="fa-solid ${isCrit ? "fa-triangle-exclamation" : "fa-box"}"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between gap-2">
-              <p class="text-sm font-semibold text-white truncate">${esc(i.nombre)}</p>
-              <span class="text-[10px] ${isCrit ? "text-red-400" : "text-zinc-500"} font-bold shrink-0">
-                ${isCrit ? "CRÍTICO" : "OK"}
-              </span>
-            </div>
-            <p class="text-[11px] text-zinc-500 truncate">${esc(i.proveedor || "")}</p>
-          </div>
-        </div>
-        <div class="flex items-center justify-between text-xs mb-2">
-          <span class="text-zinc-400">Stock: <strong class="text-white tabular-nums">${i.stock} ${esc(i.unidad)}</strong></span>
-          <span class="text-zinc-500 tabular-nums">${money(i.costo)}/${esc(i.unidad)}</span>
-        </div>
-        <div class="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-          <div class="h-full ${isCrit ? "bg-red-500" : "bg-emerald-500"} transition-all" style="width:${pct}%"></div>
-        </div>
-        <div class="flex gap-1.5 mt-2">
-          <button type="button" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] py-1.5 rounded-lg font-semibold" data-stock-add="${i.id}">
-            <i class="fa-solid fa-plus text-[10px] mr-1"></i>Sumar
-          </button>
-          <button type="button" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] py-1.5 rounded-lg font-semibold" data-edit-insumo="${i.id}">
-            <i class="fa-solid fa-pen text-[10px] mr-1"></i>Editar
-          </button>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  // Listeners
-  $$("[data-stock-add]").forEach(b => b.addEventListener("click", () => {
-    const id = Number(b.dataset.stockAdd);
-    const i = INVENTORY.find(x => x.id === id);
-    const q = prompt(`¿Cuánto sumar a "${i.nombre}"? (actual: ${i.stock} ${i.unidad})`, "10");
-    if (q === null) return;
-    i.stock += parseFloat(q) || 0;
-    writeLS(LS.INVENTORY, INVENTORY);
-    renderInventory();
-    updateStockChart();
-    toast("Stock actualizado");
-  }));
-  $$("[data-edit-insumo]").forEach(b => b.addEventListener("click", () => editInsumo(Number(b.dataset.editInsumo))));
-
-  // Chart
-  updateStockChart();
-}
-
-function editInsumo(id) {
-  const ins = id === 0 ? { id: uid(), nombre: "", unidad: "kg", stock: 0, min: 0, costo: 0, proveedor: "" } : INVENTORY.find(x => x.id === id);
-  if (!ins) return;
-
-  openModal(`
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="text-lg font-bold text-white">${id ? "Editar" : "Nuevo"} insumo</h3>
-      <button type="button" id="m-close" class="w-9 h-9 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <form id="m-insumo-form" class="space-y-3">
-      <div>
-        <label class="block text-xs text-zinc-400 mb-1.5">Nombre</label>
-        <input type="text" id="i-name" value="${esc(ins.nombre)}" required class="input">
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs text-zinc-400 mb-1.5">Unidad</label>
-          <input type="text" id="i-unit" value="${esc(ins.unidad)}" class="input">
-        </div>
-        <div>
-          <label class="block text-xs text-zinc-400 mb-1.5">Costo</label>
-          <input type="number" step="0.01" id="i-cost" value="${ins.costo}" class="input">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs text-zinc-400 mb-1.5">Stock actual</label>
-          <input type="number" step="0.01" id="i-stock" value="${ins.stock}" class="input">
-        </div>
-        <div>
-          <label class="block text-xs text-zinc-400 mb-1.5">Mínimo</label>
-          <input type="number" step="0.01" id="i-min" value="${ins.min}" class="input">
-        </div>
-      </div>
-      <div>
-        <label class="block text-xs text-zinc-400 mb-1.5">Proveedor</label>
-        <input type="text" id="i-prov" value="${esc(ins.proveedor || "")}" class="input">
-      </div>
-      <div class="grid grid-cols-2 gap-3 pt-2">
-        <button type="button" id="m-cancel" class="bg-zinc-800 text-zinc-200 py-3 rounded-xl text-sm font-semibold">Cancelar</button>
-        <button type="submit" class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white py-3 rounded-xl text-sm font-semibold">Guardar</button>
-      </div>
-    </form>
-  `);
-  $("#m-close").addEventListener("click", closeModal);
-  $("#m-cancel").addEventListener("click", closeModal);
-  $("#m-insumo-form").addEventListener("submit", e => {
-    e.preventDefault();
-    const data = {
-      nombre: $("#i-name").value.trim(),
-      unidad: $("#i-unit").value.trim() || "kg",
-      costo: parseFloat($("#i-cost").value) || 0,
-      stock: parseFloat($("#i-stock").value) || 0,
-      min: parseFloat($("#i-min").value) || 0,
-      proveedor: $("#i-prov").value.trim(),
-    };
-    if (!data.nombre) { toast("Ponle un nombre", "error"); return; }
-    if (id === 0) INVENTORY.push({ id: uid(), ...data });
-    else Object.assign(INVENTORY.find(x => x.id === id), data);
-    writeLS(LS.INVENTORY, INVENTORY);
-    renderInventory();
-    closeModal();
-    toast("Insumo guardado");
-  });
-}
-
-$$("[data-action='new-insumo']").forEach(b => b.addEventListener("click", () => editInsumo(0)));
-
-$("[data-action='replenish-all']").forEach(b => b.addEventListener("click", () => {
-  const crit = INVENTORY.filter(i => i.stock <= i.min);
-  if (!crit.length) { toast("No hay insumos críticos"); return; }
-  if (!confirm(`¿Reabastecer ${crit.length} insumo(s) crítico(s)?`)) return;
-  crit.forEach(i => { i.stock = i.min * 3; });
-  writeLS(LS.INVENTORY, INVENTORY);
-  renderInventory();
-  toast(`${crit.length} insumo(s) reabastecidos`);
-}));
-
-/* =========================================================
-   STAFF
-   ========================================================= */
-function renderStaff() {
-  $("#staff-grid").innerHTML = STAFF.map(s => `
-    <div class="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pizza-500 to-amber-600 grid place-items-center text-white font-bold text-lg shrink-0">
-          ${s.nombre.charAt(0).toUpperCase()}
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-bold text-white truncate">${esc(s.nombre)}</p>
-          <p class="text-[11px] text-zinc-500 truncate">@${esc(s.usuario)}</p>
-        </div>
-        <span class="badge ${s.rol === "admin" ? "bg-pizza-600/20 text-pizza-400" : "bg-zinc-800 text-zinc-400"}">
-          ${s.rol === "admin" ? "👑 Admin" : "🧑‍🍳 Staff"}
-        </span>
-      </div>
-      <div class="flex items-center gap-2 mb-3">
-        <span class="text-[11px] ${s.activo ? "text-emerald-400" : "text-red-400"}">
-          <i class="fa-solid fa-circle text-[6px] mr-1"></i>${s.activo ? "Activo" : "Inactivo"}
-        </span>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <button type="button" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2 rounded-lg text-xs font-semibold" data-edit-staff="${s.id}">
-          <i class="fa-solid fa-pen text-[10px] mr-1"></i>Editar
-        </button>
-        <button type="button" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2 rounded-lg text-xs font-semibold" data-toggle-staff="${s.id}">
-          ${s.activo ? '<i class="fa-solid fa-pause text-[10px] mr-1"></i>Pausar' : '<i class="fa-solid fa-play text-[10px] mr-1"></i>Activar'}
-        </button>
-      </div>
-    </div>
-  `).join("");
-
-  $$("[data-edit-staff]").forEach(b => b.addEventListener("click", () => editStaff(Number(b.dataset.editStaff))));
-  $$("[data-toggle-staff]").forEach(b => b.addEventListener("click", () => {
-    const id = Number(b.dataset.toggleStaff);
-    const s = STAFF.find(x => x.id === id);
-    if (s.usuario === "admin" && s.activo) { toast("No puedes desactivar al admin principal", "error"); return; }
-    s.activo = !s.activo;
-    writeLS(LS.STAFF, STAFF);
-    renderStaff();
-    toast(s.activo ? "Trabajador activado" : "Trabajador pausado");
-  }));
-}
-
-function editStaff(id) {
-  const s = id === 0 ? { id: uid(), nombre: "", usuario: "", pass: "", rol: "cajero", activo: true } : STAFF.find(x => x.id === id);
-  if (!s) return;
-
-  openModal(`
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="text-lg font-bold text-white">${id ? "Editar" : "Nuevo"} trabajador</h3>
-      <button type="button" id="m-close" class="w-9 h-9 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <form id="m-staff-form" class="space-y-3">
-      <div>
-        <label class="block text-xs text-zinc-400 mb-1.5">Nombre completo</label>
-        <input type="text" id="s-name" value="${esc(s.nombre)}" required class="input">
-      </div>
-      <div>
-        <label class="block text-xs text-zinc-400 mb-1.5">Usuario</label>
-        <input type="text" id="s-user" value="${esc(s.usuario)}" required class="input">
-      </div>
-      <div>
-        <label class="block text-xs text-zinc-400 mb-1.5">Contraseña</label>
-        <input type="text" id="s-pass" value="${esc(s.pass)}" required class="input">
-      </div>
-      <div>
-        <label class="block text-xs text-zinc-400 mb-1.5">Rol</label>
-        <select id="s-role" class="input">
-          <option value="cajero" ${s.rol === "cajero" ? "selected" : ""}>Cajero</option>
-          <option value="cocina" ${s.rol === "cocina" ? "selected" : ""}>Cocina</option>
-          <option value="admin" ${s.rol === "admin" ? "selected" : ""}>Administrador</option>
-        </select>
-      </div>
-      <div class="grid grid-cols-2 gap-3 pt-2">
-        <button type="button" id="m-cancel" class="bg-zinc-800 text-zinc-200 py-3 rounded-xl text-sm font-semibold">Cancelar</button>
-        <button type="submit" class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white py-3 rounded-xl text-sm font-semibold">Guardar</button>
-      </div>
-    </form>
-  `);
-  $("#m-close").addEventListener("click", closeModal);
-  $("#m-cancel").addEventListener("click", closeModal);
-  $("#m-staff-form").addEventListener("submit", e => {
-    e.preventDefault();
-    const data = {
-      nombre: $("#s-name").value.trim(),
-      usuario: $("#s-user").value.trim(),
-      pass: $("#s-pass").value.trim(),
-      rol: $("#s-role").value,
-    };
-    if (!data.nombre || !data.usuario || !data.pass) { toast("Completa todos los campos", "error"); return; }
-    if (id === 0) STAFF.push({ id: uid(), ...data, activo: true });
-    else Object.assign(STAFF.find(x => x.id === id), data);
-    writeLS(LS.STAFF, STAFF);
-    renderStaff();
-    closeModal();
-    toast("Trabajador guardado");
-  });
-}
-
-$$("[data-action='new-staff']").forEach(b => b.addEventListener("click", () => editStaff(0)));
-
-/* =========================================================
-   ESTADÍSTICAS + CHARTS
-   ========================================================= */
-const charts = {};
-
-function getStatsData() {
-  const now = new Date();
-  const today = now.toISOString().slice(0, 10);
-
-  const salesToday = SALES.filter(s => s.fecha.slice(0, 10) === today);
-  const weekAgo = new Date(now.getTime() - 7 * 86400000);
-  const salesWeek = SALES.filter(s => new Date(s.fecha) >= weekAgo);
-
-  const sum = arr => arr.reduce((a, s) => a + s.total, 0);
-
-  // Top producto
-  const counts = {};
-  SALES.forEach(s => s.items.forEach(i => {
-    const k = i.nombre;
-    counts[k] = (counts[k] || 0) + i.cantidad;
-  }));
-  const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0] || ["—", 0];
-
-  return {
-    todayTotal: sum(salesToday),
-    todayCount: salesToday.length,
-    weekTotal: sum(salesWeek),
-    weekCount: salesWeek.length,
-    avgTicket: SALES.length ? sum(SALES) / SALES.length : 0,
-    top: top[0],
-    topCount: top[1],
-  };
-}
-
-function renderStats() {
-  const d = getStatsData();
-  $("#stat-today").textContent = money(d.todayTotal);
-  $("#stat-today-orders").textContent = `${d.todayCount} órdenes`;
-  $("#stat-week").textContent = money(d.weekTotal);
-  $("#stat-week-orders").textContent = `${d.weekCount} órdenes`;
-  $("#stat-avg").textContent = money(d.avgTicket);
-  $("#stat-top").textContent = d.top.slice(0, 22);
-  $("#stat-top-count").textContent = `${d.topCount} vendidos`;
-
-  // Historial
-  $("#sales-history").innerHTML = SALES.length === 0
-    ? `<div class="text-center py-8 text-zinc-500 text-sm">Sin ventas registradas</div>`
-    : SALES.slice(0, 20).map(s => `
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-zinc-900 grid place-items-center text-lg shrink-0">
-          ${s.metodo === "Efectivo" ? "💵" : "💳"}
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs font-semibold text-white truncate">${esc(s.cliente)}</p>
-          <p class="text-[10px] text-zinc-500">${new Date(s.fecha).toLocaleString("es-EC", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short" })}</p>
-        </div>
-        <div class="text-right shrink-0">
-          <p class="font-bold text-amber-400 tabular-nums text-sm">${money(s.total)}</p>
-          <p class="text-[10px] text-zinc-500">${s.items.length} ítems</p>
-        </div>
-      </div>
-    `).join("");
-
-  updateCharts();
-}
-
-$("[data-action='clear-sales']").addEventListener("click", () => {
-  if (!confirm("¿Borrar todo el historial de ventas?")) return;
-  SALES = [];
-  writeLS(LS.SALES, SALES);
-  renderStats();
-  toast("Historial borrado");
-});
-
-/* ---------- CHARTS ---------- */
-function initCharts() {
-  const commonOpts = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: "#a1a1aa", font: { size: 11 } } } },
-    scales: {
-      x: { ticks: { color: "#71717a", font: { size: 10 } }, grid: { color: "#27272a" } },
-      y: { ticks: { color: "#71717a", font: { size: 10 } }, grid: { color: "#27272a" } }
-    }
-  };
-
-  // Ventas 7 días
-  charts.sales = new Chart($("#chart-sales"), {
-    type: "line",
-    data: { labels: [], datasets: [{
-      label: "Ventas ($)", data: [],
-      borderColor: "#ef4444", backgroundColor: "rgba(239,68,68,.15)",
-      tension: .35, fill: true, borderWidth: 2, pointRadius: 4, pointBackgroundColor: "#ef4444"
-    }]},
-    options: commonOpts,
-  });
-
-  // Método de pago
-  charts.payments = new Chart($("#chart-payments"), {
-    type: "doughnut",
-    data: { labels: [], datasets: [{ data: [], backgroundColor: ["#10b981", "#ef4444", "#f59e0b"], borderWidth: 0 }] },
-    options: {
-      responsive: true, maintainAspectRatio: false, cutout: "65%",
-      plugins: { legend: { position: "bottom", labels: { color: "#a1a1aa", font: { size: 11 }, padding: 12 } } }
-    }
-  });
-
-  // Top 5
-  charts.top = new Chart($("#chart-top"), {
-    type: "bar",
-    data: { labels: [], datasets: [{ label: "Vendidos", data: [], backgroundColor: "#ef4444", borderRadius: 8 }] },
-    options: { ...commonOpts, indexAxis: "y" },
-  });
-
-  // Stock
-  charts.stock = new Chart($("#chart-stock"), {
-    type: "bar",
-    data: { labels: [], datasets: [{
-      label: "Stock", data: [], backgroundColor: [],
-      borderRadius: 8
-    }]},
-    options: commonOpts,
-  });
-
-  updateCharts();
-  updateStockChart();
-}
-
-function updateCharts() {
-  if (!charts.sales) return;
-
-  // Ventas últimos 7 días
-  const labels = [];
-  const totals = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
-    labels.push(d.toLocaleDateString("es-EC", { weekday: "short", day: "numeric" }));
-    const total = SALES.filter(s => s.fecha.slice(0, 10) === key).reduce((a, s) => a + s.total, 0);
-    totals.push(+total.toFixed(2));
-  }
-  charts.sales.data.labels = labels;
-  charts.sales.data.datasets[0].data = totals;
-  charts.sales.update();
-
-  // Métodos de pago
-  const methods = {};
-  SALES.forEach(s => methods[s.metodo] = (methods[s.metodo] || 0) + s.total);
-  charts.payments.data.labels = Object.keys(methods);
-  charts.payments.data.datasets[0].data = Object.values(methods).map(v => +v.toFixed(2));
-  charts.payments.update();
-
-  // Top 5
-  const counts = {};
-  SALES.forEach(s => s.items.forEach(i => {
-    const k = i.nombre.slice(0, 25);
-    counts[k] = (counts[k] || 0) + i.cantidad;
-  }));
-  const top5 = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  charts.top.data.labels = top5.map(x => x[0]);
-  charts.top.data.datasets[0].data = top5.map(x => x[1]);
-  charts.top.update();
-}
-
-function updateStockChart() {
-  if (!charts.stock) return;
-  charts.stock.data.labels = INVENTORY.map(i => i.nombre);
-  charts.stock.data.datasets[0].data = INVENTORY.map(i => i.stock);
-  charts.stock.data.datasets[0].backgroundColor = INVENTORY.map(i =>
-    i.stock <= i.min ? "#ef4444" : "#10b981"
-  );
-  charts.stock.update();
-}
-
-/* =========================================================
-   SYNC EN VIVO
-   ========================================================= */
-window.addEventListener("storage", e => {
-  if (e.key === LS.MENU) { MENU = readLS(LS.MENU, DEFAULT_MENU); renderPOS(); renderMenuAdmin(); }
-  if (e.key === LS.INVENTORY) { INVENTORY = readLS(LS.INVENTORY, DEFAULT_INVENTORY); renderInventory(); }
-  if (e.key === LS.SALES) { SALES = readLS(LS.SALES, []); renderStats(); }
-  if (e.key === LS.STAFF) { STAFF = readLS(LS.STAFF, DEFAULT_STAFF); renderStaff(); }
-});
-
-/* =========================================================
-   RENDER ALL
-   ========================================================= */
-function renderAll() {
-  renderPOS();
-  renderCart();
-  renderMenuAdmin();
-  renderInventory();
-  renderStaff();
-  renderStats();
-  switchTab("pos");
-}
-
-/* =========================================================
-   INIT
-   ========================================================= */
-document.addEventListener("DOMContentLoaded", () => {
-  // Cargar tamaño menú en localStorage si no existe
-  if (!localStorage.getItem(LS.MENU)) writeLS(LS.MENU, MENU);
-  if (!localStorage.getItem(LS.INVENTORY)) writeLS(LS.INVENTORY, INVENTORY);
-  if (!localStorage.getItem(LS.STAFF)) writeLS(LS.STAFF, STAFF);
-
-  // Sesión activa
-  if (SESSION) showApp();
-  else {
-    $("#loginGate").style.display = "flex";
-    $("#gate-user").focus();
-  }
-});
-
-// API pública por si la quieres usar desde la consola
-window.BPAdmin = {
-  MENU: () => readLS(LS.MENU, DEFAULT_MENU),
-  SALES: () => readLS(LS.SALES, []),
-  INVENTORY: () => readLS(LS.INVENTORY, DEFAULT_INVENTORY),
-  STAFF: () => readLS(LS.STAFF, DEFAULT_STAFF),
-  resetAll() {
-    Object.values(LS).forEach(k => localStorage.removeItem(k));
-    location.reload();
-  },
-  resetMenu() {
-    writeLS(LS.MENU, DEFAULT_MENU);
-    MENU = DEFAULT_MENU;
-    renderAll();
-    toast("Menú restaurado");
-  },
-};
-</script>
-</body>
-</html>
+            <p class="text-xs font-semibold text-white trun
