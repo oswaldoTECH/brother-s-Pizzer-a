@@ -20,11 +20,13 @@
     --bp-success: #2ed573;
   }
   * { -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
   body {
     background-color: var(--bp-bg);
     color: #f3f4f6;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   .modal-active { display: flex !important; }
 
@@ -33,28 +35,117 @@
   ::-webkit-scrollbar-thumb { background: #374151; border-radius: 999px; }
   ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
 
+  /* ---------- Barra de progreso superior ---------- */
+  #scrollProgress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573);
+    z-index: 100; transition: width .08s linear;
+    box-shadow: 0 0 10px rgba(255,71,87,.6);
+  }
+
+  /* ---------- Marquee promocional ---------- */
+  .marquee-wrap {
+    overflow: hidden;
+    background: linear-gradient(90deg, #ff4757, #ff6b81, #ffa502, #ff4757);
+    background-size: 300% 100%;
+    animation: gradient-shift 8s ease infinite;
+  }
+  .marquee-track {
+    display: flex; gap: 2.5rem; width: max-content;
+    animation: marquee 32s linear infinite;
+    padding: 7px 0;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* ---------- Hero ---------- */
   .hero-bg {
     background:
-      linear-gradient(to bottom, rgba(11,15,25,.7), rgba(11,15,25,.95)),
+      linear-gradient(to bottom, rgba(11,15,25,.72), rgba(11,15,25,.96)),
       url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1600&auto=format&fit=crop&q=80') center/cover no-repeat;
+    background-attachment: fixed;
   }
 
+  .gradient-text {
+    background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573, #ff4757);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-shift 6s ease infinite;
+  }
+
+  @keyframes float-y {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-16px) rotate(8deg); }
+  }
+  .float-slow  { animation: float-y 5.5s ease-in-out infinite; }
+  .float-med   { animation: float-y 4.5s ease-in-out infinite; animation-delay: .8s; }
+  .float-fast  { animation: float-y 3.8s ease-in-out infinite; animation-delay: 1.4s; }
+
+  @keyframes blob {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(30px,-20px) scale(1.1); }
+    66% { transform: translate(-20px,20px) scale(.95); }
+  }
+  .blob { animation: blob 12s ease-in-out infinite; }
+
+  /* ---------- Botones con brillo ---------- */
+  .btn-glow {
+    position: relative; overflow: hidden;
+  }
+  .btn-glow::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform .7s ease;
+  }
+  .btn-glow:hover::before { transform: translateX(100%); }
+
+  /* ---------- Ripple ---------- */
+  .ripple { position: relative; overflow: hidden; }
+  .ripple > .ripple-ink {
+    position: absolute; border-radius: 50%; transform: scale(0);
+    background: rgba(255,255,255,.45); pointer-events: none;
+    animation: ripple-anim .65s ease-out forwards;
+    z-index: 1;
+  }
+  @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+
+  /* ---------- Tarjetas de producto ---------- */
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(22px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
   .product-card {
-    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    animation: card-in .55s cubic-bezier(.22,1,.36,1) both;
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
   }
   .product-card:hover {
-    border-color: rgba(255,71,87,.5);
-    transform: translateY(-3px);
-    box-shadow: 0 18px 40px -18px rgba(255,71,87,.35);
+    border-color: rgba(255,71,87,.55);
+    transform: translateY(-6px);
+    box-shadow: 0 24px 48px -20px rgba(255,71,87,.45);
   }
-  .product-card .product-img { transition: transform .55s ease; }
-  .product-card:hover .product-img { transform: scale(1.06); }
+  .product-card .product-img { transition: transform .7s cubic-bezier(.22,1,.36,1); }
+  .product-card:hover .product-img { transform: scale(1.09) rotate(1deg); }
 
+  /* ---------- Reveal on scroll ---------- */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ---------- Animaciones varias ---------- */
   @keyframes pop-in {
     from { opacity: 0; transform: translateY(12px) scale(.98); }
     to   { opacity: 1; transform: none; }
   }
-  .pop-in { animation: pop-in .22s ease-out both; }
+  .pop-in { animation: pop-in .25s ease-out both; }
 
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
@@ -75,17 +166,76 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Carrito flotante */
+  /* ---------- Carrito flotante ---------- */
   .cart-fab {
-    transition: transform .25s ease, opacity .25s ease;
+    transition: transform .3s cubic-bezier(.22,1,.36,1), opacity .3s ease;
   }
   .cart-fab:active { transform: scale(.94); }
-  .cart-fab .cart-count {
-    transition: transform .2s ease;
+  @keyframes fab-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,71,87,.6); }
+    70% { box-shadow: 0 0 0 16px rgba(255,71,87,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,71,87,0); }
   }
-  .cart-fab.bump .cart-count {
-    transform: scale(1.25);
+  .cart-fab.pulse { animation: fab-pulse 1.6s infinite; }
+  .cart-fab .cart-count { transition: transform .25s cubic-bezier(.22,1.5,.36,1); }
+  .cart-fab.bump .cart-count { transform: scale(1.35); }
+
+  /* ---------- Fly to cart ---------- */
+  .fly-ghost {
+    position: fixed; z-index: 90; pointer-events: none;
+    background-size: cover; background-position: center;
+    border-radius: 16px;
+    transition: all .85s cubic-bezier(.5,-0.15,.7,1);
+    box-shadow: 0 10px 30px rgba(255,71,87,.5);
   }
+
+  /* ---------- "+1" flotante ---------- */
+  .plus-one {
+    position: fixed; z-index: 95; pointer-events: none;
+    color: #2ed573; font-weight: 900; font-size: 18px;
+    text-shadow: 0 2px 8px rgba(46,213,115,.6);
+    animation: plus-up 1s ease-out forwards;
+  }
+  @keyframes plus-up {
+    0% { opacity: 0; transform: translateY(0) scale(.6); }
+    20% { opacity: 1; transform: translateY(-10px) scale(1.15); }
+    100% { opacity: 0; transform: translateY(-60px) scale(.9); }
+  }
+
+  /* ---------- Confetti ---------- */
+  .confetti-piece {
+    position: fixed; width: 9px; height: 9px; pointer-events: none; z-index: 100;
+    animation: confetti-fall 1.3s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  @keyframes confetti-fall {
+    0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translate(var(--cx), var(--cy)) rotate(720deg) scale(.4); opacity: 0; }
+  }
+
+  /* ---------- Toast con barra de tiempo ---------- */
+  @keyframes toast-bar { from { width: 100%; } to { width: 0%; } }
+  .toast-bar {
+    position: absolute; bottom: 0; left: 0; height: 2px;
+    background: linear-gradient(90deg, #2ed573, #ffa502);
+    animation: toast-bar 3.2s linear forwards;
+  }
+  .toast-error .toast-bar { background: linear-gradient(90deg, #ff4757, #ff3838); }
+
+  /* ---------- Dot "en vivo" ---------- */
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(46,213,115,.7); }
+    70% { box-shadow: 0 0 0 9px rgba(46,213,115,0); }
+    100% { box-shadow: 0 0 0 0 rgba(46,213,115,0); }
+  }
+  .dot-live { animation: pulse-ring 1.8s infinite; }
+
+  /* ---------- Count-up highlight ---------- */
+  @keyframes count-flash {
+    0% { transform: scale(1); color: #2ed573; }
+    40% { transform: scale(1.18); color: #fff; }
+    100% { transform: scale(1); color: #2ed573; }
+  }
+  .count-flash { animation: count-flash .45s ease; }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -94,22 +244,45 @@
     }
   }
 
-  /* Estado cerrado (fuera de horario) */
+  /* Estado cerrado */
   .closed-overlay { display: none; }
   body.is-closed .closed-overlay { display: block; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-[#ff4757] selection:text-white">
 
+<div id="scrollProgress" aria-hidden="true"></div>
+
 <a href="#menu" class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-3 focus:left-3 focus:bg-[#ff4757] focus:text-white focus:px-4 focus:py-2 focus:rounded-xl focus:text-sm">Saltar al menú</a>
+
+<!-- =========================================================
+     MARQUEE PROMOCIONAL
+     ========================================================= -->
+<div class="marquee-wrap text-white text-[11px] font-bold uppercase tracking-wider">
+  <div class="marquee-track">
+    <span>🍕 Masa fresca todos los días</span>
+    <span>🔥 Horno artesanal</span>
+    <span>🛵 Delivery en Biblián · Mínimo $5.00</span>
+    <span>⏰ Todos los días 17:00 - 22:30</span>
+    <span>📞 Pedidos: 098 411 3081</span>
+    <span>🧀 Ingredientes de primera calidad</span>
+    <!-- duplicado para loop continuo -->
+    <span>🍕 Masa fresca todos los días</span>
+    <span>🔥 Horno artesanal</span>
+    <span>🛵 Delivery en Biblián · Mínimo $5.00</span>
+    <span>⏰ Todos los días 17:00 - 22:30</span>
+    <span>📞 Pedidos: 098 411 3081</span>
+    <span>🧀 Ingredientes de primera calidad</span>
+  </div>
+</div>
 
 <!-- =========================================================
      BARRA DE NAVEGACIÓN PÚBLICA
      ========================================================= -->
-<header class="sticky top-0 z-40 bg-[#0b0f19]/90 backdrop-blur-md border-b border-white/10">
+<header class="sticky top-0 z-40 bg-[#0b0f19]/85 backdrop-blur-md border-b border-white/10">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
-    <a href="#" class="flex items-center gap-3 shrink-0" aria-label="Brothers Pizza, inicio">
-      <div class="w-10 h-10 rounded-xl bg-[#ff4757] grid place-items-center text-white shadow-lg shadow-[#ff4757]/30">
+    <a href="#" class="flex items-center gap-3 shrink-0 group" aria-label="Brothers Pizza, inicio">
+      <div class="w-10 h-10 rounded-xl bg-[#ff4757] grid place-items-center text-white shadow-lg shadow-[#ff4757]/30 transition-transform duration-300 group-hover:rotate-[18deg] group-hover:scale-110">
         <i class="fa-solid fa-pizza-slice text-lg" aria-hidden="true"></i>
       </div>
       <div class="leading-tight">
@@ -119,20 +292,29 @@
     </a>
 
     <nav class="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Secciones">
-      <a href="#menu" class="text-gray-300 hover:text-[#ff4757] transition">Menú y Precios</a>
-      <a href="#delivery" class="text-gray-300 hover:text-[#ff4757] transition">Delivery</a>
-      <a href="#horarios" class="text-gray-300 hover:text-[#ff4757] transition">Horarios y Ubicación</a>
+      <a href="#menu" class="relative text-gray-300 hover:text-[#ff4757] transition group">
+        Menú y Precios
+        <span class="absolute left-0 -bottom-1 h-0.5 w-0 bg-[#ff4757] transition-all duration-300 group-hover:w-full"></span>
+      </a>
+      <a href="#delivery" class="relative text-gray-300 hover:text-[#ff4757] transition group">
+        Delivery
+        <span class="absolute left-0 -bottom-1 h-0.5 w-0 bg-[#ff4757] transition-all duration-300 group-hover:w-full"></span>
+      </a>
+      <a href="#horarios" class="relative text-gray-300 hover:text-[#ff4757] transition group">
+        Horarios y Ubicación
+        <span class="absolute left-0 -bottom-1 h-0.5 w-0 bg-[#ff4757] transition-all duration-300 group-hover:w-full"></span>
+      </a>
     </nav>
 
     <div class="flex items-center gap-2 sm:gap-3">
       <a href="https://wa.me/593984113081?text=Hola%2C%20deseo%20hacer%20un%20pedido%20en%20Brothers%20Pizza" target="_blank" rel="noopener"
-         class="hidden sm:flex bg-[#2ed573] hover:bg-[#26af5f] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition items-center gap-2 shadow-lg shadow-[#2ed573]/20">
+         class="hidden sm:flex btn-glow bg-[#2ed573] hover:bg-[#26af5f] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition items-center gap-2 shadow-lg shadow-[#2ed573]/25 hover:shadow-[#2ed573]/50">
         <i class="fa-brands fa-whatsapp text-sm" aria-hidden="true"></i> Pedir por WhatsApp
       </a>
 
       <button type="button" data-action="open-login"
               title="Ingreso al Punto de Venta"
-              class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-gray-300 hover:text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+              class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-gray-300 hover:text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
         <i class="fa-solid fa-right-to-bracket text-[#ff4757]" aria-hidden="true"></i>
         <span class="hidden sm:inline">Ingreso</span>
       </button>
@@ -148,25 +330,43 @@
   </div>
 </header>
 
+<!-- Aviso cuando está cerrado -->
+<div class="closed-overlay">
+  <div class="bg-amber-500/10 border-b border-amber-500/20 text-amber-300 text-[11px] py-2 px-4 text-center font-semibold">
+    <i class="fa-solid fa-moon mr-1.5" aria-hidden="true"></i>
+    Estamos cerrados en este momento. Los pedidos por WhatsApp se atenderán en nuestro horario (17:00 - 22:30).
+  </div>
+</div>
+
 <!-- =========================================================
      HERO
      ========================================================= -->
-<section class="hero-bg py-20 lg:py-28 border-b border-white/10 text-center px-4 relative overflow-hidden">
+<section class="hero-bg py-20 lg:py-32 border-b border-white/10 text-center px-4 relative overflow-hidden">
+  <!-- Blobs animados -->
+  <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-[#ff4757]/25 blur-3xl blob" aria-hidden="true"></div>
+  <div class="absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-[#2ed573]/20 blur-3xl blob" style="animation-delay:2s" aria-hidden="true"></div>
+
+  <!-- Emojis flotantes -->
+  <span class="hidden md:block absolute top-16 left-[8%] text-4xl float-slow opacity-90" aria-hidden="true">🍕</span>
+  <span class="hidden md:block absolute bottom-24 left-[14%] text-3xl float-med opacity-80" aria-hidden="true">🧀</span>
+  <span class="hidden md:block absolute top-24 right-[10%] text-4xl float-fast opacity-90" aria-hidden="true">🔥</span>
+  <span class="hidden md:block absolute bottom-20 right-[16%] text-3xl float-slow opacity-80" aria-hidden="true">🍅</span>
+
   <div class="max-w-3xl mx-auto space-y-6 relative z-10">
-    <span class="bg-[#ff4757]/10 border border-[#ff4757]/30 text-[#ff4757] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider inline-block">
+    <span class="bg-[#ff4757]/10 border border-[#ff4757]/30 text-[#ff4757] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider inline-block reveal">
       🍕 Las mejores pizzas artesanales
     </span>
-    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
-      Sabor inigualable en cada porción
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight reveal" style="transition-delay:.1s">
+      Sabor <span class="gradient-text">inigualable</span> en cada porción
     </h1>
-    <p class="text-gray-300 text-sm sm:text-base max-w-xl mx-auto">
+    <p class="text-gray-300 text-sm sm:text-base max-w-xl mx-auto reveal" style="transition-delay:.2s">
       Preparamos masa fresca todos los días con ingredientes de primera calidad. ¡Disfruta con tu familia o amigos en Brothers Pizza!
     </p>
-    <div class="pt-2 flex flex-wrap justify-center gap-3">
-      <a href="#menu" class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-7 py-3.5 rounded-xl text-sm transition shadow-xl shadow-[#ff4757]/30">
+    <div class="pt-2 flex flex-wrap justify-center gap-3 reveal" style="transition-delay:.3s">
+      <a href="#menu" class="btn-glow bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-7 py-3.5 rounded-xl text-sm transition shadow-xl shadow-[#ff4757]/30 hover:shadow-[#ff4757]/60 hover:-translate-y-0.5 active:scale-95">
         Ver Menú Completo
       </a>
-      <a href="#delivery" class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-white font-bold px-7 py-3.5 rounded-xl text-sm transition">
+      <a href="#delivery" class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-white font-bold px-7 py-3.5 rounded-xl text-sm transition hover:-translate-y-0.5 active:scale-95">
         Información de Delivery
       </a>
     </div>
@@ -179,18 +379,18 @@
 <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-16 space-y-20 w-full">
 
   <section id="menu" class="space-y-8 scroll-mt-28">
-    <div class="text-center space-y-2">
-      <h2 class="text-2xl sm:text-3xl font-black">Nuestro Menú y Precios</h2>
+    <div class="text-center space-y-2 reveal">
+      <h2 class="text-2xl sm:text-3xl font-black">Nuestro Menú y <span class="gradient-text">Precios</span></h2>
       <p class="text-xs sm:text-sm text-gray-400">Elige tus favoritas, arma tu pedido y envíalo por WhatsApp en un clic.</p>
     </div>
 
     <!-- Buscador + categorías -->
-    <div class="flex flex-col sm:flex-row gap-3 sm:items-center justify-between max-w-4xl mx-auto">
+    <div class="flex flex-col sm:flex-row gap-3 sm:items-center justify-between max-w-4xl mx-auto reveal" style="transition-delay:.1s">
       <div class="relative w-full sm:w-72">
         <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs" aria-hidden="true"></i>
         <input type="search" id="menuSearch" autocomplete="off" placeholder="Buscar en el menú…"
                aria-label="Buscar en el menú"
-               class="w-full bg-[#111827] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] transition">
+               class="w-full bg-[#111827] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
       </div>
       <div id="publicCategorias" class="flex gap-2 overflow-x-auto pb-1 sm:pb-0" role="group" aria-label="Filtrar categoría"></div>
     </div>
@@ -202,8 +402,8 @@
        DELIVERY Y HORARIOS
        ========================================================= -->
   <section id="delivery" class="grid grid-cols-1 md:grid-cols-2 gap-8 scroll-mt-28">
-    <div class="bg-[#111827] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl">
-      <div class="w-12 h-12 rounded-2xl bg-[#ff4757]/10 text-[#ff4757] grid place-items-center text-xl">
+    <div class="reveal bg-[#111827] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl hover:border-[#ff4757]/40 transition-colors">
+      <div class="w-12 h-12 rounded-2xl bg-[#ff4757]/10 text-[#ff4757] grid place-items-center text-xl float-slow">
         <i class="fa-solid fa-motorcycle" aria-hidden="true"></i>
       </div>
       <div>
@@ -211,21 +411,21 @@
         <p class="text-xs text-gray-400 mb-6">Llevamos tu pizza caliente y directa a la puerta de tu casa.</p>
       </div>
       <div class="space-y-4 text-xs sm:text-sm text-gray-300">
-        <div class="flex items-start gap-3 bg-black/30 p-4 rounded-2xl border border-white/5">
+        <div class="flex items-start gap-3 bg-black/30 p-4 rounded-2xl border border-white/5 hover:border-[#2ed573]/30 transition">
           <i class="fa-solid fa-circle-check text-[#2ed573] mt-1" aria-hidden="true"></i>
           <div>
             <p class="font-bold text-white mb-0.5">Casco urbano de Biblián</p>
             <p class="text-gray-400 text-xs">¡Servicio de entrega a domicilio disponible!</p>
           </div>
         </div>
-        <div class="flex items-start gap-3 bg-black/30 p-4 rounded-2xl border border-white/5">
+        <div class="flex items-start gap-3 bg-black/30 p-4 rounded-2xl border border-white/5 hover:border-[#ff4757]/30 transition">
           <i class="fa-solid fa-map-location-dot text-[#ff4757] mt-1" aria-hidden="true"></i>
           <div>
             <p class="font-bold text-white mb-0.5">Otros sectores</p>
             <p class="text-gray-400 text-xs">Disponibles con un costo adicional por distancia.</p>
           </div>
         </div>
-        <div class="flex items-start gap-3 bg-black/30 p-4 rounded-2xl border border-white/5">
+        <div class="flex items-start gap-3 bg-black/30 p-4 rounded-2xl border border-white/5 hover:border-[#ffa502]/30 transition">
           <i class="fa-solid fa-tag text-[#ffa502] mt-1" aria-hidden="true"></i>
           <div>
             <p class="font-bold text-white mb-0.5">Compra mínima para delivery</p>
@@ -235,8 +435,8 @@
       </div>
     </div>
 
-    <div id="horarios" class="bg-[#111827] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl scroll-mt-28">
-      <div class="w-12 h-12 rounded-2xl bg-[#2ed573]/10 text-[#2ed573] grid place-items-center text-xl">
+    <div id="horarios" class="reveal bg-[#111827] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl scroll-mt-28 hover:border-[#2ed573]/40 transition-colors" style="transition-delay:.1s">
+      <div class="w-12 h-12 rounded-2xl bg-[#2ed573]/10 text-[#2ed573] grid place-items-center text-xl float-med">
         <i class="fa-solid fa-clock" aria-hidden="true"></i>
       </div>
       <div>
@@ -258,7 +458,7 @@
       </div>
       <div class="pt-2">
         <a href="https://wa.me/593984113081?text=Hola%2C%20deseo%20pedir%20con%20delivery%20en%20Brothers%20Pizza" target="_blank" rel="noopener"
-           class="w-full bg-[#2ed573] hover:bg-[#26af5f] text-white font-bold py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-[#2ed573]/20">
+           class="btn-glow w-full bg-[#2ed573] hover:bg-[#26af5f] text-white font-bold py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-[#2ed573]/25 hover:shadow-[#2ed573]/50 active:scale-95">
           <i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i> Pedir por WhatsApp (0984113081)
         </a>
       </div>
@@ -300,7 +500,7 @@
         <span id="cartModalCount" class="text-[10px] font-bold bg-white/10 text-gray-300 px-2 py-0.5 rounded-full tabular-nums">0</span>
       </h3>
       <button type="button" data-close-modal="modalCart"
-              class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition"
+              class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition hover:rotate-90 duration-300"
               aria-label="Cerrar">
         <i class="fa-solid fa-xmark text-base" aria-hidden="true"></i>
       </button>
@@ -312,7 +512,7 @@
       <div>
         <label for="cartNote" class="block text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-1">Nombre y dirección (opcional)</label>
         <input type="text" id="cartNote" maxlength="120" placeholder="Ej: Juan Pérez — Calle Bolívar y Sucre"
-               class="w-full bg-[#1f2937] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] transition">
+               class="w-full bg-[#1f2937] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
       </div>
       <div class="flex justify-between items-center text-base font-black text-white pt-1 border-t border-white/10">
         <span>Total</span>
@@ -324,11 +524,11 @@
       </p>
       <div class="grid grid-cols-2 gap-2">
         <button type="button" data-action="clear-cart"
-                class="w-full bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-gray-300 hover:text-white py-3 rounded-xl font-bold text-xs transition">
+                class="w-full bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-gray-300 hover:text-white py-3 rounded-xl font-bold text-xs transition active:scale-95">
           <i class="fa-solid fa-trash mr-1.5" aria-hidden="true"></i>Vaciar
         </button>
         <button type="button" data-action="checkout-wa"
-                class="w-full bg-[#2ed573] hover:bg-[#26af5f] text-white py-3 rounded-xl font-bold text-xs transition shadow-lg shadow-[#2ed573]/25 flex items-center justify-center gap-2">
+                class="btn-glow w-full bg-[#2ed573] hover:bg-[#26af5f] text-white py-3 rounded-xl font-bold text-xs transition shadow-lg shadow-[#2ed573]/25 hover:shadow-[#2ed573]/50 flex items-center justify-center gap-2 active:scale-95">
           <i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>Enviar pedido
         </button>
       </div>
@@ -343,13 +543,13 @@
      role="dialog" aria-modal="true" aria-labelledby="loginTitle">
   <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-3xl p-8 shadow-2xl relative space-y-6 pop-in">
     <button type="button" data-close-modal="modalLogin"
-            class="absolute right-5 top-5 text-gray-400 hover:text-white text-base p-2 rounded-lg hover:bg-white/5 transition"
+            class="absolute right-5 top-5 text-gray-400 hover:text-white text-base p-2 rounded-lg hover:bg-white/5 transition hover:rotate-90 duration-300"
             aria-label="Cerrar">
       <i class="fa-solid fa-xmark" aria-hidden="true"></i>
     </button>
 
     <div class="text-center space-y-2">
-      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#ff4757]/20 text-[#ff4757] mb-1">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#ff4757]/20 text-[#ff4757] mb-1 float-slow">
         <i class="fa-solid fa-right-to-bracket text-2xl" aria-hidden="true"></i>
       </div>
       <h3 id="loginTitle" class="text-xl font-black">Ingreso al Sistema</h3>
@@ -382,7 +582,7 @@
            class="hidden text-red-400 text-xs text-center font-medium bg-red-500/10 border border-red-500/20 py-2.5 rounded-lg"></div>
 
       <button type="submit" id="loginSubmit"
-              class="w-full bg-[#ff4757] hover:bg-[#ff3838] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-xs transition shadow-lg shadow-[#ff4757]/30 flex items-center justify-center gap-2">
+              class="btn-glow w-full bg-[#ff4757] hover:bg-[#ff3838] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-xs transition shadow-lg shadow-[#ff4757]/30 hover:shadow-[#ff4757]/60 flex items-center justify-center gap-2 active:scale-95">
         <span id="loginSubmitText">Entrar al panel</span>
       </button>
     </form>
@@ -397,7 +597,7 @@
 
 <script>
 /* =========================================================================
-   Brothers Pizza · Página pública v2.0
+   Brothers Pizza · Página pública v2.1 (dinámica)
    ========================================================================= */
 (() => {
   'use strict';
@@ -406,7 +606,7 @@
   const CONFIG = {
     whatsapp: '593984113081',
     deliveryMin: 5.00,
-    schedule: { open: 17 * 60, close: 22 * 60 + 30 },   // 17:00 → 22:30
+    schedule: { open: 17 * 60, close: 22 * 60 + 30 },
     defaultImg: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=80',
     adminUrl: 'admin.html'
   };
@@ -434,31 +634,149 @@
   let categoria = 'todos';
   let busqueda = '';
   let lastFocused = null;
+  let lastTotalShown = 0;
 
   /* ------------------------------ Helpers ------------------------------ */
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-
-  const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
-                              .format(Number(n) || 0);
-
+  const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
   const round2 = n => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
-
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const debounce = (fn, ms = 180) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+  const loadJSON = (k, fb) => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) ?? fb : fb; } catch { return fb; } };
+  const saveJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { console.warn(e); } };
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const debounce = (fn, ms = 180) => {
-    let t;
-    return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
-  };
+  /* ------------------------------ Barra de progreso ------------------------------ */
+  function initScrollProgress() {
+    const bar = $('#scrollProgress');
+    const update = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+      bar.style.width = pct + '%';
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
 
-  const loadJSON = (k, fb) => {
-    try { const r = localStorage.getItem(k); return r ? JSON.parse(r) ?? fb : fb; }
-    catch { return fb; }
-  };
-  const saveJSON = (k, v) => {
-    try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { console.warn(e); }
-  };
+  /* ------------------------------ Reveal on scroll ------------------------------ */
+  function initReveal() {
+    const items = $$('.reveal');
+    if (!('IntersectionObserver' in window) || prefersReduced) {
+      items.forEach(el => el.classList.add('in'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    items.forEach(el => io.observe(el));
+  }
+
+  /* ------------------------------ Parallax suave en hero ------------------------------ */
+  function initParallax() {
+    if (prefersReduced) return;
+    const hero = $('.hero-bg');
+    if (!hero) return;
+    let raf = null;
+    window.addEventListener('scroll', () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (y < 800) hero.style.backgroundPositionY = `calc(center + ${y * 0.25}px)`;
+        raf = null;
+      });
+    }, { passive: true });
+  }
+
+  /* ------------------------------ Ripple universal ------------------------------ */
+  function initRipple() {
+    if (prefersReduced) return;
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button, a');
+      if (!btn) return;
+      if (btn.classList.contains('no-ripple')) return;
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const ink = document.createElement('span');
+      ink.className = 'ripple-ink';
+      ink.style.width = ink.style.height = size + 'px';
+      ink.style.left = (e.clientX - rect.left - size / 2) + 'px';
+      ink.style.top  = (e.clientY - rect.top  - size / 2) + 'px';
+      btn.classList.add('ripple');
+      btn.appendChild(ink);
+      setTimeout(() => ink.remove(), 700);
+    }, true);
+  }
+
+  /* ------------------------------ Fly to cart ------------------------------ */
+  function flyToCart(sourceEl, imgSrc, label) {
+    if (prefersReduced) return;
+    const fab = $('#cartFab');
+    if (!fab || fab.classList.contains('hidden')) return;
+    const fabRect = fab.getBoundingClientRect();
+    const srcRect = sourceEl.getBoundingClientRect();
+
+    const ghost = document.createElement('div');
+    ghost.className = 'fly-ghost';
+    ghost.style.left = srcRect.left + 'px';
+    ghost.style.top = srcRect.top + 'px';
+    ghost.style.width = srcRect.width + 'px';
+    ghost.style.height = srcRect.height + 'px';
+    ghost.style.backgroundImage = `url('${imgSrc}')`;
+    document.body.appendChild(ghost);
+
+    requestAnimationFrame(() => {
+      ghost.style.left = (fabRect.left + fabRect.width / 2 - 22) + 'px';
+      ghost.style.top  = (fabRect.top + fabRect.height / 2 - 22) + 'px';
+      ghost.style.width = '44px';
+      ghost.style.height = '44px';
+      ghost.style.borderRadius = '50%';
+      ghost.style.opacity = '0.35';
+      ghost.style.transform = 'rotate(360deg)';
+    });
+
+    setTimeout(() => ghost.remove(), 900);
+
+    // "+1" flotante
+    const plus = document.createElement('span');
+    plus.className = 'plus-one';
+    plus.textContent = '+1';
+    plus.style.left = (srcRect.left + srcRect.width / 2 - 10) + 'px';
+    plus.style.top  = (srcRect.top + 6) + 'px';
+    document.body.appendChild(plus);
+    setTimeout(() => plus.remove(), 1000);
+
+    // Mini confeti
+    burstConfetti(srcRect.left + srcRect.width / 2, srcRect.top + srcRect.height / 2, 8);
+  }
+
+  /* ------------------------------ Confetti ------------------------------ */
+  function burstConfetti(x, y, amount = 14) {
+    if (prefersReduced) return;
+    const colors = ['#ff4757', '#2ed573', '#ffa502', '#ffd93d', '#ff6b81'];
+    for (let i = 0; i < amount; i++) {
+      const piece = document.createElement('span');
+      piece.className = 'confetti-piece';
+      const angle = (Math.PI * 2 * i) / amount + Math.random() * 0.6;
+      const dist = 60 + Math.random() * 90;
+      piece.style.setProperty('--cx', Math.cos(angle) * dist + 'px');
+      piece.style.setProperty('--cy', Math.sin(angle) * dist + 'px');
+      piece.style.left = x + 'px';
+      piece.style.top  = y + 'px';
+      piece.style.background = colors[i % colors.length];
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 1400);
+    }
+  }
 
   /* ------------------------------ Toasts ------------------------------ */
   function toast(title, message, type = 'success') {
@@ -466,7 +784,7 @@
     const el = document.createElement('div');
     const isError = type === 'error';
 
-    el.className = 'pointer-events-auto flex items-start gap-3 bg-[#111827]/95 border border-white/10 text-white px-4 py-3 rounded-xl shadow-2xl backdrop-blur translate-y-3 opacity-0 transition-all duration-300 max-w-xs';
+    el.className = `pointer-events-auto relative overflow-hidden flex items-start gap-3 bg-[#111827]/95 border border-white/10 text-white px-4 py-3 pr-5 rounded-xl shadow-2xl backdrop-blur translate-y-3 opacity-0 transition-all duration-300 max-w-xs ${isError ? 'toast-error' : ''}`;
     el.innerHTML = `
       <div class="${isError ? 'text-red-400' : 'text-[#2ed573]'} pt-0.5 shrink-0">
         <i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'} text-lg" aria-hidden="true"></i>
@@ -474,7 +792,9 @@
       <div class="min-w-0">
         <p class="text-xs font-bold">${esc(title)}</p>
         <p class="text-[11px] text-gray-400 break-words">${esc(message)}</p>
-      </div>`;
+      </div>
+      <span class="toast-bar"></span>`;
+
     host.appendChild(el);
     requestAnimationFrame(() => el.classList.remove('translate-y-3', 'opacity-0'));
     setTimeout(() => {
@@ -514,20 +834,24 @@
     const txt = $('#statusText');
 
     if (isOpen) {
-      dot.className = 'w-2 h-2 rounded-full bg-[#2ed573] shadow-[0_0_10px_#2ed573]';
+      dot.className = 'w-2 h-2 rounded-full bg-[#2ed573] dot-live';
       const remaining = close - mins;
       const h = Math.floor(remaining / 60);
       const m = remaining % 60;
-      txt.innerHTML = `<span class="text-[#2ed573]">Abierto ahora</span> · Cerramos en ${h}h ${m}m · Pedidos: <span class="text-white tabular-nums">098 411 3081</span>`;
+      txt.innerHTML = `<span class="text-[#2ed573] font-bold">● Abierto ahora</span> · Cerramos en ${h}h ${m}m · Pedidos: <span class="text-white tabular-nums">098 411 3081</span>`;
       document.body.classList.remove('is-closed');
+      const fab = $('#cartFab');
+      if (fab && !fab.classList.contains('hidden')) fab.classList.add('pulse');
     } else {
       dot.className = 'w-2 h-2 rounded-full bg-red-500';
       const isBefore = mins < open;
       const diff = isBefore ? open - mins : (24 * 60 - mins) + open;
       const h = Math.floor(diff / 60);
       const m = diff % 60;
-      txt.innerHTML = `<span class="text-red-400">Cerrado ahora</span> · Abrimos en ${h}h ${m}m (17:00) · Pedidos: <span class="text-white tabular-nums">098 411 3081</span>`;
+      txt.innerHTML = `<span class="text-red-400 font-bold">● Cerrado ahora</span> · Abrimos en ${h}h ${m}m (17:00) · Pedidos: <span class="text-white tabular-nums">098 411 3081</span>`;
       document.body.classList.add('is-closed');
+      const fab = $('#cartFab');
+      if (fab) fab.classList.remove('pulse');
     }
   }
 
@@ -539,10 +863,10 @@
     const cats = ['todos', ...Array.from(new Set(menu.map(p => p.categoria)))];
     host.innerHTML = cats.map(c => `
       <button type="button" data-cat="${esc(c)}"
-              class="pub-cat-btn px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+              class="pub-cat-btn px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition active:scale-95 ${
                 categoria === c
-                  ? 'bg-[#ff4757] text-white'
-                  : 'bg-[#111827] border border-white/10 text-gray-400 hover:text-white'
+                  ? 'bg-[#ff4757] text-white shadow-lg shadow-[#ff4757]/30'
+                  : 'bg-[#111827] border border-white/10 text-gray-400 hover:text-white hover:border-[#ff4757]/40'
               }">
         ${c === 'todos' ? 'Todos' : esc(c)}
       </button>
@@ -560,17 +884,17 @@
 
     if (!list.length) {
       grid.innerHTML = `
-        <div class="col-span-full text-center py-12 text-sm text-gray-500">
+        <div class="col-span-full text-center py-12 text-sm text-gray-500 pop-in">
           <i class="fa-solid fa-magnifying-glass text-3xl block mb-3 opacity-40" aria-hidden="true"></i>
           No hay productos disponibles con esos filtros.
         </div>`;
       return;
     }
 
-    grid.innerHTML = list.map(p => {
-      const enCarrito = carrito.find(i => i.id === p.id);
+    grid.innerHTML = list.map((p, i) => {
+      const enCarrito = carrito.find(it => it.id === p.id);
       return `
-        <article class="product-card bg-[#111827] border border-white/10 rounded-3xl overflow-hidden shadow-xl flex flex-col">
+        <article class="product-card bg-[#111827] border border-white/10 rounded-3xl overflow-hidden shadow-xl flex flex-col" style="animation-delay:${i * 60}ms">
           <div class="h-48 w-full overflow-hidden bg-black/40 relative">
             <img src="${esc(p.imagen || CONFIG.defaultImg)}" alt="${esc(p.nombre)}" loading="lazy"
                  class="product-img w-full h-full object-cover"
@@ -579,7 +903,7 @@
               ${esc(p.categoria)}
             </span>
             ${enCarrito ? `
-              <span class="absolute top-3 left-3 bg-[#2ed573] text-black text-[10px] font-black px-2.5 py-1 rounded-full tabular-nums">
+              <span class="absolute top-3 left-3 bg-[#2ed573] text-black text-[10px] font-black px-2.5 py-1 rounded-full tabular-nums shadow-lg pop-in">
                 ${enCarrito.cantidad} en pedido
               </span>` : ''}
           </div>
@@ -591,12 +915,12 @@
             </div>
             <div class="grid grid-cols-[1fr_auto] gap-2">
               <button type="button" data-action="add-cart" data-id="${p.id}"
-                      class="w-full bg-[#1f2937] hover:bg-[#ff4757] text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 border border-white/10 hover:border-transparent active:scale-[.98]">
+                      class="w-full bg-[#1f2937] hover:bg-[#ff4757] text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 border border-white/10 hover:border-transparent active:scale-[.97]">
                 <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i> Agregar
               </button>
               <a href="https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(`Hola, deseo pedir ${p.nombre} por valor de ${money(p.precio)}`)}"
                  target="_blank" rel="noopener" title="Pedir solo este producto"
-                 class="bg-[#2ed573]/10 hover:bg-[#2ed573]/20 border border-[#2ed573]/30 text-[#2ed573] w-11 grid place-items-center rounded-xl transition">
+                 class="bg-[#2ed573]/10 hover:bg-[#2ed573]/20 border border-[#2ed573]/30 text-[#2ed573] w-11 grid place-items-center rounded-xl transition hover:scale-105 active:scale-95">
                 <i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>
               </a>
             </div>
@@ -609,9 +933,10 @@
   /* =========================================================================
      CARRITO
      ========================================================================= */
-  function addToCart(id) {
+  function addToCart(id, sourceEl) {
     const prod = menu.find(p => p.id === id);
     if (!prod) return;
+
     const existing = carrito.find(i => i.id === id);
     if (existing) existing.cantidad += 1;
     else carrito.push({ id: prod.id, nombre: prod.nombre, categoria: prod.categoria, precio: prod.precio, cantidad: 1 });
@@ -620,10 +945,14 @@
     renderMenuPublico();
     updateCartFab(true);
 
-    // Feedback visual
+    // Animación de vuelo al carrito si tenemos referencia de origen
+    const img = prod.imagen || CONFIG.defaultImg;
+    const origin = sourceEl || event?.target?.closest('.product-card')?.querySelector('img');
+    if (origin) flyToCart(origin, img, prod.nombre);
+
     const fab = $('#cartFab');
     fab.classList.add('bump');
-    setTimeout(() => fab.classList.remove('bump'), 200);
+    setTimeout(() => fab.classList.remove('bump'), 260);
 
     toast('Añadido al pedido', `${prod.nombre} · ${money(prod.precio)}`);
   }
@@ -664,9 +993,11 @@
     const total = cartCount();
     fab.classList.toggle('hidden', total === 0);
     fab.querySelector('.cart-count').textContent = total;
+    // pulso mientras esté abierto
+    if (!document.body.classList.contains('is-closed')) fab.classList.add('pulse');
     if (bump) {
       fab.classList.add('bump');
-      setTimeout(() => fab.classList.remove('bump'), 220);
+      setTimeout(() => fab.classList.remove('bump'), 260);
     }
   }
 
@@ -677,24 +1008,24 @@
 
     if (!carrito.length) {
       host.innerHTML = `
-        <div class="text-center py-12 text-xs text-gray-500">
+        <div class="text-center py-12 text-xs text-gray-500 pop-in">
           <i class="fa-solid fa-basket-shopping text-3xl block mb-3 opacity-40" aria-hidden="true"></i>
           Tu pedido está vacío. Agrega productos desde el menú.
         </div>`;
     } else {
-      host.innerHTML = carrito.map(item => `
-        <div class="flex items-center gap-3 bg-black/30 p-3 rounded-2xl border border-white/5">
+      host.innerHTML = carrito.map((item, idx) => `
+        <div class="flex items-center gap-3 bg-black/30 p-3 rounded-2xl border border-white/5 pop-in" style="animation-delay:${idx * 30}ms">
           <div class="flex-1 min-w-0">
             <p class="text-xs font-bold text-white truncate">${esc(item.nombre)}</p>
             <p class="text-[10px] text-gray-400 tabular-nums">${money(item.precio)} c/u · ${esc(item.categoria)}</p>
           </div>
           <div class="flex items-center gap-1 bg-[#1f2937] rounded-lg border border-white/10 p-1 shrink-0">
             <button type="button" data-action="qty-dec" data-id="${item.id}"
-                    class="w-6 h-6 grid place-items-center rounded text-gray-400 hover:text-white hover:bg-white/10 transition"
+                    class="w-6 h-6 grid place-items-center rounded text-gray-400 hover:text-white hover:bg-white/10 transition active:scale-90"
                     aria-label="Quitar una unidad de ${esc(item.nombre)}">−</button>
             <span class="text-xs font-bold text-white w-6 text-center tabular-nums">${item.cantidad}</span>
             <button type="button" data-action="qty-inc" data-id="${item.id}"
-                    class="w-6 h-6 grid place-items-center rounded text-gray-400 hover:text-white hover:bg-white/10 transition"
+                    class="w-6 h-6 grid place-items-center rounded text-gray-400 hover:text-white hover:bg-white/10 transition active:scale-90"
                     aria-label="Agregar una unidad de ${esc(item.nombre)}">+</button>
           </div>
           <span class="text-xs font-black text-[#2ed573] w-16 text-right tabular-nums shrink-0">${money(item.precio * item.cantidad)}</span>
@@ -707,10 +1038,11 @@
       `).join('');
     }
 
+    // Total con animación de contador
     const total = cartTotal();
-    $('#cartTotal').textContent = money(total);
+    animateTotal(lastTotalShown, total);
+    lastTotalShown = total;
 
-    // Aviso mínimo de delivery
     const minHint = $('#cartMinHint');
     if (total > 0 && total < CONFIG.deliveryMin) {
       minHint.classList.remove('hidden');
@@ -718,6 +1050,28 @@
     } else {
       minHint.classList.add('hidden');
     }
+  }
+
+  function animateTotal(from, to) {
+    const el = $('#cartTotal');
+    if (prefersReduced || from === to) {
+      el.textContent = money(to);
+      return;
+    }
+    const duration = 380;
+    const start = performance.now();
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = from + (to - from) * eased;
+      el.textContent = money(val);
+      if (t < 1) requestAnimationFrame(step);
+      else el.textContent = money(to);
+    };
+    requestAnimationFrame(step);
+    el.classList.remove('count-flash');
+    void el.offsetWidth;
+    el.classList.add('count-flash');
   }
 
   function checkoutWhatsApp() {
@@ -748,6 +1102,11 @@
 
     const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank', 'noopener');
+
+    // Mini festejo
+    const rect = $('#cartFab').getBoundingClientRect();
+    burstConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2, 18);
+
     toast('Pedido enviado', 'Continuamos la conversación por WhatsApp.');
   }
 
@@ -757,12 +1116,10 @@
   function loadUsers() {
     const saved = loadJSON(STORAGE.USERS, null);
     if (Array.isArray(saved) && saved.length) return saved;
-    // Fallback solo para primer arranque; el admin real debe registrar usuarios.
     return [{ id: 1, nombre: 'Osvaldo', user: 'admin', pass: 'admin123', rol: 'Administrador' }];
   }
 
   function initLogin() {
-    // Mostrar/ocultar contraseña
     $('#togglePass').addEventListener('click', () => {
       const input = $('#loginPass');
       const icon = $('#togglePass').querySelector('i');
@@ -772,12 +1129,10 @@
       input.focus();
     });
 
-    // Limpiar error al escribir
     ['#loginUser', '#loginPass'].forEach(sel =>
       $(sel).addEventListener('input', () => $('#loginMsgError').classList.add('hidden'))
     );
 
-    // Submit
     $('#formLoginPublico').addEventListener('submit', procesarIngreso);
   }
 
@@ -796,7 +1151,6 @@
       return;
     }
 
-    // Estado de carga
     btn.disabled = true;
     text.textContent = 'Verificando…';
     btn.insertAdjacentHTML('beforeend', '<span class="spinner"></span>');
@@ -807,7 +1161,6 @@
       const sp = btn.querySelector('.spinner');
       if (sp) sp.remove();
 
-      // Recargar usuarios desde localStorage por si el admin los modificó
       usuarios = loadUsers();
       const found = usuarios.find(u => u.user === user && u.pass === pass);
 
@@ -823,10 +1176,7 @@
       saveJSON(STORAGE.SESSION, found);
       toast('Acceso concedido', `Bienvenido, ${found.nombre}. Redirigiendo…`);
 
-      // Cerrar modal y redirigir
-      setTimeout(() => {
-        window.location.href = CONFIG.adminUrl;
-      }, 500);
+      setTimeout(() => { window.location.href = CONFIG.adminUrl; }, 500);
     }, 500);
   }
 
@@ -834,7 +1184,6 @@
      EVENTOS
      ========================================================================= */
   function bindEvents() {
-    // Categorías (delegación)
     $('#publicCategorias').addEventListener('click', e => {
       const btn = e.target.closest('[data-cat]');
       if (!btn) return;
@@ -843,20 +1192,19 @@
       renderMenuPublico();
     });
 
-    // Buscador con debounce
     $('#menuSearch').addEventListener('input', debounce(e => {
       busqueda = e.target.value;
       renderMenuPublico();
     }, 180));
 
-    // Acciones del menú público (delegado)
     $('#publicMenuGrid').addEventListener('click', e => {
       const btn = e.target.closest('[data-action="add-cart"]');
       if (!btn) return;
-      addToCart(Number(btn.dataset.id));
+      const card = btn.closest('.product-card');
+      const img  = card ? card.querySelector('img') : null;
+      addToCart(Number(btn.dataset.id), img);
     });
 
-    // Acciones del carrito
     $('#cartItems').addEventListener('click', e => {
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
@@ -875,26 +1223,20 @@
       openModal('modalCart');
     });
 
-    // Abrir / cerrar modal login (delegado)
     document.addEventListener('click', e => {
-      if (e.target.closest('[data-action="open-login"]')) {
-        openModal('modalLogin');
-      }
+      if (e.target.closest('[data-action="open-login"]')) openModal('modalLogin');
     });
 
-    // Cierre por botón
     $$('[data-close-modal]').forEach(btn =>
       btn.addEventListener('click', () => closeModal(btn.dataset.closeModal))
     );
 
-    // Clic fuera del modal
     $$('.modal-backdrop').forEach(m => {
       m.addEventListener('mousedown', e => {
         if (e.target === m) closeModal(m.id);
       });
     });
 
-    // Escape cierra el modal activo
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
       const open = $$('.modal-backdrop.modal-active')[0];
@@ -906,29 +1248,24 @@
      INICIALIZACIÓN
      ========================================================================= */
   function init() {
-    // Cargar datos (menú y carrito desde localStorage)
     menu = loadJSON(STORAGE.MENU, null) || DEFAULT_MENU.map(p => ({ ...p }));
     usuarios = loadUsers();
     carrito = loadJSON(STORAGE.CART, []) || [];
 
-    // Si el carrito guardado contiene productos que ya no existen en el menú, los limpiamos.
     const idsMenu = new Set(menu.map(p => p.id));
     carrito = carrito.filter(i => idsMenu.has(i.id));
 
-    // Año del footer
     $('#footerYear').textContent = new Date().getFullYear();
 
-    // Render inicial
     renderCategorias();
     renderMenuPublico();
     renderCart();
+    lastTotalShown = cartTotal();
     updateCartFab();
     renderStatus();
 
-    // Refrescar estado abierto/cerrado cada minuto
     setInterval(renderStatus, 60_000);
 
-    // Refrescar menú si cambia desde otra pestaña (ej. admin)
     window.addEventListener('storage', e => {
       if (e.key === STORAGE.MENU) {
         menu = loadJSON(STORAGE.MENU, null) || menu;
@@ -940,13 +1277,23 @@
         renderCart();
         updateCartFab();
       }
-      if (e.key === STORAGE.USERS) {
-        usuarios = loadUsers();
-      }
+      if (e.key === STORAGE.USERS) usuarios = loadUsers();
     });
 
     bindEvents();
     initLogin();
+    initScrollProgress();
+    initReveal();
+    initParallax();
+    initRipple();
+
+    // Pequeña animación de entrada cuando carga todo
+    setTimeout(() => {
+      const fab = $('#cartFab');
+      if (fab && !fab.classList.contains('hidden') && !document.body.classList.contains('is-closed')) {
+        fab.classList.add('pulse');
+      }
+    }, 400);
   }
 
   document.addEventListener('DOMContentLoaded', init);
