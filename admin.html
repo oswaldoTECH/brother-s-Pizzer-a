@@ -3,482 +3,432 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin - Brother's Pizza</title>
+    <title>Brother's Pizza | Panel de Administración</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brandDark: '#121212',
-                        brandCard: '#1e1e1e',
-                        brandPrimary: '#ff4757',
-                        brandPrimaryHover: '#ff2e43',
-                        brandText: '#f3f4f6',
-                        brandMuted: '#9ca3af',
-                        brandBorder: '#374151',
-                        brandSuccess: '#10b981',
-                        brandWarning: '#f59e0b',
-                        brandDanger: '#ef4444'
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             background-color: #121212;
-            color: #f3f4f6;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
+            color: #f1f2f6;
+            font-family: system-ui, -apple-system, sans-serif;
         }
-        
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #121212; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #374151; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #4b5563; 
-        }
-
-        .fade-in {
-            animation: fadeIn 0.3s ease-in-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .view-hidden {
-            display: none !important;
-        }
-
-        input, textarea, select {
-            color-scheme: dark;
+        .modal-active {
+            display: flex !important;
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col md:flex-row">
 
-    <div id="login-view" class="flex-1 flex items-center justify-center p-4">
-        <div class="bg-brandCard w-full max-w-md rounded-2xl shadow-2xl p-8 border border-brandBorder fade-in">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brandPrimary/10 text-brandPrimary mb-4">
-                    <i class="fa-solid fa-pizza-slice text-3xl"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-white tracking-tight">Brother's Pizza</h1>
-                <p class="text-brandMuted text-sm mt-1">Acceso Administrativo</p>
+    <!-- LOGIN CONTAINER -->
+    <div id="loginSection" class="fixed inset-0 z-50 bg-[#121212] flex items-center justify-center p-4">
+        <div class="bg-[#1e1e1e] p-8 rounded-xl border border-white/10 w-full max-w-md shadow-2xl">
+            <div class="text-center mb-6">
+                <i class="fa-solid fa-pizza-slice text-4xl text-[#ff4757] mb-2"></i>
+                <h2 class="text-2xl font-bold">Brother's Pizza</h2>
+                <p class="text-gray-400 text-sm">Acceso Administrativo</p>
             </div>
-
-            <form id="login-form" class="space-y-6">
-                <div id="login-error" class="hidden bg-red-900/30 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center">
-                    <i class="fa-solid fa-triangle-exclamation mr-2"></i>
-                    <span id="login-error-msg">Credenciales inválidas</span>
-                </div>
-
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label for="username" class="block text-sm font-medium text-brandMuted mb-2">Usuario</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-user text-brandMuted"></i>
-                        </div>
-                        <input type="text" id="username" class="block w-full pl-10 pr-3 py-3 border border-brandBorder rounded-xl leading-5 bg-brandDark text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brandPrimary focus:border-brandPrimary sm:text-sm transition-colors" placeholder="admin" required>
-                    </div>
+                    <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Usuario</label>
+                    <input type="text" id="userInput" required class="w-full bg-[#121212] border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#ff4757]">
                 </div>
-
                 <div>
-                    <label for="password" class="block text-sm font-medium text-brandMuted mb-2">Contraseña</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-lock text-brandMuted"></i>
-                        </div>
-                        <input type="password" id="password" class="block w-full pl-10 pr-3 py-3 border border-brandBorder rounded-xl leading-5 bg-brandDark text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brandPrimary focus:border-brandPrimary sm:text-sm transition-colors" placeholder="••••••••" required>
-                    </div>
+                    <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Contraseña</label>
+                    <input type="password" id="passInput" required class="w-full bg-[#121212] border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#ff4757]">
                 </div>
-
-                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-brandPrimary hover:bg-brandPrimaryHover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brandDark focus:ring-brandPrimary transition-colors">
-                    Ingresar al Panel
+                <div id="loginError" class="text-red-500 text-xs text-center hidden">
+                    Usuario o contraseña incorrectos.
+                </div>
+                <button type="submit" class="w-full bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold py-3 rounded-lg transition">
+                    Ingresar
                 </button>
+            </form>
+            <div class="mt-4 text-center">
+                <a href="index.html" class="text-xs text-gray-400 hover:underline">← Volver a la página principal</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN PANEL (HIDDEN BY DEFAULT) -->
+    <div id="mainPanel" class="flex-1 flex flex-col md:flex-row hidden w-full">
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-64 bg-[#1e1e1e] border-r border-white/10 flex flex-col justify-between p-4">
+            <div>
+                <div class="flex items-center gap-3 px-2 py-4 mb-6 border-b border-white/10">
+                    <i class="fa-solid fa-pizza-slice text-[#ff4757] text-xl"></i>
+                    <span class="font-bold text-lg">Brother's Pizza</span>
+                </div>
+                <nav class="space-y-1">
+                    <button onclick="switchTab('inventario')" id="btnTabInventario" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-[#ff4757]/10 text-[#ff4757] font-semibold text-sm transition text-left">
+                        <i class="fa-solid fa-boxes-stacked w-5"></i> Inventario
+                    </button>
+                    <button onclick="switchTab('ventas')" id="btnTabVentas" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 font-semibold text-sm transition text-left">
+                        <i class="fa-solid fa-chart-line w-5"></i> Ventas Diarias
+                    </button>
+                </nav>
+            </div>
+            <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold text-xs">A</div>
+                    <span class="text-xs font-semibold">Administrador</span>
+                </div>
+                <button onclick="handleLogout()" title="Cerrar sesión" class="text-gray-400 hover:text-white transition p-2">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTENT AREA -->
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <!-- SECCIÓN INVENTARIO -->
+            <section id="sectionInventario">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold">Control de Inventario</h1>
+                        <p class="text-xs text-gray-400">Gestiona los ingredientes y suministros principales.</p>
+                    </div>
+                    <button onclick="openModalInsumo()" class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-2.5 rounded-lg text-sm flex items-center gap-2 transition w-fit">
+                        <i class="fa-solid fa-plus"></i> Nuevo Ingreso
+                    </button>
+                </div>
+
+                <div class="bg-[#1e1e1e] border border-white/10 rounded-xl overflow-x-auto shadow-xl">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-black/20 text-xs uppercase text-gray-400 border-b border-white/10">
+                            <tr>
+                                <th class="p-4">Ingrediente / Insumo</th>
+                                <th class="p-4">Cantidad Actual</th>
+                                <th class="p-4">Unidad</th>
+                                <th class="p-4">Estado</th>
+                                <th class="p-4 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventarioTableBody" class="divide-y divide-white/10">
+                            <!-- Filas generadas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECCIÓN VENTAS -->
+            <section id="sectionVentas" class="hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold">Ventas Diarias</h1>
+                        <p class="text-xs text-gray-400">Registro de órdenes e ingresos por pedidos.</p>
+                    </div>
+                    <button onclick="openModalVenta()" class="bg-[#2ed573] hover:bg-[#26af5f] text-white font-bold px-4 py-2.5 rounded-lg text-sm flex items-center gap-2 transition w-fit">
+                        <i class="fa-solid fa-plus"></i> Registrar Venta
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-[#1e1e1e] p-4 rounded-xl border border-white/10">
+                        <p class="text-xs text-gray-400">Total Recaudado</p>
+                        <h3 id="statTotalVentas" class="text-2xl font-bold text-[#2ed573]">$0.00</h3>
+                    </div>
+                    <div class="bg-[#1e1e1e] p-4 rounded-xl border border-white/10">
+                        <p class="text-xs text-gray-400">Total de Pedidos</p>
+                        <h3 id="statTotalPedidos" class="text-2xl font-bold text-white">0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-[#1e1e1e] border border-white/10 rounded-xl overflow-x-auto shadow-xl">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-black/20 text-xs uppercase text-gray-400 border-b border-white/10">
+                            <tr>
+                                <th class="p-4">Fecha / Hora</th>
+                                <th class="p-4">Detalle del Pedido</th>
+                                <th class="p-4">Total ($)</th>
+                                <th class="p-4 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ventasTableBody" class="divide-y divide-white/10">
+                            <!-- Filas generadas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL AGREGAR/EDITAR INSUMO -->
+    <div id="modalInsumo" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-[#1e1e1e] border border-white/10 w-full max-w-md rounded-xl p-6 shadow-2xl space-y-4">
+            <h3 id="modalInsumoTitle" class="text-lg font-bold">Agregar Insumo</h3>
+            <form onsubmit="saveInsumo(event)" class="space-y-3">
+                <input type="hidden" id="insumoId">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Nombre del Insumo</label>
+                    <input type="text" id="insumoNombre" required class="w-full bg-[#121212] border border-white/10 rounded-lg p-2.5 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Cantidad</label>
+                        <input type="number" step="0.1" id="insumoCantidad" required class="w-full bg-[#121212] border border-white/10 rounded-lg p-2.5 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Unidad</label>
+                        <select id="insumoUnidad" class="w-full bg-[#121212] border border-white/10 rounded-lg p-2.5 text-sm">
+                            <option value="Unidades">Unidades</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Libras">Libras</option>
+                            <option value="Litros">Litros</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Límite Crítico (Alerta)</label>
+                    <input type="number" step="0.1" id="insumoLimite" placeholder="Ej: 2.0" required class="w-full bg-[#121212] border border-white/10 rounded-lg p-2.5 text-sm">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModalInsumo()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold">Guardar</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <div id="dashboard-view" class="view-hidden flex-1 flex h-screen overflow-hidden">
-        
-        <!-- Sidebar -->
-        <aside class="w-64 bg-brandCard border-r border-brandBorder flex flex-col transition-all duration-300 md:relative absolute z-20 h-full" id="sidebar">
-            <div class="h-16 flex items-center px-6 border-b border-brandBorder shrink-0">
-                <i class="fa-solid fa-pizza-slice text-brandPrimary text-xl mr-3"></i>
-                <span class="text-lg font-bold text-white">Brother's Pizza</span>
-                <button id="close-sidebar-btn" class="ml-auto text-brandMuted md:hidden">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            
-            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-                <a href="#" data-tab="inventory" class="nav-btn flex items-center px-3 py-2.5 text-sm font-medium rounded-lg bg-brandPrimary/10 text-brandPrimary group">
-                    <i class="fa-solid fa-boxes-stacked w-5 text-center mr-3"></i>
-                    Inventario
-                </a>
-                <a href="#" data-tab="sales" class="nav-btn flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-brandMuted hover:bg-brandDark hover:text-white group transition-colors">
-                    <i class="fa-solid fa-chart-line w-5 text-center mr-3"></i>
-                    Ventas Diarias
-                </a>
-            </nav>
-
-            <div class="p-4 border-t border-brandBorder">
-                <div class="flex items-center w-full">
-                    <div class="w-8 h-8 rounded-full bg-brandDark border border-brandBorder flex items-center justify-center text-sm font-bold mr-3">
-                        A
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-white truncate">Administrador</p>
-                    </div>
-                    <button id="logout-btn" class="text-brandMuted hover:text-brandPrimary transition-colors p-2" title="Cerrar Sesión">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    </button>
+    <!-- MODAL REGISTRAR VENTA -->
+    <div id="modalVenta" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-[#1e1e1e] border border-white/10 w-full max-w-md rounded-xl p-6 shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold">Registrar Venta</h3>
+            <form onsubmit="saveVenta(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Detalle del Pedido</label>
+                    <input type="text" id="ventaDetalle" placeholder="Ej: 1 Pizza Grande Pepperoni + Cola" required class="w-full bg-[#121212] border border-white/10 rounded-lg p-2.5 text-sm">
                 </div>
-            </div>
-        </aside>
-
-        <main class="flex-1 flex flex-col relative min-w-0 overflow-hidden bg-brandDark">
-            
-            <!-- Top Header (Mobile trigger) -->
-            <header class="h-16 bg-brandCard border-b border-brandBorder flex items-center justify-between px-4 sm:px-6 md:hidden shrink-0">
-                <button id="open-sidebar-btn" class="text-brandMuted hover:text-white focus:outline-none p-2 -ml-2">
-                    <i class="fa-solid fa-bars text-xl"></i>
-                </button>
-                <div class="font-bold text-white flex items-center">
-                    <i class="fa-solid fa-pizza-slice text-brandPrimary mr-2"></i> Panel Admin
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Monto Total ($)</label>
+                    <input type="number" step="0.01" id="ventaMonto" placeholder="13.00" required class="w-full bg-[#121212] border border-white/10 rounded-lg p-2.5 text-sm">
                 </div>
-                <div class="w-8"></div>
-            </header>
-
-            <div class="flex-1 overflow-auto p-4 sm:p-6 lg:p-8" id="tab-content">
-                
-                <div id="tab-inventory" class="tab-pane fade-in">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                        <div>
-                            <h2 class="text-2xl font-bold text-white">Control de Inventario</h2>
-                            <p class="text-brandMuted text-sm mt-1">Gestiona los ingredientes y suministros principales.</p>
-                        </div>
-                        <button class="bg-brandPrimary hover:bg-brandPrimaryHover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-lg shadow-brandPrimary/20">
-                            <i class="fa-solid fa-plus"></i> Nuevo Ingreso
-                        </button>
-                    </div>
-
-                    <div class="bg-brandCard border border-brandBorder rounded-xl overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-brandDark border-b border-brandBorder text-brandMuted text-xs uppercase tracking-wider">
-                                        <th class="p-4 font-medium">Ingrediente / Insumo</th>
-                                        <th class="p-4 font-medium">Cantidad Actual</th>
-                                        <th class="p-4 font-medium">Unidad</th>
-                                        <th class="p-4 font-medium">Estado</th>
-                                        <th class="p-4 font-medium text-right">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-sm divide-y divide-brandBorder">
-                                    <tr class="hover:bg-brandDark/50 transition-colors">
-                                        <td class="p-4 font-medium flex items-center gap-2">
-                                            <i class="fa-solid fa-cookie text-brandMuted"></i> Masa (Bollos)
-                                        </td>
-                                        <td class="p-4 font-bold text-white">45</td>
-                                        <td class="p-4 text-brandMuted">Unidades</td>
-                                        <td class="p-4">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900/30 text-green-400 border border-green-800/50">
-                                                Óptimo
-                                            </span>
-                                        </td>
-                                        <td class="p-4 text-right">
-                                            <button class="text-brandMuted hover:text-white px-2" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-brandDark/50 transition-colors">
-                                        <td class="p-4 font-medium flex items-center gap-2">
-                                            <i class="fa-solid fa-cheese text-brandMuted"></i> Queso Mozzarella
-                                        </td>
-                                        <td class="p-4 font-bold text-white">12.5</td>
-                                        <td class="p-4 text-brandMuted">Kg</td>
-                                        <td class="p-4">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900/30 text-green-400 border border-green-800/50">
-                                                Óptimo
-                                            </span>
-                                        </td>
-                                        <td class="p-4 text-right">
-                                            <button class="text-brandMuted hover:text-white px-2" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-brandDark/50 transition-colors">
-                                        <td class="p-4 font-medium flex items-center gap-2">
-                                            <i class="fa-solid fa-circle-dot text-brandMuted"></i> Pepperoni
-                                        </td>
-                                        <td class="p-4 font-bold text-brandWarning">3.2</td>
-                                        <td class="p-4 text-brandMuted">Kg</td>
-                                        <td class="p-4">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-900/30 text-yellow-400 border border-yellow-800/50">
-                                                Por Agotarse
-                                            </span>
-                                        </td>
-                                        <td class="p-4 text-right">
-                                            <button class="text-brandMuted hover:text-white px-2" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-brandDark/50 transition-colors">
-                                        <td class="p-4 font-medium flex items-center gap-2">
-                                            <i class="fa-solid fa-drumstick-bite text-brandMuted"></i> Jamón
-                                        </td>
-                                        <td class="p-4 font-bold text-brandDanger">0.8</td>
-                                        <td class="p-4 text-brandMuted">Kg</td>
-                                        <td class="p-4">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/30 text-red-400 border border-red-800/50">
-                                                Crítico
-                                            </span>
-                                        </td>
-                                        <td class="p-4 text-right">
-                                            <button class="text-brandMuted hover:text-white px-2" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-brandDark/50 transition-colors">
-                                        <td class="p-4 font-medium flex items-center gap-2">
-                                            <i class="fa-solid fa-box text-brandMuted"></i> Cajas Familiares
-                                        </td>
-                                        <td class="p-4 font-bold text-white">120</td>
-                                        <td class="p-4 text-brandMuted">Unidades</td>
-                                        <td class="p-4">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900/30 text-green-400 border border-green-800/50">
-                                                Óptimo
-                                            </span>
-                                        </td>
-                                        <td class="p-4 text-right">
-                                            <button class="text-brandMuted hover:text-white px-2" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModalVenta()" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-[#2ed573] hover:bg-[#26af5f] text-xs font-bold">Guardar Venta</button>
                 </div>
-
-                <div id="tab-sales" class="tab-pane view-hidden fade-in">
-                    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h2 class="text-2xl font-bold text-white">Ventas Diarias</h2>
-                            <p class="text-brandMuted text-sm mt-1">Resumen de ingresos y productos vendidos hoy.</p>
-                        </div>
-                        <div class="flex items-center bg-brandCard border border-brandBorder rounded-lg px-3 py-1">
-                            <span class="text-sm text-brandMuted mr-2">Fecha:</span>
-                            <span class="text-sm font-bold text-white" id="current-date">Cargando...</span>
-                        </div>
-                    </div>
-
-                    <!-- Resumen de Tarjetas -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div class="bg-brandCard border border-brandBorder rounded-xl p-5 relative overflow-hidden flex flex-col justify-center">
-                            <div class="absolute top-0 right-0 p-4 opacity-5">
-                                <i class="fa-solid fa-dollar-sign text-8xl text-white"></i>
-                            </div>
-                            <h4 class="text-brandMuted font-medium text-sm mb-1">Ingresos Totales (Hoy)</h4>
-                            <div class="text-4xl font-bold text-brandSuccess">$345.50</div>
-                            <div class="mt-2 text-xs text-brandMuted">Última actualización: hace 5 min</div>
-                        </div>
-
-                        <div class="bg-brandCard border border-brandBorder rounded-xl p-5 relative overflow-hidden flex flex-col justify-center">
-                            <div class="absolute top-0 right-0 p-4 opacity-5">
-                                <i class="fa-solid fa-pizza-slice text-8xl text-white"></i>
-                            </div>
-                            <h4 class="text-brandMuted font-medium text-sm mb-1">Pizzas Vendidas (Hoy)</h4>
-                            <div class="text-4xl font-bold text-white">28</div>
-                            <div class="mt-2 text-xs text-brandMuted">12 Familiares, 16 Medianas</div>
-                        </div>
-                    </div>
-
-                    <!-- Tabla de Últimas Ventas -->
-                    <div class="bg-brandCard border border-brandBorder rounded-xl overflow-hidden">
-                        <div class="p-4 border-b border-brandBorder flex justify-between items-center bg-brandDark/50">
-                            <h3 class="font-bold text-white">Últimos Pedidos</h3>
-                            <button class="text-sm text-brandPrimary hover:text-brandPrimaryHover">Ver todos</button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-brandDark border-b border-brandBorder text-brandMuted text-xs uppercase tracking-wider">
-                                        <th class="p-4 font-medium">Hora</th>
-                                        <th class="p-4 font-medium">Producto</th>
-                                        <th class="p-4 font-medium">Cant.</th>
-                                        <th class="p-4 font-medium">Precio Unit.</th>
-                                        <th class="p-4 font-medium">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-sm divide-y divide-brandBorder">
-                                    <tr class="hover:bg-brandDark/50 transition-colors">
-                                        <td class="p-4 text-brandMuted">14:30</td>
-                                        <td class="p-4 font-medium">Pizza Pepperoni Familiar</td>
-                                        <td class="p-4">1</td>
-                                        <td class="p-4 text-brandMuted">$14.00</td>
-                                        <td class="p-4 font-bold text-brandSuccess">$14.00</td>
-                                    </tr>
-                                    <tr class="hover:bg-brandDark/50 transition-colors">
-                                        <td class="p-4 text-brandMuted">14:15</td>
-                                        <td class="p-4 font-medium">Pizza Hawaiana Mediana</td>
-                                        <td class="p-4">2</td>
-                                        <td class="p-4 text-brandMuted">$10.00</td>
-                                        <td class="p-4 font-bold text-brandSuccess">$20.00</td>
-                                    </tr>
-                                    <tr class="hover:bg-brandDark/50 transition-colors">
-                                        <td class="p-4 text-brandMuted">13:50</td>
-                                        <td class="p-4 font-medium">Combo Familiar (Pizza + Gaseosa)</td>
-                                        <td class="p-4">1</td>
-                                        <td class="p-4 text-brandMuted">$18.50</td>
-                                        <td class="p-4 font-bold text-brandSuccess">$18.50</td>
-                                    </tr>
-                                    <tr class="hover:bg-brandDark/50 transition-colors">
-                                        <td class="p-4 text-brandMuted">13:20</td>
-                                        <td class="p-4 font-medium">Pizza Meat Lover's Familiar</td>
-                                        <td class="p-4">1</td>
-                                        <td class="p-4 text-brandMuted">$18.00</td>
-                                        <td class="p-4 font-bold text-brandSuccess">$18.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </main>
-        
-        <!-- Mobile Sidebar Overlay -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-10 hidden md:hidden transition-opacity"></div>
+            </form>
+        </div>
     </div>
 
+    <!-- SCRIPT DE FUNCIONAMIENTO -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Elementos de la UI ---
-            const loginView = document.getElementById('login-view');
-            const dashboardView = document.getElementById('dashboard-view');
-            const loginForm = document.getElementById('login-form');
-            const loginError = document.getElementById('login-error');
-            const logoutBtn = document.getElementById('logout-btn');
-            
-            // Sidebar
-            const sidebar = document.getElementById('sidebar');
-            const openSidebarBtn = document.getElementById('open-sidebar-btn');
-            const closeSidebarBtn = document.getElementById('close-sidebar-btn');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-            
-            // Pestañas (Tabs)
-            const navBtns = document.querySelectorAll('.nav-btn');
-            const tabPanes = document.querySelectorAll('.tab-pane');
+        // DATOS INICIALES POR DEFECTO
+        const defaultInventario = [
+            { id: 1, nombre: "Masa (Bollos)", cantidad: 45, unidad: "Unidades", limite: 10 },
+            { id: 2, nombre: "Queso Mozzarella", cantidad: 12.5, unidad: "Kg", limite: 3 },
+            { id: 3, nombre: "Pepperoni", cantidad: 3.2, unidad: "Kg", limite: 1.5 },
+            { id: 4, nombre: "Jamón", cantidad: 0.8, unidad: "Kg", limite: 1 },
+            { id: 5, nombre: "Cajas Familiares", cantidad: 120, unidad: "Unidades", limite: 20 }
+        ];
 
-            // Establecer fecha actual en la pestaña de ventas
-            const dateElement = document.getElementById('current-date');
-            if(dateElement) {
-                const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
-                dateElement.textContent = new Date().toLocaleDateString('es-ES', options);
+        let inventario = JSON.parse(localStorage.getItem('bp_inventario')) || defaultInventario;
+        let ventas = JSON.parse(localStorage.getItem('bp_ventas')) || [];
+
+        // VERIFICAR SESIÓN
+        window.onload = () => {
+            if (sessionStorage.getItem('bp_admin_logged') === 'true') {
+                showPanel();
             }
+        };
 
-            // --- Lógica de Autenticación (Simulada) ---
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const user = document.getElementById('username').value;
-                const pass = document.getElementById('password').value;
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('userInput').value;
+            const p = document.getElementById('passInput').value;
 
-                // Validación simple para demostración
-                if(user && pass) {
-                    loginError.classList.add('hidden');
-                    loginView.classList.add('view-hidden');
-                    dashboardView.classList.remove('view-hidden');
-                    // Pequeño retraso para la transición
-                    setTimeout(() => {
-                        dashboardView.style.opacity = 1;
-                    }, 50);
-                } else {
-                    loginError.classList.remove('hidden');
+            // Credenciales por defecto
+            if (u === 'admin' && p === 'admin123') {
+                sessionStorage.setItem('bp_admin_logged', 'true');
+                showPanel();
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('bp_admin_logged');
+            document.getElementById('mainPanel').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+        }
+
+        function showPanel() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('mainPanel').classList.remove('hidden');
+            renderInventario();
+            renderVentas();
+        }
+
+        // CAMBIO DE PESTAÑAS
+        function switchTab(tab) {
+            const btnInv = document.getElementById('btnTabInventario');
+            const btnVen = document.getElementById('btnTabVentas');
+            const secInv = document.getElementById('sectionInventario');
+            const secVen = document.getElementById('sectionVentas');
+
+            if (tab === 'inventario') {
+                secInv.classList.remove('hidden');
+                secVen.classList.add('hidden');
+                btnInv.className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-[#ff4757]/10 text-[#ff4757] font-semibold text-sm transition text-left";
+                btnVen.className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 font-semibold text-sm transition text-left";
+            } else {
+                secInv.classList.add('hidden');
+                secVen.classList.remove('hidden');
+                btnVen.className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-[#2ed573]/10 text-[#2ed573] font-semibold text-sm transition text-left";
+                btnInv.className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/5 font-semibold text-sm transition text-left";
+            }
+        }
+
+        // INVENTARIO LÓGICA
+        function renderInventario() {
+            const tbody = document.getElementById('inventarioTableBody');
+            tbody.innerHTML = '';
+
+            inventario.forEach(item => {
+                let badgeClass = "bg-green-500/20 text-green-400 border-green-500/30";
+                let estadoText = "Óptimo";
+
+                if (item.cantidad <= item.limite) {
+                    badgeClass = "bg-red-500/20 text-red-400 border-red-500/30";
+                    estadoText = "Crítico";
+                } else if (item.cantidad <= item.limite * 2) {
+                    badgeClass = "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+                    estadoText = "Por Agotarse";
                 }
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="p-4 font-semibold">${item.nombre}</td>
+                        <td class="p-4 font-bold text-base">${item.cantidad}</td>
+                        <td class="p-4 text-gray-400">${item.unidad}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold border ${badgeClass}">
+                                ${estadoText}
+                            </span>
+                        </td>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="editInsumo(${item.id})" class="text-gray-400 hover:text-white p-1">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteInsumo(${item.id})" class="text-red-400 hover:text-red-300 p-1">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
             });
 
-            logoutBtn.addEventListener('click', () => {
-                loginForm.reset();
-                loginError.classList.add('hidden');
-                dashboardView.classList.add('view-hidden');
-                loginView.classList.remove('view-hidden');
-            });
+            localStorage.setItem('bp_inventario', JSON.stringify(inventario));
+        }
 
-            // --- Lógica de Cambio de Pestañas ---
-            navBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetTab = btn.getAttribute('data-tab');
+        function openModalInsumo() {
+            document.getElementById('insumoId').value = '';
+            document.getElementById('insumoNombre').value = '';
+            document.getElementById('insumoCantidad').value = '';
+            document.getElementById('insumoLimite').value = '';
+            document.getElementById('modalInsumoTitle').innerText = 'Nuevo Insumo';
+            document.getElementById('modalInsumo').classList.add('modal-active');
+        }
 
-                    // Actualizar estilos de los botones
-                    navBtns.forEach(b => {
-                        b.classList.remove('bg-brandPrimary/10', 'text-brandPrimary');
-                        b.classList.add('text-brandMuted', 'hover:bg-brandDark', 'hover:text-white');
-                    });
-                    btn.classList.remove('text-brandMuted', 'hover:bg-brandDark', 'hover:text-white');
-                    btn.classList.add('bg-brandPrimary/10', 'text-brandPrimary');
+        function closeModalInsumo() {
+            document.getElementById('modalInsumo').classList.remove('modal-active');
+        }
 
-                    // Mostrar pestaña objetivo, ocultar las demás
-                    tabPanes.forEach(pane => {
-                        if(pane.id === `tab-${targetTab}`) {
-                            pane.classList.remove('view-hidden');
-                            pane.classList.remove('fade-in');
-                            void pane.offsetWidth; // Trigger reflow
-                            pane.classList.add('fade-in');
-                        } else {
-                            pane.classList.add('view-hidden');
-                        }
-                    });
+        function editInsumo(id) {
+            const item = inventario.find(i => i.id === id);
+            if (!item) return;
+            document.getElementById('insumoId').value = item.id;
+            document.getElementById('insumoNombre').value = item.nombre;
+            document.getElementById('insumoCantidad').value = item.cantidad;
+            document.getElementById('insumoUnidad').value = item.unidad;
+            document.getElementById('insumoLimite').value = item.limite;
+            document.getElementById('modalInsumoTitle').innerText = 'Editar Insumo';
+            document.getElementById('modalInsumo').classList.add('modal-active');
+        }
 
-                    // Cerrar sidebar en móviles tras hacer clic
-                    if (window.innerWidth < 768) {
-                        closeSidebar();
-                    }
-                });
-            });
+        function saveInsumo(e) {
+            e.preventDefault();
+            const id = document.getElementById('insumoId').value;
+            const nombre = document.getElementById('insumoNombre').value;
+            const cantidad = parseFloat(document.getElementById('insumoCantidad').value);
+            const unidad = document.getElementById('insumoUnidad').value;
+            const limite = parseFloat(document.getElementById('insumoLimite').value);
 
-            // --- Lógica de Sidebar en Móviles ---
-            function openSidebar() {
-                sidebar.classList.remove('-translate-x-full');
-                sidebarOverlay.classList.remove('hidden');
+            if (id) {
+                const index = inventario.findIndex(i => i.id == id);
+                inventario[index] = { id: parseInt(id), nombre, cantidad, unidad, limite };
+            } else {
+                inventario.push({ id: Date.now(), nombre, cantidad, unidad, limite });
             }
 
-            function closeSidebar() {
-                sidebar.classList.add('-translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-            }
+            closeModalInsumo();
+            renderInventario();
+        }
 
-            if (window.innerWidth < 768) {
-                sidebar.classList.add('-translate-x-full');
+        function deleteInsumo(id) {
+            if (confirm('¿Seguro que deseas eliminar este insumo?')) {
+                inventario = inventario.filter(i => i.id !== id);
+                renderInventario();
             }
+        }
 
-            window.addEventListener('resize', () => {
-                if (window.innerWidth >= 768) {
-                    sidebar.classList.remove('-translate-x-full');
-                    sidebarOverlay.classList.add('hidden');
-                } else {
-                    sidebar.classList.add('-translate-x-full');
-                }
+        // VENTAS LÓGICA
+        function renderVentas() {
+            const tbody = document.getElementById('ventasTableBody');
+            tbody.innerHTML = '';
+
+            let total = 0;
+
+            ventas.forEach((v, index) => {
+                total += v.monto;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="p-4 text-xs text-gray-400">${v.fecha}</td>
+                        <td class="p-4 font-semibold">${v.detalle}</td>
+                        <td class="p-4 font-bold text-[#2ed573]">$${v.monto.toFixed(2)}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="deleteVenta(${index})" class="text-red-400 hover:text-red-300 p-1">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
             });
 
-            openSidebarBtn.addEventListener('click', openSidebar);
-            closeSidebarBtn.addEventListener('click', closeSidebar);
-            sidebarOverlay.addEventListener('click', closeSidebar);
-        });
+            document.getElementById('statTotalVentas').innerText = `$${total.toFixed(2)}`;
+            document.getElementById('statTotalPedidos').innerText = ventas.length;
+
+            localStorage.setItem('bp_ventas', JSON.stringify(ventas));
+        }
+
+        function openModalVenta() {
+            document.getElementById('ventaDetalle').value = '';
+            document.getElementById('ventaMonto').value = '';
+            document.getElementById('modalVenta').classList.add('modal-active');
+        }
+
+        function closeModalVenta() {
+            document.getElementById('modalVenta').classList.remove('modal-active');
+        }
+
+        function saveVenta(e) {
+            e.preventDefault();
+            const detalle = document.getElementById('ventaDetalle').value;
+            const monto = parseFloat(document.getElementById('ventaMonto').value);
+            const fecha = new Date().toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' });
+
+            ventas.unshift({ detalle, monto, fecha });
+            closeModalVenta();
+            renderVentas();
+        }
+
+        function deleteVenta(index) {
+            if (confirm('¿Eliminar este registro de venta?')) {
+                ventas.splice(index, 1);
+                renderVentas();
+            }
+        }
     </script>
 </body>
 </html>
