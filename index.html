@@ -34,7 +34,6 @@
   ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
 
-  /* ---------- LOGIN DINÁMICO ---------- */
   .login-bg {
     background:
       radial-gradient(circle at 15% 20%, rgba(255,71,87,.18), transparent 45%),
@@ -66,26 +65,6 @@
   }
   .fade-up { animation: fadeUp .5s ease both; }
 
-  .demo-chip {
-    transition: all .2s ease; cursor: pointer;
-  }
-  .demo-chip:hover {
-    background: rgba(255,71,87,.15);
-    border-color: rgba(255,71,87,.5);
-    transform: translateY(-2px);
-  }
-
-  .spinner {
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,.25);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-    display: inline-block;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ---------- UI ---------- */
   .tab-btn {
     display: flex; align-items: center; justify-content: center; gap: .75rem;
     padding: .75rem 1rem; border-radius: .75rem;
@@ -124,46 +103,33 @@
     transform: translateY(-2px);
   }
   .product-card:active { transform: scale(.98); }
-  .product-card:focus-visible { outline: 2px solid var(--bp-accent); outline-offset: 2px; }
-
   .tabular-nums { font-variant-numeric: tabular-nums; }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: .001ms !important;
-      transition-duration: .001ms !important;
-    }
-  }
 </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row">
 
 <!-- =========================================================
-     LOGIN DINÁMICO
+     LOGIN DINÁMICO (DISCRETO / ACCESO ADMIN)
      ========================================================= -->
 <div id="loginSection" class="login-bg fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden">
-
-  <!-- Iconos flotantes decorativos -->
   <div aria-hidden="true" class="absolute inset-0 overflow-hidden">
     <i class="fa-solid fa-pizza-slice float-icon text-6xl" style="top:10%; left:8%;  --rot:-15deg; --dur:9s;  --delay:0s;"></i>
     <i class="fa-solid fa-pizza-slice float-icon text-4xl" style="top:75%; left:15%; --rot:20deg;  --dur:11s; --delay:1s;"></i>
-    <i class="fa-solid fa-cheese       float-icon text-5xl" style="top:20%; left:82%; --rot:12deg;  --dur:10s; --delay:.5s;"></i>
-    <i class="fa-solid fa-fire         float-icon text-4xl" style="top:65%; left:88%; --rot:-8deg;  --dur:8s;  --delay:1.5s;"></i>
+    <i class="fa-solid fa-cheese        float-icon text-5xl" style="top:20%; left:82%; --rot:12deg;  --dur:10s; --delay:.5s;"></i>
+    <i class="fa-solid fa-fire          float-icon text-4xl" style="top:65%; left:88%; --rot:-8deg;  --dur:8s;  --delay:1.5s;"></i>
     <i class="fa-solid fa-beer-mug-empty float-icon text-4xl" style="top:88%; left:60%; --rot:18deg; --dur:12s; --delay:.8s;"></i>
-    <i class="fa-solid fa-pepper-hot    float-icon text-3xl" style="top:35%; left:5%;  --rot:-25deg; --dur:9.5s; --delay:2s;"></i>
   </div>
 
   <div class="relative w-full max-w-md fade-up">
     <div class="bg-[#111827]/90 border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative overflow-hidden">
       <div class="absolute -top-16 -right-16 w-48 h-48 bg-[#ff4757]/15 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-16 -left-16 w-48 h-48 bg-[#2ed573]/10 rounded-full blur-3xl pointer-events-none"></div>
-
+      
       <div class="relative text-center mb-8">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#ff4757]/20 text-[#ff4757] mb-3 shadow-inner">
           <i class="fa-solid fa-pizza-slice text-3xl" aria-hidden="true"></i>
         </div>
         <h2 class="text-2xl font-black tracking-wide">Brother's Pizza</h2>
-        <p class="text-gray-400 text-xs mt-1">Sistema de Gestión y Control Dinámico</p>
+        <p class="text-gray-400 text-xs mt-1">Panel de Control Administrativo</p>
       </div>
 
       <form id="loginForm" class="space-y-4 relative" novalidate>
@@ -172,7 +138,7 @@
           <div class="relative">
             <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none" aria-hidden="true"></i>
             <input type="text" id="userInput" required autocomplete="username"
-                   class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
+                   class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ff4757]">
           </div>
         </div>
 
@@ -181,40 +147,29 @@
           <div class="relative">
             <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none" aria-hidden="true"></i>
             <input type="password" id="passInput" required autocomplete="current-password"
-                   class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-11 py-3.5 text-sm text-white focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
-            <button type="button" id="togglePass" aria-label="Mostrar u ocultar contraseña"
+                   class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-11 py-3.5 text-sm text-white focus:outline-none focus:border-[#ff4757]">
+            <button type="button" id="togglePass" aria-label="Mostrar contraseña"
                     class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white p-1.5 rounded-lg transition">
               <i class="fa-solid fa-eye text-xs" aria-hidden="true"></i>
             </button>
           </div>
         </div>
 
-        <div class="flex items-center justify-between text-[11px]">
-          <label class="flex items-center gap-2 text-gray-400 cursor-pointer select-none">
-            <input type="checkbox" id="rememberUser" class="accent-[#ff4757] w-3.5 h-3.5">
-            Recordar usuario
-          </label>
-          <span class="text-gray-500">v2.0</span>
-        </div>
-
-        <div id="loginError" role="alert"
-             class="hidden text-red-400 text-xs text-center font-medium bg-red-500/10 border border-red-500/20 py-2.5 rounded-lg">
-        </div>
+        <div id="loginError" role="alert" class="hidden text-red-400 text-xs text-center font-medium bg-red-500/10 border border-red-500/20 py-2.5 rounded-lg"></div>
 
         <button type="submit" id="loginBtn"
-                class="w-full bg-[#ff4757] hover:bg-[#ff3838] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-[#ff4757]/30 text-sm flex items-center justify-center gap-2">
+                class="w-full bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-[#ff4757]/30 text-sm flex items-center justify-center gap-2">
           <span id="loginBtnText">Ingresar al Sistema</span>
         </button>
       </form>
 
-      <!-- Cuentas demo dinámicas -->
       <div class="mt-6 pt-5 border-t border-white/10 relative">
         <p class="text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-2.5 text-center">Acceso rápido demo</p>
         <div id="demoAccounts" class="grid grid-cols-2 gap-2"></div>
       </div>
 
       <div class="mt-5 text-center relative">
-        <a href="index.html" class="text-xs text-gray-400 hover:text-white transition">← Volver al sitio web</a>
+        <button onclick="saltarAlPosPublico()" class="text-xs text-gray-400 hover:text-white transition underline">← Ir directo a la vista pública del catálogo</button>
       </div>
     </div>
   </div>
@@ -225,7 +180,6 @@
      ========================================================= -->
 <div id="mainPanel" class="flex-1 hidden md:flex-row w-full min-h-screen">
 
-  <!-- SIDEBAR -->
   <aside class="w-full md:w-72 bg-[#111827] border-b md:border-b-0 md:border-r border-white/10 flex flex-col justify-between p-4 sticky top-0 z-30 md:relative">
     <div class="flex flex-col md:flex-row md:flex-col justify-between items-center md:items-stretch gap-4">
       <div class="flex items-center justify-between w-full md:w-auto px-2 py-2">
@@ -235,15 +189,14 @@
           </div>
           <span class="font-black text-base tracking-wide">Brother's Pizza</span>
         </div>
-        <button data-action="logout" title="Cerrar sesión" aria-label="Cerrar sesión"
-                class="md:hidden text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition">
+        <button data-action="logout" title="Cerrar sesión" class="md:hidden text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition">
           <i class="fa-solid fa-right-from-bracket text-lg" aria-hidden="true"></i>
         </button>
       </div>
 
       <nav id="navTabs" class="flex md:flex-col gap-1.5 w-full overflow-x-auto pb-2 md:pb-0" aria-label="Navegación principal">
         <button data-tab="pos" class="tab-btn is-active">
-          <i class="fa-solid fa-cash-register w-5 text-center" aria-hidden="true"></i><span>Punto de Venta</span>
+          <i class="fa-solid fa-cash-register w-5 text-center" aria-hidden="true"></i><span>Punto de Venta / Pedidos</span>
         </button>
         <button data-tab="menu" class="tab-btn" data-role="admin">
           <i class="fa-solid fa-utensils w-5 text-center" aria-hidden="true"></i><span>Gestión del Menú</span>
@@ -265,28 +218,30 @@
           <p id="desktopUserRole" class="text-[10px] text-gray-400 truncate">—</p>
         </div>
       </div>
-      <button data-action="logout" title="Cerrar sesión" aria-label="Cerrar sesión"
-              class="text-gray-400 hover:text-red-400 transition p-2 rounded-lg hover:bg-red-500/10 shrink-0">
+      <button data-action="logout" title="Cerrar sesión" class="text-gray-400 hover:text-red-400 transition p-2 rounded-lg hover:bg-red-500/10 shrink-0">
         <i class="fa-solid fa-right-from-bracket text-base" aria-hidden="true"></i>
       </button>
     </div>
   </aside>
 
-  <!-- CONTENIDO -->
   <main class="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
 
     <!-- ========== SECCIÓN POS ========== -->
     <section id="sectionPos" class="space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 class="text-xl sm:text-2xl font-black">Caja Registradora y Pedidos</h1>
-          <p class="text-xs text-gray-400">Selecciona los productos del menú dinámico para agregarlos al ticket.</p>
+          <h1 class="text-xl sm:text-2xl font-black">Caja Registradora y Menú</h1>
+          <p class="text-xs text-gray-400">Selecciona los platos para armar pedidos o enviarlos por WhatsApp.</p>
         </div>
-        <div class="relative w-full sm:w-64">
-          <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs" aria-hidden="true"></i>
-          <input type="search" id="posSearch" autocomplete="off" placeholder="Buscar producto…"
-                 aria-label="Buscar producto"
-                 class="w-full bg-[#111827] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] transition">
+        <div class="flex items-center gap-2">
+          <div class="relative w-full sm:w-64">
+            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs" aria-hidden="true"></i>
+            <input type="search" id="posSearch" autocomplete="off" placeholder="Buscar producto…"
+                   class="w-full bg-[#111827] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] transition">
+          </div>
+          <button onclick="abrirLoginDesdeAdmin()" title="Bloquear / Panel de Acceso" class="bg-[#111827] border border-white/10 hover:border-[#ff4757] p-2.5 rounded-xl text-gray-400 hover:text-white transition">
+            <i class="fa-solid fa-lock text-xs"></i>
+          </button>
         </div>
       </div>
 
@@ -296,7 +251,6 @@
           <div id="posGridProductos" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
         </div>
 
-        <!-- Ticket -->
         <div class="bg-[#111827] border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xl h-fit lg:sticky lg:top-6">
           <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-white/10 pb-3">
@@ -310,7 +264,7 @@
 
             <div>
               <label for="clientName" class="block text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-1">Cliente / Mesa</label>
-              <input type="text" id="clientName" value="Mesa 01" autocomplete="off"
+              <input type="text" id="clientName" value="Cliente General" autocomplete="off"
                      class="w-full bg-[#1f2937] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff4757] transition">
             </div>
 
@@ -332,24 +286,17 @@
             </div>
             <button data-action="checkout"
                     class="w-full bg-[#2ed573] hover:bg-[#26af5f] text-white font-bold py-3.5 rounded-xl transition text-xs shadow-lg shadow-[#2ed573]/20 flex items-center justify-center gap-2 active:scale-[.99]">
-              <i class="fa-solid fa-check text-sm" aria-hidden="true"></i> Cobrar y registrar pedido
+              <i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i> Enviar Pedido / Cobrar
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Historial + chart -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
         <div class="lg:col-span-2 bg-[#111827] border border-white/10 rounded-2xl p-5 shadow-xl space-y-4">
           <div class="flex justify-between items-center flex-wrap gap-2">
             <h3 class="font-bold text-sm">Historial de órdenes recientes</h3>
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-gray-400 tabular-nums" id="contadorVentasTotal">0 registros</span>
-              <button data-action="export-csv" title="Exportar CSV"
-                      class="text-xs text-gray-400 hover:text-white px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition">
-                <i class="fa-solid fa-file-csv mr-1" aria-hidden="true"></i>CSV
-              </button>
-            </div>
+            <span class="text-xs text-gray-400 tabular-nums" id="contadorVentasTotal">0 registros</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs min-w-[560px]">
@@ -359,7 +306,6 @@
                   <th class="p-3 font-semibold">Atendido por</th>
                   <th class="p-3 font-semibold">Detalle</th>
                   <th class="p-3 font-semibold text-right">Total</th>
-                  <th class="p-3 font-semibold text-right">Acción</th>
                 </tr>
               </thead>
               <tbody id="ventasTableBody" class="divide-y divide-white/10"></tbody>
@@ -370,7 +316,7 @@
         <div class="bg-[#111827] border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
           <div>
             <h3 class="font-bold text-sm mb-1">Rendimiento financiero</h3>
-            <p class="text-[11px] text-gray-400">Ingresos por categoría de venta.</p>
+            <p class="text-[11px] text-gray-400">Ingresos por categoría.</p>
           </div>
           <div class="py-4 relative h-48">
             <canvas id="ventasChart" aria-label="Ingresos por categoría" role="img"></canvas>
@@ -391,7 +337,7 @@
           <p class="text-xs text-gray-400">Agrega, edita precios o elimina platos y bebidas al instante.</p>
         </div>
         <button data-action="new-menu"
-                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-[#ff4757]/20 w-full sm:w-auto active:scale-[.98]">
+                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-[#ff4757]/20 w-full sm:w-auto">
           <i class="fa-solid fa-plus" aria-hidden="true"></i> Nuevo producto
         </button>
       </div>
@@ -422,7 +368,7 @@
           <p class="text-xs text-gray-400">Supervisa stock de masa, queso, cajas y bebidas.</p>
         </div>
         <button data-action="new-insumo"
-                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition w-full sm:w-auto active:scale-[.98]">
+                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition w-full sm:w-auto">
           <i class="fa-solid fa-plus" aria-hidden="true"></i> Nuevo insumo
         </button>
       </div>
@@ -453,7 +399,7 @@
           <p class="text-xs text-gray-400">Crea cuentas, asigna roles y cambia contraseñas.</p>
         </div>
         <button data-action="new-user"
-                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition w-full sm:w-auto active:scale-[.98]">
+                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition w-full sm:w-auto">
           <i class="fa-solid fa-user-plus" aria-hidden="true"></i> Registrar trabajador
         </button>
       </div>
@@ -465,7 +411,7 @@
               <tr>
                 <th class="p-4 font-semibold">Foto</th>
                 <th class="p-4 font-semibold">Usuario</th>
-                <th class="p-4 font-semibold">Nombre / Alias</th>
+                <th class="p-4 font-semibold">Nombre</th>
                 <th class="p-4 font-semibold">Rol</th>
                 <th class="p-4 font-semibold text-right">Acciones</th>
               </tr>
@@ -481,69 +427,58 @@
 <!-- =========================================================
      MODALES
      ========================================================= -->
-
-<!-- Producto del menú -->
-<div id="modalMenu" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalMenuTitle">
-  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4 fade-up">
-    <h3 id="modalMenuTitle" class="text-base font-black">Gestión de producto del menú</h3>
-    <form id="formMenu" class="space-y-3" novalidate>
+<div id="modalMenu" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+    <h3 class="text-base font-black">Gestión de producto del menú</h3>
+    <form id="formMenu" class="space-y-3" onsubmit="guardarMenu(event)">
       <input type="hidden" id="menuId">
       <div>
-        <label for="menuNombre" class="block text-xs text-gray-400 mb-1">Nombre del producto *</label>
-        <input type="text" id="menuNombre" required maxlength="80" data-autofocus
-               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        <label class="block text-xs text-gray-400 mb-1">Nombre del producto *</label>
+        <input type="text" id="menuNombre" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label for="menuCategoria" class="block text-xs text-gray-400 mb-1">Categoría</label>
-          <select id="menuCategoria" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+          <label class="block text-xs text-gray-400 mb-1">Categoría</label>
+          <select id="menuCategoria" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
             <option value="Pizzas">Pizzas</option>
             <option value="Bebidas">Bebidas</option>
             <option value="Extras">Extras</option>
           </select>
         </div>
         <div>
-          <label for="menuPrecio" class="block text-xs text-gray-400 mb-1">Precio ($) *</label>
-          <input type="number" step="0.01" min="0" id="menuPrecio" required
-                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+          <label class="block text-xs text-gray-400 mb-1">Precio ($) *</label>
+          <input type="number" step="0.01" min="0" id="menuPrecio" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
         </div>
       </div>
       <div>
-        <label for="menuImagen" class="block text-xs text-gray-400 mb-1">URL de imagen</label>
-        <input type="url" id="menuImagen" placeholder="https://…"
-               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
-        <p class="text-[10px] text-gray-500 mt-1">Si se deja vacío se usará una imagen por defecto.</p>
+        <label class="block text-xs text-gray-400 mb-1">URL de imagen</label>
+        <input type="url" id="menuImagen" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
       </div>
       <div class="flex justify-end gap-2 pt-2">
-        <button type="button" data-close-modal="modalMenu"
-                class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-        <button type="submit"
-                class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
+        <button type="button" onclick="cerrarModal('modalMenu')" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
+        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Insumo -->
-<div id="modalInsumo" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalInsumoTitle">
-  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4 fade-up">
-    <h3 id="modalInsumoTitle" class="text-base font-black">Gestión de insumo</h3>
-    <form id="formInsumo" class="space-y-3" novalidate>
+<div id="modalInsumo" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+    <h3 class="text-base font-black">Gestión de insumo</h3>
+    <form id="formInsumo" class="space-y-3" onsubmit="guardarInsumo(event)">
       <input type="hidden" id="insumoId">
       <div>
-        <label for="insumoNombre" class="block text-xs text-gray-400 mb-1">Nombre *</label>
-        <input type="text" id="insumoNombre" required maxlength="60" data-autofocus
-               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        <label class="block text-xs text-gray-400 mb-1">Nombre *</label>
+        <input type="text" id="insumoNombre" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label for="insumoCantidad" class="block text-xs text-gray-400 mb-1">Cantidad *</label>
-          <input type="number" step="0.01" min="0" id="insumoCantidad" required
-                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+          <label class="block text-xs text-gray-400 mb-1">Cantidad *</label>
+          <input type="number" step="0.01" min="0" id="insumoCantidad" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
         </div>
         <div>
-          <label for="insumoUnidad" class="block text-xs text-gray-400 mb-1">Unidad</label>
-          <select id="insumoUnidad" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+          <label class="block text-xs text-gray-400 mb-1">Unidad</label>
+          <select id="insumoUnidad" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
             <option value="Unidades">Unidades</option>
             <option value="Kg">Kg</option>
             <option value="Litros">Litros</option>
@@ -551,1260 +486,579 @@
         </div>
       </div>
       <div>
-        <label for="insumoLimite" class="block text-xs text-gray-400 mb-1">Límite crítico *</label>
-        <input type="number" step="0.01" min="0" id="insumoLimite" required
-               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        <label class="block text-xs text-gray-400 mb-1">Límite crítico *</label>
+        <input type="number" step="0.01" min="0" id="insumoLimite" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
       </div>
       <div class="flex justify-end gap-2 pt-2">
-        <button type="button" data-close-modal="modalInsumo"
-                class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-        <button type="submit"
-                class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
+        <button type="button" onclick="cerrarModal('modalInsumo')" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
+        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Usuario -->
-<div id="modalUsuario" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalUsuarioTitle">
-  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4 fade-up">
-    <h3 id="modalUsuarioTitle" class="text-base font-black">Gestión de trabajador</h3>
-    <form id="formUsuario" class="space-y-3" novalidate>
+<div id="modalUsuario" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+    <h3 class="text-base font-black">Gestión de trabajador</h3>
+    <form id="formUsuario" class="space-y-3" onsubmit="guardarUsuario(event)">
       <input type="hidden" id="usuarioId">
       <div>
-        <label for="usuarioNombre" class="block text-xs text-gray-400 mb-1">Nombre o alias *</label>
-        <input type="text" id="usuarioNombre" required maxlength="60" data-autofocus
-               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        <label class="block text-xs text-gray-400 mb-1">Nombre o alias *</label>
+        <input type="text" id="usuarioNombre" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
       </div>
       <div>
-        <label for="usuarioFoto" class="block text-xs text-gray-400 mb-1">URL de foto (opcional)</label>
-        <input type="url" id="usuarioFoto" placeholder="https://…"
-               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        <label class="block text-xs text-gray-400 mb-1">URL de foto</label>
+        <input type="url" id="usuarioFoto" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label for="usuarioUser" class="block text-xs text-gray-400 mb-1">Usuario *</label>
-          <input type="text" id="usuarioUser" required maxlength="40"
-                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+          <label class="block text-xs text-gray-400 mb-1">Usuario *</label>
+          <input type="text" id="usuarioUser" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
         </div>
         <div>
-          <label for="usuarioPass" class="block text-xs text-gray-400 mb-1">Contraseña *</label>
-          <input type="text" id="usuarioPass" required minlength="4"
-                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+          <label class="block text-xs text-gray-400 mb-1">Contraseña *</label>
+          <input type="text" id="usuarioPass" required class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
         </div>
       </div>
       <div>
-        <label for="usuarioRol" class="block text-xs text-gray-400 mb-1">Rol en el sistema</label>
-        <select id="usuarioRol" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
-          <option value="Cajero">Cajero (POS e Inventario)</option>
-          <option value="Administrador">Administrador (control total)</option>
+        <label class="block text-xs text-gray-400 mb-1">Rol en el sistema</label>
+        <select id="usuarioRol" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white">
+          <option value="Cajero">Cajero</option>
+          <option value="Administrador">Administrador</option>
         </select>
       </div>
       <div class="flex justify-end gap-2 pt-2">
-        <button type="button" data-close-modal="modalUsuario"
-                class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-        <button type="submit"
-                class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
+        <button type="button" onclick="cerrarModal('modalUsuario')" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
+        <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Confirmación -->
-<div id="modalConfirm" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-  <div class="bg-[#111827] border border-white/10 w-full max-w-sm rounded-2xl p-6 shadow-2xl fade-up">
-    <div class="flex items-start gap-3">
-      <div class="bg-red-500/10 text-red-400 p-2.5 rounded-xl border border-red-500/20 shrink-0">
-        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-      </div>
-      <div class="flex-1 min-w-0">
-        <h3 id="confirmTitle" class="text-sm font-black text-white">Confirmar acción</h3>
-        <p id="confirmMessage" class="text-xs text-gray-400 mt-1">¿Estás seguro?</p>
-      </div>
-    </div>
-    <div class="flex justify-end gap-2 mt-5">
-      <button type="button" data-confirm="cancel"
-              class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-      <button type="button" id="confirmOk" data-confirm="ok"
-              class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white">Eliminar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Toasts -->
-<div id="toastHost" class="fixed bottom-5 right-5 z-[80] flex flex-col items-end gap-2 pointer-events-none" role="status" aria-live="polite"></div>
-
+<!-- =========================================================
+     SCRIPT LÓGICA COMPLETA
+     ========================================================= -->
 <script>
-/* =========================================================================
-   Brother's Pizza · Panel Admin & POS · v2.0
-   ========================================================================= */
-(() => {
-  'use strict';
-
-  /* ------------------------------ Helpers ------------------------------ */
-  const $  = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-
-  const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
-                              .format(Number(n) || 0);
-
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
-  const round2 = n => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
-  const TAX_RATE = 0.12;
-
-  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-
-  const debounce = (fn, ms = 200) => {
-    let t;
-    return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
-  };
-
-  const FALLBACK_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-      <rect width="200" height="200" fill="#1f2937"/>
-      <text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"
-            font-family="system-ui" font-size="46" fill="#4b5563">🍕</text>
-    </svg>`
-  );
-
-  /* ------------------------------ Estado ------------------------------ */
-  const STORAGE = {
-    MENU:  'bp_menu',
-    INV:   'bp_inventario',
-    VENTAS:'bp_ventas',
-    USERS: 'bp_usuarios',
-    SESS:  'bp_session_user',
-    REMEMBER: 'bp_remember_user'
-  };
-
-  const DEFAULT_MENU = [
-    { id: 1, nombre: 'Pizza Familiar Pepperoni', categoria: 'Pizzas',  precio: 12.00, imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=300&auto=format&fit=crop&q=80' },
-    { id: 2, nombre: 'Pizza Jamón y Queso',      categoria: 'Pizzas',  precio: 11.00, imagen: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=300&auto=format&fit=crop&q=80' },
-    { id: 3, nombre: 'Slice (Porción) Pepperoni',categoria: 'Pizzas',  precio: 1.50,  imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&auto=format&fit=crop&q=80' },
-    { id: 4, nombre: 'Cola / Gaseosa 1.5L',      categoria: 'Bebidas', precio: 2.25,  imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300&auto=format&fit=crop&q=80' },
-    { id: 5, nombre: 'Agua Purificada 500ml',    categoria: 'Bebidas', precio: 0.75,  imagen: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4c?w=300&auto=format&fit=crop&q=80' },
-    { id: 6, nombre: 'Bordes de Queso Extra',    categoria: 'Extras',  precio: 2.00,  imagen: 'https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=300&auto=format&fit=crop&q=80' }
+  let dbMenu = JSON.parse(localStorage.getItem('bp_menu')) || [
+    { id: 1, nombre: "Pizza Familiar Pepperoni", categoria: "Pizzas", precio: 12.00, imagen: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=300&auto=format&fit=crop&q=80" },
+    { id: 2, nombre: "Pizza Jamón y Queso", categoria: "Pizzas", precio: 11.00, imagen: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=300&auto=format&fit=crop&q=80" },
+    { id: 3, nombre: "Slice Pepperoni", categoria: "Pizzas", precio: 1.50, imagen: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&auto=format&fit=crop&q=80" },
+    { id: 4, nombre: "Cola 1.5L", categoria: "Bebidas", precio: 2.25, imagen: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300&auto=format&fit=crop&q=80" },
+    { id: 5, nombre: "Agua 500ml", categoria: "Bebidas", precio: 0.75, imagen: "https://images.unsplash.com/photo-1548839140-29a749e1cf4c?w=300&auto=format&fit=crop&q=80" },
+    { id: 6, nombre: "Bordes de Queso Extra", categoria: "Extras", precio: 2.00, imagen: "https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=300&auto=format&fit=crop&q=80" }
   ];
 
-  const DEFAULT_INV = [
-    { id: 1, nombre: 'Masa (Bollos)', cantidad: 50, unidad: 'Unidades', limite: 10 },
-    { id: 2, nombre: 'Queso Mozzarella', cantidad: 15, unidad: 'Kg', limite: 4 },
-    { id: 3, nombre: 'Pepperoni', cantidad: 5, unidad: 'Kg', limite: 2 }
+  let dbInsumos = JSON.parse(localStorage.getItem('bp_insumos')) || [
+    { id: 1, nombre: "Masa de Pizza", cantidad: 25, unidad: "Kg", limite: 5 },
+    { id: 2, nombre: "Queso Mozzarella", cantidad: 12, unidad: "Kg", limite: 3 },
+    { id: 3, nombre: "Cajas de Pizza Familiar", cantidad: 45, unidad: "Unidades", limite: 10 }
   ];
 
-  const DEFAULT_USERS = [
-    { id: 1, nombre: 'Osvaldo (Admin)', user: 'admin',  pass: 'admin123',  rol: 'Administrador', foto: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80' },
-    { id: 2, nombre: 'Cajero Local',    user: 'cajero', pass: 'cajero123', rol: 'Cajero',        foto: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80' }
+  let dbUsuarios = JSON.parse(localStorage.getItem('bp_usuarios')) || [
+    { id: 1, nombre: "Osvaldo", user: "admin", pass: "admin123", rol: "Administrador", foto: "" }
   ];
 
-  let state = {
-    menu: [],
-    inventario: [],
-    ventas: [],
-    usuarios: [],
-    usuarioActual: null,
-    carrito: [],
-    categoriaPos: 'todos',
-    busquedaPos: ''
-  };
+  let dbVentas = JSON.parse(localStorage.getItem('bp_ventas')) || [];
+  let carrito = [];
+  let categoriaActual = 'todos';
+  let usuarioActual = null;
+  let chartInstancia = null;
 
-  let salesChart = null;
-  let confirmResolver = null;
-  let lastFocused = null;
-
-  /* ------------------------------ Storage ------------------------------ */
-  const loadJSON = (key, fallback) => {
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) return fallback;
-      const parsed = JSON.parse(raw);
-      return parsed ?? fallback;
-    } catch { return fallback; }
-  };
-
-  const saveJSON = (key, value) => {
-    try { localStorage.setItem(key, JSON.stringify(value)); }
-    catch (e) { console.warn('[Brother\'s Pizza] No se pudo guardar', key, e); }
-  };
-
-  function loadState() {
-    state.menu       = loadJSON(STORAGE.MENU, null)     || DEFAULT_MENU.map(p => ({ ...p }));
-    state.inventario = loadJSON(STORAGE.INV, null)      || DEFAULT_INV.map(i => ({ ...i }));
-    state.usuarios   = loadJSON(STORAGE.USERS, null)    || DEFAULT_USERS.map(u => ({ ...u }));
-    state.ventas     = loadJSON(STORAGE.VENTAS, []);
-    state.usuarioActual = loadJSON(STORAGE.SESS, null);
-
-    // Limpieza: sesión inválida (usuario eliminado)
-    if (state.usuarioActual && !state.usuarios.some(u => u.id === state.usuarioActual.id)) {
-      state.usuarioActual = null;
-      localStorage.removeItem(STORAGE.SESS);
-    }
-  }
-
-  const persist = {
-    menu:       () => saveJSON(STORAGE.MENU, state.menu),
-    inventario: () => saveJSON(STORAGE.INV, state.inventario),
-    usuarios:   () => saveJSON(STORAGE.USERS, state.usuarios),
-    ventas:     () => saveJSON(STORAGE.VENTAS, state.ventas),
-    sesion:     () => saveJSON(STORAGE.SESS, state.usuarioActual)
-  };
-
-  /* ------------------------------ Toasts ------------------------------ */
-  function toast(title, message, type = 'success') {
-    const host = $('#toastHost');
-    const el = document.createElement('div');
-    const isError = type === 'error';
-
-    el.className = 'pointer-events-auto flex items-start gap-3 bg-[#111827]/95 border border-white/10 text-white px-4 py-3 rounded-xl shadow-2xl backdrop-blur translate-y-3 opacity-0 transition-all duration-300 max-w-xs';
-    el.innerHTML = `
-      <div class="${isError ? 'text-red-400' : 'text-[#2ed573]'} pt-0.5 shrink-0">
-        <i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'} text-lg" aria-hidden="true"></i>
-      </div>
-      <div class="min-w-0">
-        <p class="text-xs font-bold">${esc(title)}</p>
-        <p class="text-[11px] text-gray-400 break-words">${esc(message)}</p>
-      </div>`;
-    host.appendChild(el);
-    requestAnimationFrame(() => el.classList.remove('translate-y-3', 'opacity-0'));
-    setTimeout(() => {
-      el.classList.add('translate-y-3', 'opacity-0');
-      setTimeout(() => el.remove(), 320);
-    }, 3400);
-  }
-
-  /* ------------------------------ Modales ------------------------------ */
-  function openModal(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    lastFocused = document.activeElement;
-    m.classList.add('modal-active');
-    const target = m.querySelector('[data-autofocus]') || m.querySelector('input, select, button');
-    if (target) setTimeout(() => target.focus(), 40);
-  }
-
-  function closeModal(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.classList.remove('modal-active');
-    if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
-  }
-
-  function dismissModal(id) {
-    if (id === 'modalConfirm') return resolveConfirm(false);
-    closeModal(id);
-  }
-
-  function confirmAction({ title = 'Confirmar acción', message = '¿Estás seguro?', confirmText = 'Eliminar', danger = true } = {}) {
-    return new Promise(resolve => {
-      confirmResolver = resolve;
-      $('#confirmTitle').textContent = title;
-      $('#confirmMessage').textContent = message;
-      const ok = $('#confirmOk');
-      ok.textContent = confirmText;
-      ok.className = danger
-        ? 'px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white'
-        : 'px-4 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white';
-      openModal('modalConfirm');
-      ok.focus();
+  window.onload = () => {
+    renderDemoAccounts();
+    document.getElementById('loginForm').addEventListener('submit', procesarLogin);
+    
+    // Configurar tabs de navegación
+    document.querySelectorAll('#navTabs button[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => cambiarTab(btn.dataset.tab));
     });
-  }
 
-  function resolveConfirm(value) {
-    closeModal('modalConfirm');
-    if (confirmResolver) {
-      const r = confirmResolver;
-      confirmResolver = null;
-      r(value);
-    }
-  }
+    document.querySelector('button[data-action="clear-cart"]').addEventListener('click', vaciarCarrito);
+    document.querySelector('button[data-action="checkout"]').addEventListener('click', finalizarVenta);
+    document.querySelector('button[data-action="new-menu"]').addEventListener('click', () => abrirModalMenu());
+    document.querySelector('button[data-action="new-insumo"]').addEventListener('click', () => abrirModalInsumo());
+    document.querySelector('button[data-action="new-user"]').addEventListener('click', () => abrirModalUsuario());
+    document.querySelectorAll('button[data-action="logout"]').forEach(b => b.addEventListener('click', cerrarSesion));
+    
+    document.getElementById('posSearch').addEventListener('input', (e) => renderProductosPOS(e.target.value));
 
-  /* =========================================================================
-     LOGIN DINÁMICO
-     ========================================================================= */
+    // Auto-iniciar sesión con Osvaldo (Admin) para ver la app de inmediato sin trabas
+    usuarioActual = dbUsuarios[0];
+    saltarAlPosPublico();
+  };
+
   function renderDemoAccounts() {
-    const host = $('#demoAccounts');
-    const demos = state.usuarios.slice(0, 4);
-    if (!demos.length) {
-      host.innerHTML = `<p class="col-span-2 text-center text-[11px] text-gray-500">Sin cuentas registradas.</p>`;
-      return;
-    }
-    host.innerHTML = demos.map(u => `
-      <button type="button" class="demo-chip bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-left"
-              data-demo-user="${esc(u.user)}" data-demo-pass="${esc(u.pass)}"
-              title="Rellenar credenciales de ${esc(u.nombre)}">
-        <p class="text-[11px] font-bold text-white truncate">${esc(u.nombre)}</p>
-        <p class="text-[10px] text-gray-400 font-mono truncate">${esc(u.user)}</p>
+    const container = document.getElementById('demoAccounts');
+    container.innerHTML = dbUsuarios.map(u => `
+      <button type="button" onclick="llenarDemo('${u.user}', '${u.pass}')" class="demo-chip bg-[#1f2937] border border-white/10 p-2 rounded-xl text-left">
+        <p class="text-xs font-bold truncate">${u.nombre}</p>
+        <p class="text-[10px] text-gray-400">${u.rol}</p>
       </button>
     `).join('');
   }
 
-  function initLogin() {
-    renderDemoAccounts();
-
-    // Autocompletar si "recordar usuario" estaba activo
-    const remembered = localStorage.getItem(STORAGE.REMEMBER);
-    if (remembered) {
-      $('#userInput').value = remembered;
-      $('#rememberUser').checked = true;
-      setTimeout(() => $('#passInput').focus(), 300);
-    } else {
-      setTimeout(() => $('#userInput').focus(), 300);
-    }
-
-    // Toggle mostrar contraseña
-    $('#togglePass').addEventListener('click', () => {
-      const input = $('#passInput');
-      const icon = $('#togglePass').querySelector('i');
-      const show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      icon.className = `fa-solid ${show ? 'fa-eye-slash' : 'fa-eye'} text-xs`;
-      input.focus();
-    });
-
-    // Rellenar credenciales demo
-    $('#demoAccounts').addEventListener('click', e => {
-      const btn = e.target.closest('[data-demo-user]');
-      if (!btn) return;
-      $('#userInput').value = btn.dataset.demoUser;
-      $('#passInput').value = btn.dataset.demoPass;
-      $('#loginError').classList.add('hidden');
-      $('#loginBtn').focus();
-    });
-
-    // Envío del formulario
-    $('#loginForm').addEventListener('submit', handleLogin);
-
-    // Limpiar error al escribir
-    ['#userInput', '#passInput'].forEach(sel => {
-      $(sel).addEventListener('input', () => $('#loginError').classList.add('hidden'));
-    });
+  function llenarDemo(u, p) {
+    document.getElementById('userInput').value = u;
+    document.getElementById('passInput').value = p;
   }
 
-  function handleLogin(e) {
+  function procesarLogin(e) {
     e.preventDefault();
+    const u = document.getElementById('userInput').value.trim();
+    const p = document.getElementById('passInput').value.trim();
+    const encontrado = dbUsuarios.find(x => x.user === u && x.pass === p);
 
-    const user = $('#userInput').value.trim();
-    const pass = $('#passInput').value.trim();
-    const errorBox = $('#loginError');
-    const btn = $('#loginBtn');
-    const btnText = $('#loginBtnText');
-
-    if (!user || !pass) {
-      errorBox.textContent = 'Completa usuario y contraseña.';
-      errorBox.classList.remove('hidden');
-      $('#loginForm').classList.add('shake');
-      setTimeout(() => $('#loginForm').classList.remove('shake'), 500);
-      return;
-    }
-
-    // Estado de carga
-    btn.disabled = true;
-    btnText.textContent = 'Verificando…';
-    btn.insertAdjacentHTML('beforeend', '<span class="spinner"></span>');
-
-    // Simular latencia
-    setTimeout(() => {
-      btn.disabled = false;
-      btnText.textContent = 'Ingresar al Sistema';
-      const spinner = btn.querySelector('.spinner');
-      if (spinner) spinner.remove();
-
-      const found = state.usuarios.find(u => u.user === user && u.pass === pass);
-
-      if (!found) {
-        errorBox.textContent = 'Usuario o contraseña incorrectos.';
-        errorBox.classList.remove('hidden');
-        $('#loginForm').classList.add('shake');
-        setTimeout(() => $('#loginForm').classList.remove('shake'), 500);
-        $('#passInput').select();
-        return;
-      }
-
-      // Recordar usuario
-      if ($('#rememberUser').checked) localStorage.setItem(STORAGE.REMEMBER, user);
-      else localStorage.removeItem(STORAGE.REMEMBER);
-
-      state.usuarioActual = found;
-      persist.sesion();
-
-      showPanel();
-      toast(`¡Bienvenido, ${found.nombre}!`, `Has ingresado como ${found.rol}.`);
-    }, 550);
-  }
-
-  function handleLogout() {
-    localStorage.removeItem(STORAGE.SESS);
-    state.usuarioActual = null;
-    state.carrito = [];
-
-    $('#mainPanel').classList.add('hidden');
-    $('#loginSection').classList.remove('hidden');
-    $('#passInput').value = '';
-    $('#loginError').classList.add('hidden');
-
-    // Refrescar cuentas demo (por si se agregaron/editaron usuarios)
-    renderDemoAccounts();
-
-    const remembered = localStorage.getItem(STORAGE.REMEMBER);
-    if (remembered) {
-      $('#userInput').value = remembered;
-      $('#rememberUser').checked = true;
-      setTimeout(() => $('#passInput').focus(), 300);
+    if (encontrado) {
+      usuarioActual = encontrado;
+      saltarAlPosPublico();
     } else {
-      $('#userInput').value = '';
-      $('#rememberUser').checked = false;
-      setTimeout(() => $('#userInput').focus(), 300);
+      const err = document.getElementById('loginError');
+      err.innerText = "Usuario o contraseña incorrectos.";
+      err.classList.remove('hidden');
     }
-
-    toast('Sesión cerrada', 'Has salido del panel de administración.');
   }
 
-  /* =========================================================================
-     PANEL
-     ========================================================================= */
-  function showPanel() {
-    if (!state.usuarioActual) return;
-    $('#loginSection').classList.add('hidden');
-    $('#mainPanel').classList.remove('hidden');
-    $('#mainPanel').classList.add('md:flex-row', 'md:flex');
+  function saltarAlPosPublico() {
+    document.getElementById('loginSection').classList.add('hidden');
+    const panel = document.getElementById('mainPanel');
+    panel.classList.remove('hidden');
+    panel.classList.add('flex');
 
-    // Cabecera
-    $('#desktopUserName').textContent = state.usuarioActual.nombre;
-    $('#desktopUserRole').textContent = state.usuarioActual.rol;
-
-    const avatarHtml = state.usuarioActual.foto
-      ? `<img src="${esc(state.usuarioActual.foto)}" alt="" class="w-full h-full object-cover" onerror="this.replaceWith(Object.assign(document.createElement('i'),{className:'fa-solid fa-user text-xs'}))">`
-      : `<i class="fa-solid fa-user text-xs" aria-hidden="true"></i>`;
-    $('#desktopAvatar').innerHTML = avatarHtml;
-
-    // Visibilidad de pestañas según rol
-    const isAdmin = state.usuarioActual.rol === 'Administrador';
-    $$('[data-role="admin"]').forEach(el => el.classList.toggle('hidden', !isAdmin));
-
-    // Si un cajero estaba en sección admin, volver a POS
-    if (!isAdmin) {
-      const activeTab = $('.tab-btn.is-active')?.dataset.tab;
-      if (activeTab === 'menu' || activeTab === 'usuarios') switchTab('pos');
+    if (usuarioActual) {
+      document.getElementById('desktopUserName').innerText = usuarioActual.nombre;
+      document.getElementById('desktopUserRole').innerText = usuarioActual.rol;
+      document.getElementById('desktopAvatar').innerText = usuarioActual.nombre.charAt(0).toUpperCase();
     }
 
-    // Render general
-    renderCategoriasPos();
-    renderMenuPOS();
-    renderMenuAdmin();
-    renderInventario();
+    renderizarPOS();
+    renderMenuTable();
+    renderInventarioTable();
+    renderUsuariosTable();
     renderVentas();
-    renderUsuarios();
+  }
+
+  function abrirLoginDesdeAdmin() {
+    document.getElementById('mainPanel').classList.add('hidden');
+    document.getElementById('mainPanel').classList.remove('flex');
+    document.getElementById('loginSection').classList.remove('hidden');
+  }
+
+  function cerrarSesion() {
+    usuarioActual = null;
+    abrirLoginDesdeAdmin();
+  }
+
+  function cambiarTab(tabId) {
+    document.querySelectorAll('#navTabs button').forEach(b => b.classList.remove('is-active'));
+    const btnTarget = document.querySelector(`#navTabs button[data-tab="${tabId}"]`);
+    if(btnTarget) btnTarget.classList.add('is-active');
+
+    ['Pos', 'Menu', 'Inventario', 'Usuarios'].forEach(s => {
+      document.getElementById('section' + s).classList.add('hidden');
+    });
+    document.getElementById('section' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
+  }
+
+  // --- POS / CARRITO ---
+  function renderizarPOS() {
+    const categorias = ['todos', 'Pizzas', 'Bebidas', 'Extras'];
+    const tabsContainer = document.getElementById('posCategoriasTabs');
+    tabsContainer.innerHTML = categorias.map(c => `
+      <button onclick="filtrarCategoriaPOS('${c}')" class="pos-cat-btn ${categoriaActual === c ? 'is-active' : ''}">${c.toUpperCase()}</button>
+    `).join('');
+
+    renderProductosPOS();
     renderCarrito();
   }
 
-  function switchTab(tab) {
-    ['pos', 'menu', 'inventario', 'usuarios'].forEach(t => {
-      const sec = document.getElementById('section' + t.charAt(0).toUpperCase() + t.slice(1));
-      if (sec) sec.classList.toggle('hidden', t !== tab);
-    });
-    $$('.tab-btn').forEach(btn => btn.classList.toggle('is-active', btn.dataset.tab === tab));
+  function filtrarCategoriaPOS(cat) {
+    categoriaActual = cat;
+    renderizarPOS();
+  }
 
-    if (tab === 'pos') {
-      if (!salesChart) initChart();
-      else requestAnimationFrame(() => salesChart.resize());
-      renderVentasChart();
+  function renderProductosPOS(filtroTexto = '') {
+    const grid = document.getElementById('posGridProductos');
+    let lista = dbMenu;
+
+    if (categoriaActual !== 'todos') {
+      lista = lista.filter(p => p.categoria === categoriaActual);
     }
-  }
+    if (filtroTexto.trim() !== '') {
+      lista = lista.filter(p => p.nombre.toLowerCase().includes(filtroTexto.toLowerCase()));
+    }
 
-  /* =========================================================================
-     POS
-     ========================================================================= */
-  function renderCategoriasPos() {
-    const host = $('#posCategoriasTabs');
-    const cats = ['todos', ...new Set(state.menu.map(p => p.categoria))];
-    host.innerHTML = cats.map(c => `
-      <button type="button" data-cat="${esc(c)}"
-              class="pos-cat-btn ${state.categoriaPos === c ? 'is-active' : ''}">
-        ${c === 'todos' ? 'Todos' : esc(c)}
-      </button>
-    `).join('');
-  }
-
-  function renderMenuPOS() {
-    const grid = $('#posGridProductos');
-    const q = state.busquedaPos.trim().toLowerCase();
-
-    const list = state.menu.filter(p =>
-      (state.categoriaPos === 'todos' || p.categoria === state.categoriaPos) &&
-      (!q || p.nombre.toLowerCase().includes(q))
-    );
-
-    if (!list.length) {
-      grid.innerHTML = `
-        <div class="col-span-full text-center py-12 text-xs text-gray-500">
-          <i class="fa-solid fa-magnifying-glass text-3xl block mb-2 opacity-40" aria-hidden="true"></i>
-          No se encontraron productos.
-        </div>`;
+    if (lista.length === 0) {
+      grid.innerHTML = `<div class="col-span-full text-center py-8 text-xs text-gray-500">No se encontraron productos.</div>`;
       return;
     }
 
-    grid.innerHTML = list.map(p => `
-      <button type="button" class="product-card group" data-action="add-to-cart" data-id="${p.id}">
-        <div class="h-28 w-full rounded-xl overflow-hidden mb-2 bg-black/40">
-          <img src="${esc(p.imagen || FALLBACK_IMG)}" alt="" loading="lazy"
-               class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-               onerror="this.src='${FALLBACK_IMG}'">
+    grid.innerHTML = lista.map(p => `
+      <button onclick="agregarAlCarrito(${p.id})" class="product-card">
+        <div class="h-24 w-full rounded-lg overflow-hidden mb-2 bg-black/40">
+          <img src="${p.imagen || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&auto=format&fit=crop&q=80'}" class="w-full h-full object-cover">
         </div>
         <div>
-          <h4 class="text-xs font-bold truncate" title="${esc(p.nombre)}">${esc(p.nombre)}</h4>
-          <div class="flex justify-between items-center mt-2 gap-1">
-            <span class="text-[#2ed573] font-black text-xs tabular-nums">${money(p.precio)}</span>
-            <span class="bg-white/5 px-2 py-0.5 rounded text-[10px] text-gray-400 shrink-0">${esc(p.categoria)}</span>
-          </div>
+          <h4 class="text-xs font-bold truncate">${p.nombre}</h4>
+          <p class="text-[#2ed573] font-black text-xs mt-1">$${p.precio.toFixed(2)}</p>
         </div>
       </button>
     `).join('');
   }
 
-  function addToCart(id) {
-    const prod = state.menu.find(p => p.id === id);
+  function agregarAlCarrito(id) {
+    const prod = dbMenu.find(p => p.id === id);
     if (!prod) return;
-    const existing = state.carrito.find(i => i.id === id);
-    if (existing) existing.cantidad += 1;
-    else state.carrito.push({ id: prod.id, nombre: prod.nombre, categoria: prod.categoria, precio: prod.precio, cantidad: 1 });
+    const existe = carrito.find(item => item.id === id);
+    if (existe) {
+      existe.cantidad++;
+    } else {
+      carrito.push({ ...prod, cantidad: 1 });
+    }
     renderCarrito();
   }
 
-  function changeCartQty(id, delta) {
-    const item = state.carrito.find(i => i.id === id);
+  function cambiarCantidad(id, delta) {
+    const item = carrito.find(i => i.id === id);
     if (!item) return;
     item.cantidad += delta;
-    if (item.cantidad <= 0) state.carrito = state.carrito.filter(i => i.id !== id);
-    renderCarrito();
-  }
-
-  function removeFromCart(id) {
-    state.carrito = state.carrito.filter(i => i.id !== id);
+    if (item.cantidad <= 0) {
+      carrito = carrito.filter(i => i.id !== id);
+    }
     renderCarrito();
   }
 
   function vaciarCarrito() {
-    state.carrito = [];
+    carrito = [];
     renderCarrito();
   }
 
   function renderCarrito() {
-    const wrap = $('#carritoItemsContainer');
-    const totalQty = state.carrito.reduce((s, i) => s + i.cantidad, 0);
-    $('#cartCount').textContent = totalQty;
+    const container = document.getElementById('carritoItemsContainer');
+    const countBadge = document.getElementById('cartCount');
+    const subtotalEl = document.getElementById('carritoSubtotal');
+    const ivaEl = document.getElementById('carritoIva');
+    const totalEl = document.getElementById('carritoTotal');
 
-    if (!state.carrito.length) {
-      wrap.innerHTML = `
-        <p class="text-xs text-gray-500 text-center py-6">
-          <i class="fa-solid fa-basket-shopping text-2xl block mb-2 opacity-40" aria-hidden="true"></i>
-          El carrito está vacío.
-        </p>`;
-    } else {
-      wrap.innerHTML = state.carrito.map(item => `
-        <div class="flex justify-between items-center bg-black/25 p-2.5 rounded-xl border border-white/5 text-xs gap-2">
-          <div class="truncate min-w-0">
-            <p class="font-bold truncate" title="${esc(item.nombre)}">${esc(item.nombre)}</p>
-            <p class="text-[10px] text-[#2ed573] tabular-nums">${money(item.precio)} c/u</p>
-          </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" data-action="qty-dec" data-id="${item.id}"
-                    aria-label="Quitar una unidad"
-                    class="w-6 h-6 rounded bg-white/10 hover:bg-white/20 grid place-items-center transition">−</button>
-            <span class="font-bold w-5 text-center tabular-nums">${item.cantidad}</span>
-            <button type="button" data-action="qty-inc" data-id="${item.id}"
-                    aria-label="Agregar una unidad"
-                    class="w-6 h-6 rounded bg-white/10 hover:bg-white/20 grid place-items-center transition">+</button>
-            <button type="button" data-action="remove-item" data-id="${item.id}"
-                    aria-label="Eliminar del carrito"
-                    class="w-6 h-6 rounded hover:bg-red-500/20 text-gray-500 hover:text-red-400 grid place-items-center transition ml-1">
-              <i class="fa-solid fa-xmark text-[11px]" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
-      `).join('');
-    }
+    const totalItems = carrito.reduce((sum, i) => sum + i.cantidad, 0);
+    countBadge.innerText = totalItems;
 
-    const subtotal = round2(state.carrito.reduce((s, i) => s + i.precio * i.cantidad, 0));
-    const iva = round2(subtotal * TAX_RATE);
-    $('#carritoSubtotal').textContent = money(subtotal);
-    $('#carritoIva').textContent = money(iva);
-    $('#carritoTotal').textContent = money(subtotal + iva);
-  }
-
-  function procesarVentaPOS() {
-    if (!state.carrito.length) {
-      toast('Carrito vacío', 'Agrega productos antes de cobrar.', 'error');
+    if (carrito.length === 0) {
+      container.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">Tu carrito está vacío.</p>`;
+      subtotalEl.innerText = '$0.00';
+      ivaEl.innerText = '$0.00';
+      totalEl.innerText = '$0.00';
       return;
     }
 
-    const items = state.carrito.map(i => ({ ...i }));
-    const subtotal = round2(items.reduce((s, i) => s + i.precio * i.cantidad, 0));
-    const iva = round2(subtotal * TAX_RATE);
-    const total = round2(subtotal + iva);
+    let subtotal = 0;
+    container.innerHTML = carrito.map(item => {
+      const sub = item.precio * item.cantidad;
+      subtotal += sub;
+      return `
+        <div class="flex justify-between items-center bg-black/25 p-2.5 rounded-xl border border-white/5 text-xs">
+          <div class="truncate mr-2">
+            <p class="font-bold truncate">${item.nombre}</p>
+            <p class="text-[10px] text-[#2ed573]">$${item.precio.toFixed(2)} c/u</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="cambiarCantidad(${item.id}, -1)" class="w-6 h-6 rounded bg-white/10 hover:bg-white/20">-</button>
+            <span class="font-bold w-4 text-center">${item.cantidad}</span>
+            <button onclick="cambiarCantidad(${item.id}, 1)" class="w-6 h-6 rounded bg-white/10 hover:bg-white/20">+</button>
+          </div>
+        </div>
+      `;
+    }).join('');
 
-    const venta = {
-      id: uid(),
-      fecha: new Date().toISOString(),
-      fechaTexto: new Date().toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' }),
-      cliente: ($('#clientName').value || '').trim() || 'General',
-      atendidoPor: state.usuarioActual?.nombre || 'Admin',
-      items,
-      subtotal, iva, total
-    };
+    const iva = subtotal * 0.12;
+    const total = subtotal + iva;
 
-    state.ventas.unshift(venta);
-    state.carrito = [];
-    persist.ventas();
-
-    renderCarrito();
-    renderVentas();
-    renderVentasChart();
-
-    toast('Venta registrada', `${venta.cliente} · ${money(total)}`);
+    subtotalEl.innerText = `$${subtotal.toFixed(2)}`;
+    ivaEl.innerText = `$${iva.toFixed(2)}`;
+    totalEl.innerText = `$${total.toFixed(2)}`;
   }
 
-  function renderVentas() {
-    const tbody = $('#ventasTableBody');
-    const isAdmin = state.usuarioActual?.rol === 'Administrador';
+  function finalizarVenta() {
+    if (carrito.length === 0) {
+      alert('Agrega productos al pedido primero.');
+      return;
+    }
 
-    if (!state.ventas.length) {
-      tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-xs text-gray-500">Sin órdenes registradas todavía.</td></tr>`;
+    let subtotal = carrito.reduce((sum, i) => sum + (i.precio * i.cantidad), 0);
+    let total = subtotal * 1.12;
+    const cliente = document.getElementById('clientName').value.trim() || 'Cliente';
+
+    // Abrir WhatsApp con el detalle
+    let texto = `Hola, pedido para *${cliente}* en Brother's Pizza:%0A%0A`;
+    carrito.forEach(i => {
+      texto += `- ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})%0A`;
+    });
+    texto += `%0A*Total con IVA: $${total.toFixed(2)}*`;
+    window.open(`https://wa.me/593999999999?text=${texto}`, '_blank');
+
+    // Registrar venta
+    dbVentas.unshift({
+      id: Date.now(),
+      fecha: new Date().toLocaleString(),
+      atendido: usuarioActual ? usuarioActual.nombre : 'Sistema',
+      detalle: carrito.map(i => `${i.cantidad}x ${i.nombre}`).join(', '),
+      total: total
+    });
+    localStorage.setItem('bp_ventas', JSON.stringify(dbVentas));
+
+    carrito = [];
+    renderCarrito();
+    renderVentas();
+  }
+
+  // --- HISTORIAL Y GRÁFICO ---
+  function renderVentas() {
+    const tbody = document.getElementById('ventasTableBody');
+    const contador = document.getElementById('contadorVentasTotal');
+    const recaudadoEl = document.getElementById('statRecaudadoTotal');
+
+    contador.innerText = `${dbVentas.length} registros`;
+    let totalRecaudado = dbVentas.reduce((acc, v) => acc + v.total, 0);
+    recaudadoEl.innerText = `$${totalRecaudado.toFixed(2)}`;
+
+    if (dbVentas.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">No hay ventas registradas aún.</td></tr>`;
     } else {
-      tbody.innerHTML = state.ventas.map((v, idx) => `
-        <tr class="hover:bg-white/5 transition">
-          <td class="p-3 text-gray-400 whitespace-nowrap tabular-nums">${esc(v.fechaTexto || '')}</td>
-          <td class="p-3 font-semibold text-gray-300">${esc(v.atendidoPor || '—')}</td>
-          <td class="p-3 font-medium text-gray-200 max-w-[260px]">
-            <span class="block truncate" title="${esc(v.items ? v.items.map(i => `${i.cantidad}× ${i.nombre}`).join(' + ') : v.detalle || '')}">
-              ${esc(v.items ? v.items.map(i => `${i.cantidad}× ${i.nombre}`).join(' + ') : v.detalle || '')}
-            </span>
-          </td>
-          <td class="p-3 font-bold text-[#2ed573] whitespace-nowrap tabular-nums text-right">${money(v.total ?? v.monto)}</td>
-          <td class="p-3 text-right">
-            ${isAdmin ? `
-              <button data-action="delete-venta" data-idx="${idx}"
-                      class="text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-500/10 transition"
-                      aria-label="Eliminar venta">
-                <i class="fa-solid fa-trash text-xs" aria-hidden="true"></i>
-              </button>` : ''}
-          </td>
+      tbody.innerHTML = dbVentas.slice(0, 10).map(v => `
+        <tr class="hover:bg-white/5">
+          <td class="p-3 text-gray-400">${v.fecha}</td>
+          <td class="p-3 font-medium">${v.atendido}</td>
+          <td class="p-3 truncate max-w-xs">${v.detalle}</td>
+          <td class="p-3 text-right font-bold text-[#2ed573]">$${v.total.toFixed(2)}</td>
         </tr>
       `).join('');
     }
 
-    const total = round2(state.ventas.reduce((s, v) => s + (v.total ?? v.monto ?? 0), 0));
-    $('#contadorVentasTotal').textContent = `${state.ventas.length} registro${state.ventas.length === 1 ? '' : 's'}`;
-    $('#statRecaudadoTotal').textContent = money(total);
+    actualizarGrafico();
   }
 
-  async function deleteVenta(idx) {
-    if (state.usuarioActual?.rol !== 'Administrador') return;
-    const ok = await confirmAction({
-      title: 'Eliminar venta',
-      message: '¿Eliminar este registro del historial? Esta acción no se puede deshacer.',
-      confirmText: 'Eliminar'
+  function actualizarGrafico() {
+    const ctx = document.getElementById('ventasChart').getContext('2d');
+    let categoriasTotales = { Pizzas: 0, Bebidas: 0, Extras: 0 };
+    
+    dbVentas.forEach(v => {
+      // Cálculo aproximado para el gráfico
+      categoriasTotales.Pizzas += v.total * 0.7;
+      categoriasTotales.Bebidas += v.total * 0.2;
+      categoriasTotales.Extras += v.total * 0.1;
     });
-    if (!ok) return;
-    state.ventas.splice(idx, 1);
-    persist.ventas();
-    renderVentas();
-    renderVentasChart();
-    toast('Registro eliminado', 'La venta fue removida del historial.');
-  }
 
-  /* =========================================================================
-     GRÁFICO
-     ========================================================================= */
-  function initChart() {
-    if (typeof Chart === 'undefined') return;
-    const ctx = $('#ventasChart');
-    if (!ctx) return;
+    if (chartInstancia) chartInstancia.destroy();
 
-    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
-    Chart.defaults.color = '#9ca3af';
-
-    salesChart = new Chart(ctx, {
+    chartInstancia = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: ['Pizzas', 'Bebidas', 'Extras'],
         datasets: [{
-          data: [0, 0, 0],
+          data: [categoriasTotales.Pizzas, categoriasTotales.Bebidas, categoriasTotales.Extras],
           backgroundColor: ['#ff4757', '#2ed573', '#ffa502'],
-          borderWidth: 0,
-          hoverOffset: 6
+          borderWidth: 0
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '60%',
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { color: '#9ca3af', font: { size: 10 }, padding: 14, usePointStyle: true, pointStyle: 'circle', boxWidth: 8 }
-          },
-          tooltip: {
-            backgroundColor: '#0b0f19',
-            borderColor: '#374151',
-            borderWidth: 1,
-            padding: 10,
-            callbacks: { label: c => ` ${c.label}: ${money(c.parsed)}` }
-          }
-        }
+        plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af', boxWidth: 12, font: { size: 10 } } } }
       }
     });
-    renderVentasChart();
   }
 
-  function renderVentasChart() {
-    if (!salesChart) return;
-
-    const totals = { Pizzas: 0, Bebidas: 0, Extras: 0 };
-    state.ventas.forEach(v => {
-      if (Array.isArray(v.items)) {
-        v.items.forEach(i => {
-          const cat = i.categoria in totals ? i.categoria : 'Extras';
-          totals[cat] += i.precio * i.cantidad;
-        });
-      } else {
-        // Compatibilidad con datos antiguos: aproximación por texto
-        const t = (v.detalle || '').toLowerCase();
-        if (t.includes('pizza') || t.includes('slice') || t.includes('borde')) totals.Pizzas += v.monto || 0;
-        else if (t.includes('cola') || t.includes('gaseosa') || t.includes('agua')) totals.Bebidas += v.monto || 0;
-        else totals.Extras += v.monto || 0;
-      }
-    });
-
-    salesChart.data.datasets[0].data = [
-      round2(totals.Pizzas),
-      round2(totals.Bebidas),
-      round2(totals.Extras)
-    ];
-    salesChart.update();
-  }
-
-  /* =========================================================================
-     ADMIN · MENÚ
-     ========================================================================= */
-  function renderMenuAdmin() {
-    const tbody = $('#menuTableBody');
-    if (!state.menu.length) {
-      tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-xs text-gray-500">Sin productos en el menú.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = state.menu.map(p => `
-      <tr class="hover:bg-white/5 transition">
-        <td class="p-4">
-          <img src="${esc(p.imagen || FALLBACK_IMG)}" alt=""
-               class="w-12 h-12 rounded-xl object-cover border border-white/10"
-               onerror="this.src='${FALLBACK_IMG}'">
-        </td>
-        <td class="p-4 font-bold">${esc(p.nombre)}</td>
-        <td class="p-4">
-          <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/5 text-gray-300">${esc(p.categoria)}</span>
-        </td>
-        <td class="p-4 font-black text-[#2ed573] tabular-nums">${money(p.precio)}</td>
-        <td class="p-4 text-right whitespace-nowrap">
-          <button data-action="edit-menu" data-id="${p.id}"
-                  class="text-gray-400 hover:text-white p-1.5 rounded hover:bg-white/5 transition"
-                  aria-label="Editar producto">
-            <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
-          </button>
-          <button data-action="delete-menu" data-id="${p.id}"
-                  class="text-red-400 hover:text-red-300 p-1.5 rounded hover:bg-red-500/10 transition"
-                  aria-label="Eliminar producto">
-            <i class="fa-solid fa-trash text-xs" aria-hidden="true"></i>
-          </button>
+  // --- GESTIÓN DE MENÚ ---
+  function renderMenuTable() {
+    const tbody = document.getElementById('menuTableBody');
+    tbody.innerHTML = dbMenu.map(p => `
+      <tr class="hover:bg-white/5">
+        <td class="p-4"><img src="${p.imagen || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&auto=format&fit=crop&q=80'}" class="w-10 h-10 rounded-lg object-cover"></td>
+        <td class="p-4 font-bold">${p.nombre}</td>
+        <td class="p-4 text-gray-400">${p.categoria}</td>
+        <td class="p-4 text-[#2ed573] font-black">$${p.precio.toFixed(2)}</td>
+        <td class="p-4 text-right space-x-2">
+          <button onclick="editarMenu(${p.id})" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="eliminarMenu(${p.id})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>
     `).join('');
+    localStorage.setItem('bp_menu', JSON.stringify(dbMenu));
   }
 
-  function openModalMenu(product = null) {
-    const form = $('#formMenu');
-    form.reset();
-    if (product) {
-      $('#modalMenuTitle').textContent = 'Editar producto';
-      $('#menuId').value = product.id;
-      $('#menuNombre').value = product.nombre;
-      $('#menuCategoria').value = product.categoria;
-      $('#menuPrecio').value = product.precio;
-      $('#menuImagen').value = product.imagen || '';
+  function abrirModalMenu(id = null) {
+    document.getElementById('modalMenu').classList.add('modal-active');
+    if (id) {
+      const p = dbMenu.find(x => x.id === id);
+      document.getElementById('menuId').value = p.id;
+      document.getElementById('menuNombre').value = p.nombre;
+      document.getElementById('menuCategoria').value = p.categoria;
+      document.getElementById('menuPrecio').value = p.precio;
+      document.getElementById('menuImagen').value = p.imagen || '';
     } else {
-      $('#modalMenuTitle').textContent = 'Nuevo producto en el menú';
-      $('#menuId').value = '';
-      $('#menuImagen').value = '';
+      document.getElementById('formMenu').reset();
+      document.getElementById('menuId').value = '';
     }
-    openModal('modalMenu');
   }
 
-  function saveMenuProducto(e) {
+  function guardarMenu(e) {
     e.preventDefault();
-    const id = $('#menuId').value;
-    const nombre = $('#menuNombre').value.trim();
-    const categoria = $('#menuCategoria').value;
-    const precio = parseFloat($('#menuPrecio').value);
-    const imagen = $('#menuImagen').value.trim() || FALLBACK_IMG;
-
-    if (!nombre) return toast('Datos incompletos', 'El nombre es obligatorio.', 'error');
-    if (!Number.isFinite(precio) || precio < 0) return toast('Precio inválido', 'Ingresa un precio válido.', 'error');
+    const id = document.getElementById('menuId').value;
+    const nombre = document.getElementById('menuNombre').value.trim();
+    const categoria = document.getElementById('menuCategoria').value;
+    const precio = parseFloat(document.getElementById('menuPrecio').value);
+    const imagen = document.getElementById('menuImagen').value.trim();
 
     if (id) {
-      const p = state.menu.find(i => i.id === Number(id));
-      if (p) Object.assign(p, { nombre, categoria, precio: round2(precio), imagen });
-      toast('Producto actualizado', `"${nombre}" se guardó correctamente.`);
+      const idx = dbMenu.findIndex(x => x.id == id);
+      dbMenu[idx] = { id: parseInt(id), nombre, categoria, precio, imagen };
     } else {
-      state.menu.push({ id: Date.now(), nombre, categoria, precio: round2(precio), imagen });
-      toast('Producto creado', `"${nombre}" se agregó al menú.`);
+      dbMenu.push({ id: Date.now(), nombre, categoria, precio, imagen });
     }
-    persist.menu();
-    closeModal('modalMenu');
-    renderMenuAdmin();
-    renderCategoriasPos();
-    renderMenuPOS();
+    cerrarModal('modalMenu');
+    renderMenuTable();
+    renderProductosPOS();
   }
 
-  async function deleteMenuProducto(id) {
-    const p = state.menu.find(i => i.id === id);
-    if (!p) return;
-    const ok = await confirmAction({
-      title: 'Eliminar producto',
-      message: `¿Eliminar "${p.nombre}" del menú? No se puede deshacer.`,
-      confirmText: 'Eliminar'
-    });
-    if (!ok) return;
-    state.menu = state.menu.filter(i => i.id !== id);
-    state.carrito = state.carrito.filter(i => i.id !== id);
-    persist.menu();
-    renderMenuAdmin();
-    renderCategoriasPos();
-    renderMenuPOS();
-    renderCarrito();
-    toast('Producto eliminado', `"${p.nombre}" fue removido del menú.`);
+  function editarMenu(id) { abrirModalMenu(id); }
+  function eliminarMenu(id) {
+    if (confirm('¿Eliminar este producto?')) {
+      dbMenu = dbMenu.filter(x => x.id !== id);
+      renderMenuTable();
+      renderProductosPOS();
+    }
   }
 
-  /* =========================================================================
-     INVENTARIO
-     ========================================================================= */
-  function renderInventario() {
-    const tbody = $('#inventarioTableBody');
-    if (!state.inventario.length) {
-      tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-xs text-gray-500">Sin insumos registrados.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = state.inventario.map(item => {
-      const critico = item.cantidad <= item.limite;
-      const badge = critico
-        ? 'bg-red-500/20 text-red-400 border-red-500/30'
-        : 'bg-green-500/20 text-green-400 border-green-500/30';
-      const estado = critico ? 'Crítico' : 'Óptimo';
+  // --- GESTIÓN DE INVENTARIO ---
+  function renderInventarioTable() {
+    const tbody = document.getElementById('inventarioTableBody');
+    tbody.innerHTML = dbInsumos.map(i => {
+      const critico = i.cantidad <= i.limite;
       return `
-        <tr class="hover:bg-white/5 transition">
-          <td class="p-4 font-bold">${esc(item.nombre)}</td>
-          <td class="p-4 font-black tabular-nums">${esc(item.cantidad)}</td>
-          <td class="p-4 text-gray-400">${esc(item.unidad)}</td>
-          <td class="p-4">
-            <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold border ${badge}">${estado}</span>
+        <tr class="hover:bg-white/5">
+          <td class="p-4 font-bold">${i.nombre}</td>
+          <td class="p-4 tabular-nums">${i.cantidad}</td>
+          <td class="p-4 text-gray-400">${i.unidad}</td>
+          <td class="p-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${critico ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}">${critico ? 'Bajo Stock' : 'Óptimo'}</span></td>
+          <td class="p-4 text-right space-x-2">
+            <button onclick="editarInsumo(${i.id})" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="eliminarInsumo(${i.id})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
           </td>
-          <td class="p-4 text-right whitespace-nowrap">
-            <button data-action="edit-insumo" data-id="${item.id}"
-                    class="text-gray-400 hover:text-white p-1.5 rounded hover:bg-white/5 transition"
-                    aria-label="Editar insumo">
-              <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
-            </button>
-            <button data-action="delete-insumo" data-id="${item.id}"
-                    class="text-red-400 hover:text-red-300 p-1.5 rounded hover:bg-red-500/10 transition"
-                    aria-label="Eliminar insumo">
-              <i class="fa-solid fa-trash text-xs" aria-hidden="true"></i>
-            </button>
-          </td>
-        </tr>`;
+        </tr>
+      `;
     }).join('');
+    localStorage.setItem('bp_insumos', JSON.stringify(dbInsumos));
   }
 
-  function openModalInsumo(insumo = null) {
-    const form = $('#formInsumo');
-    form.reset();
-    if (insumo) {
-      $('#modalInsumoTitle').textContent = 'Editar insumo';
-      $('#insumoId').value = insumo.id;
-      $('#insumoNombre').value = insumo.nombre;
-      $('#insumoCantidad').value = insumo.cantidad;
-      $('#insumoUnidad').value = insumo.unidad;
-      $('#insumoLimite').value = insumo.limite;
+  function abrirModalInsumo(id = null) {
+    document.getElementById('modalInsumo').classList.add('modal-active');
+    if (id) {
+      const ins = dbInsumos.find(x => x.id === id);
+      document.getElementById('insumoId').value = ins.id;
+      document.getElementById('insumoNombre').value = ins.nombre;
+      document.getElementById('insumoCantidad').value = ins.cantidad;
+      document.getElementById('insumoUnidad').value = ins.unidad;
+      document.getElementById('insumoLimite').value = ins.limite;
     } else {
-      $('#modalInsumoTitle').textContent = 'Nuevo insumo';
-      $('#insumoId').value = '';
+      document.getElementById('formInsumo').reset();
+      document.getElementById('insumoId').value = '';
     }
-    openModal('modalInsumo');
   }
 
-  function saveInsumo(e) {
+  function guardarInsumo(e) {
     e.preventDefault();
-    const id = $('#insumoId').value;
-    const nombre = $('#insumoNombre').value.trim();
-    const cantidad = parseFloat($('#insumoCantidad').value);
-    const unidad = $('#insumoUnidad').value;
-    const limite = parseFloat($('#insumoLimite').value);
-
-    if (!nombre) return toast('Datos incompletos', 'El nombre es obligatorio.', 'error');
-    if (!Number.isFinite(cantidad) || cantidad < 0) return toast('Cantidad inválida', '', 'error');
-    if (!Number.isFinite(limite) || limite < 0) return toast('Límite inválido', '', 'error');
+    const id = document.getElementById('insumoId').value;
+    const nombre = document.getElementById('insumoNombre').value.trim();
+    const cantidad = parseFloat(document.getElementById('insumoCantidad').value);
+    const unidad = document.getElementById('insumoUnidad').value;
+    const limite = parseFloat(document.getElementById('insumoLimite').value);
 
     if (id) {
-      const i = state.inventario.find(x => x.id === Number(id));
-      if (i) Object.assign(i, { nombre, cantidad, unidad, limite });
-      toast('Insumo actualizado', `"${nombre}" se guardó.`);
+      const idx = dbInsumos.findIndex(x => x.id == id);
+      dbInsumos[idx] = { id: parseInt(id), nombre, cantidad, unidad, limite };
     } else {
-      state.inventario.push({ id: Date.now(), nombre, cantidad, unidad, limite });
-      toast('Insumo creado', `"${nombre}" se agregó al inventario.`);
+      dbInsumos.push({ id: Date.now(), nombre, cantidad, unidad, limite });
     }
-    persist.inventario();
-    closeModal('modalInsumo');
-    renderInventario();
+    cerrarModal('modalInsumo');
+    renderInventarioTable();
   }
 
-  async function deleteInsumo(id) {
-    const it = state.inventario.find(i => i.id === id);
-    if (!it) return;
-    const ok = await confirmAction({
-      title: 'Eliminar insumo',
-      message: `¿Eliminar "${it.nombre}" del inventario?`,
-      confirmText: 'Eliminar'
-    });
-    if (!ok) return;
-    state.inventario = state.inventario.filter(i => i.id !== id);
-    persist.inventario();
-    renderInventario();
-    toast('Insumo eliminado', `"${it.nombre}" fue removido.`);
-  }
-
-  /* =========================================================================
-     USUARIOS
-     ========================================================================= */
-  function renderUsuarios() {
-    const tbody = $('#usuariosTableBody');
-    if (!state.usuarios.length) {
-      tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-xs text-gray-500">Sin trabajadores registrados.</td></tr>`;
-      return;
+  function editarInsumo(id) { abrirModalInsumo(id); }
+  function eliminarInsumo(id) {
+    if (confirm('¿Eliminar insumo?')) {
+      dbInsumos = dbInsumos.filter(x => x.id !== id);
+      renderInventarioTable();
     }
-    tbody.innerHTML = state.usuarios.map(u => {
-      const isAdmin = u.rol === 'Administrador';
-      const badge = isAdmin ? 'bg-[#ff4757]/20 text-[#ff4757]' : 'bg-[#2ed573]/20 text-[#2ed573]';
-      const avatar = u.foto
-        ? `<img src="${esc(u.foto)}" alt="" class="w-9 h-9 rounded-full object-cover border border-white/10" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-9 h-9 rounded-full bg-white/10 grid place-items-center text-xs',innerHTML:'<i class=\\'fa-solid fa-user\\'></i>'}))">`
-        : `<div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center text-xs"><i class="fa-solid fa-user" aria-hidden="true"></i></div>`;
-      return `
-        <tr class="hover:bg-white/5 transition">
-          <td class="p-4">${avatar}</td>
-          <td class="p-4 font-mono text-xs text-sky-400">${esc(u.user)}</td>
-          <td class="p-4 font-bold">${esc(u.nombre)}</td>
-          <td class="p-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-semibold ${badge}">${esc(u.rol)}</span></td>
-          <td class="p-4 text-right whitespace-nowrap">
-            <button data-action="edit-user" data-id="${u.id}"
-                    class="text-gray-400 hover:text-white p-1.5 rounded hover:bg-white/5 transition"
-                    aria-label="Editar trabajador">
-              <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
-            </button>
-            ${u.user !== 'admin' ? `
-              <button data-action="delete-user" data-id="${u.id}"
-                      class="text-red-400 hover:text-red-300 p-1.5 rounded hover:bg-red-500/10 transition"
-                      aria-label="Eliminar trabajador">
-                <i class="fa-solid fa-trash text-xs" aria-hidden="true"></i>
-              </button>` : ''}
-          </td>
-        </tr>`;
-    }).join('');
   }
 
-  function openModalUsuario(user = null) {
-    const form = $('#formUsuario');
-    form.reset();
-    if (user) {
-      $('#modalUsuarioTitle').textContent = 'Editar trabajador';
-      $('#usuarioId').value = user.id;
-      $('#usuarioNombre').value = user.nombre;
-      $('#usuarioFoto').value = user.foto || '';
-      $('#usuarioUser').value = user.user;
-      $('#usuarioPass').value = user.pass;
-      $('#usuarioRol').value = user.rol;
+  // --- GESTIÓN DE TRABAJADORES ---
+  function renderUsuariosTable() {
+    const tbody = document.getElementById('usuariosTableBody');
+    tbody.innerHTML = dbUsuarios.map(u => `
+      <tr class="hover:bg-white/5">
+        <td class="p-4"><div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center font-bold text-xs">${u.nombre.charAt(0)}</div></td>
+        <td class="p-4 font-mono text-sky-400">${u.user}</td>
+        <td class="p-4 font-bold">${u.nombre}</td>
+        <td class="p-4 text-gray-400">${u.rol}</td>
+        <td class="p-4 text-right space-x-2">
+          <button onclick="editarUsuario(${u.id})" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="eliminarUsuario(${u.id})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>
+    `).join('');
+    localStorage.setItem('bp_usuarios', JSON.stringify(dbUsuarios));
+    renderDemoAccounts();
+  }
+
+  function abrirModalUsuario(id = null) {
+    document.getElementById('modalUsuario').classList.add('modal-active');
+    if (id) {
+      const usr = dbUsuarios.find(x => x.id === id);
+      document.getElementById('usuarioId').value = usr.id;
+      document.getElementById('usuarioNombre').value = usr.nombre;
+      document.getElementById('usuarioUser').value = usr.user;
+      document.getElementById('usuarioPass').value = usr.pass;
+      document.getElementById('usuarioRol').value = usr.rol;
+      document.getElementById('usuarioFoto').value = usr.foto || '';
     } else {
-      $('#modalUsuarioTitle').textContent = 'Registrar nuevo trabajador';
-      $('#usuarioId').value = '';
+      document.getElementById('formUsuario').reset();
+      document.getElementById('usuarioId').value = '';
     }
-    openModal('modalUsuario');
   }
 
-  function saveUsuario(e) {
+  function guardarUsuario(e) {
     e.preventDefault();
-    const id = $('#usuarioId').value;
-    const nombre = $('#usuarioNombre').value.trim();
-    const foto = $('#usuarioFoto').value.trim();
-    const user = $('#usuarioUser').value.trim();
-    const pass = $('#usuarioPass').value.trim();
-    const rol = $('#usuarioRol').value;
-
-    if (!nombre || !user || !pass) return toast('Datos incompletos', 'Todos los campos marcados son obligatorios.', 'error');
-    if (pass.length < 4) return toast('Contraseña muy corta', 'Debe tener al menos 4 caracteres.', 'error');
-
-    // Validar usuario único (excluyendo el actual en edición)
-    const dup = state.usuarios.find(u => u.user === user && String(u.id) !== String(id));
-    if (dup) return toast('Usuario duplicado', `El usuario "${user}" ya existe.`, 'error');
+    const id = document.getElementById('usuarioId').value;
+    const nombre = document.getElementById('usuarioNombre').value.trim();
+    const user = document.getElementById('usuarioUser').value.trim();
+    const pass = document.getElementById('usuarioPass').value.trim();
+    const rol = document.getElementById('usuarioRol').value;
+    const foto = document.getElementById('usuarioFoto').value.trim();
 
     if (id) {
-      const idx = state.usuarios.findIndex(u => u.id === Number(id));
-      if (idx > -1) {
-        // Evitar que el último admin quede como cajero
-        const isLastAdmin = state.usuarios[idx].rol === 'Administrador' &&
-                            rol !== 'Administrador' &&
-                            state.usuarios.filter(u => u.rol === 'Administrador').length === 1;
-        if (isLastAdmin) return toast('No permitido', 'Debe existir al menos un administrador.', 'error');
-
-        state.usuarios[idx] = { id: Number(id), nombre, foto, user, pass, rol };
-        if (state.usuarioActual && state.usuarioActual.id === Number(id)) {
-          state.usuarioActual = state.usuarios[idx];
-          persist.sesion();
-        }
-      }
-      toast('Trabajador actualizado', `"${nombre}" se guardó correctamente.`);
+      const idx = dbUsuarios.findIndex(x => x.id == id);
+      dbUsuarios[idx] = { id: parseInt(id), nombre, user, pass, rol, foto };
     } else {
-      state.usuarios.push({ id: Date.now(), nombre, foto, user, pass, rol });
-      toast('Trabajador registrado', `"${nombre}" se agregó al sistema.`);
+      dbUsuarios.push({ id: Date.now(), nombre, user, pass, rol, foto });
     }
-
-    persist.usuarios();
-    closeModal('modalUsuario');
-    renderUsuarios();
-    renderDemoAccounts();
-    showPanel();
+    cerrarModal('modalUsuario');
+    renderUsuariosTable();
   }
 
-  async function deleteUsuario(id) {
-    const u = state.usuarios.find(x => x.id === id);
-    if (!u || u.user === 'admin') return;
-    if (state.usuarioActual?.id === id) {
-      toast('No permitido', 'No puedes eliminar tu propia sesión activa.', 'error');
+  function editarUsuario(id) { abrirModalUsuario(id); }
+  function eliminarUsuario(id) {
+    if (dbUsuarios.length <= 1) {
+      alert('Debes mantener al menos un usuario activo.');
       return;
     }
-    const ok = await confirmAction({
-      title: 'Eliminar trabajador',
-      message: `¿Eliminar a "${u.nombre}"? No podrá iniciar sesión nuevamente.`,
-      confirmText: 'Eliminar'
-    });
-    if (!ok) return;
-    state.usuarios = state.usuarios.filter(x => x.id !== id);
-    persist.usuarios();
-    renderUsuarios();
-    renderDemoAccounts();
-    toast('Trabajador eliminado', `"${u.nombre}" fue removido del sistema.`);
-  }
-
-  /* =========================================================================
-     EXPORT CSV
-     ========================================================================= */
-  function exportCSV() {
-    if (!state.ventas.length) return toast('Sin datos', 'No hay ventas para exportar.', 'error');
-
-    const header = ['Fecha', 'Cliente', 'Atendido por', 'Detalle', 'Subtotal', 'IVA', 'Total'];
-    const rows = state.ventas.map(v => {
-      const detalle = Array.isArray(v.items)
-        ? v.items.map(i => `${i.cantidad}x ${i.nombre}`).join(' | ')
-        : (v.detalle || '');
-      return [
-        v.fechaTexto || '',
-        v.cliente || '',
-        v.atendidoPor || '',
-        detalle,
-        (v.subtotal ?? v.monto ?? 0).toFixed(2),
-        (v.iva ?? 0).toFixed(2),
-        (v.total ?? v.monto ?? 0).toFixed(2)
-      ];
-    });
-
-    const csv = [header, ...rows]
-      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      .join('\r\n');
-
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `brothers-pizza-ventas-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-
-    toast('Exportación lista', `Se descargaron ${state.ventas.length} registros.`);
-  }
-
-  /* =========================================================================
-     EVENTOS
-     ========================================================================= */
-  function bindEvents() {
-    // Logout (delegado)
-    document.addEventListener('click', e => {
-      if (e.target.closest('[data-action="logout"]')) handleLogout();
-    });
-
-    // Pestañas
-    $('#navTabs').addEventListener('click', e => {
-      const btn = e.target.closest('.tab-btn');
-      if (!btn || btn.classList.contains('hidden')) return;
-      switchTab(btn.dataset.tab);
-    });
-
-    // POS: categorías
-    $('#posCategoriasTabs').addEventListener('click', e => {
-      const btn = e.target.closest('[data-cat]');
-      if (!btn) return;
-      state.categoriaPos = btn.dataset.cat;
-      $$('.pos-cat-btn').forEach(b => b.classList.toggle('is-active', b === btn));
-      renderMenuPOS();
-    });
-
-    // POS: buscador
-    $('#posSearch').addEventListener('input', debounce(e => {
-      state.busquedaPos = e.target.value;
-      renderMenuPOS();
-    }, 180));
-
-    // POS: añadir al carrito
-    $('#posGridProductos').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action="add-to-cart"]');
-      if (!btn) return;
-      addToCart(Number(btn.dataset.id));
-    });
-
-    // Carrito
-    $('#carritoItemsContainer').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const id = Number(btn.dataset.id);
-      switch (btn.dataset.action) {
-        case 'qty-inc':     changeCartQty(id, 1); break;
-        case 'qty-dec':     changeCartQty(id, -1); break;
-        case 'remove-item': removeFromCart(id); break;
-      }
-    });
-
-    // Vaciar / cobrar
-    $('[data-action="clear-cart"]').addEventListener('click', async () => {
-      if (!state.carrito.length) return toast('Carrito vacío', 'No hay productos que eliminar.', 'error');
-      const ok = await confirmAction({
-        title: 'Vaciar orden',
-        message: '¿Eliminar todos los productos de la orden actual?',
-        confirmText: 'Vaciar'
-      });
-      if (!ok) return;
-      vaciarCarrito();
-      toast('Orden vaciada', 'Se eliminaron los productos del carrito.');
-    });
-
-    $('[data-action="checkout"]').addEventListener('click', procesarVentaPOS);
-
-    // Ventas: eliminar
-    $('#ventasTableBody').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action="delete-venta"]');
-      if (!btn) return;
-      deleteVenta(Number(btn.dataset.idx));
-    });
-
-    // Exportar CSV
-    $('[data-action="export-csv"]').addEventListener('click', exportCSV);
-
-    // Menú admin
-    $('[data-action="new-menu"]').addEventListener('click', () => openModalMenu(null));
-    $('#formMenu').addEventListener('submit', saveMenuProducto);
-    $('#menuTableBody').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const id = Number(btn.dataset.id);
-      if (btn.dataset.action === 'edit-menu') {
-        const p = state.menu.find(i => i.id === id);
-        if (p) openModalMenu(p);
-      } else if (btn.dataset.action === 'delete-menu') {
-        deleteMenuProducto(id);
-      }
-    });
-
-    // Inventario
-    $('[data-action="new-insumo"]').addEventListener('click', () => openModalInsumo(null));
-    $('#formInsumo').addEventListener('submit', saveInsumo);
-    $('#inventarioTableBody').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const id = Number(btn.dataset.id);
-      if (btn.dataset.action === 'edit-insumo') {
-        const i = state.inventario.find(x => x.id === id);
-        if (i) openModalInsumo(i);
-      } else if (btn.dataset.action === 'delete-insumo') {
-        deleteInsumo(id);
-      }
-    });
-
-    // Usuarios
-    $('[data-action="new-user"]').addEventListener('click', () => openModalUsuario(null));
-    $('#formUsuario').addEventListener('submit', saveUsuario);
-    $('#usuariosTableBody').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const id = Number(btn.dataset.id);
-      if (btn.dataset.action === 'edit-user') {
-        const u = state.usuarios.find(x => x.id === id);
-        if (u) openModalUsuario(u);
-      } else if (btn.dataset.action === 'delete-user') {
-        deleteUsuario(id);
-      }
-    });
-
-    // Cierre de modales por botón
-    $$('[data-close-modal]').forEach(btn => {
-      btn.addEventListener('click', () => closeModal(btn.dataset.closeModal));
-    });
-
-    // Confirmación
-    $('#modalConfirm').addEventListener('click', e => {
-      const btn = e.target.closest('[data-confirm]');
-      if (!btn) return;
-      resolveConfirm(btn.dataset.confirm === 'ok');
-    });
-
-    // Clic fuera del modal
-    $$('.modal-backdrop').forEach(modal => {
-      modal.addEventListener('mousedown', e => {
-        if (e.target === modal) dismissModal(modal.id);
-      });
-    });
-
-    // Escape cierra el modal activo
-    document.addEventListener('keydown', e => {
-      if (e.key !== 'Escape') return;
-      const open = $$('.modal-backdrop').find(m => m.classList.contains('modal-active'));
-      if (open) dismissModal(open.id);
-    });
-  }
-
-  /* =========================================================================
-     INICIALIZACIÓN
-     ========================================================================= */
-  function init() {
-    loadState();
-    bindEvents();
-    initLogin();
-
-    if (state.usuarioActual) {
-      showPanel();
-      toast(`Sesión restaurada`, `Bienvenido de nuevo, ${state.usuarioActual.nombre}.`);
-    } else {
-      $('#mainPanel').classList.add('hidden');
+    if (confirm('¿Eliminar trabajador?')) {
+      dbUsuarios = dbUsuarios.filter(x => x.id !== id);
+      renderUsuariosTable();
     }
   }
 
-  document.addEventListener('DOMContentLoaded', init);
-})();
+  function cerrarModal(modalId) {
+    document.getElementById(modalId).classList.remove('modal-active');
+  }
 </script>
 </body>
 </html>
