@@ -2,315 +2,264 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin · Brothers Pizza</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   body { font-family: system-ui, sans-serif; }
-  .input { width: 100%; background: #09090b; border: 1px solid #3f3f46; border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 14px; }
-  .input:focus { outline: none; border-color: #ef4444; }
-  .tab-active { background: #dc2626 !important; color: #fff !important; }
-  .hide { display: none !important; }
+  .inp { width:100%; background:#09090b; border:1px solid #3f3f46; border-radius:10px; padding:10px; color:#fff; font-size:14px; }
+  .inp:focus { outline:none; border-color:#ef4444; }
+  .btn-red { background:#dc2626; color:#fff; padding:10px 14px; border-radius:10px; font-weight:600; font-size:14px; }
+  .btn-gray { background:#27272a; color:#e4e4e7; padding:10px 14px; border-radius:10px; font-size:14px; }
+  .tabbtn { padding:8px 14px; border-radius:10px; background:#27272a; color:#a1a1aa; font-size:13px; white-space:nowrap; }
+  .tabbtn.act { background:#dc2626; color:#fff; }
+  .card { background:#18181b; border:1px solid #27272a; border-radius:14px; padding:14px; }
+  .hide { display:none !important; }
 </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen">
 
 <!-- LOGIN -->
-<div id="loginGate" class="fixed inset-0 z-50 bg-zinc-950 flex items-center justify-center p-4">
-  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6">
+<div id="login" class="fixed inset-0 bg-zinc-950 flex items-center justify-center p-4 z-50">
+  <div class="card w-full max-w-sm">
     <div class="text-center mb-5">
-      <div class="inline-flex w-12 h-12 rounded-xl bg-red-600 items-center justify-center mb-2">
-        <i class="fa-solid fa-pizza-slice text-white text-xl"></i>
-      </div>
-      <h1 class="text-lg font-bold">Brothers Pizza · Admin</h1>
+      <div class="inline-block w-12 h-12 rounded-xl bg-red-600 text-white text-xl leading-[3rem]">🍕</div>
+      <h1 class="font-bold mt-2">Brothers Pizza · Admin</h1>
     </div>
-    <form id="loginForm" class="space-y-3">
-      <input type="text" id="luser" value="admin" class="input" placeholder="Usuario">
-      <input type="password" id="lpass" value="admin123" class="input" placeholder="Contraseña">
-      <div id="lerr" class="hidden text-red-400 text-xs text-center bg-red-500/10 py-2 rounded"></div>
-      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold">Ingresar</button>
-    </form>
-    <button onclick="localStorage.removeItem('bp_staff');localStorage.removeItem('bp_session');location.reload()" class="w-full text-xs text-zinc-500 mt-3">🔧 Reparar acceso</button>
-    <a href="index.html" class="block text-center text-xs text-zinc-500 mt-2">← Volver al menú</a>
+    <input id="lu" class="inp mb-2" value="admin" placeholder="Usuario">
+    <input id="lp" type="password" class="inp mb-2" value="admin123" placeholder="Contraseña">
+    <div id="lerr" class="hide text-red-400 text-xs text-center bg-red-500/10 py-2 rounded mb-2"></div>
+    <button onclick="doLogin()" class="btn-red w-full">Ingresar</button>
+    <button onclick="localStorage.clear();location.reload()" class="text-xs text-zinc-500 w-full mt-3">🔧 Reparar acceso</button>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app" class="hide">
-  <!-- HEADER -->
   <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
-    <div class="max-w-6xl mx-auto px-3 py-3 flex items-center justify-between">
+    <div class="max-w-5xl mx-auto px-3 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <div class="w-9 h-9 rounded-lg bg-red-600 flex items-center justify-center">
-          <i class="fa-solid fa-pizza-slice text-white"></i>
-        </div>
+        <div class="w-9 h-9 rounded-lg bg-red-600 flex items-center justify-center">🍕</div>
         <div>
-          <h1 class="font-bold text-sm">Brothers Pizza</h1>
-          <p class="text-[10px] text-zinc-500" id="userInfo">—</p>
+          <p class="font-bold text-sm">Brothers Pizza</p>
+          <p id="whoami" class="text-[10px] text-zinc-500">—</p>
         </div>
       </div>
       <div class="flex gap-2">
-        <a href="index.html" target="_blank" class="text-xs px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700">
-          <i class="fa-solid fa-eye"></i><span class="hidden sm:inline ml-1">Ver menú</span>
-        </a>
-        <button onclick="logout()" class="text-xs px-3 py-2 rounded-lg bg-zinc-800 hover:bg-red-600">
-          <i class="fa-solid fa-right-from-bracket"></i>
-        </button>
+        <a href="index.html" target="_blank" class="btn-gray text-xs">👁️ Ver menú</a>
+        <button onclick="logout()" class="btn-gray text-xs">Salir</button>
       </div>
     </div>
-    <!-- TABS -->
-    <div class="max-w-6xl mx-auto px-3 pb-2 flex gap-1 overflow-x-auto text-xs">
-      <button data-tab="pos" class="tab tab-active px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">🍕 POS</button>
-      <button data-tab="menu" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">📋 Menú</button>
-      <button data-tab="inv" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">📦 Stock</button>
-      <button data-tab="staff" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">👥 Staff</button>
-      <button data-tab="fin" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">💰 Finanzas</button>
-      <button data-tab="cash" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">💵 Caja</button>
-      <button data-tab="stats" class="tab px-3 py-2 rounded-lg bg-zinc-800 whitespace-nowrap">📊 Ventas</button>
+    <div class="max-w-5xl mx-auto px-3 pb-2 flex gap-1 overflow-x-auto">
+      <button class="tabbtn act" data-t="pos">🍕 POS</button>
+      <button class="tabbtn" data-t="menu">📋 Menú</button>
+      <button class="tabbtn" data-t="stock">📦 Stock</button>
+      <button class="tabbtn" data-t="staff">👥 Staff</button>
+      <button class="tabbtn" data-t="fin">💰 Finanzas</button>
+      <button class="tabbtn" data-t="cash">💵 Caja</button>
+      <button class="tabbtn" data-t="stats">📊 Ventas</button>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto p-3 pb-24">
+  <main class="max-w-5xl mx-auto p-3 pb-24">
 
     <!-- POS -->
-    <section id="sec-pos">
+    <section id="t-pos">
       <div class="grid lg:grid-cols-3 gap-3">
-        <div class="lg:col-span-2 space-y-3">
-          <input type="text" id="posSearch" class="input" placeholder="🔍 Buscar producto...">
-          <div id="posGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+        <div class="lg:col-span-2">
+          <input id="pq" class="inp mb-2" placeholder="🔍 Buscar...">
+          <div id="pgrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
         </div>
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 h-fit lg:sticky lg:top-32">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="font-bold text-sm">🛒 Orden <span id="cCount" class="text-red-500">(0)</span></h3>
-            <button onclick="clearCart()" class="text-xs text-zinc-500 hover:text-red-400">Limpiar</button>
+        <div class="card h-fit">
+          <div class="flex justify-between mb-2">
+            <b class="text-sm">🛒 Orden <span id="cc" class="text-red-500">(0)</span></b>
+            <button onclick="clearCart()" class="text-xs text-zinc-500">Limpiar</button>
           </div>
-          <input type="text" id="clientName" value="Mesa 1" class="input mb-3 text-sm">
-          <div id="cartList" class="space-y-2 max-h-64 overflow-y-auto mb-3"></div>
-          <div class="border-t border-zinc-800 pt-3 space-y-1 text-xs">
-            <div class="flex justify-between"><span>Subtotal</span><span id="cSub">$0.00</span></div>
-            <div class="flex justify-between"><span>IVA 12%</span><span id="cTax">$0.00</span></div>
-            <div class="flex justify-between font-bold text-base pt-2"><span>Total</span><span id="cTot" class="text-red-500">$0.00</span></div>
+          <input id="cliente" class="inp mb-2 text-sm" value="Mesa 1">
+          <div id="cartList" class="space-y-1 max-h-60 overflow-y-auto mb-2"></div>
+          <div class="text-xs border-t border-zinc-800 pt-2 space-y-1">
+            <div class="flex justify-between"><span>Subtotal</span><span id="cSub">$0</span></div>
+            <div class="flex justify-between"><span>IVA</span><span id="cTax">$0</span></div>
+            <div class="flex justify-between font-bold text-base pt-1"><span>Total</span><span id="cTot" class="text-red-500">$0</span></div>
           </div>
-          <div class="grid grid-cols-2 gap-2 mt-3">
-            <button onclick="pay('Efectivo')" class="bg-zinc-800 py-2.5 rounded-lg text-xs font-semibold">💵 Efectivo</button>
-            <button onclick="pay('Tarjeta')" class="bg-red-600 py-2.5 rounded-lg text-xs font-semibold">💳 Tarjeta</button>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button onclick="pay('Efectivo')" class="btn-gray">💵 Efectivo</button>
+            <button onclick="pay('Tarjeta')" class="btn-red">💳 Tarjeta</button>
           </div>
         </div>
       </div>
     </section>
 
     <!-- MENU -->
-    <section id="sec-menu" class="hide">
-      <div class="flex justify-between items-center mb-3">
+    <section id="t-menu" class="hide">
+      <div class="flex justify-between mb-3">
         <h2 class="font-bold">📋 Menú</h2>
-        <button onclick="editPizza(0)" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold">+ Nueva pizza</button>
+        <button onclick="editPizza(0)" class="btn-red">+ Nueva pizza</button>
       </div>
       <div id="sizesBox" class="grid grid-cols-3 gap-2 mb-3"></div>
-      <button onclick="editSizes()" class="text-xs text-red-400 mb-3">✏️ Editar tamaños y precios</button>
+      <button onclick="editSizes()" class="text-xs text-red-400 mb-3">✏️ Editar tamaños</button>
       <div id="pizzaList" class="space-y-2"></div>
     </section>
 
-    <!-- INVENTARIO -->
-    <section id="sec-inv" class="hide">
-      <div class="flex justify-between items-center mb-3">
+    <!-- STOCK -->
+    <section id="t-stock" class="hide">
+      <div class="flex justify-between mb-3">
         <h2 class="font-bold">📦 Inventario</h2>
-        <button onclick="editInsumo(0)" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold">+ Nuevo</button>
+        <button onclick="editInsumo(0)" class="btn-red">+ Nuevo</button>
       </div>
-      <div id="invList" class="space-y-2"></div>
+      <div id="stockList" class="space-y-2"></div>
     </section>
 
     <!-- STAFF -->
-    <section id="sec-staff" class="hide">
-      <div class="flex justify-between items-center mb-3">
+    <section id="t-staff" class="hide">
+      <div class="flex justify-between mb-3">
         <h2 class="font-bold">👥 Trabajadores</h2>
-        <button onclick="editStaff(0)" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold">+ Nuevo</button>
+        <button onclick="editStaff(0)" class="btn-red">+ Nuevo</button>
       </div>
       <div id="staffList" class="space-y-2"></div>
     </section>
 
     <!-- FINANZAS -->
-    <section id="sec-fin" class="hide">
+    <section id="t-fin" class="hide">
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
-        <div class="bg-emerald-600/20 border border-emerald-600/40 p-3 rounded-xl">
-          <p class="text-[10px] text-emerald-400 font-bold uppercase">Ingresos mes</p>
-          <p id="fIncome" class="text-xl font-bold mt-1">$0</p>
-        </div>
-        <div class="bg-red-600/20 border border-red-600/40 p-3 rounded-xl">
-          <p class="text-[10px] text-red-400 font-bold uppercase">Egresos mes</p>
-          <p id="fExpense" class="text-xl font-bold mt-1">$0</p>
-        </div>
-        <div class="bg-amber-600/20 border border-amber-600/40 p-3 rounded-xl">
-          <p class="text-[10px] text-amber-400 font-bold uppercase">Nómina</p>
-          <p id="fPayroll" class="text-xl font-bold mt-1">$0</p>
-        </div>
-        <div class="bg-blue-600/20 border border-blue-600/40 p-3 rounded-xl">
-          <p class="text-[10px] text-blue-400 font-bold uppercase">Balance</p>
-          <p id="fBalance" class="text-xl font-bold mt-1">$0</p>
-        </div>
+        <div class="card"><p class="text-[10px] text-emerald-400 font-bold">INGRESOS</p><p id="fIn" class="text-xl font-bold">$0</p></div>
+        <div class="card"><p class="text-[10px] text-red-400 font-bold">EGRESOS</p><p id="fEx" class="text-xl font-bold">$0</p></div>
+        <div class="card"><p class="text-[10px] text-amber-400 font-bold">NÓMINA</p><p id="fPay" class="text-xl font-bold">$0</p></div>
+        <div class="card"><p class="text-[10px] text-blue-400 font-bold">BALANCE</p><p id="fBal" class="text-xl font-bold">$0</p></div>
       </div>
-
-      <div class="flex gap-2 mb-3 text-xs">
-        <button data-ftab="salary" class="ftab tab-active px-3 py-2 rounded-lg bg-zinc-800">💼 Sueldos</button>
-        <button data-ftab="expenses" class="ftab px-3 py-2 rounded-lg bg-zinc-800">🧾 Gastos</button>
-        <button data-ftab="debts" class="ftab px-3 py-2 rounded-lg bg-zinc-800">💳 Deudas</button>
+      <div class="flex gap-2 mb-3">
+        <button class="tabbtn act" data-f="salary">💼 Sueldos</button>
+        <button class="tabbtn" data-f="exp">🧾 Gastos</button>
+        <button class="tabbtn" data-f="debt">💳 Deudas</button>
       </div>
-
-      <div id="fSalary">
-        <div id="salaryList" class="space-y-2"></div>
+      <div id="f-salary"><div id="salaryList" class="space-y-2"></div></div>
+      <div id="f-exp" class="hide">
+        <button onclick="newExpense()" class="btn-red mb-3">+ Nuevo gasto</button>
+        <div id="expList" class="space-y-2"></div>
       </div>
-      <div id="fExpenses" class="hide">
-        <button onclick="newExpense()" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold mb-3">+ Nuevo gasto</button>
-        <div id="expensesList" class="space-y-2"></div>
-      </div>
-      <div id="fDebts" class="hide">
-        <button onclick="newDebt()" class="bg-red-600 px-3 py-2 rounded-lg text-xs font-semibold mb-3">+ Nueva deuda</button>
-        <div id="debtsList" class="space-y-2"></div>
+      <div id="f-debt" class="hide">
+        <button onclick="newDebt()" class="btn-red mb-3">+ Nueva deuda</button>
+        <div id="debtList" class="space-y-2"></div>
       </div>
     </section>
 
     <!-- CAJA -->
-    <section id="sec-cash" class="hide">
+    <section id="t-cash" class="hide">
       <div class="grid grid-cols-3 gap-2 mb-3">
-        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
-          <p class="text-[10px] text-zinc-500 font-bold uppercase">Estado</p>
-          <p id="cashStatus" class="text-base font-bold mt-1">—</p>
-        </div>
-        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
-          <p class="text-[10px] text-zinc-500 font-bold uppercase">Esperado</p>
-          <p id="cashExpected" class="text-xl font-bold text-emerald-400 mt-1">$0</p>
-        </div>
-        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
-          <p class="text-[10px] text-zinc-500 font-bold uppercase">Diferencia</p>
-          <p id="cashDiff" class="text-xl font-bold mt-1">$0</p>
-        </div>
+        <div class="card"><p class="text-[10px] text-zinc-500 font-bold">ESTADO</p><p id="kState" class="text-base font-bold">—</p></div>
+        <div class="card"><p class="text-[10px] text-zinc-500 font-bold">ESPERADO</p><p id="kExp" class="text-xl font-bold text-emerald-400">$0</p></div>
+        <div class="card"><p class="text-[10px] text-zinc-500 font-bold">DIF.</p><p id="kDif" class="text-xl font-bold">$0</p></div>
       </div>
-      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 space-y-3 mb-3">
+      <div class="card mb-3 space-y-2">
         <div class="grid grid-cols-3 gap-2">
-          <input type="number" id="cashOpenAmt" class="input" placeholder="Monto apertura" step="0.01">
-          <button onclick="openCash()" class="bg-emerald-600 py-2.5 rounded-lg text-xs font-semibold">🔓 Abrir</button>
-          <button onclick="closeCash()" class="bg-red-600 py-2.5 rounded-lg text-xs font-semibold">🔒 Cerrar</button>
+          <input id="cashOpen" type="number" step="0.01" class="inp" placeholder="Apertura">
+          <button onclick="openCash()" class="btn-gray">🔓 Abrir</button>
+          <button onclick="closeCash()" class="btn-red">🔒 Cerrar</button>
         </div>
-        <input type="number" id="cashCounted" class="input" placeholder="Efectivo contado al cerrar" step="0.01">
+        <input id="cashCount" type="number" step="0.01" class="inp" placeholder="Efectivo contado">
         <p id="cashHint" class="text-[11px] text-zinc-500"></p>
       </div>
-      <h3 class="font-bold text-sm mb-2">Historial</h3>
-      <div id="cashHistory" class="space-y-2"></div>
+      <div id="cashHist" class="space-y-2"></div>
     </section>
 
     <!-- STATS -->
-    <section id="sec-stats" class="hide">
+    <section id="t-stats" class="hide">
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
-        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
-          <p class="text-[10px] text-zinc-500 font-bold uppercase">Ventas hoy</p>
-          <p id="sToday" class="text-xl font-bold mt-1">$0</p>
-        </div>
-        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
-          <p class="text-[10px] text-zinc-500 font-bold uppercase">Órdenes hoy</p>
-          <p id="sOrders" class="text-xl font-bold mt-1">0</p>
-        </div>
-        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
-          <p class="text-[10px] text-zinc-500 font-bold uppercase">Total mes</p>
-          <p id="sMonth" class="text-xl font-bold mt-1">$0</p>
-        </div>
-        <div class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl">
-          <p class="text-[10px] text-zinc-500 font-bold uppercase">Ticket promedio</p>
-          <p id="sAvg" class="text-xl font-bold mt-1">$0</p>
-        </div>
+        <div class="card"><p class="text-[10px] text-zinc-500 font-bold">HOY</p><p id="sT" class="text-xl font-bold">$0</p></div>
+        <div class="card"><p class="text-[10px] text-zinc-500 font-bold">ÓRDENES</p><p id="sO" class="text-xl font-bold">0</p></div>
+        <div class="card"><p class="text-[10px] text-zinc-500 font-bold">MES</p><p id="sM" class="text-xl font-bold">$0</p></div>
+        <div class="card"><p class="text-[10px] text-zinc-500 font-bold">TICKET</p><p id="sA" class="text-xl font-bold">$0</p></div>
       </div>
-      <h3 class="font-bold text-sm mb-2">Últimas ventas</h3>
       <div id="salesList" class="space-y-2"></div>
     </section>
 
   </main>
 </div>
 
-<div id="modal" class="fixed inset-0 z-40 bg-black/70 hide items-end sm:items-center justify-center p-0 sm:p-4">
-  <div id="modalBody" class="bg-zinc-900 border border-zinc-800 w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl p-5"></div>
+<!-- MODAL -->
+<div id="modal" class="hide fixed inset-0 z-40 bg-black/70 flex items-end sm:items-center justify-center">
+  <div id="modalBody" class="bg-zinc-900 w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl p-5"></div>
 </div>
 
 <script>
-/* ==================== STORAGE ==================== */
-const LS = { MENU:"bp_menu", SALES:"bp_sales", INV:"bp_inventory", STAFF:"bp_staff", SESSION:"bp_session", PAYROLL:"bp_payroll", EXPENSES:"bp_expenses", DEBTS:"bp_debts", CASH:"bp_cash" };
+// ==================== STORAGE ====================
+const K = { M:"bp_menu", S:"bp_sales", I:"bp_inventory", U:"bp_staff", SE:"bp_session", P:"bp_payroll", E:"bp_expenses", D:"bp_debts", C:"bp_cash" };
 
-const DEF_MENU = {
-  tamanos: [
+const DEF_M = {
+  tamanos:[
     {id:"personal",label:"Personal",precio:5,porciones:4},
     {id:"mediana",label:"Mediana",precio:9,porciones:10},
-    {id:"familiar",label:"Familiar",precio:13,porciones:12},
+    {id:"familiar",label:"Familiar",precio:13,porciones:12}
   ],
-  pizzas: [
+  pizzas:[
     {id:1,nombre:"Pizza Pepperoni",desc:"Pepperoni y mozzarella",badge:"hot"},
-    {id:2,nombre:"Pizza Margarita",desc:"Mozzarella, albahaca y tomate"},
-    {id:3,nombre:"Pizza Hawaiana",desc:"Jamón, piña y mozzarella"},
-    {id:4,nombre:"Pizza de Jamón",desc:"Jamón y mozzarella",badge:"new"},
+    {id:2,nombre:"Pizza Margarita",desc:"Mozzarella y tomate"},
+    {id:3,nombre:"Pizza Hawaiana",desc:"Jamón y piña"},
+    {id:4,nombre:"Pizza de Jamón",desc:"Jamón y mozzarella",badge:"new"}
   ],
-  porcion: {id:200,nombre:"Porción de Pizza",precio:1.25},
-  cola: {id:300,nombre:"Cola 1L",precio:0.75},
+  porcion:{id:200,nombre:"Porción de Pizza",precio:1.25},
+  cola:{id:300,nombre:"Cola 1L",precio:0.75}
 };
 
-const DEF_INV = [
-  {id:1,nombre:"Harina",unidad:"kg",stock:25,min:10,costo:1.20,proveedor:"Molinos"},
-  {id:2,nombre:"Queso",unidad:"kg",stock:8,min:5,costo:6.50,proveedor:"Lácteos"},
-  {id:3,nombre:"Pepperoni",unidad:"kg",stock:4,min:3,costo:8,proveedor:"Carnes"},
-  {id:4,nombre:"Jamón",unidad:"kg",stock:2,min:3,costo:5.50,proveedor:"Carnes"},
-  {id:5,nombre:"Cola 1L",unidad:"botella",stock:20,min:12,costo:0.50,proveedor:"Distribuidora"},
+const DEF_I = [
+  {id:1,nombre:"Harina",unidad:"kg",stock:25,min:10,costo:1.20,prov:"Molinos"},
+  {id:2,nombre:"Queso",unidad:"kg",stock:8,min:5,costo:6.50,prov:"Lácteos"},
+  {id:3,nombre:"Pepperoni",unidad:"kg",stock:4,min:3,costo:8,prov:"Carnes"},
+  {id:4,nombre:"Jamón",unidad:"kg",stock:2,min:3,costo:5.50,prov:"Carnes"},
+  {id:5,nombre:"Cola 1L",unidad:"botella",stock:20,min:12,costo:0.50,prov:"Distribuidora"}
 ];
 
-const DEF_STAFF = [
+const DEF_U = [
   {id:1,nombre:"Administrador",usuario:"admin",pass:"admin123",rol:"admin",activo:true,emoji:"👑",sueldo:600},
-  {id:2,nombre:"Cajero",usuario:"cajero",pass:"cajero123",rol:"cajero",activo:true,emoji:"🧑‍🍳",sueldo:400},
+  {id:2,nombre:"Cajero",usuario:"cajero",pass:"cajero123",rol:"cajero",activo:true,emoji:"🧑‍🍳",sueldo:400}
 ];
 
-/* ==================== HELPERS ==================== */
+// ==================== HELPERS ====================
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const money = v => "$" + Number(v).toFixed(2);
 const uid = () => Date.now() + Math.floor(Math.random()*1000);
-const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const read = (k,f) => { try { const v=localStorage.getItem(k); return v?JSON.parse(v):f; } catch { return f; } };
-const write = (k,v) => { localStorage.setItem(k, JSON.stringify(v)); try { window.dispatchEvent(new StorageEvent("storage",{key:k})); } catch(_){} };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rj = (k,f) => { try { const v=localStorage.getItem(k); return v?JSON.parse(v):f; } catch { return f; } };
+const wj = (k,v) => { localStorage.setItem(k, JSON.stringify(v)); };
 
-/* ==================== SEED BLINDADO ==================== */
-function seed() {
-  let m = read(LS.MENU,null);
-  if (!m || !Array.isArray(m.pizzas) || !Array.isArray(m.tamanos)) write(LS.MENU, DEF_MENU);
+// ==================== SEED ====================
+(function seed(){
+  let m = rj(K.M,null);
+  if (!m || !m.pizzas || !m.tamanos || !m.porcion || !m.cola) wj(K.M, DEF_M);
 
-  let inv = read(LS.INV,null);
-  if (!Array.isArray(inv)) write(LS.INV, DEF_INV);
+  if (!Array.isArray(rj(K.I,null))) wj(K.I, DEF_I);
 
-  // 🛡️ Staff blindado
-  let st = read(LS.STAFF,null);
+  let st = rj(K.U,[]);
   if (!Array.isArray(st)) st = [];
-  st = st.filter(s => s && s.usuario && s.pass);
-  const ai = st.findIndex(s => s.usuario === "admin");
-  if (ai === -1) st.unshift(DEF_STAFF[0]);
-  else if (st[ai].pass !== "admin123") { st[ai].pass = "admin123"; st[ai].activo = true; st[ai].rol = "admin"; }
-  if (!st.find(s => s.usuario === "cajero")) st.push(DEF_STAFF[1]);
-  write(LS.STAFF, st);
+  st = st.filter(x => x && x.usuario && x.pass);
+  const ai = st.findIndex(x => x.usuario === "admin");
+  if (ai === -1) st.unshift(DEF_U[0]);
+  else { st[ai].pass = "admin123"; st[ai].rol = "admin"; st[ai].activo = true; if (!st[ai].sueldo) st[ai].sueldo = 600; }
+  if (!st.find(x => x.usuario === "cajero")) st.push(DEF_U[1]);
+  wj(K.U, st);
 
-  if (!Array.isArray(read(LS.SALES,null)))    write(LS.SALES,[]);
-  if (!Array.isArray(read(LS.PAYROLL,null)))  write(LS.PAYROLL,[]);
-  if (!Array.isArray(read(LS.EXPENSES,null))) write(LS.EXPENSES,[]);
-  if (!Array.isArray(read(LS.DEBTS,null)))    write(LS.DEBTS,[]);
-  if (!Array.isArray(read(LS.CASH,null)))     write(LS.CASH,[]);
-}
-seed();
+  if (!Array.isArray(rj(K.S,null))) wj(K.S,[]);
+  if (!Array.isArray(rj(K.P,null))) wj(K.P,[]);
+  if (!Array.isArray(rj(K.E,null))) wj(K.E,[]);
+  if (!Array.isArray(rj(K.D,null))) wj(K.D,[]);
+  if (!Array.isArray(rj(K.C,null))) wj(K.C,[]);
+})();
 
-/* ==================== STATE ==================== */
-let MENU = read(LS.MENU, DEF_MENU);
-let SALES = read(LS.SALES, []);
-let INV = read(LS.INV, DEF_INV);
-let STAFF = read(LS.STAFF, DEF_STAFF);
-let PAYROLL = read(LS.PAYROLL, []);
-let EXPENSES = read(LS.EXPENSES, []);
-let DEBTS = read(LS.DEBTS, []);
-let CASH = read(LS.CASH, []);
-let SESSION = read(LS.SESSION, null);
+// ==================== STATE ====================
+let MENU = rj(K.M, DEF_M);
+let SALES = rj(K.S, []);
+let INV = rj(K.I, DEF_I);
+let STAFF = rj(K.U, DEF_U);
+let PAY = rj(K.P, []);
+let EXP = rj(K.E, []);
+let DEBT = rj(K.D, []);
+let CASH = rj(K.C, []);
+let SESSION = rj(K.SE, null);
 let cart = [];
-let currentTab = "pos";
 
-/* ==================== IMÁGENES ==================== */
+// ==================== IMÁGENES ====================
 const IMG = {
   pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=300&q=70",
   margarita:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=300&q=70",
@@ -318,68 +267,76 @@ const IMG = {
   jamon:"https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=300&q=70",
   cola:"https://images.unsplash.com/photo-1554866585-cd94860890b7?w=300&q=70",
   slice:"https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=300&q=70",
-  def:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&q=70",
+  def:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&q=70"
 };
 function imgOf(n="") {
   n = n.toLowerCase();
   if (n.includes("pepperoni")) return IMG.pepperoni;
   if (n.includes("margarita")) return IMG.margarita;
   if (n.includes("hawaiana")) return IMG.hawaiana;
-  if (n.includes("jamón")||n.includes("jamon")) return IMG.jamon;
-  if (n.includes("cola")||n.includes("coca")) return IMG.cola;
+  if (n.includes("jamón") || n.includes("jamon")) return IMG.jamon;
+  if (n.includes("cola") || n.includes("coca")) return IMG.cola;
   if (n.includes("porci")) return IMG.slice;
   return IMG.def;
 }
 
-/* ==================== LOGIN ==================== */
-$("#loginForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const u = $("#luser").value.trim(), p = $("#lpass").value;
-  let user = STAFF.find(s => s.usuario === u && s.pass === p && s.activo);
+// ==================== MODAL ====================
+function modal(html) { $("#modalBody").innerHTML = html; $("#modal").classList.remove("hide"); }
+function closeModal() { $("#modal").classList.add("hide"); }
+$("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+
+// ==================== LOGIN ====================
+function doLogin() {
+  const u = $("#lu").value.trim(), p = $("#lp").value;
+  let user = STAFF.find(x => x.usuario === u && x.pass === p && x.activo);
   if (!user) {
-    const d = DEF_STAFF.find(s => s.usuario === u && s.pass === p);
-    if (d) { STAFF = [...DEF_STAFF]; write(LS.STAFF, STAFF); user = d; }
+    const d = DEF_U.find(x => x.usuario === u && x.pass === p);
+    if (d) { STAFF = [...DEF_U]; wj(K.U, STAFF); user = d; }
   }
-  if (!user) { $("#lerr").textContent = "Usuario o contraseña incorrectos"; $("#lerr").classList.remove("hidden"); return; }
+  if (!user) {
+    $("#lerr").textContent = "Usuario o contraseña incorrectos";
+    $("#lerr").classList.remove("hide");
+    return;
+  }
   SESSION = { id:user.id, nombre:user.nombre, rol:user.rol };
-  write(LS.SESSION, SESSION);
-  $("#loginGate").classList.add("hide");
+  wj(K.SE, SESSION);
+  startApp();
+}
+function logout() {
+  if (!confirm("¿Cerrar sesión?")) return;
+  localStorage.removeItem(K.SE);
+  location.reload();
+}
+function startApp() {
+  $("#login").classList.add("hide");
   $("#app").classList.remove("hide");
-  $("#userInfo").textContent = `${user.nombre} · ${user.rol}`;
-  renderAll();
-});
-if (SESSION && STAFF.find(s => s.id === SESSION.id)) {
-  $("#loginGate").classList.add("hide");
-  $("#app").classList.remove("hide");
-  $("#userInfo").textContent = `${SESSION.nombre} · ${SESSION.rol}`;
+  $("#whoami").textContent = `${SESSION.nombre} · ${SESSION.rol}`;
   renderAll();
 }
-function logout() { if (!confirm("¿Cerrar sesión?")) return; localStorage.removeItem(LS.SESSION); location.reload(); }
 
-/* ==================== TABS ==================== */
-$$(".tab").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.tab)));
-function switchTab(t) {
-  currentTab = t;
+// ==================== TABS ====================
+function showTab(t) {
   $$("main > section").forEach(s => s.classList.add("hide"));
-  $("#sec-" + t).classList.remove("hide");
-  $$(".tab").forEach(b => b.classList.toggle("tab-active", b.dataset.tab === t));
+  const el = $("#t-" + t); if (el) el.classList.remove("hide");
+  $$(".tabbtn[data-t]").forEach(b => b.classList.toggle("act", b.dataset.t === t));
 }
+$$(".tabbtn[data-t]").forEach(b => b.addEventListener("click", () => showTab(b.dataset.t)));
 
-/* ==================== POS ==================== */
-function getProducts() {
+// ==================== POS ====================
+function getProds() {
   const l = [];
   MENU.pizzas.forEach(p => MENU.tamanos.forEach(t => l.push({
-    key:`p${p.id}-${t.id}`, tipo:"pizza", id:p.id, nombre:`${p.nombre} ${t.label}`, precio:t.precio, img:imgOf(p.nombre)
+    key:`p${p.id}-${t.id}`, tipo:"pizza", nombre:`${p.nombre} ${t.label}`, precio:t.precio, img:imgOf(p.nombre)
   })));
-  l.push({ key:"porcion", tipo:"porcion", id:200, nombre:"Porción pizza", precio:MENU.porcion.precio, img:IMG.slice });
-  l.push({ key:"cola", tipo:"extra", id:300, nombre:MENU.cola.nombre, precio:MENU.cola.precio, img:IMG.cola });
+  l.push({ key:"porcion", tipo:"porcion", nombre:"Porción pizza", precio:MENU.porcion.precio, img:IMG.slice });
+  l.push({ key:"cola", tipo:"extra", nombre:MENU.cola.nombre, precio:MENU.cola.precio, img:IMG.cola });
   return l;
 }
 function renderPOS(q="") {
-  let list = getProducts();
+  let list = getProds();
   if (q) list = list.filter(p => p.nombre.toLowerCase().includes(q.toLowerCase()));
-  $("#posGrid").innerHTML = list.map(p => `
-    <button onclick='addCart(${JSON.stringify(p).replace(/'/g,"&#39;")})' class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden text-left hover:border-red-600">
+  $("#pgrid").innerHTML = list.map((p,i) => `
+    <button onclick="addCart(${i})" data-idx="${i}" class="prod-card bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden text-left hover:border-red-600">
       <div class="h-20 bg-zinc-800 overflow-hidden">
         <img src="${p.img}" class="w-full h-full object-cover" onerror="this.src='${IMG.def}'">
       </div>
@@ -389,35 +346,36 @@ function renderPOS(q="") {
       </div>
     </button>
   `).join("") || `<p class="col-span-full text-center text-zinc-500 py-8 text-sm">Sin resultados</p>`;
-}
-$("#posSearch").addEventListener("input", e => renderPOS(e.target.value));
 
-function addCart(p) {
-  const f = cart.find(i => i.key === p.key);
+  // Guardar la lista actual para addCart
+  window._posList = list;
+}
+$("#pq").addEventListener("input", e => renderPOS(e.target.value));
+
+function addCart(i) {
+  const p = window._posList[i];
+  if (!p) return;
+  const f = cart.find(x => x.key === p.key);
   if (f) f.cantidad++; else cart.push({ ...p, cantidad:1 });
   renderCart();
 }
-function changeQty(i, d) {
-  cart[i].cantidad += d;
-  if (cart[i].cantidad <= 0) cart.splice(i,1);
-  renderCart();
-}
+function changeQty(i,d) { cart[i].cantidad += d; if (cart[i].cantidad <= 0) cart.splice(i,1); renderCart(); }
 function clearCart() { cart = []; renderCart(); }
 function renderCart() {
   const cnt = cart.reduce((s,i)=>s+i.cantidad,0);
   const sub = cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
   const tax = sub * 0.12;
-  $("#cCount").textContent = `(${cnt})`;
+  $("#cc").textContent = `(${cnt})`;
   $("#cSub").textContent = money(sub);
   $("#cTax").textContent = money(tax);
   $("#cTot").textContent = money(sub+tax);
   $("#cartList").innerHTML = cart.length === 0
-    ? `<p class="text-center text-zinc-600 py-6 text-xs">Sin productos</p>`
+    ? `<p class="text-center text-zinc-600 py-4 text-xs">Sin productos</p>`
     : cart.map((it,i) => `
       <div class="flex items-center gap-2 bg-zinc-950 p-2 rounded-lg">
         <div class="flex-1 min-w-0">
           <p class="text-xs font-semibold truncate">${esc(it.nombre)}</p>
-          <p class="text-[10px] text-zinc-500">${money(it.precio)} c/u</p>
+          <p class="text-[10px] text-zinc-500">${money(it.precio)}</p>
         </div>
         <button onclick="changeQty(${i},-1)" class="w-6 h-6 rounded bg-zinc-800 text-xs">−</button>
         <span class="text-xs font-bold w-5 text-center">${it.cantidad}</span>
@@ -425,31 +383,31 @@ function renderCart() {
       </div>
     `).join("");
 }
-function pay(method) {
+function pay(m) {
   if (!cart.length) { alert("Carrito vacío"); return; }
   const sub = cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
   const tax = sub * 0.12;
   SALES.unshift({
     id: uid(), fecha: new Date().toISOString(),
-    cliente: $("#clientName").value || "Cliente", metodo: method,
+    cliente: $("#cliente").value || "Cliente", metodo: m,
     items: [...cart], subtotal: sub, impuesto: tax, total: sub+tax,
     vendedor: SESSION?.nombre || "Sistema"
   });
-  write(LS.SALES, SALES);
-  cart = []; renderCart(); renderStats(); renderFinance(); renderCash();
-  alert(`✅ Venta: ${money(sub+tax)} (${method})`);
+  wj(K.S, SALES);
+  cart = []; renderCart(); renderStats(); renderFin(); renderCash();
+  alert(`✅ Venta registrada: ${money(sub+tax)} (${m})`);
 }
 
-/* ==================== MENU ==================== */
+// ==================== MENU ====================
 function renderMenu() {
   $("#sizesBox").innerHTML = MENU.tamanos.map(t => `
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2 text-center">
-      <p class="text-[10px] text-zinc-500 uppercase font-bold">${esc(t.label)}</p>
+    <div class="card text-center">
+      <p class="text-[10px] text-zinc-500 font-bold uppercase">${esc(t.label)}</p>
       <p class="text-lg font-bold text-amber-400">${money(t.precio)}</p>
-      <p class="text-[10px] text-zinc-500">${t.porciones} porciones</p>
+      <p class="text-[10px] text-zinc-500">${t.porciones} porc.</p>
     </div>`).join("");
   $("#pizzaList").innerHTML = MENU.pizzas.map(p => `
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2 flex gap-3 items-center">
+    <div class="card flex gap-3 items-center">
       <div class="w-14 h-14 rounded-lg overflow-hidden bg-zinc-800 shrink-0">
         <img src="${imgOf(p.nombre)}" class="w-full h-full object-cover" onerror="this.src='${IMG.def}'">
       </div>
@@ -463,75 +421,75 @@ function renderMenu() {
 }
 function editPizza(id) {
   const p = id === 0 ? { id:uid(), nombre:"", desc:"", badge:"" } : MENU.pizzas.find(x => x.id === id);
-  openModal(`
+  modal(`
     <h3 class="font-bold mb-4">${id?"Editar":"Nueva"} pizza</h3>
-    <input type="text" id="pName" value="${esc(p.nombre)}" class="input mb-2" placeholder="Nombre">
-    <input type="text" id="pDesc" value="${esc(p.desc||"")}" class="input mb-2" placeholder="Descripción">
-    <select id="pBadge" class="input mb-3">
+    <input type="text" id="pN" class="inp mb-2" value="${esc(p.nombre)}" placeholder="Nombre">
+    <input type="text" id="pD" class="inp mb-2" value="${esc(p.desc||"")}" placeholder="Descripción">
+    <select id="pB" class="inp mb-3">
       <option value="">Normal</option>
       <option value="hot" ${p.badge==="hot"?"selected":""}>🔥 Popular</option>
       <option value="new" ${p.badge==="new"?"selected":""}>⭐ Nuevo</option>
     </select>
     <div class="flex gap-2">
-      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
-      <button onclick="savePizza(${id})" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+      <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
+      <button onclick="savePizza(${id})" class="btn-red flex-1">Guardar</button>
     </div>
   `);
 }
 function savePizza(id) {
-  const nombre = $("#pName").value.trim();
-  if (!nombre) { alert("Ponle un nombre"); return; }
-  const data = { nombre, desc: $("#pDesc").value.trim(), badge: $("#pBadge").value };
+  const nombre = $("#pN").value.trim();
+  if (!nombre) { alert("Ponle nombre"); return; }
+  const data = { nombre, desc: $("#pD").value.trim(), badge: $("#pB").value };
   if (id === 0) MENU.pizzas.push({ id: uid(), ...data });
   else Object.assign(MENU.pizzas.find(x => x.id === id), data);
-  write(LS.MENU, MENU); MENU = read(LS.MENU, DEF_MENU);
+  wj(K.M, MENU); MENU = rj(K.M, DEF_M);
   renderMenu(); renderPOS(); closeModal();
 }
 function delPizza(id) {
   if (!confirm("¿Eliminar?")) return;
   MENU.pizzas = MENU.pizzas.filter(x => x.id !== id);
-  write(LS.MENU, MENU); MENU = read(LS.MENU, DEF_MENU);
+  wj(K.M, MENU); MENU = rj(K.M, DEF_M);
   renderMenu(); renderPOS();
 }
 function editSizes() {
-  openModal(`
+  modal(`
     <h3 class="font-bold mb-4">Tamaños y precios</h3>
     ${MENU.tamanos.map((t,i) => `
       <div class="bg-zinc-950 p-3 rounded-lg mb-2">
         <p class="text-sm font-bold mb-2">${esc(t.label)}</p>
         <div class="grid grid-cols-2 gap-2">
-          <input type="number" step="0.01" id="sp${i}" value="${t.precio}" class="input" placeholder="Precio">
-          <input type="number" id="sr${i}" value="${t.porciones}" class="input" placeholder="Porciones">
+          <input type="number" step="0.01" id="sp${i}" value="${t.precio}" class="inp" placeholder="Precio">
+          <input type="number" id="sr${i}" value="${t.porciones}" class="inp" placeholder="Porciones">
         </div>
       </div>`).join("")}
     <div class="flex gap-2 mt-3">
-      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
-      <button onclick="saveSizes()" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+      <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
+      <button onclick="saveSizes()" class="btn-red flex-1">Guardar</button>
     </div>
   `);
 }
 function saveSizes() {
   MENU.tamanos.forEach((t,i) => {
-    t.precio = parseFloat($(`#sp${i}`).value) || 0;
-    t.porciones = parseInt($(`#sr${i}`).value) || t.porciones;
+    t.precio = parseFloat($("#sp"+i).value) || 0;
+    t.porciones = parseInt($("#sr"+i).value) || t.porciones;
   });
-  write(LS.MENU, MENU); MENU = read(LS.MENU, DEF_MENU);
+  wj(K.M, MENU); MENU = rj(K.M, DEF_M);
   renderMenu(); renderPOS(); closeModal();
 }
 
-/* ==================== INVENTARIO ==================== */
-function renderInv() {
-  $("#invList").innerHTML = INV.map(i => {
+// ==================== STOCK ====================
+function renderStock() {
+  $("#stockList").innerHTML = INV.map(i => {
     const crit = i.stock <= i.min;
     return `
-      <div class="bg-zinc-900 border ${crit?"border-red-600/60":"border-zinc-800"} rounded-xl p-3">
-        <div class="flex justify-between items-center mb-1">
+      <div class="card ${crit?"border-red-600/60":""}">
+        <div class="flex justify-between mb-1">
           <p class="font-semibold text-sm">${esc(i.nombre)}</p>
           <span class="text-[10px] ${crit?"text-red-400":"text-emerald-400"} font-bold">${crit?"⚠️ CRÍTICO":"OK"}</span>
         </div>
-        <p class="text-xs text-zinc-500 mb-2">${esc(i.proveedor||"")} · ${money(i.costo)}/${esc(i.unidad)}</p>
+        <p class="text-xs text-zinc-500 mb-2">${esc(i.prov||"")} · ${money(i.costo)}/${esc(i.unidad)}</p>
         <div class="flex items-center justify-between">
-          <span class="text-xs">Stock: <strong>${i.stock} ${esc(i.unidad)}</strong></span>
+          <span class="text-xs">Stock: <b>${i.stock} ${esc(i.unidad)}</b></span>
           <div class="flex gap-1">
             <button onclick="addStock(${i.id})" class="text-[10px] px-2 py-1 rounded bg-zinc-800">+ Sumar</button>
             <button onclick="editInsumo(${i.id})" class="text-[10px] px-2 py-1 rounded bg-zinc-800">Editar</button>
@@ -545,47 +503,47 @@ function addStock(id) {
   const q = prompt(`¿Cuánto sumar a "${i.nombre}"?`, "10");
   if (q === null) return;
   i.stock += parseFloat(q) || 0;
-  write(LS.INV, INV); renderInv();
+  wj(K.I, INV); renderStock();
 }
 function editInsumo(id) {
-  const i = id === 0 ? { id:uid(), nombre:"", unidad:"kg", stock:0, min:0, costo:0, proveedor:"" } : INV.find(x => x.id === id);
-  openModal(`
+  const i = id === 0 ? { id:uid(), nombre:"", unidad:"kg", stock:0, min:0, costo:0, prov:"" } : INV.find(x => x.id === id);
+  modal(`
     <h3 class="font-bold mb-4">${id?"Editar":"Nuevo"} insumo</h3>
-    <input type="text" id="iName" value="${esc(i.nombre)}" class="input mb-2" placeholder="Nombre">
+    <input type="text" id="iN" class="inp mb-2" value="${esc(i.nombre)}" placeholder="Nombre">
     <div class="grid grid-cols-2 gap-2 mb-2">
-      <input type="text" id="iUnit" value="${esc(i.unidad)}" class="input" placeholder="Unidad">
-      <input type="number" step="0.01" id="iCost" value="${i.costo}" class="input" placeholder="Costo">
+      <input type="text" id="iU" class="inp" value="${esc(i.unidad)}" placeholder="Unidad">
+      <input type="number" step="0.01" id="iC" class="inp" value="${i.costo}" placeholder="Costo">
     </div>
     <div class="grid grid-cols-2 gap-2 mb-2">
-      <input type="number" step="0.01" id="iStock" value="${i.stock}" class="input" placeholder="Stock">
-      <input type="number" step="0.01" id="iMin" value="${i.min}" class="input" placeholder="Mínimo">
+      <input type="number" step="0.01" id="iS" class="inp" value="${i.stock}" placeholder="Stock">
+      <input type="number" step="0.01" id="iM" class="inp" value="${i.min}" placeholder="Mínimo">
     </div>
-    <input type="text" id="iProv" value="${esc(i.proveedor||"")}" class="input mb-3" placeholder="Proveedor">
+    <input type="text" id="iP" class="inp mb-3" value="${esc(i.prov||"")}" placeholder="Proveedor">
     <div class="flex gap-2">
-      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
-      <button onclick="saveInsumo(${id})" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+      <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
+      <button onclick="saveInsumo(${id})" class="btn-red flex-1">Guardar</button>
     </div>
   `);
 }
 function saveInsumo(id) {
   const data = {
-    nombre: $("#iName").value.trim(),
-    unidad: $("#iUnit").value.trim() || "kg",
-    costo: parseFloat($("#iCost").value) || 0,
-    stock: parseFloat($("#iStock").value) || 0,
-    min: parseFloat($("#iMin").value) || 0,
-    proveedor: $("#iProv").value.trim(),
+    nombre: $("#iN").value.trim(),
+    unidad: $("#iU").value.trim() || "kg",
+    costo: parseFloat($("#iC").value) || 0,
+    stock: parseFloat($("#iS").value) || 0,
+    min: parseFloat($("#iM").value) || 0,
+    prov: $("#iP").value.trim()
   };
   if (!data.nombre) { alert("Ponle nombre"); return; }
   if (id === 0) INV.push({ id: uid(), ...data });
   else Object.assign(INV.find(x => x.id === id), data);
-  write(LS.INV, INV); renderInv(); closeModal();
+  wj(K.I, INV); renderStock(); closeModal();
 }
 
-/* ==================== STAFF ==================== */
+// ==================== STAFF ====================
 function renderStaff() {
   $("#staffList").innerHTML = STAFF.map(s => `
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3">
+    <div class="card">
       <div class="flex items-center gap-3 mb-2">
         <div class="w-10 h-10 rounded-lg ${s.rol==="admin"?"bg-red-600":"bg-emerald-600"} flex items-center justify-center text-lg">${s.emoji||"👤"}</div>
         <div class="flex-1 min-w-0">
@@ -593,10 +551,10 @@ function renderStaff() {
           <p class="text-[11px] text-zinc-500">@${esc(s.usuario)} · ${s.rol}</p>
         </div>
       </div>
-      <p class="text-xs text-zinc-400 mb-2">Sueldo: <strong class="text-white">${money(s.sueldo||0)}</strong></p>
+      <p class="text-xs text-zinc-400 mb-2">Sueldo: <b class="text-white">${money(s.sueldo||0)}</b></p>
       <div class="flex gap-2">
-        <button onclick="editStaff(${s.id})" class="flex-1 bg-zinc-800 py-1.5 rounded text-xs">Editar</button>
-        <button onclick="toggleStaff(${s.id})" class="flex-1 bg-zinc-800 py-1.5 rounded text-xs">${s.activo?"Pausar":"Activar"}</button>
+        <button onclick="editStaff(${s.id})" class="btn-gray flex-1 text-xs">Editar</button>
+        <button onclick="toggleStaff(${s.id})" class="btn-gray flex-1 text-xs">${s.activo?"Pausar":"Activar"}</button>
       </div>
     </div>`).join("");
 }
@@ -604,85 +562,90 @@ function toggleStaff(id) {
   const s = STAFF.find(x => x.id === id);
   if (s.usuario === "admin" && s.activo) { alert("No puedes desactivar al admin"); return; }
   s.activo = !s.activo;
-  write(LS.STAFF, STAFF); renderStaff();
+  wj(K.U, STAFF); renderStaff();
 }
 function editStaff(id) {
   const s = id === 0 ? { id:uid(), nombre:"", usuario:"", pass:"", rol:"cajero", activo:true, emoji:"🧑‍🍳", sueldo:0 } : STAFF.find(x => x.id === id);
-  openModal(`
+  modal(`
     <h3 class="font-bold mb-4">${id?"Editar":"Nuevo"} trabajador</h3>
-    <input type="text" id="sName" value="${esc(s.nombre)}" class="input mb-2" placeholder="Nombre">
-    <input type="text" id="sUser" value="${esc(s.usuario)}" class="input mb-2" placeholder="Usuario">
-    <input type="text" id="sPass" value="${esc(s.pass)}" class="input mb-2" placeholder="Contraseña">
-    <input type="number" step="0.01" id="sSalary" value="${s.sueldo||0}" class="input mb-2" placeholder="Sueldo mensual">
-    <select id="sRole" class="input mb-3">
+    <input type="text" id="sN" class="inp mb-2" value="${esc(s.nombre)}" placeholder="Nombre completo">
+    <input type="text" id="sU" class="inp mb-2" value="${esc(s.usuario)}" placeholder="Usuario">
+    <input type="text" id="sP" class="inp mb-2" value="${esc(s.pass)}" placeholder="Contraseña">
+    <input type="number" step="0.01" id="sS" class="inp mb-2" value="${s.sueldo||0}" placeholder="Sueldo mensual">
+    <select id="sR" class="inp mb-3">
       <option value="cajero" ${s.rol==="cajero"?"selected":""}>🧑‍🍳 Cajero</option>
       <option value="cocina" ${s.rol==="cocina"?"selected":""}>👨‍🍳 Cocina</option>
       <option value="admin" ${s.rol==="admin"?"selected":""}>👑 Admin</option>
     </select>
     <div class="flex gap-2">
-      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
-      <button onclick="saveStaff(${id})" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+      <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
+      <button onclick="saveStaff(${id})" class="btn-red flex-1">Guardar</button>
     </div>
   `);
 }
 function saveStaff(id) {
   const data = {
-    nombre: $("#sName").value.trim(),
-    usuario: $("#sUser").value.trim(),
-    pass: $("#sPass").value.trim(),
-    sueldo: parseFloat($("#sSalary").value) || 0,
-    rol: $("#sRole").value,
-    emoji: $("#sRole").value === "admin" ? "👑" : $("#sRole").value === "cocina" ? "👨‍🍳" : "🧑‍🍳",
+    nombre: $("#sN").value.trim(),
+    usuario: $("#sU").value.trim(),
+    pass: $("#sP").value.trim(),
+    sueldo: parseFloat($("#sS").value) || 0,
+    rol: $("#sR").value,
+    emoji: $("#sR").value === "admin" ? "👑" : $("#sR").value === "cocina" ? "👨‍🍳" : "🧑‍🍳"
   };
   if (!data.nombre || !data.usuario || !data.pass) { alert("Completa los campos"); return; }
   if (id === 0) STAFF.push({ id: uid(), ...data, activo: true });
   else Object.assign(STAFF.find(x => x.id === id), data);
-  write(LS.STAFF, STAFF); renderStaff(); renderFinance(); closeModal();
+  wj(K.U, STAFF); renderStaff(); renderFin(); closeModal();
 }
 
-/* ==================== FINANZAS ==================== */
-const thisMonth = () => new Date().toISOString().slice(0,7);
+// ==================== FINANZAS ====================
+const monthKey = () => new Date().toISOString().slice(0,7);
+function renderFin() {
+  const m = monthKey();
+  const inc = SALES.filter(s => s.fecha.slice(0,7) === m).reduce((a,s) => a+s.total, 0);
+  const payPaid = PAY.filter(p => (p.fecha||"").slice(0,7) === m).reduce((a,p) => a+p.monto, 0);
+  const expSum = EXP.filter(e => e.fecha.slice(0,7) === m).reduce((a,e) => a+e.monto, 0);
+  const debtPaid = DEBT.filter(d => (d.fechaPago||"").slice(0,7) === m && d.pagado).reduce((a,d) => a+d.monto, 0);
+  const totalEx = payPaid + expSum + debtPaid;
+  const payExp = STAFF.reduce((a,s) => a+(s.sueldo||0), 0);
+  const bal = inc - totalEx;
 
-function renderFinance() {
-  const month = thisMonth();
-  const income = SALES.filter(s => s.fecha.slice(0,7) === month).reduce((a,s) => a+s.total, 0);
-  const payrollPaid = PAYROLL.filter(p => (p.fecha||"").slice(0,7) === month).reduce((a,p) => a+p.monto, 0);
-  const expenseSum = EXPENSES.filter(e => e.fecha.slice(0,7) === month).reduce((a,e) => a+e.monto, 0);
-  const debtsPaid = DEBTS.filter(d => (d.fechaPago||"").slice(0,7) === month && d.pagado).reduce((a,d) => a+d.monto, 0);
-  const totalExp = payrollPaid + expenseSum + debtsPaid;
-  const payrollExp = STAFF.reduce((a,s) => a+(s.sueldo||0), 0);
-  const balance = income - totalExp;
-
-  $("#fIncome").textContent = money(income);
-  $("#fExpense").textContent = money(totalExp);
-  $("#fPayroll").textContent = money(payrollExp);
-  $("#fBalance").textContent = money(balance);
-  $("#fBalance").style.color = balance >= 0 ? "#34d399" : "#f87171";
+  $("#fIn").textContent = money(inc);
+  $("#fEx").textContent = money(totalEx);
+  $("#fPay").textContent = money(payExp);
+  $("#fBal").textContent = money(bal);
+  $("#fBal").style.color = bal >= 0 ? "#34d399" : "#f87171";
 
   // Sueldos
   $("#salaryList").innerHTML = STAFF.map(s => {
-    const paid = PAYROLL.filter(p => p.staffId === s.id && (p.fecha||"").slice(0,7) === month).reduce((a,p) => a+p.monto, 0);
-    const pending = Math.max(0, (s.sueldo||0) - paid);
+    const paid = PAY.filter(p => p.staffId === s.id && (p.fecha||"").slice(0,7) === m).reduce((a,p) => a+p.monto, 0);
+    const pend = Math.max(0, (s.sueldo||0) - paid);
     return `
-      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3">
+      <div class="card">
         <div class="flex justify-between items-start mb-2">
-          <div><p class="font-semibold text-sm">${esc(s.nombre)}</p><p class="text-[11px] text-zinc-500">Sueldo: ${money(s.sueldo||0)}</p></div>
-          <div class="text-right"><p class="text-[10px] text-zinc-500">Pendiente</p><p class="text-sm font-bold ${pending>0?"text-red-400":"text-emerald-400"}">${money(pending)}</p></div>
+          <div>
+            <p class="font-semibold text-sm">${esc(s.nombre)}</p>
+            <p class="text-[11px] text-zinc-500">Sueldo: ${money(s.sueldo||0)}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] text-zinc-500">Pendiente</p>
+            <p class="text-sm font-bold ${pend>0?"text-red-400":"text-emerald-400"}">${money(pend)}</p>
+          </div>
         </div>
-        <p class="text-[11px] text-zinc-500 mb-2">Pagado: <strong class="text-emerald-400">${money(paid)}</strong></p>
+        <p class="text-[11px] text-zinc-500 mb-2">Pagado: <b class="text-emerald-400">${money(paid)}</b></p>
         <div class="flex gap-2">
           <button onclick="paySalary(${s.id})" class="flex-1 bg-emerald-600/30 text-emerald-400 py-1.5 rounded text-xs">💵 Pagar</button>
-          <button onclick="editSalary(${s.id})" class="flex-1 bg-zinc-800 py-1.5 rounded text-xs">✏️ Sueldo</button>
+          <button onclick="editSalary(${s.id})" class="btn-gray flex-1 text-xs">✏️ Sueldo</button>
         </div>
       </div>`;
   }).join("");
 
   // Gastos
-  const monthExp = EXPENSES.filter(e => e.fecha.slice(0,7) === month);
-  $("#expensesList").innerHTML = monthExp.length === 0
+  const mExp = EXP.filter(e => e.fecha.slice(0,7) === m);
+  $("#expList").innerHTML = mExp.length === 0
     ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin gastos este mes</p>`
-    : monthExp.map(e => `
-      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
+    : mExp.map(e => `
+      <div class="card flex items-center gap-3">
         <div class="flex-1 min-w-0">
           <p class="font-semibold text-sm truncate">${esc(e.descripcion)}</p>
           <p class="text-[11px] text-zinc-500">${esc(e.categoria||"General")} · ${new Date(e.fecha).toLocaleDateString("es-EC")}</p>
@@ -692,10 +655,10 @@ function renderFinance() {
       </div>`).join("");
 
   // Deudas
-  $("#debtsList").innerHTML = DEBTS.length === 0
+  $("#debtList").innerHTML = DEBT.length === 0
     ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin deudas 🎉</p>`
-    : DEBTS.map(d => `
-      <div class="bg-zinc-900 border ${d.pagado?"border-emerald-600/40 opacity-60":"border-amber-600/40"} rounded-xl p-3">
+    : DEBT.map(d => `
+      <div class="card ${d.pagado?"border-emerald-600/40 opacity-60":"border-amber-600/40"}">
         <div class="flex justify-between items-start mb-2">
           <div class="min-w-0">
             <p class="font-semibold text-sm truncate">${esc(d.acreedor)}</p>
@@ -712,90 +675,86 @@ function renderFinance() {
         </div>
       </div>`).join("");
 }
-
 function paySalary(id) {
   const s = STAFF.find(x => x.id === id);
   const v = prompt(`Monto a pagar a ${s.nombre}:`, s.sueldo || 0);
   if (v === null) return;
   const monto = parseFloat(v) || 0;
   if (monto <= 0) return;
-  PAYROLL.push({ id: uid(), staffId: id, nombre: s.nombre, monto, fecha: new Date().toISOString() });
-  write(LS.PAYROLL, PAYROLL); renderFinance();
+  PAY.push({ id: uid(), staffId: id, nombre: s.nombre, monto, fecha: new Date().toISOString() });
+  wj(K.P, PAY); renderFin();
 }
 function editSalary(id) {
   const s = STAFF.find(x => x.id === id);
   const v = prompt(`Sueldo mensual de ${s.nombre}:`, s.sueldo || 0);
   if (v === null) return;
   s.sueldo = parseFloat(v) || 0;
-  write(LS.STAFF, STAFF); renderFinance(); renderStaff();
+  wj(K.U, STAFF); renderFin(); renderStaff();
 }
 function newExpense() {
-  openModal(`
+  modal(`
     <h3 class="font-bold mb-4">Nuevo gasto</h3>
-    <input type="text" id="exDesc" class="input mb-2" placeholder="Descripción">
-    <input type="number" step="0.01" id="exAmount" class="input mb-2" placeholder="Monto">
-    <select id="exCat" class="input mb-3">
+    <input type="text" id="exD" class="inp mb-2" placeholder="Descripción">
+    <input type="number" step="0.01" id="exA" class="inp mb-2" placeholder="Monto">
+    <select id="exC" class="inp mb-3">
       <option>Servicios</option><option>Arriendo</option><option>Insumos</option><option>Sueldos</option><option>Otros</option>
     </select>
     <div class="flex gap-2">
-      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
-      <button onclick="saveExpense()" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+      <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
+      <button onclick="saveExpense()" class="btn-red flex-1">Guardar</button>
     </div>
   `);
 }
 function saveExpense() {
-  const desc = $("#exDesc").value.trim();
-  const monto = parseFloat($("#exAmount").value) || 0;
-  if (!desc || monto <= 0) { alert("Completa los datos"); return; }
-  EXPENSES.push({ id: uid(), descripcion: desc, monto, categoria: $("#exCat").value, fecha: new Date().toISOString() });
-  write(LS.EXPENSES, EXPENSES); renderFinance(); closeModal();
+  const d = $("#exD").value.trim(), m = parseFloat($("#exA").value) || 0;
+  if (!d || m <= 0) { alert("Completa los datos"); return; }
+  EXP.push({ id: uid(), descripcion: d, monto: m, categoria: $("#exC").value, fecha: new Date().toISOString() });
+  wj(K.E, EXP); renderFin(); closeModal();
 }
 function delExpense(id) {
   if (!confirm("¿Eliminar?")) return;
-  EXPENSES = EXPENSES.filter(e => e.id !== id);
-  write(LS.EXPENSES, EXPENSES); renderFinance();
+  EXP = EXP.filter(e => e.id !== id);
+  wj(K.E, EXP); renderFin();
 }
 function newDebt() {
-  openModal(`
+  modal(`
     <h3 class="font-bold mb-4">Nueva deuda</h3>
-    <input type="text" id="dName" class="input mb-2" placeholder="Acreedor">
-    <input type="number" step="0.01" id="dAmount" class="input mb-2" placeholder="Monto">
-    <input type="date" id="dDue" class="input mb-2">
-    <input type="text" id="dNote" class="input mb-3" placeholder="Nota (opcional)">
+    <input type="text" id="dN" class="inp mb-2" placeholder="Acreedor">
+    <input type="number" step="0.01" id="dA" class="inp mb-2" placeholder="Monto">
+    <input type="date" id="dV" class="inp mb-2">
+    <input type="text" id="dNo" class="inp mb-3" placeholder="Nota (opcional)">
     <div class="flex gap-2">
-      <button onclick="closeModal()" class="flex-1 bg-zinc-800 py-3 rounded-lg">Cancelar</button>
-      <button onclick="saveDebt()" class="flex-1 bg-red-600 py-3 rounded-lg font-semibold">Guardar</button>
+      <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
+      <button onclick="saveDebt()" class="btn-red flex-1">Guardar</button>
     </div>
   `);
 }
 function saveDebt() {
-  const name = $("#dName").value.trim();
-  const monto = parseFloat($("#dAmount").value) || 0;
-  if (!name || monto <= 0) { alert("Completa los datos"); return; }
-  DEBTS.push({ id: uid(), acreedor: name, monto, vence: $("#dDue").value || null, nota: $("#dNote").value.trim(), pagado: false, fecha: new Date().toISOString() });
-  write(LS.DEBTS, DEBTS); renderFinance(); closeModal();
+  const n = $("#dN").value.trim(), m = parseFloat($("#dA").value) || 0;
+  if (!n || m <= 0) { alert("Completa los datos"); return; }
+  DEBT.push({ id: uid(), acreedor: n, monto: m, vence: $("#dV").value || null, nota: $("#dNo").value.trim(), pagado: false, fecha: new Date().toISOString() });
+  wj(K.D, DEBT); renderFin(); closeModal();
 }
 function payDebt(id) {
-  const d = DEBTS.find(x => x.id === id);
+  const d = DEBT.find(x => x.id === id);
   if (!confirm(`¿Marcar pagada: ${d.acreedor} - ${money(d.monto)}?`)) return;
   d.pagado = true; d.fechaPago = new Date().toISOString();
-  write(LS.DEBTS, DEBTS); renderFinance();
+  wj(K.D, DEBT); renderFin();
 }
 function delDebt(id) {
-  if (!confirm("¿Eliminar deuda?")) return;
-  DEBTS = DEBTS.filter(d => d.id !== id);
-  write(LS.DEBTS, DEBTS); renderFinance();
+  if (!confirm("¿Eliminar?")) return;
+  DEBT = DEBT.filter(d => d.id !== id);
+  wj(K.D, DEBT); renderFin();
 }
-
-$$(".ftab").forEach(b => b.addEventListener("click", () => {
-  $$(".ftab").forEach(x => x.classList.remove("tab-active"));
-  b.classList.add("tab-active");
-  ["salary","expenses","debts"].forEach(t => {
-    $("#f" + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle("hide", t !== b.dataset.ftab);
+$$(".tabbtn[data-f]").forEach(b => b.addEventListener("click", () => {
+  $$(".tabbtn[data-f]").forEach(x => x.classList.remove("act"));
+  b.classList.add("act");
+  ["salary","exp","debt"].forEach(t => {
+    const el = $("#f-" + t); if (el) el.classList.toggle("hide", t !== b.dataset.f);
   });
 }));
 
-/* ==================== CAJA ==================== */
+// ==================== CAJA ====================
 function renderCash() {
   const today = new Date().toISOString().slice(0,10);
   const c = CASH.find(x => x.fecha === today);
@@ -803,68 +762,68 @@ function renderCash() {
   const cashSales = salesToday.filter(s => s.metodo === "Efectivo").reduce((a,s) => a+s.total, 0);
   const isOpen = c && !c.cerrada;
 
-  $("#cashStatus").textContent = isOpen ? "ABIERTA" : "CERRADA";
-  $("#cashStatus").style.color = isOpen ? "#34d399" : "#a1a1aa";
-  const expected = (c?.montoApertura || 0) + cashSales;
-  $("#cashExpected").textContent = money(expected);
+  $("#kState").textContent = isOpen ? "ABIERTA" : "CERRADA";
+  $("#kState").style.color = isOpen ? "#34d399" : "#a1a1aa";
+  const exp = (c?.montoApertura || 0) + cashSales;
+  $("#kExp").textContent = money(exp);
   const counted = c?.montoContado ?? null;
-  const diff = counted !== null ? counted - expected : 0;
-  $("#cashDiff").textContent = counted !== null ? money(diff) : "$0";
-  $("#cashDiff").style.color = counted === null ? "#fff" : Math.abs(diff) < 0.5 ? "#34d399" : "#f87171";
-  $("#cashHint").textContent = `💵 Efectivo: ${money(cashSales)} · 💳 Tarjeta: ${money(salesToday.filter(s=>s.metodo==="Tarjeta").reduce((a,s)=>a+s.total,0))}`;
+  const dif = counted !== null ? counted - exp : 0;
+  $("#kDif").textContent = counted !== null ? money(dif) : "$0";
+  $("#kDif").style.color = counted === null ? "#fff" : Math.abs(dif) < 0.5 ? "#34d399" : "#f87171";
+  $("#cashHint").textContent = `💵 ${money(cashSales)} efectivo · 💳 ${money(salesToday.filter(s=>s.metodo==="Tarjeta").reduce((a,s)=>a+s.total,0))} tarjeta`;
 
-  $("#cashHistory").innerHTML = CASH.length === 0
-    ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin cierres</p>`
+  $("#cashHist").innerHTML = CASH.length === 0
+    ? `<p class="text-center text-zinc-500 py-4 text-xs">Sin cierres</p>`
     : CASH.slice().reverse().slice(0,10).map(c => {
       const d = c.diferencia ?? 0;
       return `
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex justify-between items-center">
+        <div class="card flex justify-between items-center">
           <div>
             <p class="text-xs font-semibold">${new Date(c.fecha).toLocaleDateString("es-EC")}</p>
-            <p class="text-[10px] text-zinc-500">Apertura: ${money(c.montoApertura)} · Contado: ${money(c.montoContado||0)}</p>
+            <p class="text-[10px] text-zinc-500">Apertura ${money(c.montoApertura)} · Contado ${money(c.montoContado||0)}</p>
           </div>
           <p class="text-sm font-bold ${Math.abs(d)<0.5?"text-emerald-400":"text-red-400"}">${money(d)}</p>
         </div>`;
     }).join("");
 }
 function openCash() {
-  const amt = parseFloat($("#cashOpenAmt").value) || 0;
+  const amt = parseFloat($("#cashOpen").value) || 0;
   if (amt <= 0) { alert("Ingresa el monto"); return; }
   const today = new Date().toISOString().slice(0,10);
   if (CASH.find(c => c.fecha === today && !c.cerrada)) { alert("Ya hay caja abierta"); return; }
   CASH.push({ id: uid(), fecha: today, apertura: new Date().toISOString(), montoApertura: amt, cerrada: false, abiertaPor: SESSION?.nombre || "Sistema" });
-  write(LS.CASH, CASH); renderCash();
+  wj(K.C, CASH); renderCash();
 }
 function closeCash() {
   const today = new Date().toISOString().slice(0,10);
   const c = CASH.find(x => x.fecha === today && !x.cerrada);
   if (!c) { alert("No hay caja abierta"); return; }
-  const counted = parseFloat($("#cashCounted").value);
-  if (isNaN(counted)) { alert("Ingresa el efectivo contado"); return; }
-  const cashSales = SALES.filter(s => s.fecha.slice(0,10) === today && s.metodo === "Efectivo").reduce((a,s) => a+s.total, 0);
-  const expected = c.montoApertura + cashSales;
+  const cnt = parseFloat($("#cashCount").value);
+  if (isNaN(cnt)) { alert("Ingresa el efectivo contado"); return; }
+  const cs = SALES.filter(s => s.fecha.slice(0,10) === today && s.metodo === "Efectivo").reduce((a,s) => a+s.total, 0);
+  const exp = c.montoApertura + cs;
   c.cerrada = true; c.cierre = new Date().toISOString();
-  c.montoContado = counted; c.esperado = expected; c.diferencia = counted - expected;
+  c.montoContado = cnt; c.esperado = exp; c.diferencia = cnt - exp;
   c.cerradaPor = SESSION?.nombre || "Sistema";
-  write(LS.CASH, CASH); renderCash();
+  wj(K.C, CASH); renderCash();
   alert(`Caja cerrada. Diferencia: ${money(c.diferencia)}`);
 }
 
-/* ==================== STATS ==================== */
+// ==================== STATS ====================
 function renderStats() {
   const today = new Date().toISOString().slice(0,10);
-  const month = thisMonth();
-  const salesToday = SALES.filter(s => s.fecha.slice(0,10) === today);
-  const salesMonth = SALES.filter(s => s.fecha.slice(0,7) === month);
-  $("#sToday").textContent = money(salesToday.reduce((a,s) => a+s.total, 0));
-  $("#sOrders").textContent = salesToday.length;
-  $("#sMonth").textContent = money(salesMonth.reduce((a,s) => a+s.total, 0));
-  $("#sAvg").textContent = money(SALES.length ? SALES.reduce((a,s) => a+s.total, 0)/SALES.length : 0);
+  const m = monthKey();
+  const sT = SALES.filter(s => s.fecha.slice(0,10) === today);
+  const sM = SALES.filter(s => s.fecha.slice(0,7) === m);
+  $("#sT").textContent = money(sT.reduce((a,s) => a+s.total, 0));
+  $("#sO").textContent = sT.length;
+  $("#sM").textContent = money(sM.reduce((a,s) => a+s.total, 0));
+  $("#sA").textContent = money(SALES.length ? SALES.reduce((a,s) => a+s.total, 0)/SALES.length : 0);
 
   $("#salesList").innerHTML = SALES.length === 0
     ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin ventas</p>`
     : SALES.slice(0,15).map(s => `
-      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
+      <div class="card flex items-center gap-3">
         <div class="text-lg">${s.metodo === "Efectivo" ? "💵" : "💳"}</div>
         <div class="flex-1 min-w-0">
           <p class="text-xs font-semibold truncate">${esc(s.cliente)}</p>
@@ -874,29 +833,22 @@ function renderStats() {
       </div>`).join("");
 }
 
-/* ==================== MODAL ==================== */
-function openModal(html) { $("#modalBody").innerHTML = html; $("#modal").classList.remove("hide"); $("#modal").style.display = "flex"; }
-function closeModal() { $("#modal").classList.add("hide"); $("#modal").style.display = "none"; }
-$("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
-
-/* ==================== SYNC ==================== */
-window.addEventListener("storage", e => {
-  if (e.key === LS.MENU)      { MENU = read(LS.MENU, DEF_MENU); renderMenu(); renderPOS(); }
-  if (e.key === LS.INV)       { INV = read(LS.INV, DEF_INV); renderInv(); }
-  if (e.key === LS.SALES)     { SALES = read(LS.SALES, []); renderStats(); renderFinance(); renderCash(); }
-  if (e.key === LS.STAFF)     { STAFF = read(LS.STAFF, DEF_STAFF); renderStaff(); renderFinance(); }
-  if (e.key === LS.PAYROLL)   { PAYROLL = read(LS.PAYROLL, []); renderFinance(); }
-  if (e.key === LS.EXPENSES)  { EXPENSES = read(LS.EXPENSES, []); renderFinance(); }
-  if (e.key === LS.DEBTS)     { DEBTS = read(LS.DEBTS, []); renderFinance(); }
-  if (e.key === LS.CASH)      { CASH = read(LS.CASH, []); renderCash(); }
-});
-
-/* ==================== INIT ==================== */
+// ==================== RENDER ALL ====================
 function renderAll() {
-  renderPOS(); renderCart(); renderMenu(); renderInv();
-  renderStaff(); renderStats(); renderFinance(); renderCash();
+  try { renderPOS(); } catch(e) { console.error("POS:", e); }
+  try { renderCart(); } catch(e) { console.error("Cart:", e); }
+  try { renderMenu(); } catch(e) { console.error("Menu:", e); }
+  try { renderStock(); } catch(e) { console.error("Stock:", e); }
+  try { renderStaff(); } catch(e) { console.error("Staff:", e); }
+  try { renderFin(); } catch(e) { console.error("Fin:", e); }
+  try { renderCash(); } catch(e) { console.error("Cash:", e); }
+  try { renderStats(); } catch(e) { console.error("Stats:", e); }
 }
-switchTab("pos");
+
+// ==================== INIT ====================
+if (SESSION && STAFF.find(s => s.id === SESSION.id)) {
+  startApp();
+}
 </script>
 </body>
 </html>
