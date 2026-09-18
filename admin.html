@@ -102,6 +102,13 @@
   .sub-tab:hover { color: #fff; background: #27272a; }
   .sub-tab.is-active { background: #3f3f46; color: #fff; }
 
+  /* Animación sutil de sincronización */
+  @keyframes sync-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
+  }
+  .sync-dot { animation: sync-pulse 2s ease-in-out infinite; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: .001ms !important;
@@ -115,7 +122,7 @@
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-[70] focus:top-3 focus:left-3 focus:bg-pizza-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm">Saltar al contenido</a>
 
 <!-- ============================================================
-     PANTALLA DE INGRESO EMBEBIDA (evita el bucle de redirecciones)
+     PANTALLA DE INGRESO EMBEBIDA
      ============================================================ -->
 <div id="loginGate" class="fixed inset-0 z-[100] bg-zinc-950 flex items-center justify-center p-4 hidden">
   <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-8 shadow-2xl modal-card relative overflow-hidden">
@@ -160,13 +167,24 @@
       </div>
       <div class="min-w-0">
         <h1 class="text-base sm:text-lg font-bold tracking-tight text-white leading-tight truncate">Brother's Pizza</h1>
-        <p class="text-[10px] sm:text-xs text-zinc-400 truncate">Panel Administrativo &amp; POS Pro</p>
+        <p class="text-[10px] sm:text-xs text-zinc-400 truncate flex items-center gap-2">
+          Panel Administrativo &amp; POS Pro
+          <span class="hidden md:inline-flex items-center gap-1.5 text-emerald-400">
+            <span class="sync-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Sincronizado
+          </span>
+        </p>
       </div>
     </div>
 
     <div class="flex items-center gap-2">
+      <a href="index.html" target="_blank" rel="noopener" title="Abrir el menú público en una pestaña nueva"
+         class="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-pizza-600 to-amber-600 text-white hover:opacity-95 text-xs font-semibold transition shadow-lg shadow-pizza-600/30">
+        <i class="fa-solid fa-arrow-up-right-from-square text-[11px]" aria-hidden="true"></i>
+        <span>Ver menú público</span>
+      </a>
       <a href="index.html" title="Volver al sitio público"
-         class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 text-xs font-medium transition">
+         class="hidden sm:flex md:hidden items-center gap-2 px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 text-xs font-medium transition">
         <i class="fa-solid fa-house text-[11px]" aria-hidden="true"></i>
         <span>Volver al sitio</span>
       </a>
@@ -283,7 +301,12 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900/70 p-5 rounded-2xl border border-zinc-800">
       <div>
         <h2 class="text-lg font-bold text-white">Manipulación y control del menú</h2>
-        <p class="text-xs text-zinc-400">Los cambios se sincronizan automáticamente con el sitio público.</p>
+        <p class="text-xs text-zinc-400">
+          Los cambios se sincronizan automáticamente con el sitio público.
+          <a href="index.html" target="_blank" rel="noopener" class="text-pizza-400 hover:text-pizza-300 underline ml-1">
+            Ver menú público →
+          </a>
+        </p>
       </div>
       <button type="button" data-action="new-product"
               class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 hover:opacity-95 active:scale-[.98] transition">
@@ -293,7 +316,7 @@
 
     <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-zinc-300 min-w-[720px]">
+        <table class="w-full text-left text-sm text-zinc-300 min-w-[820px]">
           <thead class="bg-zinc-950/80 text-xs uppercase text-zinc-400 border-b border-zinc-800">
             <tr>
               <th class="py-3 px-4 font-semibold">Producto</th>
@@ -653,7 +676,10 @@
 
 <script>
 /* =========================================================================
-   Brother's Pizza · Panel Admin v3.1 (login embebido + sincronización)
+   Brother's Pizza · Panel Admin v3.2
+   - Login embebido
+   - Sincronización en vivo con el sitio público
+   - Editor completo del menú (imagen, descripción, visibilidad, duplicar)
    ========================================================================= */
 (() => {
   'use strict';
@@ -708,15 +734,15 @@
   /* --------------------------- Datos demo --------------------------- */
   const DEFAULTS = {
     products: [
-      { id: 1, name: 'Pizza Pepperoni Suprema', category: 'pizza',  price: 14.99, cost: 6.50, icon: 'fa-pizza-slice' },
-      { id: 2, name: 'Pizza Hawaiana Clásica',  category: 'pizza',  price: 13.50, cost: 5.80, icon: 'fa-pizza-slice' },
-      { id: 3, name: 'Pizza Cuatro Quesos',     category: 'pizza',  price: 16.00, cost: 7.20, icon: 'fa-cheese' },
-      { id: 4, name: 'Pizza Carne & BBQ',       category: 'pizza',  price: 17.50, cost: 8.00, icon: 'fa-fire' },
-      { id: 5, name: 'Coca-Cola 1.5L',          category: 'bebida', price: 3.00,  cost: 1.20, icon: 'fa-bottle-droplet' },
-      { id: 6, name: 'Cerveza Artesanal IPA',   category: 'bebida', price: 4.50,  cost: 2.00, icon: 'fa-beer-mug-empty' },
-      { id: 7, name: 'Jugo Natural Maracuyá',   category: 'bebida', price: 2.50,  cost: 0.90, icon: 'fa-cup-straw' },
-      { id: 8, name: 'Pan de Ajo con Queso',    category: 'extra',  price: 4.99,  cost: 1.50, icon: 'fa-bread-slice' },
-      { id: 9, name: 'Alitas BBQ x8',           category: 'extra',  price: 8.99,  cost: 4.20, icon: 'fa-drumstick-bite' }
+      { id: 1, name: 'Pizza Pepperoni Suprema', description: 'Pepperoni, mozzarella y orégano.', category: 'pizza',  price: 14.99, cost: 6.50, icon: 'fa-pizza-slice', imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&auto=format&fit=crop&q=80', visible: true },
+      { id: 2, name: 'Pizza Hawaiana Clásica',  description: 'Jamón, piña y queso fundido.',     category: 'pizza',  price: 13.50, cost: 5.80, icon: 'fa-pizza-slice', imagen: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop&q=80', visible: true },
+      { id: 3, name: 'Pizza Cuatro Quesos',     description: 'Mozzarella, parmesano, azul y cheddar.', category: 'pizza', price: 16.00, cost: 7.20, icon: 'fa-cheese', imagen: 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=500&auto=format&fit=crop&q=80', visible: true },
+      { id: 4, name: 'Pizza Carne & BBQ',       description: 'Carne, tocino, cebolla y salsa BBQ.', category: 'pizza', price: 17.50, cost: 8.00, icon: 'fa-fire', imagen: 'https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=500&auto=format&fit=crop&q=80', visible: true },
+      { id: 5, name: 'Coca-Cola 1.5L',          description: '',  category: 'bebida', price: 3.00,  cost: 1.20, icon: 'fa-bottle-droplet', imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=80', visible: true },
+      { id: 6, name: 'Cerveza Artesanal IPA',   description: '',  category: 'bebida', price: 4.50,  cost: 2.00, icon: 'fa-beer-mug-empty', imagen: '', visible: true },
+      { id: 7, name: 'Jugo Natural Maracuyá',   description: '',  category: 'bebida', price: 2.50,  cost: 0.90, icon: 'fa-cup-straw', imagen: '', visible: true },
+      { id: 8, name: 'Pan de Ajo con Queso',    description: 'Pan horneado con mantequilla de ajo.', category: 'extra', price: 4.99, cost: 1.50, icon: 'fa-bread-slice', imagen: '', visible: true },
+      { id: 9, name: 'Alitas BBQ x8',           description: 'Alitas glaseadas en salsa BBQ.', category: 'extra', price: 8.99, cost: 4.20, icon: 'fa-drumstick-bite', imagen: '', visible: true }
     ],
     suppliers: [
       { id: 1, name: 'Distribuidora Lácteos Andina', contact: 'María López', phone: '098 765 4321', email: 'ventas@lacteosandina.ec', notes: 'Entrega los martes' },
@@ -865,11 +891,13 @@
     return {
       id: m.id,
       name: m.nombre || '',
+      description: m.descripcion || '',
       category: cat,
       price: Number(m.precio) || 0,
       cost: Number(m.costo) || 0,
       icon: m.icon || 'fa-pizza-slice',
-      imagen: m.imagen || ''
+      imagen: m.imagen || '',
+      visible: m.visible !== false
     };
   }
 
@@ -877,10 +905,13 @@
     return {
       id: p.id,
       nombre: p.name,
+      descripcion: p.description || '',
       categoria: CATS_TO_PUBLIC[p.category] || p.category,
       precio: Number(p.price) || 0,
       costo: Number(p.cost) || 0,
-      imagen: p.imagen || ''
+      imagen: p.imagen || '',
+      icon: p.icon || 'fa-pizza-slice',
+      visible: p.visible !== false
     };
   }
 
@@ -913,7 +944,9 @@
 
   function saveProductsShared() {
     saveJSON(KEYS.PRODUCTS, state.products);
-    saveJSON(KEYS.PUB_MENU, state.products.map(productToMenu));
+    saveJSON(KEYS.PUB_MENU, state.products
+      .filter(p => p.visible !== false)
+      .map(productToMenu));
   }
 
   function saveEmployeesShared() {
@@ -1165,14 +1198,24 @@
       const cost = Number(p.cost) || 0;
       const margin = p.price > 0 ? ((p.price - cost) / p.price) * 100 : 0;
       const marginColor = margin >= 50 ? 'text-emerald-400' : margin >= 30 ? 'text-amber-400' : 'text-rose-400';
+      const hidden = p.visible === false;
+      const thumb = p.imagen
+        ? `<img src="${esc(p.imagen)}" alt="" class="w-10 h-10 rounded-lg object-cover border border-zinc-700"
+                onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'w-10 h-10 rounded-lg bg-zinc-800 grid place-items-center text-pizza-500',innerHTML:'<i class=\\'fa-solid fa-pizza-slice\\'></i>'}))">`
+        : `<span class="w-10 h-10 rounded-lg bg-zinc-800 grid place-items-center text-pizza-500">${iconHtml(p.icon)}</span>`;
+
       return `
-        <tr class="hover:bg-zinc-900/40 transition-colors">
+        <tr class="hover:bg-zinc-900/40 transition-colors ${hidden ? 'opacity-60' : ''}">
           <td class="py-3 px-4">
             <div class="flex items-center gap-3">
-              <span class="bg-zinc-800 text-pizza-500 p-2 rounded-lg w-9 h-9 grid place-items-center shrink-0">
-                ${iconHtml(p.icon)}
-              </span>
-              <span class="font-medium text-white">${esc(p.name)}</span>
+              ${thumb}
+              <div class="min-w-0">
+                <p class="font-medium text-white truncate">
+                  ${esc(p.name)}
+                  ${hidden ? '<span class="badge bg-zinc-800 text-zinc-400 border border-zinc-700 ml-1">Oculto</span>' : ''}
+                </p>
+                ${p.description ? `<p class="text-[11px] text-zinc-500 truncate max-w-[240px]">${esc(p.description)}</p>` : ''}
+              </div>
             </div>
           </td>
           <td class="py-3 px-4 capitalize">
@@ -1182,13 +1225,22 @@
           <td class="py-3 px-4 text-zinc-400 tabular-nums">${money(cost)}</td>
           <td class="py-3 px-4 font-semibold tabular-nums ${marginColor}">${margin.toFixed(1)}%</td>
           <td class="py-3 px-4 text-right whitespace-nowrap">
-            <button type="button" data-action="edit-product" data-id="${p.id}"
-                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded-lg text-xs font-medium transition">
-              <i class="fa-solid fa-pen-to-square mr-1" aria-hidden="true"></i>Editar
+            <button type="button" data-action="toggle-product" data-id="${p.id}"
+                    title="${hidden ? 'Mostrar en el sitio público' : 'Ocultar del sitio público'}"
+                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition">
+              <i class="fa-solid ${hidden ? 'fa-eye-slash' : 'fa-eye'}" aria-hidden="true"></i>
             </button>
-            <button type="button" data-action="delete-product" data-id="${p.id}"
-                    class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg text-xs font-medium transition ml-2">
-              <i class="fa-solid fa-trash mr-1" aria-hidden="true"></i>Eliminar
+            <button type="button" data-action="duplicate-product" data-id="${p.id}" title="Duplicar"
+                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ml-2">
+              <i class="fa-solid fa-copy" aria-hidden="true"></i>
+            </button>
+            <button type="button" data-action="edit-product" data-id="${p.id}" title="Editar"
+                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ml-2">
+              <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+            </button>
+            <button type="button" data-action="delete-product" data-id="${p.id}" title="Eliminar"
+                    class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2.5 py-1.5 rounded-lg text-xs font-medium transition ml-2">
+              <i class="fa-solid fa-trash" aria-hidden="true"></i>
             </button>
           </td>
         </tr>`;
@@ -1367,16 +1419,23 @@
   const ENTITY_FORMS = {
     product: {
       title: 'Producto del menú',
-      subtitle: 'Completa los datos del producto.',
+      subtitle: 'Los cambios se publican automáticamente en el sitio público.',
       fields: [
-        { key: 'name',     label: 'Nombre',      type: 'text',   required: true, placeholder: 'Ej: Pizza Hawaiana' },
-        { key: 'category', label: 'Categoría',   type: 'select', required: true, options: [
-          { value: 'pizza',  label: 'Pizza' }, { value: 'bebida', label: 'Bebida' }, { value: 'extra', label: 'Extra' }
+        { key: 'name',        label: 'Nombre',            type: 'text',     required: true,  placeholder: 'Ej: Pizza Hawaiana' },
+        { key: 'description', label: 'Descripción corta', type: 'textarea', required: false, rows: 2,
+          placeholder: 'Ingredientes, tamaño o detalles…' },
+        { key: 'category',    label: 'Categoría',         type: 'select',   required: true,  options: [
+            { value: 'pizza',  label: 'Pizza'  },
+            { value: 'bebida', label: 'Bebida' },
+            { value: 'extra',  label: 'Extra'  }
         ]},
-        { key: 'price', label: 'Precio (USD)', type: 'number', step: '0.01', min: 0, required: true },
-        { key: 'cost',  label: 'Costo (USD)',  type: 'number', step: '0.01', min: 0, required: false, default: 0 },
-        { key: 'icon',  label: 'Icono (FontAwesome o emoji)', type: 'text', required: true, default: 'fa-pizza-slice',
-          hint: 'Ej: <code>fa-pizza-slice</code> o 🍕' }
+        { key: 'price', label: 'Precio (USD)',  type: 'number', step: '0.01', min: 0, required: true },
+        { key: 'cost',  label: 'Costo (USD)',   type: 'number', step: '0.01', min: 0, required: false, default: 0 },
+        { key: 'imagen', label: 'Imagen (URL)', type: 'imageUrl', required: false,
+          hint: 'Pega un enlace directo a la imagen (Unsplash, tu CDN, etc.). Se verá en el menú público.' },
+        { key: 'icon',  label: 'Icono (FontAwesome o emoji)', type: 'text', required: false, default: 'fa-pizza-slice',
+          hint: 'Ej: <code>fa-pizza-slice</code> o 🍕. Se usa en el POS.' },
+        { key: 'visible', label: 'Mostrar en el menú público', type: 'checkbox', default: true }
       ]
     },
     insumo: {
@@ -1479,6 +1538,7 @@
           <div>
             <label for="fld-${f.key}" class="block text-xs text-zinc-400 mb-1">${esc(f.label)}</label>
             <textarea id="fld-${f.key}" name="${f.key}" rows="${f.rows || 3}" ${reqAttr}
+                      placeholder="${esc(f.placeholder || '')}"
                       class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500 resize-none">${esc(value)}</textarea>
             ${hintHtml}
           </div>`;
@@ -1490,6 +1550,31 @@
             <input type="checkbox" id="fld-${f.key}" name="${f.key}" ${value ? 'checked' : ''} class="accent-pizza-600 w-4 h-4">
             <span>${esc(f.label)}</span>
           </label>`;
+      }
+
+      if (f.type === 'imageUrl') {
+        return `
+          <div>
+            <label for="fld-${f.key}" class="block text-xs text-zinc-400 mb-1">${esc(f.label)}</label>
+            <div class="flex gap-3 items-start">
+              <div class="w-20 h-20 rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden shrink-0 grid place-items-center">
+                <img id="fld-${f.key}-preview"
+                     src="${esc(value) || ''}"
+                     alt=""
+                     class="w-full h-full object-cover ${value ? '' : 'hidden'}"
+                     onerror="this.classList.add('hidden')">
+                <i id="fld-${f.key}-placeholder"
+                   class="fa-solid fa-image text-zinc-600 text-lg ${value ? 'hidden' : ''}"
+                   aria-hidden="true"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <input type="url" id="fld-${f.key}" name="${f.key}" value="${esc(value)}"
+                       placeholder="https://…"
+                       class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500 focus:ring-1 focus:ring-pizza-500/40">
+                ${f.hint ? `<p class="text-[11px] text-zinc-500 mt-1">${f.hint}</p>` : ''}
+              </div>
+            </div>
+          </div>`;
       }
 
       const extra = [
@@ -1507,6 +1592,26 @@
           ${hintHtml}
         </div>`;
     }).join('');
+
+    // Preview en vivo de la imagen
+    const imgInput = form.querySelector('input[name="imagen"]');
+    if (imgInput) {
+      const preview = form.querySelector('#fld-imagen-preview');
+      const placeholder = form.querySelector('#fld-imagen-placeholder');
+      imgInput.addEventListener('input', () => {
+        const url = imgInput.value.trim();
+        if (!url) {
+          preview.classList.add('hidden');
+          placeholder.classList.remove('hidden');
+          return;
+        }
+        preview.src = url;
+        preview.classList.remove('hidden');
+        preview.onerror = () => { preview.classList.add('hidden'); placeholder.classList.remove('hidden'); };
+        preview.onload  = () => { preview.classList.remove('hidden'); placeholder.classList.add('hidden'); };
+        placeholder.classList.add('hidden');
+      });
+    }
 
     openModal('entity-modal');
   }
@@ -1944,15 +2049,41 @@
       if (ok) { clearCart(); toast('Orden vaciada', 'Se eliminaron los productos.'); }
     });
 
+    // ============== PRODUCTOS ==============
     $('[data-action="new-product"]').addEventListener('click', () => openEntityModal({ type: 'product', mode: 'new' }));
+
     $('#admin-product-table').addEventListener('click', e => {
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
       const id = Number(btn.dataset.id);
-      if (btn.dataset.action === 'edit-product') openEntityModal({ type: 'product', id, mode: 'edit' });
-      else if (btn.dataset.action === 'delete-product') deleteEntity('product', id);
+      const action = btn.dataset.action;
+
+      if (action === 'edit-product') {
+        openEntityModal({ type: 'product', id, mode: 'edit' });
+      } else if (action === 'delete-product') {
+        deleteEntity('product', id);
+      } else if (action === 'duplicate-product') {
+        const p = state.products.find(x => x.id === id);
+        if (!p) return;
+        const copy = { ...p, id: Date.now(), name: `${p.name} (copia)` };
+        state.products.push(copy);
+        saveProductsShared();
+        renderAll();
+        toast('Producto duplicado', `"${p.name}" fue copiado al menú.`);
+      } else if (action === 'toggle-product') {
+        const p = state.products.find(x => x.id === id);
+        if (!p) return;
+        p.visible = p.visible === false;   // invierte el valor
+        saveProductsShared();
+        renderAll();
+        toast(
+          p.visible ? 'Producto visible' : 'Producto oculto',
+          `"${p.name}" ${p.visible ? 'ya aparece' : 'ya no aparece'} en el sitio público.`
+        );
+      }
     });
 
+    // ============== INVENTARIO ==============
     $('[data-action="new-insumo"]').addEventListener('click', () => openEntityModal({ type: 'insumo', mode: 'new' }));
     $('[data-action="adjust-stock"]').addEventListener('click', openStockModal);
     $('[data-action="apply-stock-adjust"]').addEventListener('click', applyStockAdjust);
@@ -1977,6 +2108,7 @@
       else if (btn.dataset.action === 'delete-supplier') deleteEntity('supplier', id);
     });
 
+    // ============== EMPLEADOS ==============
     $('[data-action="new-employee"]').addEventListener('click', () => openEntityModal({ type: 'employee', mode: 'new' }));
     $('#employees-table').addEventListener('click', e => {
       const btn = e.target.closest('[data-action]');
@@ -2039,6 +2171,19 @@
     // Login gate
     const loginForm = $('#loginGateForm');
     if (loginForm) loginForm.addEventListener('submit', handleGateLogin);
+
+    // Reaccionar a cambios en otra pestaña (por si editan el sitio público)
+    window.addEventListener('storage', e => {
+      if (e.key === KEYS.PUB_MENU) {
+        const pub = loadJSON(KEYS.PUB_MENU, null);
+        if (Array.isArray(pub)) {
+          state.products = pub.map(menuToProduct);
+          renderProductsTable();
+          renderPOSCatalog();
+          renderCategoriesPos();
+        }
+      }
+    });
   }
 
   /* =========================================================================
@@ -2048,10 +2193,10 @@
     // Productos: priorizar menú público si existe
     const pubMenu = loadJSON(KEYS.PUB_MENU, null);
     const admProducts = loadJSON(KEYS.PRODUCTS, null);
-    if (Array.isArray(pubMenu) && pubMenu.length) {
-      state.products = pubMenu.map(menuToProduct);
-    } else if (Array.isArray(admProducts) && admProducts.length) {
+    if (Array.isArray(admProducts) && admProducts.length) {
       state.products = admProducts;
+    } else if (Array.isArray(pubMenu) && pubMenu.length) {
+      state.products = pubMenu.map(menuToProduct);
     } else {
       state.products = DEFAULTS.products.map(p => ({ ...p }));
     }
@@ -2091,8 +2236,6 @@
   function init() {
     const s = getSession();
     if (!s) {
-      // Sin sesión: mostrar formulario embebido, NO redirigir
-      // Cargamos datos primero para poder validar contra la lista de usuarios
       initData();
       bindEvents();
       showLoginGate();
