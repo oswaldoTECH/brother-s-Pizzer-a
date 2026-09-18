@@ -9,15 +9,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --bp-bg: #0b0f19;
-    --bp-panel: #111827;
+    --bp-bg: #0a0a0f;
+    --bp-panel: #12121c;
     --bp-accent: #ff4757;
     --bp-accent-hover: #ff3838;
     --bp-success: #2ed573;
+    --bp-gold: #ffa502;
+    --bp-warm: #ff6b35;
   }
   * { -webkit-tap-highlight-color: transparent; }
   html { scroll-behavior: smooth; }
@@ -28,32 +30,32 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
-  .modal-active { display: flex !important; }
+  .font-display { font-family: 'Bebas Neue', 'Inter', sans-serif; letter-spacing: .02em; }
 
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: #111827; }
+  ::-webkit-scrollbar-track { background: #12121c; }
   ::-webkit-scrollbar-thumb { background: #374151; border-radius: 999px; }
   ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
 
-  /* ---------- Barra de progreso superior ---------- */
+  /* ---------- Barra de progreso ---------- */
   #scrollProgress {
     position: fixed; top: 0; left: 0; height: 3px; width: 0%;
     background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573);
     z-index: 100; transition: width .08s linear;
-    box-shadow: 0 0 10px rgba(255,71,87,.6);
+    box-shadow: 0 0 12px rgba(255,71,87,.7);
   }
 
-  /* ---------- Marquee promocional ---------- */
+  /* ---------- Marquee ---------- */
   .marquee-wrap {
     overflow: hidden;
-    background: linear-gradient(90deg, #ff4757, #ff6b81, #ffa502, #ff4757);
+    background: linear-gradient(90deg, #ff4757, #ff6b35, #ffa502, #ff4757);
     background-size: 300% 100%;
     animation: gradient-shift 8s ease infinite;
   }
   .marquee-track {
     display: flex; gap: 2.5rem; width: max-content;
     animation: marquee 32s linear infinite;
-    padding: 7px 0;
+    padding: 8px 0;
   }
   .marquee-track:hover { animation-play-state: paused; }
   @keyframes marquee {
@@ -68,8 +70,10 @@
   /* ---------- Hero ---------- */
   .hero-bg {
     background:
-      linear-gradient(to bottom, rgba(11,15,25,.72), rgba(11,15,25,.96)),
-      url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1600&auto=format&fit=crop&q=80') center/cover no-repeat;
+      radial-gradient(ellipse at top, rgba(255,71,87,.28), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(255,165,2,.22), transparent 50%),
+      linear-gradient(to bottom, rgba(10,10,15,.72), rgba(10,10,15,.98)),
+      url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1800&auto=format&fit=crop&q=80') center/cover no-repeat;
     background-attachment: fixed;
   }
 
@@ -80,6 +84,12 @@
     background-clip: text;
     color: transparent;
     animation: gradient-shift 6s ease infinite;
+  }
+  .fire-text {
+    background: linear-gradient(180deg, #fff 20%, #ffa502 60%, #ff4757 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   @keyframes float-y {
@@ -97,10 +107,22 @@
   }
   .blob { animation: blob 12s ease-in-out infinite; }
 
-  /* ---------- Botones con brillo ---------- */
-  .btn-glow {
-    position: relative; overflow: hidden;
+  /* Steam */
+  @keyframes steam {
+    0% { opacity: 0; transform: translateY(0) scale(.6); }
+    40% { opacity: .5; }
+    100% { opacity: 0; transform: translateY(-40px) scale(1.3); }
   }
+  .steam span {
+    position: absolute; display: block;
+    width: 6px; height: 18px; border-radius: 50%;
+    background: rgba(255,255,255,.35);
+    filter: blur(4px);
+    animation: steam 3s ease-out infinite;
+  }
+
+  /* ---------- Botones ---------- */
+  .btn-glow { position: relative; overflow: hidden; }
   .btn-glow::before {
     content: ''; position: absolute; inset: 0;
     background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
@@ -109,13 +131,11 @@
   }
   .btn-glow:hover::before { transform: translateX(100%); }
 
-  /* ---------- Ripple ---------- */
   .ripple { position: relative; overflow: hidden; }
   .ripple > .ripple-ink {
     position: absolute; border-radius: 50%; transform: scale(0);
     background: rgba(255,255,255,.45); pointer-events: none;
-    animation: ripple-anim .65s ease-out forwards;
-    z-index: 1;
+    animation: ripple-anim .65s ease-out forwards; z-index: 1;
   }
   @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
 
@@ -126,21 +146,58 @@
   }
   .product-card {
     animation: card-in .55s cubic-bezier(.22,1,.36,1) both;
-    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+    transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+    position: relative; overflow: hidden;
+  }
+  .product-card::after {
+    content: ''; position: absolute; inset: 0;
+    border-radius: inherit; pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(255,71,87,.12), transparent 60%);
+    opacity: 0; transition: opacity .35s ease;
   }
   .product-card:hover {
-    border-color: rgba(255,71,87,.55);
-    transform: translateY(-6px);
-    box-shadow: 0 24px 48px -20px rgba(255,71,87,.45);
+    border-color: rgba(255,71,87,.65);
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px -22px rgba(255,71,87,.55), 0 0 0 1px rgba(255,71,87,.15);
   }
-  .product-card .product-img { transition: transform .7s cubic-bezier(.22,1,.36,1); }
-  .product-card:hover .product-img { transform: scale(1.09) rotate(1deg); }
+  .product-card:hover::after { opacity: 1; }
+  .product-card .product-img { transition: transform .8s cubic-bezier(.22,1,.36,1); }
+  .product-card:hover .product-img { transform: scale(1.12) rotate(1.5deg); }
 
-  /* ---------- Reveal on scroll ---------- */
+  .img-frame {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #1f2937, #0f0f18);
+  }
+  .img-frame::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 45%, rgba(10,10,15,.92) 100%);
+  }
+
+  .badge-hot {
+    background: linear-gradient(135deg, #ff4757, #ff6b35);
+    box-shadow: 0 4px 14px rgba(255,71,87,.55);
+    animation: pulse-badge 2s ease-in-out infinite;
+  }
+  .badge-new {
+    background: linear-gradient(135deg, #2ed573, #26af5f);
+    box-shadow: 0 4px 14px rgba(46,213,115,.5);
+  }
+  .badge-promo {
+    background: linear-gradient(135deg, #ffa502, #ff6b35);
+    box-shadow: 0 4px 14px rgba(255,165,2,.5);
+  }
+  @keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.07); }
+  }
+
+  /* Rating stars */
+  .stars i { font-size: 11px; }
+
+  /* ---------- Reveal ---------- */
   .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
   .reveal.in { opacity: 1; transform: none; }
 
-  /* ---------- Animaciones varias ---------- */
   @keyframes pop-in {
     from { opacity: 0; transform: translateY(12px) scale(.98); }
     to   { opacity: 1; transform: none; }
@@ -167,13 +224,11 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ---------- Carrito flotante ---------- */
-  .cart-fab {
-    transition: transform .3s cubic-bezier(.22,1,.36,1), opacity .3s ease;
-  }
+  .cart-fab { transition: transform .3s cubic-bezier(.22,1,.36,1), opacity .3s ease; }
   .cart-fab:active { transform: scale(.94); }
   @keyframes fab-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255,71,87,.6); }
-    70% { box-shadow: 0 0 0 16px rgba(255,71,87,0); }
+    0% { box-shadow: 0 0 0 0 rgba(255,71,87,.65); }
+    70% { box-shadow: 0 0 0 18px rgba(255,71,87,0); }
     100% { box-shadow: 0 0 0 0 rgba(255,71,87,0); }
   }
   .cart-fab.pulse { animation: fab-pulse 1.6s infinite; }
@@ -186,14 +241,12 @@
     background-size: cover; background-position: center;
     border-radius: 16px;
     transition: all .85s cubic-bezier(.5,-0.15,.7,1);
-    box-shadow: 0 10px 30px rgba(255,71,87,.5);
+    box-shadow: 0 10px 30px rgba(255,71,87,.55);
   }
-
-  /* ---------- "+1" flotante ---------- */
   .plus-one {
     position: fixed; z-index: 95; pointer-events: none;
     color: #2ed573; font-weight: 900; font-size: 18px;
-    text-shadow: 0 2px 8px rgba(46,213,115,.6);
+    text-shadow: 0 2px 8px rgba(46,213,115,.7);
     animation: plus-up 1s ease-out forwards;
   }
   @keyframes plus-up {
@@ -202,7 +255,7 @@
     100% { opacity: 0; transform: translateY(-60px) scale(.9); }
   }
 
-  /* ---------- Confetti ---------- */
+  /* Confetti */
   .confetti-piece {
     position: fixed; width: 9px; height: 9px; pointer-events: none; z-index: 100;
     animation: confetti-fall 1.3s cubic-bezier(.22,1,.36,1) forwards;
@@ -212,7 +265,7 @@
     100% { transform: translate(var(--cx), var(--cy)) rotate(720deg) scale(.4); opacity: 0; }
   }
 
-  /* ---------- Toast con barra de tiempo ---------- */
+  /* Toast */
   @keyframes toast-bar { from { width: 100%; } to { width: 0%; } }
   .toast-bar {
     position: absolute; bottom: 0; left: 0; height: 2px;
@@ -221,7 +274,7 @@
   }
   .toast-error .toast-bar { background: linear-gradient(90deg, #ff4757, #ff3838); }
 
-  /* ---------- Dot "en vivo" ---------- */
+  /* Dot "en vivo" */
   @keyframes pulse-ring {
     0% { box-shadow: 0 0 0 0 rgba(46,213,115,.7); }
     70% { box-shadow: 0 0 0 9px rgba(46,213,115,0); }
@@ -229,13 +282,17 @@
   }
   .dot-live { animation: pulse-ring 1.8s infinite; }
 
-  /* ---------- Count-up highlight ---------- */
-  @keyframes count-flash {
-    0% { transform: scale(1); color: #2ed573; }
-    40% { transform: scale(1.18); color: #fff; }
-    100% { transform: scale(1); color: #2ed573; }
+  /* Category chips */
+  .cat-chip {
+    transition: all .25s ease;
+    white-space: nowrap;
   }
-  .count-flash { animation: count-flash .45s ease; }
+  .cat-chip:hover { transform: translateY(-2px); }
+  .cat-chip.active {
+    background: linear-gradient(135deg, #ff4757, #ff6b35);
+    color: #fff; border-color: transparent;
+    box-shadow: 0 8px 20px -8px rgba(255,71,87,.7);
+  }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -244,9 +301,16 @@
     }
   }
 
-  /* Estado cerrado */
-  .closed-overlay { display: none; }
-  body.is-closed .closed-overlay { display: block; }
+  /* Empty state */
+  .empty-state { animation: pop-in .4s ease both; }
+
+  /* Gradient border shine */
+  .shine-border {
+    position: relative;
+    background: linear-gradient(#12121c, #12121c) padding-box,
+                linear-gradient(135deg, rgba(255,71,87,.5), rgba(255,165,2,.4), rgba(46,213,115,.4)) border-box;
+    border: 1px solid transparent;
+  }
 </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-[#ff4757] selection:text-white">
@@ -255,9 +319,7 @@
 
 <a href="#menu" class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-3 focus:left-3 focus:bg-[#ff4757] focus:text-white focus:px-4 focus:py-2 focus:rounded-xl focus:text-sm">Saltar al menú</a>
 
-<!-- =========================================================
-     MARQUEE PROMOCIONAL
-     ========================================================= -->
+<!-- ============================ MARQUEE ============================ -->
 <div class="marquee-wrap text-white text-[11px] font-bold uppercase tracking-wider">
   <div class="marquee-track">
     <span>🍕 Masa fresca todos los días</span>
@@ -266,7 +328,6 @@
     <span>⏰ Todos los días 17:00 - 22:30</span>
     <span>📞 Pedidos: 098 411 3081</span>
     <span>🧀 Ingredientes de primera calidad</span>
-    <!-- duplicado para loop continuo -->
     <span>🍕 Masa fresca todos los días</span>
     <span>🔥 Horno artesanal</span>
     <span>🛵 Delivery en Biblián · Mínimo $5.00</span>
@@ -276,17 +337,15 @@
   </div>
 </div>
 
-<!-- =========================================================
-     BARRA DE NAVEGACIÓN PÚBLICA
-     ========================================================= -->
-<header class="sticky top-0 z-40 bg-[#0b0f19]/85 backdrop-blur-md border-b border-white/10">
+<!-- ============================ NAV ============================ -->
+<header class="sticky top-0 z-40 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/10">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
     <a href="#" class="flex items-center gap-3 shrink-0 group" aria-label="Brothers Pizza, inicio">
-      <div class="w-10 h-10 rounded-xl bg-[#ff4757] grid place-items-center text-white shadow-lg shadow-[#ff4757]/30 transition-transform duration-300 group-hover:rotate-[18deg] group-hover:scale-110">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff4757] to-[#ff6b35] grid place-items-center text-white shadow-lg shadow-[#ff4757]/40 transition-transform duration-300 group-hover:rotate-[18deg] group-hover:scale-110">
         <i class="fa-solid fa-pizza-slice text-lg" aria-hidden="true"></i>
       </div>
       <div class="leading-tight">
-        <span class="font-black text-base sm:text-lg tracking-wide block">Brothers Pizza</span>
+        <span class="font-display text-xl sm:text-2xl tracking-wide block">Brothers Pizza</span>
         <span class="text-[10px] text-gray-400 font-medium tracking-widest uppercase">Biblián, Ecuador</span>
       </div>
     </a>
@@ -301,7 +360,7 @@
         <span class="absolute left-0 -bottom-1 h-0.5 w-0 bg-[#ff4757] transition-all duration-300 group-hover:w-full"></span>
       </a>
       <a href="#horarios" class="relative text-gray-300 hover:text-[#ff4757] transition group">
-        Horarios y Ubicación
+        Horarios
         <span class="absolute left-0 -bottom-1 h-0.5 w-0 bg-[#ff4757] transition-all duration-300 group-hover:w-full"></span>
       </a>
     </nav>
@@ -312,7 +371,7 @@
         <i class="fa-brands fa-whatsapp text-sm" aria-hidden="true"></i> Pedir por WhatsApp
       </a>
 
-      <button type="button" data-action="open-login"
+      <button type="button"
               title="Ingreso al Punto de Venta"
               class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-gray-300 hover:text-white px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
         <i class="fa-solid fa-right-to-bracket text-[#ff4757]" aria-hidden="true"></i>
@@ -321,7 +380,6 @@
     </div>
   </div>
 
-  <!-- Barra de estado abierto/cerrado -->
   <div id="statusBar" class="border-t border-white/5 text-[11px] font-semibold">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-center gap-2 text-gray-400">
       <span id="statusDot" class="w-2 h-2 rounded-full bg-gray-500"></span>
@@ -330,58 +388,65 @@
   </div>
 </header>
 
-<!-- Aviso cuando está cerrado -->
-<div class="closed-overlay">
-  <div class="bg-amber-500/10 border-b border-amber-500/20 text-amber-300 text-[11px] py-2 px-4 text-center font-semibold">
-    <i class="fa-solid fa-moon mr-1.5" aria-hidden="true"></i>
-    Estamos cerrados en este momento. Los pedidos por WhatsApp se atenderán en nuestro horario (17:00 - 22:30).
-  </div>
-</div>
-
-<!-- =========================================================
-     HERO
-     ========================================================= -->
-<section class="hero-bg py-20 lg:py-32 border-b border-white/10 text-center px-4 relative overflow-hidden">
-  <!-- Blobs animados -->
+<!-- ============================ HERO ============================ -->
+<section class="hero-bg py-24 lg:py-36 border-b border-white/10 text-center px-4 relative overflow-hidden">
   <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-[#ff4757]/25 blur-3xl blob" aria-hidden="true"></div>
-  <div class="absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-[#2ed573]/20 blur-3xl blob" style="animation-delay:2s" aria-hidden="true"></div>
+  <div class="absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-[#ffa502]/20 blur-3xl blob" style="animation-delay:2s" aria-hidden="true"></div>
 
-  <!-- Emojis flotantes -->
-  <span class="hidden md:block absolute top-16 left-[8%] text-4xl float-slow opacity-90" aria-hidden="true">🍕</span>
-  <span class="hidden md:block absolute bottom-24 left-[14%] text-3xl float-med opacity-80" aria-hidden="true">🧀</span>
-  <span class="hidden md:block absolute top-24 right-[10%] text-4xl float-fast opacity-90" aria-hidden="true">🔥</span>
-  <span class="hidden md:block absolute bottom-20 right-[16%] text-3xl float-slow opacity-80" aria-hidden="true">🍅</span>
+  <span class="hidden md:block absolute top-16 left-[8%] text-5xl float-slow opacity-90 drop-shadow-[0_8px_20px_rgba(255,71,87,.6)]" aria-hidden="true">🍕</span>
+  <span class="hidden md:block absolute bottom-24 left-[14%] text-4xl float-med opacity-85 drop-shadow-[0_8px_20px_rgba(255,165,2,.5)]" aria-hidden="true">🧀</span>
+  <span class="hidden md:block absolute top-24 right-[10%] text-5xl float-fast opacity-90 drop-shadow-[0_8px_20px_rgba(255,107,53,.6)]" aria-hidden="true">🔥</span>
+  <span class="hidden md:block absolute bottom-20 right-[16%] text-4xl float-slow opacity-85 drop-shadow-[0_8px_20px_rgba(255,71,87,.5)]" aria-hidden="true">🍅</span>
 
   <div class="max-w-3xl mx-auto space-y-6 relative z-10">
-    <span class="bg-[#ff4757]/10 border border-[#ff4757]/30 text-[#ff4757] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider inline-block reveal">
-      🍕 Las mejores pizzas artesanales
+    <span class="bg-[#ff4757]/10 border border-[#ff4757]/40 text-[#ff6b6b] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider inline-flex items-center gap-2 reveal">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#2ed573] dot-live"></span>
+      Las mejores pizzas artesanales de Biblián
     </span>
-    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight reveal" style="transition-delay:.1s">
-      Sabor <span class="gradient-text">inigualable</span> en cada porción
+    <h1 class="font-display text-6xl sm:text-7xl lg:text-8xl tracking-tight leading-[0.9] reveal" style="transition-delay:.1s">
+      <span class="fire-text">SABOR QUE</span><br>
+      <span class="gradient-text">ENAMORA</span>
     </h1>
     <p class="text-gray-300 text-sm sm:text-base max-w-xl mx-auto reveal" style="transition-delay:.2s">
-      Preparamos masa fresca todos los días con ingredientes de primera calidad. ¡Disfruta con tu familia o amigos en Brothers Pizza!
+      Masa fresca todos los días, horno artesanal e ingredientes de primera calidad. 🍕 Pide y recibe en tu puerta.
     </p>
     <div class="pt-2 flex flex-wrap justify-center gap-3 reveal" style="transition-delay:.3s">
-      <a href="#menu" class="btn-glow bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-7 py-3.5 rounded-xl text-sm transition shadow-xl shadow-[#ff4757]/30 hover:shadow-[#ff4757]/60 hover:-translate-y-0.5 active:scale-95">
-        Ver Menú Completo
+      <a href="#menu" class="btn-glow bg-gradient-to-r from-[#ff4757] to-[#ff6b35] hover:from-[#ff3838] hover:to-[#ff5522] text-white font-bold px-8 py-4 rounded-2xl text-sm transition shadow-xl shadow-[#ff4757]/40 hover:shadow-[#ff4757]/70 hover:-translate-y-0.5 active:scale-95 inline-flex items-center gap-2">
+        <i class="fa-solid fa-utensils"></i> Ver Menú Completo
       </a>
-      <a href="#delivery" class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-white font-bold px-7 py-3.5 rounded-xl text-sm transition hover:-translate-y-0.5 active:scale-95">
-        Información de Delivery
+      <a href="#delivery" class="bg-white/5 backdrop-blur hover:bg-white/10 border border-white/15 text-white font-bold px-8 py-4 rounded-2xl text-sm transition hover:-translate-y-0.5 active:scale-95 inline-flex items-center gap-2">
+        <i class="fa-solid fa-motorcycle"></i> Delivery
       </a>
+    </div>
+
+    <!-- Stats rápidas -->
+    <div class="pt-6 flex justify-center gap-6 sm:gap-10 text-xs reveal" style="transition-delay:.4s">
+      <div class="text-center">
+        <div class="font-display text-3xl text-[#ffa502]">+15</div>
+        <div class="text-gray-400 uppercase tracking-wider text-[10px]">Variedades</div>
+      </div>
+      <div class="w-px bg-white/10"></div>
+      <div class="text-center">
+        <div class="font-display text-3xl text-[#2ed573]">30min</div>
+        <div class="text-gray-400 uppercase tracking-wider text-[10px]">Entrega</div>
+      </div>
+      <div class="w-px bg-white/10"></div>
+      <div class="text-center">
+        <div class="font-display text-3xl text-[#ff4757]">4.9★</div>
+        <div class="text-gray-400 uppercase tracking-wider text-[10px]">Rating</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- =========================================================
-     MENÚ PÚBLICO
-     ========================================================= -->
+<!-- ============================ MENÚ ============================ -->
 <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-16 space-y-20 w-full">
 
   <section id="menu" class="space-y-8 scroll-mt-28">
     <div class="text-center space-y-2 reveal">
-      <h2 class="text-2xl sm:text-3xl font-black">Nuestro Menú y <span class="gradient-text">Precios</span></h2>
-      <p class="text-xs sm:text-sm text-gray-400">Elige tus favoritas, arma tu pedido y envíalo por WhatsApp en un clic.</p>
+      <span class="text-[#ffa502] text-xs font-bold uppercase tracking-widest">— Delicias —</span>
+      <h2 class="font-display text-4xl sm:text-5xl">NUESTRO <span class="gradient-text">MENÚ</span></h2>
+      <p class="text-xs sm:text-sm text-gray-400 max-w-lg mx-auto">Elige tus favoritas, arma tu pedido y envíalo por WhatsApp en un clic.</p>
     </div>
 
     <!-- Buscador + categorías -->
@@ -390,7 +455,7 @@
         <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs" aria-hidden="true"></i>
         <input type="search" id="menuSearch" autocomplete="off" placeholder="Buscar en el menú…"
                aria-label="Buscar en el menú"
-               class="w-full bg-[#111827] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
+               class="w-full bg-[#12121c] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
       </div>
       <div id="publicCategorias" class="flex gap-2 overflow-x-auto pb-1 sm:pb-0" role="group" aria-label="Filtrar categoría"></div>
     </div>
@@ -398,16 +463,14 @@
     <div id="publicMenuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </section>
 
-  <!-- =========================================================
-       DELIVERY Y HORARIOS
-       ========================================================= -->
+  <!-- ============================ DELIVERY ============================ -->
   <section id="delivery" class="grid grid-cols-1 md:grid-cols-2 gap-8 scroll-mt-28">
-    <div class="reveal bg-[#111827] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl hover:border-[#ff4757]/40 transition-colors">
-      <div class="w-12 h-12 rounded-2xl bg-[#ff4757]/10 text-[#ff4757] grid place-items-center text-xl float-slow">
+    <div class="reveal bg-[#12121c] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl hover:border-[#ff4757]/40 transition-colors">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#ff4757] to-[#ff6b35] text-white grid place-items-center text-2xl float-slow shadow-lg shadow-[#ff4757]/40">
         <i class="fa-solid fa-motorcycle" aria-hidden="true"></i>
       </div>
       <div>
-        <h3 class="text-xl font-bold mb-2">Servicio de Delivery</h3>
+        <h3 class="font-display text-3xl mb-1">SERVICIO DE DELIVERY</h3>
         <p class="text-xs text-gray-400 mb-6">Llevamos tu pizza caliente y directa a la puerta de tu casa.</p>
       </div>
       <div class="space-y-4 text-xs sm:text-sm text-gray-300">
@@ -429,875 +492,521 @@
           <i class="fa-solid fa-tag text-[#ffa502] mt-1" aria-hidden="true"></i>
           <div>
             <p class="font-bold text-white mb-0.5">Compra mínima para delivery</p>
-            <p class="text-gray-400 text-xs">La compra mínima para aplicar al servicio es de <strong class="text-white">$5.00</strong>.</p>
+            <p class="text-gray-400 text-xs">La compra mínima es de <span class="text-[#ffa502] font-bold">$5.00</span>.</p>
           </div>
         </div>
       </div>
     </div>
 
-    <div id="horarios" class="reveal bg-[#111827] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl scroll-mt-28 hover:border-[#2ed573]/40 transition-colors" style="transition-delay:.1s">
-      <div class="w-12 h-12 rounded-2xl bg-[#2ed573]/10 text-[#2ed573] grid place-items-center text-xl float-med">
+    <div id="horarios" class="reveal bg-[#12121c] border border-white/10 rounded-3xl p-8 space-y-6 shadow-xl hover:border-[#2ed573]/40 transition-colors scroll-mt-28">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2ed573] to-[#26af5f] text-white grid place-items-center text-2xl float-med shadow-lg shadow-[#2ed573]/40">
         <i class="fa-solid fa-clock" aria-hidden="true"></i>
       </div>
       <div>
-        <h3 class="text-xl font-bold mb-2">Horarios de Atención</h3>
-        <p class="text-xs text-gray-400 mb-6">Disfruta de nuestras pizzas por la tarde y noche.</p>
+        <h3 class="font-display text-3xl mb-1">HORARIOS</h3>
+        <p class="text-xs text-gray-400 mb-6">Atendemos todos los días de la semana.</p>
       </div>
-      <div class="space-y-4 text-sm">
-        <div class="flex justify-between items-center bg-black/30 p-4 rounded-2xl border border-white/5">
-          <span class="text-gray-300 font-medium">Lunes a Domingo</span>
-          <span class="font-black text-[#2ed573] bg-[#2ed573]/10 px-3 py-1 rounded-xl text-xs tabular-nums">17:00 - 22:30</span>
-        </div>
-        <div class="flex items-start gap-3 pt-2">
-          <i class="fa-solid fa-phone text-[#2ed573] mt-1" aria-hidden="true"></i>
-          <div>
-            <p class="font-bold">Teléfono / WhatsApp de pedidos</p>
-            <p class="text-xs text-gray-400 tabular-nums">098 411 3081</p>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between bg-black/30 p-4 rounded-2xl border border-white/5">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-calendar-day text-[#ff4757]" aria-hidden="true"></i>
+            <span class="text-sm font-semibold">Lunes a Domingo</span>
           </div>
+          <span class="text-sm font-bold text-[#2ed573]">17:00 - 22:30</span>
         </div>
-      </div>
-      <div class="pt-2">
-        <a href="https://wa.me/593984113081?text=Hola%2C%20deseo%20pedir%20con%20delivery%20en%20Brothers%20Pizza" target="_blank" rel="noopener"
-           class="btn-glow w-full bg-[#2ed573] hover:bg-[#26af5f] text-white font-bold py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-[#2ed573]/25 hover:shadow-[#2ed573]/50 active:scale-95">
-          <i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i> Pedir por WhatsApp (0984113081)
-        </a>
+        <div class="flex items-center justify-between bg-black/30 p-4 rounded-2xl border border-white/5">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-phone text-[#ffa502]" aria-hidden="true"></i>
+            <span class="text-sm font-semibold">Pedidos</span>
+          </div>
+          <a href="tel:0984113081" class="text-sm font-bold text-[#ffa502] hover:underline">098 411 3081</a>
+        </div>
+        <div class="flex items-center justify-between bg-black/30 p-4 rounded-2xl border border-white/5">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-location-dot text-[#2ed573]" aria-hidden="true"></i>
+            <span class="text-sm font-semibold">Ubicación</span>
+          </div>
+          <span class="text-sm font-bold text-gray-300">Biblián, Ecuador</span>
+        </div>
       </div>
     </div>
   </section>
 </main>
 
-<!-- =========================================================
-     FOOTER
-     ========================================================= -->
-<footer class="bg-[#111827] border-t border-white/10 py-8 px-4 text-center text-xs text-gray-500">
-  <p>© <span id="footerYear"></span> Brothers Pizza. Todos los derechos reservados.</p>
-  <button type="button" data-action="open-login" class="mt-3 text-gray-400 hover:text-white underline text-[11px]">
-    Ingreso al Sistema POS
-  </button>
-</footer>
-
-<!-- =========================================================
-     CARRITO FLOTANTE
-     ========================================================= -->
-<button type="button" id="cartFab" data-action="open-cart"
-        aria-label="Ver mi pedido"
-        class="cart-fab fixed bottom-5 right-5 z-40 bg-[#ff4757] hover:bg-[#ff3838] text-white rounded-2xl p-4 shadow-2xl shadow-[#ff4757]/40 flex items-center gap-3 hidden">
-  <i class="fa-solid fa-basket-shopping text-lg" aria-hidden="true"></i>
-  <span class="text-sm font-bold">Mi pedido</span>
-  <span class="cart-count bg-black/30 text-white text-xs font-black w-7 h-7 grid place-items-center rounded-full tabular-nums">0</span>
+<!-- ============================ CARRITO FLOTANTE ============================ -->
+<button type="button" id="cartFab"
+  class="cart-fab fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[#ff4757] to-[#ff6b35] hover:from-[#ff3838] hover:to-[#ff5522] text-white rounded-full w-16 h-16 shadow-2xl shadow-[#ff4757]/50 grid place-items-center text-2xl opacity-0 pointer-events-none"
+  aria-label="Ver carrito">
+  <i class="fa-solid fa-bag-shopping"></i>
+  <span class="cart-count absolute -top-1 -right-1 bg-[#2ed573] text-white text-xs font-bold rounded-full w-6 h-6 grid place-items-center border-2 border-[#0a0a0f]">0</span>
 </button>
 
-<!-- =========================================================
-     MODAL: CARRITO
-     ========================================================= -->
-<div id="modalCart" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
-     role="dialog" aria-modal="true" aria-labelledby="cartTitle">
-  <div class="bg-[#111827] border border-white/10 w-full max-w-lg rounded-3xl shadow-2xl pop-in max-h-[90vh] flex flex-col">
-    <div class="flex items-center justify-between p-5 border-b border-white/10">
-      <h3 id="cartTitle" class="text-base font-black flex items-center gap-2">
-        <i class="fa-solid fa-basket-shopping text-[#ff4757]" aria-hidden="true"></i>
-        Mi pedido
-        <span id="cartModalCount" class="text-[10px] font-bold bg-white/10 text-gray-300 px-2 py-0.5 rounded-full tabular-nums">0</span>
-      </h3>
-      <button type="button" data-close-modal="modalCart"
-              class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition hover:rotate-90 duration-300"
-              aria-label="Cerrar">
-        <i class="fa-solid fa-xmark text-base" aria-hidden="true"></i>
-      </button>
+<!-- ============================ FOOTER ============================ -->
+<footer class="border-t border-white/10 bg-[#0a0a0f] py-10 mt-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center space-y-4">
+    <div class="flex items-center justify-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff4757] to-[#ff6b35] grid place-items-center text-white">
+        <i class="fa-solid fa-pizza-slice text-lg"></i>
+      </div>
+      <span class="font-display text-2xl tracking-wide">Brothers Pizza</span>
     </div>
-
-    <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-2.5"></div>
-
-    <div class="border-t border-white/10 p-5 space-y-3">
-      <div>
-        <label for="cartNote" class="block text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-1">Nombre y dirección (opcional)</label>
-        <input type="text" id="cartNote" maxlength="120" placeholder="Ej: Juan Pérez — Calle Bolívar y Sucre"
-               class="w-full bg-[#1f2937] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
-      </div>
-      <div class="flex justify-between items-center text-base font-black text-white pt-1 border-t border-white/10">
-        <span>Total</span>
-        <span id="cartTotal" class="text-[#2ed573] tabular-nums">$0.00</span>
-      </div>
-      <p id="cartMinHint" class="text-[11px] text-amber-400/80 hidden">
-        <i class="fa-solid fa-circle-info mr-1" aria-hidden="true"></i>
-        Añade <span id="cartMinAmount"></span> más para llegar al mínimo de delivery ($5.00).
-      </p>
-      <div class="grid grid-cols-2 gap-2">
-        <button type="button" data-action="clear-cart"
-                class="w-full bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-gray-300 hover:text-white py-3 rounded-xl font-bold text-xs transition active:scale-95">
-          <i class="fa-solid fa-trash mr-1.5" aria-hidden="true"></i>Vaciar
-        </button>
-        <button type="button" data-action="checkout-wa"
-                class="btn-glow w-full bg-[#2ed573] hover:bg-[#26af5f] text-white py-3 rounded-xl font-bold text-xs transition shadow-lg shadow-[#2ed573]/25 hover:shadow-[#2ed573]/50 flex items-center justify-center gap-2 active:scale-95">
-          <i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>Enviar pedido
-        </button>
-      </div>
-    </div>
+    <p class="text-xs text-gray-500">© <span id="year"></span> Brothers Pizza · Biblián, Ecuador · Todos los derechos reservados</p>
+    <p class="text-[10px] text-gray-600">Hecho con 🍕 y mucho queso</p>
   </div>
-</div>
+</footer>
 
-<!-- =========================================================
-     MODAL: INGRESO AL SISTEMA
-     ========================================================= -->
-<div id="modalLogin" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
-     role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-3xl p-8 shadow-2xl relative space-y-6 pop-in">
-    <button type="button" data-close-modal="modalLogin"
-            class="absolute right-5 top-5 text-gray-400 hover:text-white text-base p-2 rounded-lg hover:bg-white/5 transition hover:rotate-90 duration-300"
-            aria-label="Cerrar">
-      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-    </button>
-
-    <div class="text-center space-y-2">
-      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#ff4757]/20 text-[#ff4757] mb-1 float-slow">
-        <i class="fa-solid fa-right-to-bracket text-2xl" aria-hidden="true"></i>
-      </div>
-      <h3 id="loginTitle" class="text-xl font-black">Ingreso al Sistema</h3>
-      <p class="text-xs text-gray-400">Introduce tus credenciales para acceder al punto de facturación y administración.</p>
-    </div>
-
-    <form id="formLoginPublico" class="space-y-4" novalidate>
-      <div>
-        <label for="loginUser" class="block text-[11px] uppercase font-bold tracking-wider text-gray-400 mb-1.5">Usuario</label>
-        <div class="relative">
-          <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs" aria-hidden="true"></i>
-          <input type="text" id="loginUser" required autocomplete="username" data-autofocus
-                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-xs text-white focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
-        </div>
-      </div>
-      <div>
-        <label for="loginPass" class="block text-[11px] uppercase font-bold tracking-wider text-gray-400 mb-1.5">Contraseña</label>
-        <div class="relative">
-          <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs" aria-hidden="true"></i>
-          <input type="password" id="loginPass" required autocomplete="current-password"
-                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-11 py-3 text-xs text-white focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
-          <button type="button" id="togglePass" aria-label="Mostrar u ocultar contraseña"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white p-1.5 rounded-lg transition">
-            <i class="fa-solid fa-eye text-xs" aria-hidden="true"></i>
-          </button>
-        </div>
-      </div>
-
-      <div id="loginMsgError" role="alert"
-           class="hidden text-red-400 text-xs text-center font-medium bg-red-500/10 border border-red-500/20 py-2.5 rounded-lg"></div>
-
-      <button type="submit" id="loginSubmit"
-              class="btn-glow w-full bg-[#ff4757] hover:bg-[#ff3838] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-xs transition shadow-lg shadow-[#ff4757]/30 hover:shadow-[#ff4757]/60 flex items-center justify-center gap-2 active:scale-95">
-        <span id="loginSubmitText">Entrar al panel</span>
-      </button>
-    </form>
-  </div>
-</div>
-
-<!-- =========================================================
-     TOASTS
-     ========================================================= -->
-<div id="toastHost" class="fixed bottom-24 right-5 z-[70] flex flex-col items-end gap-2 pointer-events-none"
-     role="status" aria-live="polite"></div>
+<!-- ============================ TOAST ============================ -->
+<div id="toastContainer" class="fixed bottom-24 right-6 z-[80] space-y-2 pointer-events-none"></div>
 
 <script>
-/* =========================================================================
-   Brothers Pizza · Página pública v2.1 (dinámica)
-   ========================================================================= */
-(() => {
-  'use strict';
+/* =========================================================
+   BASE DE DATOS DEL MENÚ
+   Puedes agregar productos libremente. La imagen se busca
+   automáticamente por palabras clave en `nombre` y `categoria`.
+   ========================================================= */
+const MENU = [
+  // ---------- PIZZAS ----------
+  { id: 1,  nombre: "Pizza Pepperoni",       desc: "Clásica con pepperoni, mozzarella y salsa de tomate artesanal.",      precio: 8.50,  categoria: "pizzas",    badge: "hot",   rating: 5 },
+  { id: 2,  nombre: "Pizza Margarita",       desc: "Mozzarella fresca, albahaca y tomate. La reina de las pizzas.",       precio: 7.50,  categoria: "pizzas",    rating: 5 },
+  { id: 3,  nombre: "Pizza Hawaiana",        desc: "Jamón, piña y mozzarella. Dulce y salada, ¡irresistible!",            precio: 9.00,  categoria: "pizzas",    rating: 4 },
+  { id: 4,  nombre: "Pizza Suprema",         desc: "Pepperoni, jamón, champiñones, pimiento y aceitunas.",                precio: 11.50, categoria: "pizzas",    badge: "hot",   rating: 5 },
+  { id: 5,  nombre: "Pizza BBQ Pollo",       desc: "Pollo a la parrilla, salsa BBQ, cebolla morada y mozzarella.",        precio: 10.50, categoria: "pizzas",    rating: 5 },
+  { id: 6,  nombre: "Pizza Cuatro Quesos",   desc: "Mozzarella, parmesano, cheddar y queso crema.",                       precio: 10.00, categoria: "pizzas",    rating: 5 },
 
-  /* ------------------------------ Config ------------------------------ */
-  const CONFIG = {
-    whatsapp: '593984113081',
-    deliveryMin: 5.00,
-    schedule: { open: 17 * 60, close: 22 * 60 + 30 },
-    defaultImg: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=80',
-    adminUrl: 'admin.html'
-  };
+  // ---------- ALITAS ----------
+  { id: 7,  nombre: "Alitas BBQ (6 uds)",    desc: "Alitas de pollo bañadas en salsa BBQ ahumada.",                       precio: 6.50,  categoria: "alitas",    rating: 5 },
+  { id: 8,  nombre: "Alitas Picantes (6 uds)",desc:"Alitas con salsa buffalo y toque de picante.",                        precio: 6.50,  categoria: "alitas",    badge: "hot",   rating: 4 },
 
-  const STORAGE = {
-    MENU:    'bp_menu',
-    USERS:   'bp_usuarios',
-    SESSION: 'bp_sesion_activa',
-    CART:    'bp_cart_public'
-  };
+  // ---------- ACOMPAÑANTES ----------
+  { id: 9,  nombre: "Papas Fritas",          desc: "Porción grande de papas fritas crocantes.",                           precio: 3.00,  categoria: "acompanantes", rating: 4 },
+  { id: 10, nombre: "Pan de Ajo",            desc: "Pan horneado con mantequilla de ajo y perejil.",                      precio: 3.50,  categoria: "acompanantes", rating: 5 },
+  { id: 11, nombre: "Ensalada César",        desc: "Lechuga romana, crutones, parmesano y aderezo César.",                precio: 4.50,  categoria: "acompanantes", rating: 4 },
 
-  const DEFAULT_MENU = [
-    { id: 1, nombre: 'Pizza Familiar Pepperoni', categoria: 'Pizzas',  precio: 12.00, imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&auto=format&fit=crop&q=80' },
-    { id: 2, nombre: 'Pizza Jamón y Queso',      categoria: 'Pizzas',  precio: 11.00, imagen: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=500&auto=format&fit=crop&q=80' },
-    { id: 3, nombre: 'Slice Pepperoni',          categoria: 'Pizzas',  precio: 1.50,  imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=80' },
-    { id: 4, nombre: 'Cola 1.5L',                categoria: 'Bebidas', precio: 2.25,  imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=80' },
-    { id: 5, nombre: 'Agua 500ml',               categoria: 'Bebidas', precio: 0.75,  imagen: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4c?w=500&auto=format&fit=crop&q=80' },
-    { id: 6, nombre: 'Bordes de Queso Extra',    categoria: 'Extras',  precio: 2.00,  imagen: 'https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=500&auto=format&fit=crop&q=80' }
-  ];
+  // ---------- BEBIDAS ----------
+  { id: 12, nombre: "Botella de Agua",       desc: "Agua purificada sin gas, 600 ml.",                                    precio: 1.00,  categoria: "bebidas",   rating: 5 },
+  { id: 13, nombre: "Coca Cola 500ml",       desc: "Refresco de cola bien frío.",                                        precio: 1.50,  categoria: "bebidas",   rating: 5 },
+  { id: 14, nombre: "Cerveza Pilsener",      desc: "Cerveza nacional bien fría.",                                        precio: 2.50,  categoria: "bebidas",   rating: 4 },
+  { id: 15, nombre: "Jugo Natural",          desc: "Jugo de naranja natural recién exprimido.",                          precio: 2.00,  categoria: "bebidas",   rating: 5 },
 
-  /* ------------------------------ Estado ------------------------------ */
-  let menu = [];
-  let usuarios = [];
-  let carrito = [];
-  let categoria = 'todos';
-  let busqueda = '';
-  let lastFocused = null;
-  let lastTotalShown = 0;
+  // ---------- POSTRES ----------
+  { id: 16, nombre: "Helado de Chocolate",   desc: "Dos bolas de helado de chocolate artesanal.",                        precio: 2.50,  categoria: "postres",   badge: "new", rating: 5 },
+  { id: 17, nombre: "Brownie con Helado",    desc: "Brownie tibio con helado de vainilla.",                              precio: 3.50,  categoria: "postres",   rating: 5 },
+];
 
-  /* ------------------------------ Helpers ------------------------------ */
-  const $  = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-  const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
-  const round2 = n => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const debounce = (fn, ms = 180) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
-  const loadJSON = (k, fb) => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) ?? fb : fb; } catch { return fb; } };
-  const saveJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { console.warn(e); } };
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CATEGORIAS = [
+  { id: "todos",       label: "Todos",       emoji: "🍽️" },
+  { id: "pizzas",      label: "Pizzas",      emoji: "🍕" },
+  { id: "alitas",      label: "Alitas",      emoji: "🍗" },
+  { id: "acompanantes",label: "Acompañantes",emoji: "🍟" },
+  { id: "bebidas",     label: "Bebidas",     emoji: "🥤" },
+  { id: "postres",     label: "Postres",     emoji: "🍰" },
+];
 
-  /* ------------------------------ Barra de progreso ------------------------------ */
-  function initScrollProgress() {
-    const bar = $('#scrollProgress');
-    const update = () => {
-      const h = document.documentElement;
-      const max = h.scrollHeight - h.clientHeight;
-      const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
-      bar.style.width = pct + '%';
-    };
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    update();
+/* =========================================================
+   🔎 BUSCADOR AUTOMÁTICO DE IMÁGENES
+   Detecta palabras clave en el nombre del producto y devuelve
+   una imagen apetitosa acorde (Unsplash).
+   ========================================================= */
+const IMG = {
+  // Pizzas
+  pizzaPepperoni:  "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&auto=format&fit=crop&q=80",
+  pizzaMargarita:  "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&auto=format&fit=crop&q=80",
+  pizzaHawaiana:   "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&auto=format&fit=crop&q=80",
+  pizzaSuprema:    "https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=800&auto=format&fit=crop&q=80",
+  pizzaBBQ:        "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80",
+  pizzaQuesos:     "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=800&auto=format&fit=crop&q=80",
+  pizzaGeneric:    "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80",
+
+  // Alitas
+  alitas:          "https://images.unsplash.com/photo-1608039755401-742074f0548d?w=800&auto=format&fit=crop&q=80",
+  alitasPicantes:  "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=800&auto=format&fit=crop&q=80",
+
+  // Acompañantes
+  papas:           "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=800&auto=format&fit=crop&q=80",
+  panAjo:          "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=800&auto=format&fit=crop&q=80",
+  ensalada:        "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=800&auto=format&fit=crop&q=80",
+
+  // Bebidas
+  agua:            "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=800&auto=format&fit=crop&q=80",
+  cocaCola:        "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&auto=format&fit=crop&q=80",
+  cerveza:         "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&auto=format&fit=crop&q=80",
+  jugo:            "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=800&auto=format&fit=crop&q=80",
+
+  // Postres
+  helado:          "https://images.unsplash.com/photo-1567206563064-6f60f40a2b57?w=800&auto=format&fit=crop&q=80",
+  brownie:         "https://images.unsplash.com/photo-1607920592519-bab2a80efd55?w=800&auto=format&fit=crop&q=80",
+
+  default:         "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&auto=format&fit=crop&q=80",
+};
+
+/**
+ * Devuelve la URL de una imagen apetitosa basada en el nombre
+ * del producto. Detecta palabras clave en español.
+ */
+function getImageForProduct(nombre = "", categoria = "") {
+  const n = (nombre + " " + categoria).toLowerCase();
+
+  // --- Pizzas específicas ---
+  if (n.includes("pepperoni") || n.includes("peperoni")) return IMG.pizzaPepperoni;
+  if (n.includes("margarita") || n.includes("margherita")) return IMG.pizzaMargarita;
+  if (n.includes("hawaiana") || n.includes("hawaiiana")) return IMG.pizzaHawaiana;
+  if (n.includes("suprema") || n.includes("supreme")) return IMG.pizzaSuprema;
+  if (n.includes("bbq") || n.includes("barbacoa")) return IMG.pizzaBBQ;
+  if (n.includes("cuatro queso") || n.includes("4 queso") || n.includes("quesos")) return IMG.pizzaQuesos;
+  if (n.includes("pizza")) return IMG.pizzaGeneric;
+
+  // --- Alitas ---
+  if (n.includes("alita") || n.includes("wing")) {
+    if (n.includes("picante") || n.includes("buffalo")) return IMG.alitasPicantes;
+    return IMG.alitas;
   }
 
-  /* ------------------------------ Reveal on scroll ------------------------------ */
-  function initReveal() {
-    const items = $$('.reveal');
-    if (!('IntersectionObserver' in window) || prefersReduced) {
-      items.forEach(el => el.classList.add('in'));
-      return;
-    }
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('in');
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-    items.forEach(el => io.observe(el));
+  // --- Acompañantes ---
+  if (n.includes("papa") || n.includes("frita") || n.includes("fries")) return IMG.papas;
+  if (n.includes("pan de ajo") || n.includes("ajo")) return IMG.panAjo;
+  if (n.includes("ensalada") || n.includes("salad") || n.includes("césar")) return IMG.ensalada;
+
+  // --- Bebidas ---
+  if (n.includes("agua") || n.includes("botella de agua") || n.includes("water")) return IMG.agua;
+  if (n.includes("coca") || n.includes("cola") || n.includes("pepsi") || n.includes("refresco") || n.includes("soda")) return IMG.cocaCola;
+  if (n.includes("cerveza") || n.includes("beer") || n.includes("pilsener")) return IMG.cerveza;
+  if (n.includes("jugo") || n.includes("juice") || n.includes("naranja")) return IMG.jugo;
+
+  // --- Postres ---
+  if (n.includes("helado") || n.includes("ice")) return IMG.helado;
+  if (n.includes("brownie") || n.includes("chocolate")) return IMG.brownie;
+
+  return IMG.default;
+}
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+const money = v => "$" + Number(v).toFixed(2);
+
+/* ---------- Toast ---------- */
+function toast(msg, type = "success") {
+  const cont = $("#toastContainer");
+  const el = document.createElement("div");
+  const isError = type === "error";
+  el.className = `pop-in relative overflow-hidden pointer-events-auto rounded-2xl px-5 py-3.5 shadow-2xl backdrop-blur-md border text-sm font-semibold flex items-center gap-3 ${
+    isError
+      ? "bg-[#ff4757]/15 border-[#ff4757]/40 text-[#ff8a94] toast-error"
+      : "bg-[#2ed573]/15 border-[#2ed573]/40 text-[#7bed9f]"
+  }`;
+  el.innerHTML = `
+    <i class="fa-solid ${isError ? "fa-circle-exclamation" : "fa-circle-check"} text-lg"></i>
+    <span>${msg}</span>
+    <span class="toast-bar"></span>`;
+  cont.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = "opacity .35s, transform .35s";
+    el.style.opacity = "0";
+    el.style.transform = "translateX(30px)";
+    setTimeout(() => el.remove(), 350);
+  }, 3200);
+}
+
+/* ---------- Ripple ---------- */
+document.addEventListener("click", e => {
+  const btn = e.target.closest(".ripple");
+  if (!btn) return;
+  const r = btn.getBoundingClientRect();
+  const size = Math.max(r.width, r.height);
+  const ink = document.createElement("span");
+  ink.className = "ripple-ink";
+  ink.style.width = ink.style.height = size + "px";
+  ink.style.left = (e.clientX - r.left - size / 2) + "px";
+  ink.style.top  = (e.clientY - r.top  - size / 2) + "px";
+  btn.appendChild(ink);
+  setTimeout(() => ink.remove(), 700);
+});
+
+/* ---------- Confetti ---------- */
+function confetti(x, y) {
+  const colors = ["#ff4757", "#ffa502", "#2ed573", "#ff6b35", "#ffffff"];
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement("div");
+    p.className = "confetti-piece";
+    p.style.left = x + "px";
+    p.style.top = y + "px";
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 80 + Math.random() * 140;
+    p.style.setProperty("--cx", Math.cos(angle) * dist + "px");
+    p.style.setProperty("--cy", Math.sin(angle) * dist + "px");
+    p.style.borderRadius = Math.random() > .5 ? "50%" : "2px";
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1400);
   }
+}
 
-  /* ------------------------------ Parallax suave en hero ------------------------------ */
-  function initParallax() {
-    if (prefersReduced) return;
-    const hero = $('.hero-bg');
-    if (!hero) return;
-    let raf = null;
-    window.addEventListener('scroll', () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        const y = window.scrollY;
-        if (y < 800) hero.style.backgroundPositionY = `calc(center + ${y * 0.25}px)`;
-        raf = null;
-      });
-    }, { passive: true });
+/* ---------- Fly to cart ---------- */
+function flyToCart(fromEl, imgSrc, cartBtn) {
+  const fromR = fromEl.getBoundingClientRect();
+  const toR   = cartBtn.getBoundingClientRect();
+  const ghost = document.createElement("div");
+  ghost.className = "fly-ghost";
+  ghost.style.left = fromR.left + "px";
+  ghost.style.top  = fromR.top + "px";
+  ghost.style.width = "80px";
+  ghost.style.height = "80px";
+  ghost.style.backgroundImage = `url('${imgSrc}')`;
+  document.body.appendChild(ghost);
+
+  requestAnimationFrame(() => {
+    ghost.style.left = (toR.left + toR.width / 2 - 20) + "px";
+    ghost.style.top  = (toR.top  + toR.height / 2 - 20) + "px";
+    ghost.style.width = "40px";
+    ghost.style.height = "40px";
+    ghost.style.opacity = ".5";
+    ghost.style.transform = "rotate(360deg)";
+  });
+  setTimeout(() => ghost.remove(), 900);
+}
+
+/* ---------- Plus one ---------- */
+function plusOne(x, y) {
+  const el = document.createElement("span");
+  el.className = "plus-one";
+  el.textContent = "+1";
+  el.style.left = (x - 10) + "px";
+  el.style.top  = (y - 20) + "px";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+/* =========================================================
+   ESTADO DEL CARRITO
+   ========================================================= */
+let cart = [];
+const cartFab = $("#cartFab");
+
+function renderCart() {
+  const total = cart.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  const count = cart.reduce((s, i) => s + i.cantidad, 0);
+  $(".cart-count", cartFab).textContent = count;
+  if (count > 0) {
+    cartFab.classList.remove("opacity-0", "pointer-events-none");
+    cartFab.classList.add("pulse");
+  } else {
+    cartFab.classList.add("opacity-0", "pointer-events-none");
+    cartFab.classList.remove("pulse");
   }
+}
 
-  /* ------------------------------ Ripple universal ------------------------------ */
-  function initRipple() {
-    if (prefersReduced) return;
-    document.addEventListener('click', (e) => {
-      const btn = e.target.closest('button, a');
-      if (!btn) return;
-      if (btn.classList.contains('no-ripple')) return;
-      const rect = btn.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
-      const ink = document.createElement('span');
-      ink.className = 'ripple-ink';
-      ink.style.width = ink.style.height = size + 'px';
-      ink.style.left = (e.clientX - rect.left - size / 2) + 'px';
-      ink.style.top  = (e.clientY - rect.top  - size / 2) + 'px';
-      btn.classList.add('ripple');
-      btn.appendChild(ink);
-      setTimeout(() => ink.remove(), 700);
-    }, true);
-  }
+function addToCart(producto, imgSrc, fromEl) {
+  const found = cart.find(i => i.id === producto.id);
+  if (found) found.cantidad++;
+  else cart.push({ ...producto, cantidad: 1 });
 
-  /* ------------------------------ Fly to cart ------------------------------ */
-  function flyToCart(sourceEl, imgSrc, label) {
-    if (prefersReduced) return;
-    const fab = $('#cartFab');
-    if (!fab || fab.classList.contains('hidden')) return;
-    const fabRect = fab.getBoundingClientRect();
-    const srcRect = sourceEl.getBoundingClientRect();
+  renderCart();
 
-    const ghost = document.createElement('div');
-    ghost.className = 'fly-ghost';
-    ghost.style.left = srcRect.left + 'px';
-    ghost.style.top = srcRect.top + 'px';
-    ghost.style.width = srcRect.width + 'px';
-    ghost.style.height = srcRect.height + 'px';
-    ghost.style.backgroundImage = `url('${imgSrc}')`;
-    document.body.appendChild(ghost);
+  // Efectos
+  const cartR = cartFab.getBoundingClientRect();
+  flyToCart(fromEl, imgSrc, cartFab);
+  const r = fromEl.getBoundingClientRect();
+  plusOne(r.left + r.width / 2, r.top + r.height / 2);
+  cartFab.classList.add("bump");
+  setTimeout(() => cartFab.classList.remove("bump"), 300);
 
-    requestAnimationFrame(() => {
-      ghost.style.left = (fabRect.left + fabRect.width / 2 - 22) + 'px';
-      ghost.style.top  = (fabRect.top + fabRect.height / 2 - 22) + 'px';
-      ghost.style.width = '44px';
-      ghost.style.height = '44px';
-      ghost.style.borderRadius = '50%';
-      ghost.style.opacity = '0.35';
-      ghost.style.transform = 'rotate(360deg)';
+  toast(`${producto.nombre} agregado 🍕`);
+}
+
+/* =========================================================
+   RENDER DE CATEGORÍAS Y MENÚ
+   ========================================================= */
+let currentCat = "todos";
+let currentQuery = "";
+
+function renderCategorias() {
+  const cont = $("#publicCategorias");
+  cont.innerHTML = CATEGORIAS.map(c => `
+    <button data-cat="${c.id}" type="button"
+      class="cat-chip ${c.id === currentCat ? "active" : ""} shrink-0 bg-[#12121c] border border-white/10 text-gray-300 hover:text-white hover:border-white/20 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
+      <span>${c.emoji}</span> ${c.label}
+    </button>
+  `).join("");
+
+  $$(".cat-chip", cont).forEach(btn => {
+    btn.addEventListener("click", () => {
+      currentCat = btn.dataset.cat;
+      renderCategorias();
+      renderMenu();
     });
+  });
+}
 
-    setTimeout(() => ghost.remove(), 900);
-
-    // "+1" flotante
-    const plus = document.createElement('span');
-    plus.className = 'plus-one';
-    plus.textContent = '+1';
-    plus.style.left = (srcRect.left + srcRect.width / 2 - 10) + 'px';
-    plus.style.top  = (srcRect.top + 6) + 'px';
-    document.body.appendChild(plus);
-    setTimeout(() => plus.remove(), 1000);
-
-    // Mini confeti
-    burstConfetti(srcRect.left + srcRect.width / 2, srcRect.top + srcRect.height / 2, 8);
-  }
-
-  /* ------------------------------ Confetti ------------------------------ */
-  function burstConfetti(x, y, amount = 14) {
-    if (prefersReduced) return;
-    const colors = ['#ff4757', '#2ed573', '#ffa502', '#ffd93d', '#ff6b81'];
-    for (let i = 0; i < amount; i++) {
-      const piece = document.createElement('span');
-      piece.className = 'confetti-piece';
-      const angle = (Math.PI * 2 * i) / amount + Math.random() * 0.6;
-      const dist = 60 + Math.random() * 90;
-      piece.style.setProperty('--cx', Math.cos(angle) * dist + 'px');
-      piece.style.setProperty('--cy', Math.sin(angle) * dist + 'px');
-      piece.style.left = x + 'px';
-      piece.style.top  = y + 'px';
-      piece.style.background = colors[i % colors.length];
-      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-      document.body.appendChild(piece);
-      setTimeout(() => piece.remove(), 1400);
-    }
-  }
-
-  /* ------------------------------ Toasts ------------------------------ */
-  function toast(title, message, type = 'success') {
-    const host = $('#toastHost');
-    const el = document.createElement('div');
-    const isError = type === 'error';
-
-    el.className = `pointer-events-auto relative overflow-hidden flex items-start gap-3 bg-[#111827]/95 border border-white/10 text-white px-4 py-3 pr-5 rounded-xl shadow-2xl backdrop-blur translate-y-3 opacity-0 transition-all duration-300 max-w-xs ${isError ? 'toast-error' : ''}`;
-    el.innerHTML = `
-      <div class="${isError ? 'text-red-400' : 'text-[#2ed573]'} pt-0.5 shrink-0">
-        <i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'} text-lg" aria-hidden="true"></i>
-      </div>
-      <div class="min-w-0">
-        <p class="text-xs font-bold">${esc(title)}</p>
-        <p class="text-[11px] text-gray-400 break-words">${esc(message)}</p>
-      </div>
-      <span class="toast-bar"></span>`;
-
-    host.appendChild(el);
-    requestAnimationFrame(() => el.classList.remove('translate-y-3', 'opacity-0'));
-    setTimeout(() => {
-      el.classList.add('translate-y-3', 'opacity-0');
-      setTimeout(() => el.remove(), 320);
-    }, 3200);
-  }
-
-  /* ------------------------------ Modales ------------------------------ */
-  function openModal(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    lastFocused = document.activeElement;
-    m.classList.add('modal-active');
-    document.body.style.overflow = 'hidden';
-    const target = m.querySelector('[data-autofocus]') || m.querySelector('input, select, button');
-    if (target) setTimeout(() => target.focus(), 50);
-  }
-  function closeModal(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.classList.remove('modal-active');
-    if (!$$('.modal-backdrop.modal-active').length) document.body.style.overflow = '';
-    if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
-  }
-
-  /* =========================================================================
-     ESTADO ABIERTO / CERRADO
-     ========================================================================= */
-  function renderStatus() {
-    const now = new Date();
-    const mins = now.getHours() * 60 + now.getMinutes();
-    const { open, close } = CONFIG.schedule;
-    const isOpen = mins >= open && mins <= close;
-
-    const dot = $('#statusDot');
-    const txt = $('#statusText');
-
-    if (isOpen) {
-      dot.className = 'w-2 h-2 rounded-full bg-[#2ed573] dot-live';
-      const remaining = close - mins;
-      const h = Math.floor(remaining / 60);
-      const m = remaining % 60;
-      txt.innerHTML = `<span class="text-[#2ed573] font-bold">● Abierto ahora</span> · Cerramos en ${h}h ${m}m · Pedidos: <span class="text-white tabular-nums">098 411 3081</span>`;
-      document.body.classList.remove('is-closed');
-      const fab = $('#cartFab');
-      if (fab && !fab.classList.contains('hidden')) fab.classList.add('pulse');
-    } else {
-      dot.className = 'w-2 h-2 rounded-full bg-red-500';
-      const isBefore = mins < open;
-      const diff = isBefore ? open - mins : (24 * 60 - mins) + open;
-      const h = Math.floor(diff / 60);
-      const m = diff % 60;
-      txt.innerHTML = `<span class="text-red-400 font-bold">● Cerrado ahora</span> · Abrimos en ${h}h ${m}m (17:00) · Pedidos: <span class="text-white tabular-nums">098 411 3081</span>`;
-      document.body.classList.add('is-closed');
-      const fab = $('#cartFab');
-      if (fab) fab.classList.remove('pulse');
-    }
-  }
-
-  /* =========================================================================
-     MENÚ PÚBLICO
-     ========================================================================= */
-  function renderCategorias() {
-    const host = $('#publicCategorias');
-    const cats = ['todos', ...Array.from(new Set(menu.map(p => p.categoria)))];
-    host.innerHTML = cats.map(c => `
-      <button type="button" data-cat="${esc(c)}"
-              class="pub-cat-btn px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition active:scale-95 ${
-                categoria === c
-                  ? 'bg-[#ff4757] text-white shadow-lg shadow-[#ff4757]/30'
-                  : 'bg-[#111827] border border-white/10 text-gray-400 hover:text-white hover:border-[#ff4757]/40'
-              }">
-        ${c === 'todos' ? 'Todos' : esc(c)}
-      </button>
-    `).join('');
-  }
-
-  function renderMenuPublico() {
-    const grid = $('#publicMenuGrid');
-    const q = busqueda.trim().toLowerCase();
-
-    const list = menu.filter(p =>
-      (categoria === 'todos' || p.categoria === categoria) &&
-      (!q || p.nombre.toLowerCase().includes(q))
+function renderMenu() {
+  const grid = $("#publicMenuGrid");
+  let list = MENU;
+  if (currentCat !== "todos") list = list.filter(p => p.categoria === currentCat);
+  if (currentQuery.trim()) {
+    const q = currentQuery.toLowerCase();
+    list = list.filter(p =>
+      p.nombre.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)
     );
+  }
 
-    if (!list.length) {
-      grid.innerHTML = `
-        <div class="col-span-full text-center py-12 text-sm text-gray-500 pop-in">
-          <i class="fa-solid fa-magnifying-glass text-3xl block mb-3 opacity-40" aria-hidden="true"></i>
-          No hay productos disponibles con esos filtros.
-        </div>`;
-      return;
-    }
+  if (!list.length) {
+    grid.innerHTML = `
+      <div class="empty-state col-span-full text-center py-16 space-y-4">
+        <div class="text-6xl">🍽️</div>
+        <h3 class="font-display text-3xl text-gray-300">Sin resultados</h3>
+        <p class="text-sm text-gray-500">Intenta con otra búsqueda o categoría.</p>
+      </div>`;
+    return;
+  }
 
-    grid.innerHTML = list.map((p, i) => {
-      const enCarrito = carrito.find(it => it.id === p.id);
-      return `
-        <article class="product-card bg-[#111827] border border-white/10 rounded-3xl overflow-hidden shadow-xl flex flex-col" style="animation-delay:${i * 60}ms">
-          <div class="h-48 w-full overflow-hidden bg-black/40 relative">
-            <img src="${esc(p.imagen || CONFIG.defaultImg)}" alt="${esc(p.nombre)}" loading="lazy"
-                 class="product-img w-full h-full object-cover"
-                 onerror="this.src='${CONFIG.defaultImg}'">
-            <span class="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-white/10">
-              ${esc(p.categoria)}
-            </span>
-            ${enCarrito ? `
-              <span class="absolute top-3 left-3 bg-[#2ed573] text-black text-[10px] font-black px-2.5 py-1 rounded-full tabular-nums shadow-lg pop-in">
-                ${enCarrito.cantidad} en pedido
-              </span>` : ''}
+  grid.innerHTML = list.map((p, idx) => {
+    const img = getImageForProduct(p.nombre, p.categoria);
+    const badgeHTML =
+      p.badge === "hot"  ? `<span class="badge-hot absolute top-3 left-3 z-10 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-fire"></i> Popular</span>` :
+      p.badge === "new"  ? `<span class="badge-new absolute top-3 left-3 z-10 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star"></i> Nuevo</span>` :
+      p.badge === "promo"? `<span class="badge-promo absolute top-3 left-3 z-10 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-tag"></i> Promo</span>` : "";
+
+    const stars = p.rating
+      ? `<div class="stars flex items-center gap-0.5 text-[#ffa502]">${Array.from({length:5}).map((_,i)=>`<i class="fa-solid fa-star ${i < p.rating ? "" : "opacity-25"}"></i>`).join("")}<span class="text-[10px] text-gray-400 ml-1.5 font-semibold">${p.rating}.0</span></div>`
+      : "";
+
+    return `
+      <article class="product-card bg-[#12121c] border border-white/10 rounded-3xl overflow-hidden flex flex-col" style="animation-delay:${idx * 40}ms">
+        <div class="img-frame h-52 relative">
+          ${badgeHTML}
+          <img src="${img}" alt="${p.nombre}" loading="lazy"
+               class="product-img w-full h-full object-cover"
+               onerror="this.src='${IMG.default}'">
+          <!-- emoji decorativo -->
+          <div class="absolute top-3 right-3 z-10 text-3xl drop-shadow-[0_4px_10px_rgba(0,0,0,.6)]">
+            ${p.categoria === "pizzas" ? "🍕" : p.categoria === "bebidas" ? "🥤" : p.categoria === "postres" ? "🍰" : p.categoria === "alitas" ? "🍗" : "🍟"}
           </div>
-
-          <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
-            <div>
-              <h4 class="font-bold text-base mb-1">${esc(p.nombre)}</h4>
-              <p class="text-[#2ed573] font-black text-lg tabular-nums">${money(p.precio)}</p>
-            </div>
-            <div class="grid grid-cols-[1fr_auto] gap-2">
-              <button type="button" data-action="add-cart" data-id="${p.id}"
-                      class="w-full bg-[#1f2937] hover:bg-[#ff4757] text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 border border-white/10 hover:border-transparent active:scale-[.97]">
-                <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i> Agregar
-              </button>
-              <a href="https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(`Hola, deseo pedir ${p.nombre} por valor de ${money(p.precio)}`)}"
-                 target="_blank" rel="noopener" title="Pedir solo este producto"
-                 class="bg-[#2ed573]/10 hover:bg-[#2ed573]/20 border border-[#2ed573]/30 text-[#2ed573] w-11 grid place-items-center rounded-xl transition hover:scale-105 active:scale-95">
-                <i class="fa-brands fa-whatsapp text-base" aria-hidden="true"></i>
-              </a>
-            </div>
+          <!-- steam -->
+          <div class="steam absolute bottom-4 left-1/2 -translate-x-1/2 w-16 h-12 pointer-events-none">
+            <span style="left:20%;animation-delay:0s"></span>
+            <span style="left:50%;animation-delay:.7s"></span>
+            <span style="left:75%;animation-delay:1.3s"></span>
           </div>
-        </article>
-      `;
-    }).join('');
-  }
+        </div>
 
-  /* =========================================================================
-     CARRITO
-     ========================================================================= */
-  function addToCart(id, sourceEl) {
-    const prod = menu.find(p => p.id === id);
-    if (!prod) return;
-
-    const existing = carrito.find(i => i.id === id);
-    if (existing) existing.cantidad += 1;
-    else carrito.push({ id: prod.id, nombre: prod.nombre, categoria: prod.categoria, precio: prod.precio, cantidad: 1 });
-
-    persistCart();
-    renderMenuPublico();
-    updateCartFab(true);
-
-    // Animación de vuelo al carrito si tenemos referencia de origen
-    const img = prod.imagen || CONFIG.defaultImg;
-    const origin = sourceEl || event?.target?.closest('.product-card')?.querySelector('img');
-    if (origin) flyToCart(origin, img, prod.nombre);
-
-    const fab = $('#cartFab');
-    fab.classList.add('bump');
-    setTimeout(() => fab.classList.remove('bump'), 260);
-
-    toast('Añadido al pedido', `${prod.nombre} · ${money(prod.precio)}`);
-  }
-
-  function changeQty(id, delta) {
-    const item = carrito.find(i => i.id === id);
-    if (!item) return;
-    item.cantidad += delta;
-    if (item.cantidad <= 0) carrito = carrito.filter(i => i.id !== id);
-    persistCart();
-    renderCart();
-    renderMenuPublico();
-    updateCartFab();
-  }
-
-  function removeItem(id) {
-    carrito = carrito.filter(i => i.id !== id);
-    persistCart();
-    renderCart();
-    renderMenuPublico();
-    updateCartFab();
-  }
-
-  function clearCart() {
-    carrito = [];
-    persistCart();
-    renderCart();
-    renderMenuPublico();
-    updateCartFab();
-  }
-
-  const persistCart = () => saveJSON(STORAGE.CART, carrito);
-  const cartTotal = () => round2(carrito.reduce((s, i) => s + i.precio * i.cantidad, 0));
-  const cartCount = () => carrito.reduce((s, i) => s + i.cantidad, 0);
-
-  function updateCartFab(bump) {
-    const fab = $('#cartFab');
-    const total = cartCount();
-    fab.classList.toggle('hidden', total === 0);
-    fab.querySelector('.cart-count').textContent = total;
-    // pulso mientras esté abierto
-    if (!document.body.classList.contains('is-closed')) fab.classList.add('pulse');
-    if (bump) {
-      fab.classList.add('bump');
-      setTimeout(() => fab.classList.remove('bump'), 260);
-    }
-  }
-
-  function renderCart() {
-    const host = $('#cartItems');
-    const count = cartCount();
-    $('#cartModalCount').textContent = count;
-
-    if (!carrito.length) {
-      host.innerHTML = `
-        <div class="text-center py-12 text-xs text-gray-500 pop-in">
-          <i class="fa-solid fa-basket-shopping text-3xl block mb-3 opacity-40" aria-hidden="true"></i>
-          Tu pedido está vacío. Agrega productos desde el menú.
-        </div>`;
-    } else {
-      host.innerHTML = carrito.map((item, idx) => `
-        <div class="flex items-center gap-3 bg-black/30 p-3 rounded-2xl border border-white/5 pop-in" style="animation-delay:${idx * 30}ms">
-          <div class="flex-1 min-w-0">
-            <p class="text-xs font-bold text-white truncate">${esc(item.nombre)}</p>
-            <p class="text-[10px] text-gray-400 tabular-nums">${money(item.precio)} c/u · ${esc(item.categoria)}</p>
+        <div class="p-5 flex-1 flex flex-col gap-3 relative z-10">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="font-bold text-base leading-tight">${p.nombre}</h3>
+            <span class="text-[#ffa502] font-display text-2xl shrink-0">${money(p.precio)}</span>
           </div>
-          <div class="flex items-center gap-1 bg-[#1f2937] rounded-lg border border-white/10 p-1 shrink-0">
-            <button type="button" data-action="qty-dec" data-id="${item.id}"
-                    class="w-6 h-6 grid place-items-center rounded text-gray-400 hover:text-white hover:bg-white/10 transition active:scale-90"
-                    aria-label="Quitar una unidad de ${esc(item.nombre)}">−</button>
-            <span class="text-xs font-bold text-white w-6 text-center tabular-nums">${item.cantidad}</span>
-            <button type="button" data-action="qty-inc" data-id="${item.id}"
-                    class="w-6 h-6 grid place-items-center rounded text-gray-400 hover:text-white hover:bg-white/10 transition active:scale-90"
-                    aria-label="Agregar una unidad de ${esc(item.nombre)}">+</button>
-          </div>
-          <span class="text-xs font-black text-[#2ed573] w-16 text-right tabular-nums shrink-0">${money(item.precio * item.cantidad)}</span>
-          <button type="button" data-action="remove-item" data-id="${item.id}"
-                  class="w-6 h-6 grid place-items-center text-gray-500 hover:text-red-400 rounded transition shrink-0"
-                  aria-label="Eliminar ${esc(item.nombre)}">
-            <i class="fa-solid fa-xmark text-xs" aria-hidden="true"></i>
+          <p class="text-xs text-gray-400 leading-relaxed line-clamp-2">${p.desc}</p>
+          ${stars}
+          <button type="button"
+            class="add-btn ripple mt-auto btn-glow w-full bg-gradient-to-r from-[#ff4757] to-[#ff6b35] hover:from-[#ff3838] hover:to-[#ff5522] text-white font-bold py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-[#ff4757]/30 hover:shadow-[#ff4757]/60 active:scale-[.97]"
+            data-id="${p.id}">
+            <i class="fa-solid fa-cart-plus"></i> Agregar al pedido
           </button>
         </div>
-      `).join('');
-    }
+      </article>
+    `;
+  }).join("");
 
-    // Total con animación de contador
-    const total = cartTotal();
-    animateTotal(lastTotalShown, total);
-    lastTotalShown = total;
-
-    const minHint = $('#cartMinHint');
-    if (total > 0 && total < CONFIG.deliveryMin) {
-      minHint.classList.remove('hidden');
-      $('#cartMinAmount').textContent = money(CONFIG.deliveryMin - total);
-    } else {
-      minHint.classList.add('hidden');
-    }
-  }
-
-  function animateTotal(from, to) {
-    const el = $('#cartTotal');
-    if (prefersReduced || from === to) {
-      el.textContent = money(to);
-      return;
-    }
-    const duration = 380;
-    const start = performance.now();
-    const step = (now) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      const val = from + (to - from) * eased;
-      el.textContent = money(val);
-      if (t < 1) requestAnimationFrame(step);
-      else el.textContent = money(to);
-    };
-    requestAnimationFrame(step);
-    el.classList.remove('count-flash');
-    void el.offsetWidth;
-    el.classList.add('count-flash');
-  }
-
-  function checkoutWhatsApp() {
-    if (!carrito.length) {
-      toast('Pedido vacío', 'Agrega productos antes de enviar.', 'error');
-      return;
-    }
-
-    const nota = ($('#cartNote').value || '').trim();
-    const total = cartTotal();
-
-    const lineas = carrito
-      .map(i => `• ${i.cantidad}× ${i.nombre} — ${money(i.precio * i.cantidad)}`)
-      .join('\n');
-
-    const msg = [
-      '¡Hola Brothers Pizza! 🍕',
-      'Quisiera hacer el siguiente pedido:',
-      '',
-      lineas,
-      '',
-      `*Total: ${money(total)}*`,
-      nota ? `\n📌 ${nota}` : '',
-      total < CONFIG.deliveryMin
-        ? `\n⚠️ (Mi pedido no alcanza el mínimo de delivery de ${money(CONFIG.deliveryMin)}; consultaré disponibilidad).`
-        : ''
-    ].filter(Boolean).join('\n');
-
-    const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank', 'noopener');
-
-    // Mini festejo
-    const rect = $('#cartFab').getBoundingClientRect();
-    burstConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2, 18);
-
-    toast('Pedido enviado', 'Continuamos la conversación por WhatsApp.');
-  }
-
-  /* =========================================================================
-     LOGIN
-     ========================================================================= */
-  function loadUsers() {
-    const saved = loadJSON(STORAGE.USERS, null);
-    if (Array.isArray(saved) && saved.length) return saved;
-    return [{ id: 1, nombre: 'Osvaldo', user: 'admin', pass: 'admin123', rol: 'Administrador' }];
-  }
-
-  function initLogin() {
-    $('#togglePass').addEventListener('click', () => {
-      const input = $('#loginPass');
-      const icon = $('#togglePass').querySelector('i');
-      const show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      icon.className = `fa-solid ${show ? 'fa-eye-slash' : 'fa-eye'} text-xs`;
-      input.focus();
-    });
-
-    ['#loginUser', '#loginPass'].forEach(sel =>
-      $(sel).addEventListener('input', () => $('#loginMsgError').classList.add('hidden'))
-    );
-
-    $('#formLoginPublico').addEventListener('submit', procesarIngreso);
-  }
-
-  function procesarIngreso(e) {
-    e.preventDefault();
-
-    const user = $('#loginUser').value.trim();
-    const pass = $('#loginPass').value.trim();
-    const err  = $('#loginMsgError');
-    const btn  = $('#loginSubmit');
-    const text = $('#loginSubmitText');
-
-    if (!user || !pass) {
-      err.textContent = 'Completa usuario y contraseña.';
-      err.classList.remove('hidden');
-      return;
-    }
-
-    btn.disabled = true;
-    text.textContent = 'Verificando…';
-    btn.insertAdjacentHTML('beforeend', '<span class="spinner"></span>');
-
-    setTimeout(() => {
-      btn.disabled = false;
-      text.textContent = 'Entrar al panel';
-      const sp = btn.querySelector('.spinner');
-      if (sp) sp.remove();
-
-      usuarios = loadUsers();
-      const found = usuarios.find(u => u.user === user && u.pass === pass);
-
-      if (!found) {
-        err.textContent = 'Usuario o contraseña incorrectos.';
-        err.classList.remove('hidden');
-        $('#formLoginPublico').classList.add('shake');
-        setTimeout(() => $('#formLoginPublico').classList.remove('shake'), 500);
-        $('#loginPass').select();
-        return;
-      }
-
-      saveJSON(STORAGE.SESSION, found);
-      toast('Acceso concedido', `Bienvenido, ${found.nombre}. Redirigiendo…`);
-
-      setTimeout(() => { window.location.href = CONFIG.adminUrl; }, 500);
-    }, 500);
-  }
-
-  /* =========================================================================
-     EVENTOS
-     ========================================================================= */
-  function bindEvents() {
-    $('#publicCategorias').addEventListener('click', e => {
-      const btn = e.target.closest('[data-cat]');
-      if (!btn) return;
-      categoria = btn.dataset.cat;
-      renderCategorias();
-      renderMenuPublico();
-    });
-
-    $('#menuSearch').addEventListener('input', debounce(e => {
-      busqueda = e.target.value;
-      renderMenuPublico();
-    }, 180));
-
-    $('#publicMenuGrid').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action="add-cart"]');
-      if (!btn) return;
-      const card = btn.closest('.product-card');
-      const img  = card ? card.querySelector('img') : null;
-      addToCart(Number(btn.dataset.id), img);
-    });
-
-    $('#cartItems').addEventListener('click', e => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
+  // Listeners
+  $$(".add-btn", grid).forEach(btn => {
+    btn.addEventListener("click", e => {
       const id = Number(btn.dataset.id);
-      switch (btn.dataset.action) {
-        case 'qty-inc':     changeQty(id, 1); break;
-        case 'qty-dec':     changeQty(id, -1); break;
-        case 'remove-item': removeItem(id); break;
-      }
+      const p = MENU.find(m => m.id === id);
+      const card = btn.closest(".product-card");
+      const imgEl = $(".product-img", card);
+      const img = imgEl ? imgEl.src : IMG.default;
+      addToCart(p, img, card);
+      confetti(e.clientX, e.clientY);
     });
+  });
+}
 
-    $('[data-action="clear-cart"]').addEventListener('click', clearCart);
-    $('[data-action="checkout-wa"]').addEventListener('click', checkoutWhatsApp);
-    $('#cartFab').addEventListener('click', () => {
-      renderCart();
-      openModal('modalCart');
-    });
+/* =========================================================
+   BUSCADOR
+   ========================================================= */
+$("#menuSearch").addEventListener("input", e => {
+  currentQuery = e.target.value;
+  renderMenu();
+});
 
-    document.addEventListener('click', e => {
-      if (e.target.closest('[data-action="open-login"]')) openModal('modalLogin');
-    });
+/* =========================================================
+   ESTADO ABIERTO / CERRADO
+   Horario: 17:00 - 22:30 todos los días
+   ========================================================= */
+function updateStatus() {
+  const now = new Date();
+  const h = now.getHours() + now.getMinutes() / 60;
+  const open = h >= 17 && h <= 22.5;
+  const dot = $("#statusDot");
+  const txt = $("#statusText");
+  const body = document.body;
 
-    $$('[data-close-modal]').forEach(btn =>
-      btn.addEventListener('click', () => closeModal(btn.dataset.closeModal))
-    );
-
-    $$('.modal-backdrop').forEach(m => {
-      m.addEventListener('mousedown', e => {
-        if (e.target === m) closeModal(m.id);
-      });
-    });
-
-    document.addEventListener('keydown', e => {
-      if (e.key !== 'Escape') return;
-      const open = $$('.modal-backdrop.modal-active')[0];
-      if (open) closeModal(open.id);
-    });
+  if (open) {
+    dot.className = "w-2 h-2 rounded-full bg-[#2ed573] dot-live";
+    txt.innerHTML = `<span class="text-[#2ed573] font-bold">ABIERTO AHORA</span> · Cerramos a las 22:30`;
+    body.classList.remove("is-closed");
+  } else {
+    dot.className = "w-2 h-2 rounded-full bg-[#ff4757]";
+    txt.innerHTML = `<span class="text-[#ff4757] font-bold">CERRADO</span> · Abrimos a las 17:00`;
+    body.classList.add("is-closed");
   }
+}
 
-  /* =========================================================================
-     INICIALIZACIÓN
-     ========================================================================= */
-  function init() {
-    menu = loadJSON(STORAGE.MENU, null) || DEFAULT_MENU.map(p => ({ ...p }));
-    usuarios = loadUsers();
-    carrito = loadJSON(STORAGE.CART, []) || [];
+/* =========================================================
+   SCROLL PROGRESS + REVEAL
+   ========================================================= */
+function updateProgress() {
+  const h = document.documentElement;
+  const scrollable = h.scrollHeight - h.clientHeight;
+  const pct = scrollable > 0 ? (h.scrollTop / scrollable) * 100 : 0;
+  $("#scrollProgress").style.width = pct + "%";
+}
+window.addEventListener("scroll", updateProgress, { passive: true });
 
-    const idsMenu = new Set(menu.map(p => p.id));
-    carrito = carrito.filter(i => idsMenu.has(i.id));
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) {
+      en.target.classList.add("in");
+      io.unobserve(en.target);
+    }
+  });
+}, { threshold: 0.12 });
 
-    $('#footerYear').textContent = new Date().getFullYear();
+function observeReveals() {
+  $$(".reveal").forEach(el => io.observe(el));
+}
 
-    renderCategorias();
-    renderMenuPublico();
-    renderCart();
-    lastTotalShown = cartTotal();
-    updateCartFab();
-    renderStatus();
+/* =========================================================
+   CARRITO FAB → WhatsApp
+   ========================================================= */
+cartFab.addEventListener("click", () => {
+  if (!cart.length) return;
+  const total = cart.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  let msg = "¡Hola Brothers Pizza! 🍕 Quiero hacer el siguiente pedido:%0A%0A";
+  cart.forEach(i => {
+    msg += `• ${i.cantidad}x ${i.nombre} — ${money(i.precio * i.cantidad)}%0A`;
+  });
+  msg += `%0A*Total: ${money(total)}*%0A%0A¡Gracias!`;
 
-    setInterval(renderStatus, 60_000);
-
-    window.addEventListener('storage', e => {
-      if (e.key === STORAGE.MENU) {
-        menu = loadJSON(STORAGE.MENU, null) || menu;
-        const ids = new Set(menu.map(p => p.id));
-        carrito = carrito.filter(i => ids.has(i.id));
-        persistCart();
-        renderCategorias();
-        renderMenuPublico();
-        renderCart();
-        updateCartFab();
-      }
-      if (e.key === STORAGE.USERS) usuarios = loadUsers();
-    });
-
-    bindEvents();
-    initLogin();
-    initScrollProgress();
-    initReveal();
-    initParallax();
-    initRipple();
-
-    // Pequeña animación de entrada cuando carga todo
-    setTimeout(() => {
-      const fab = $('#cartFab');
-      if (fab && !fab.classList.contains('hidden') && !document.body.classList.contains('is-closed')) {
-        fab.classList.add('pulse');
-      }
-    }, 400);
+  if (total < 5) {
+    toast("El mínimo para delivery es $5.00", "error");
+    return;
   }
+  window.open(`https://wa.me/593984113081?text=${msg}`, "_blank");
+});
 
-  document.addEventListener('DOMContentLoaded', init);
-})();
+/* =========================================================
+   INIT
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  $("#year").textContent = new Date().getFullYear();
+  renderCategorias();
+  renderMenu();
+  observeReveals();
+  updateStatus();
+  updateProgress();
+  setInterval(updateStatus, 60000);
+});
 </script>
 </body>
 </html>
