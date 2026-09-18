@@ -1,767 +1,667 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brother's Pizza | Panel de Administración</title>
+    <title>Panel Admin Brother's Pizza</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        pizza: {
+                            50: '#fff1f2',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            900: '#7f1d1d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #121212;
-            color: #f1f2f6;
-            font-family: system-ui, -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #18181b; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+        .glass-panel {
+            background: rgba(24, 24, 27, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .modal-active {
-            display: flex !important;
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
         }
+        .glow-effect { animation: pulse-glow 3s infinite; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col md:flex-row">
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col">
 
-    <!-- LOGIN CONTAINER -->
-    <div id="loginSection" class="fixed inset-0 z-50 bg-[#121212] flex items-center justify-center p-4">
-        <div class="bg-[#1e1e1e] p-6 sm:p-8 rounded-2xl border border-white/10 w-full max-w-md shadow-2xl">
-            <div class="text-center mb-6">
-                <i class="fa-solid fa-pizza-slice text-4xl text-[#ff4757] mb-2"></i>
-                <h2 class="text-2xl font-bold">Brother's Pizza</h2>
-                <p class="text-gray-400 text-xs sm:text-sm">Control de Acceso y Operaciones</p>
+    <header class="glass-panel sticky top-0 z-50 px-6 py-4 flex justify-between items-center border-b border-zinc-800">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-tr from-pizza-600 to-amber-500 p-2.5 rounded-xl text-white shadow-lg glow-effect">
+                <i class="fa-solid fa-pizza-slice text-xl"></i>
             </div>
-            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Usuario</label>
-                    <input type="text" id="userInput" required class="w-full bg-[#121212] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#ff4757]">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase font-semibold text-gray-400 mb-1">Contraseña</label>
-                    <input type="password" id="passInput" required class="w-full bg-[#121212] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#ff4757]">
-                </div>
-                <div id="loginError" class="text-red-500 text-xs text-center hidden">
-                    Usuario o contraseña incorrectos.
-                </div>
-                <button type="submit" class="w-full bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-[#ff4757]/20">
-                    Ingresar al Sistema
-                </button>
-            </form>
-            <div class="mt-4 text-center">
-                <a href="index.html" class="text-xs text-gray-400 hover:underline">← Volver a la página principal</a>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-white">Brother's Pizza</h1>
+                <p class="text-xs text-zinc-400">Panel Administrativo & Sistema POS Pro</p>
             </div>
         </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="hidden md:flex space-x-1 bg-zinc-900/80 p-1.5 rounded-xl border border-zinc-800">
+            <button onclick="switchTab('pos')" id="tab-pos" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-pizza-600 text-white shadow">
+                <i class="fa-solid fa-cash-register mr-2"></i>Punto de Venta
+            </button>
+            <button onclick="switchTab('products')" id="tab-products" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-zinc-400 hover:text-white hover:bg-zinc-800">
+                <i class="fa-solid fa-utensils mr-2"></i>Gestionar Menú
+            </button>
+            <button onclick="switchTab('stats')" id="tab-stats" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-zinc-400 hover:text-white hover:bg-zinc-800">
+                <i class="fa-solid fa-chart-pie mr-2"></i>Estadísticas y Ventas
+            </button>
+        </nav>
+
+        <div class="flex items-center space-x-3">
+            <div class="text-right hidden sm:block">
+                <span class="block text-sm font-semibold text-zinc-200">Admin General</span>
+                <span class="block text-xs text-emerald-400"><i class="fa-solid fa-circle text-[8px] mr-1"></i>En Línea</span>
+            </div>
+            <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-pizza-500 to-amber-600 flex items-center justify-center font-bold text-white shadow">
+                BP
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Nav Bar -->
+    <div class="md:hidden flex justify-around bg-zinc-900 border-b border-zinc-800 p-2">
+        <button onclick="switchTab('pos')" id="mob-tab-pos" class="flex-1 py-2 text-center text-xs font-semibold text-pizza-500 border-b-2 border-pizza-500">POS</button>
+        <button onclick="switchTab('products')" id="mob-tab-products" class="flex-1 py-2 text-center text-xs font-semibold text-zinc-400">Menú</button>
+        <button onclick="switchTab('stats')" id="mob-tab-stats" class="flex-1 py-2 text-center text-xs font-semibold text-zinc-400">Reportes</button>
     </div>
 
-    <!-- MAIN PANEL -->
-    <div id="mainPanel" class="flex-1 flex flex-col md:flex-row hidden w-full min-h-screen">
-        <!-- SIDEBAR / MENÚ MÓVIL SUPERIOR -->
-        <aside class="w-full md:w-64 bg-[#1e1e1e] border-b md:border-b-0 md:border-r border-white/10 flex flex-col justify-between p-4 sticky top-0 z-30 md:relative">
-            <div class="flex flex-col md:flex-row md:flex-col justify-between items-center md:items-stretch gap-4">
-                <div class="flex items-center justify-between w-full md:w-auto px-2 py-2">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-pizza-slice text-[#ff4757] text-xl"></i>
-                        <span class="font-bold text-base sm:text-lg">Brother's Pizza</span>
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 overflow-hidden">
+
+        <!-- ================= SECTION 1: POS (PUNTO DE VENTA) ================= -->
+        <div id="section-pos" class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+            <!-- Products Catalog -->
+            <div class="lg:col-span-7 xl:col-span-8 flex flex-col space-y-4">
+                <!-- Search & Filters -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-between items-center bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800">
+                    <div class="relative w-full sm:w-72">
+                        <i class="fa-solid fa-search absolute left-3.5 top-3 text-zinc-400"></i>
+                        <input type="text" id="pos-search" oninput="filterCatalog()" placeholder="Buscar producto..." class="w-full bg-zinc-950 border border-zinc-700 rounded-xl pl-10 pr-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500 transition-colors">
                     </div>
-                    <div class="md:hidden flex items-center gap-2">
-                        <div id="mobileUserAvatarContainer" class="w-7 h-7 rounded-full overflow-hidden bg-white/10 flex items-center justify-center shrink-0">
-                            <!-- Avatar móvil inyectado -->
+                    <div id="pos-categories" class="flex gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+                        <button onclick="filterCategory('all')" class="category-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-pizza-600 text-white whitespace-nowrap shadow">Todos</button>
+                        <button onclick="filterCategory('pizza')" class="category-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700 whitespace-nowrap">Pizzas</button>
+                        <button onclick="filterCategory('bebida')" class="category-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700 whitespace-nowrap">Bebidas</button>
+                        <button onclick="filterCategory('extra')" class="category-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700 whitespace-nowrap">Extras</button>
+                    </div>
+                </div>
+
+                <!-- Product Grid -->
+                <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto max-h-[calc(100vh-260px)] pr-1">
+                    <!-- Dynamic Items rendered via JS -->
+                </div>
+            </div>
+
+            <!-- Cart & Order Checkout -->
+            <div class="lg:col-span-5 xl:col-span-4 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between h-[calc(100vh-140px)] md:h-[calc(100vh-120px)] shadow-xl">
+                <div>
+                    <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-3">
+                        <h2 class="font-bold text-base flex items-center text-zinc-200">
+                            <i class="fa-solid fa-receipt text-pizza-500 mr-2"></i>Orden Actual
+                        </h2>
+                        <button onclick="clearCart()" class="text-xs text-zinc-400 hover:text-red-400 transition-colors bg-zinc-800 px-2.5 py-1 rounded-lg">
+                            <i class="fa-solid fa-trash mr-1"></i>Limpiar
+                        </button>
+                    </div>
+
+                    <!-- Client Name / Table -->
+                    <div class="mb-3">
+                        <label class="block text-xs text-zinc-400 mb-1">Cliente / Mesa</label>
+                        <input type="text" id="order-client" value="Mesa 01 - General" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-1.5 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
+                    </div>
+
+                    <!-- Cart Items Container -->
+                    <div id="cart-items" class="space-y-2 overflow-y-auto max-h-[calc(100vh-380px)] pr-1">
+                        <div class="text-center py-12 text-zinc-500 text-sm">
+                            <i class="fa-solid fa-basket-shopping text-3xl mb-2 block opacity-40"></i>
+                            El carrito está vacío
                         </div>
-                        <span id="mobileUserBadge" class="text-xs bg-white/10 px-2.5 py-1 rounded-full font-semibold truncate max-w-[100px]"></span>
-                        <button onclick="handleLogout()" title="Salir" class="text-red-400 p-2">
-                            <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                    </div>
+                </div>
+
+                <!-- Cart Totals & Checkout Actions -->
+                <div class="border-t border-zinc-800 pt-3 space-y-2 mt-auto">
+                    <div class="flex justify-between text-xs text-zinc-400">
+                        <span>Subtotal</span>
+                        <span id="cart-subtotal">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-xs text-zinc-400">
+                        <span>Impuestos (12%)</span>
+                        <span id="cart-tax">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-base font-bold text-white pt-1 border-t border-zinc-800/60">
+                        <span>Total a Pagar</span>
+                        <span id="cart-total" class="text-pizza-500">$0.00</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-2">
+                        <button onclick="checkoutOrder('Efectivo')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 py-2.5 rounded-xl font-medium text-xs transition-colors border border-zinc-700">
+                            <i class="fa-solid fa-money-bill-wave text-emerald-400 mr-1.5"></i>Efectivo
+                        </button>
+                        <button onclick="checkoutOrder('Tarjeta')" class="w-full bg-pizza-600 hover:bg-pizza-700 text-white py-2.5 rounded-xl font-medium text-xs transition-colors shadow-lg shadow-pizza-600/30">
+                            <i class="fa-solid fa-credit-card mr-1.5"></i>Tarjeta / QR
                         </button>
                     </div>
                 </div>
-
-                <!-- NAVEGACIÓN TABS (DINÁMICA SEGÚN ROL) -->
-                <nav id="navTabsContainer" class="flex md:flex-col gap-1 w-full overflow-x-auto pb-2 md:pb-0">
-                    <button onclick="switchTab('ventas')" id="btnTabVentas" class="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2.5 px-3 py-2.5 md:px-4 md:py-3 rounded-xl bg-[#2ed573]/10 text-[#2ed573] font-semibold text-xs sm:text-sm transition text-left whitespace-nowrap">
-                        <i class="fa-solid fa-cart-shopping w-5 text-center"></i> <span>Registrar Pedidos</span>
-                    </button>
-                    <button onclick="switchTab('inventario')" id="btnTabInventario" class="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2.5 px-3 py-2.5 md:px-4 md:py-3 rounded-xl text-gray-400 hover:bg-white/5 font-semibold text-xs sm:text-sm transition text-left whitespace-nowrap">
-                        <i class="fa-solid fa-boxes-stacked w-5 text-center"></i> <span>Inventario</span>
-                    </button>
-                    <button onclick="switchTab('usuarios')" id="btnTabUsuarios" class="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2.5 px-3 py-2.5 md:px-4 md:py-3 rounded-xl text-gray-400 hover:bg-white/5 font-semibold text-xs sm:text-sm transition text-left whitespace-nowrap">
-                        <i class="fa-solid fa-users-gear w-5 text-center"></i> <span>Trabajadores y Permisos</span>
-                    </button>
-                </nav>
             </div>
+        </div>
 
-            <!-- PERFIL ESCRITORIO -->
-            <div class="hidden md:flex pt-4 border-t border-white/10 items-center justify-between">
-                <div class="flex items-center gap-2.5 overflow-hidden">
-                    <div id="desktopUserAvatarContainer" class="w-9 h-9 rounded-full overflow-hidden bg-[#ff4757]/20 text-[#ff4757] flex items-center justify-center font-bold text-xs shrink-0 border border-white/10">
-                        <!-- Avatar escritorio inyectado -->
-                    </div>
-                    <div class="truncate">
-                        <p id="desktopUserName" class="text-xs font-bold truncate">Admin</p>
-                        <p id="desktopUserRole" class="text-[10px] text-gray-400 truncate">Administrador</p>
-                    </div>
+        <!-- ================= SECTION 2: PRODUCT & INVENTORY MANAGEMENT (ADMIN) ================= -->
+        <div id="section-products" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900/70 p-5 rounded-2xl border border-zinc-800">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Manipulación y Control del Menú</h2>
+                    <p class="text-xs text-zinc-400">Agrega nuevos productos, modifica precios o elimina del catálogo general en tiempo real.</p>
                 </div>
-                <button onclick="handleLogout()" title="Cerrar sesión" class="text-gray-400 hover:text-red-400 transition p-2 shrink-0">
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                <button onclick="openProductModal()" class="bg-gradient-to-r from-pizza-600 to-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg shadow-pizza-600/20 hover:opacity-95 transition-all">
+                    <i class="fa-solid fa-plus mr-2"></i>Nuevo Producto
                 </button>
             </div>
-        </aside>
 
-        <!-- CONTENT AREA -->
-        <main class="flex-1 p-4 sm:p-6 md:p-10 overflow-y-auto">
-            
-            <!-- SECCIÓN VENTAS Y PEDIDOS -->
-            <section id="sectionVentas" class="space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h1 class="text-xl sm:text-2xl font-bold">Gestión de Ventas y Cobros</h1>
-                        <p class="text-xs text-gray-400">Selecciona productos para procesar la orden del cliente.</p>
-                    </div>
-                    <button onclick="openModalVenta()" class="bg-[#2ed573] hover:bg-[#26af5f] text-white font-bold px-4 py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-[#2ed573]/20 w-full sm:w-auto">
-                        <i class="fa-solid fa-cash-register text-lg"></i> Nueva Venta / Cobro
-                    </button>
+            <!-- Management Table -->
+            <div class="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-zinc-300">
+                        <thead class="bg-zinc-950/80 text-xs uppercase text-zinc-400 border-b border-zinc-800">
+                            <tr>
+                                <th class="py-3 px-4">Producto</th>
+                                <th class="py-3 px-4">Categoría</th>
+                                <th class="py-3 px-4">Precio ($)</th>
+                                <th class="py-3 px-4">Estado</th>
+                                <th class="py-3 px-4 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-product-table" class="divide-y divide-zinc-800/60">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
                 </div>
-
-                <!-- TARJETAS FINANCIERAS (SOLO VISIBLES PARA ADMIN) -->
-                <div id="adminFinancialCards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                    <div class="bg-[#1e1e1e] p-4 sm:p-5 rounded-2xl border border-white/10 shadow-lg">
-                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Total Recaudado Hoy</p>
-                        <h3 id="statTotalVentas" class="text-2xl sm:text-3xl font-bold text-[#2ed573] mt-1">$0.00</h3>
-                    </div>
-                    <div class="bg-[#1e1e1e] p-4 sm:p-5 rounded-2xl border border-white/10 shadow-lg">
-                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Total de Pedidos</p>
-                        <h3 id="statTotalPedidos" class="text-2xl sm:text-3xl font-bold text-white mt-1">0</h3>
-                    </div>
-                    <div class="bg-[#1e1e1e] p-4 sm:p-5 rounded-2xl border border-white/10 shadow-lg">
-                        <p class="text-[11px] text-gray-400 uppercase font-semibold">Promedio por Venta</p>
-                        <h3 id="statPromedioVenta" class="text-2xl sm:text-3xl font-bold text-sky-400 mt-1">$0.00</h3>
-                    </div>
-                </div>
-
-                <!-- AVISO PARA CAJERO -->
-                <div id="cajeroNotice" class="bg-sky-500/10 border border-sky-500/20 p-4 rounded-2xl text-xs text-sky-300 flex items-center gap-3 hidden">
-                    <i class="fa-solid fa-circle-info text-base shrink-0"></i>
-                    <span>Modo Cajero Activo: Puedes registrar cobros y pedidos de forma fluida. El control financiero avanzado está reservado para el administrador.</span>
-                </div>
-
-                <!-- TABLA DE VENTAS / HISTORIAL DE PEDIDOS -->
-                <div class="bg-[#1e1e1e] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
-                    <div class="p-4 border-b border-white/10 flex justify-between items-center">
-                        <h3 class="font-bold text-sm">Órdenes Registradas</h3>
-                        <span class="text-xs text-gray-400">Listado general</span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs sm:text-sm">
-                            <thead class="bg-black/25 uppercase text-gray-400 border-b border-white/10 text-[11px]">
-                                <tr>
-                                    <th class="p-3.5 sm:p-4">Fecha / Hora</th>
-                                    <th class="p-3.5 sm:p-4">Atendido Por</th>
-                                    <th class="p-3.5 sm:p-4">Detalle del Pedido</th>
-                                    <th class="p-3.5 sm:p-4">Total Cobrado</th>
-                                    <th id="thAccionVenta" class="p-3.5 sm:p-4 text-right">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ventasTableBody" class="divide-y divide-white/10"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN INVENTARIO -->
-            <section id="sectionInventario" class="hidden space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h1 class="text-xl sm:text-2xl font-bold">Control de Inventario</h1>
-                        <p class="text-xs text-gray-400">Actualiza entradas y salidas de insumos (masa, queso, bebidas, etc.).</p>
-                    </div>
-                    <button onclick="openModalInsumo()" class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition w-full sm:w-auto">
-                        <i class="fa-solid fa-plus"></i> Nuevo Insumo
-                    </button>
-                </div>
-
-                <div class="bg-[#1e1e1e] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs sm:text-sm">
-                            <thead class="bg-black/25 uppercase text-gray-400 border-b border-white/10 text-[11px]">
-                                <tr>
-                                    <th class="p-3.5 sm:p-4">Insumo</th>
-                                    <th class="p-3.5 sm:p-4">Cantidad</th>
-                                    <th class="p-3.5 sm:p-4">Unidad</th>
-                                    <th class="p-3.5 sm:p-4">Estado</th>
-                                    <th class="p-3.5 sm:p-4 text-right">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inventarioTableBody" class="divide-y divide-white/10"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN TRABAJADORES Y PERMISOS (SOLO ADMIN) -->
-            <section id="sectionUsuarios" class="hidden space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h1 class="text-xl sm:text-2xl font-bold">Gestión de Trabajadores y Permisos</h1>
-                        <p class="text-xs text-gray-400">Crea cuentas, asigna fotos de perfil y delimita los accesos operativos.</p>
-                    </div>
-                    <button onclick="openModalUsuario()" class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition w-full sm:w-auto">
-                        <i class="fa-solid fa-user-plus"></i> Registrar Usuario
-                    </button>
-                </div>
-
-                <div class="bg-[#1e1e1e] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs sm:text-sm">
-                            <thead class="bg-black/25 uppercase text-gray-400 border-b border-white/10 text-[11px]">
-                                <tr>
-                                    <th class="p-3.5 sm:p-4">Foto</th>
-                                    <th class="p-3.5 sm:p-4">Usuario</th>
-                                    <th class="p-3.5 sm:p-4">Nombre / Alias</th>
-                                    <th class="p-3.5 sm:p-4">Rol Asignado</th>
-                                    <th class="p-3.5 sm:p-4 text-right">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="usuariosTableBody" class="divide-y divide-white/10"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- MODAL VENTA / COBRO RÁPIDO -->
-    <div id="modalVenta" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-2 sm:p-4">
-        <div class="bg-[#1e1e1e] border border-white/10 w-full max-w-xl rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 max-h-[95vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-white/10 pb-3">
-                <h3 class="text-base sm:text-lg font-bold flex items-center gap-2"><i class="fa-solid fa-cash-register text-[#2ed573]"></i> Caja Registradora Rápida</h3>
-                <button onclick="closeModalVenta()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            
-            <p class="text-xs text-gray-400">Selecciona los productos solicitados por el cliente:</p>
-
-            <!-- CATÁLOGO TÁCTIL RÁPIDO -->
-            <div class="grid grid-cols-2 gap-2.5">
-                <div onclick="agregarProducto('Pizza Familiar Pepperoni', 12.00)" class="bg-black/30 border border-white/10 active:border-[#2ed573] hover:border-[#2ed573] rounded-xl p-2.5 cursor-pointer transition flex items-center gap-3 group">
-                    <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?w=150&auto=format&fit=crop&q=80" alt="Pepperoni" class="w-12 h-12 object-cover rounded-lg shrink-0">
-                    <div class="min-w-0 flex-1">
-                        <h4 class="text-xs font-bold truncate">Pizza Pepperoni</h4>
-                        <span class="text-[#2ed573] font-bold text-xs">$12.00</span>
-                    </div>
-                </div>
-                <div onclick="agregarProducto('Pizza Familiar Jamón y Queso', 11.00)" class="bg-black/30 border border-white/10 active:border-[#2ed573] hover:border-[#2ed573] rounded-xl p-2.5 cursor-pointer transition flex items-center gap-3 group">
-                    <img src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=150&auto=format&fit=crop&q=80" alt="Jamón" class="w-12 h-12 object-cover rounded-lg shrink-0">
-                    <div class="min-w-0 flex-1">
-                        <h4 class="text-xs font-bold truncate">Pizza Jamón</h4>
-                        <span class="text-[#2ed573] font-bold text-xs">$11.00</span>
-                    </div>
-                </div>
-                <div onclick="agregarProducto('Slice (Porción) de Pizza', 1.50)" class="bg-black/30 border border-white/10 active:border-[#2ed573] hover:border-[#2ed573] rounded-xl p-2.5 cursor-pointer transition flex items-center gap-3 group">
-                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=150&auto=format&fit=crop&q=80" alt="Slice" class="w-12 h-12 object-cover rounded-lg shrink-0">
-                    <div class="min-w-0 flex-1">
-                        <h4 class="text-xs font-bold truncate">Slice Porción</h4>
-                        <span class="text-[#2ed573] font-bold text-xs">$1.50</span>
-                    </div>
-                </div>
-                <div onclick="agregarProducto('Cola / Gaseosa Personal', 1.00)" class="bg-black/30 border border-white/10 active:border-[#2ed573] hover:border-[#2ed573] rounded-xl p-2.5 cursor-pointer transition flex items-center gap-3 group">
-                    <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=150&auto=format&fit=crop&q=80" alt="Cola" class="w-12 h-12 object-cover rounded-lg shrink-0">
-                    <div class="min-w-0 flex-1">
-                        <h4 class="text-xs font-bold truncate">Cola Personal</h4>
-                        <span class="text-[#2ed573] font-bold text-xs">$1.00</span>
-                    </div>
-                </div>
-                <div onclick="agregarProducto('Agua Purificada', 0.75)" class="bg-black/30 border border-white/10 active:border-[#2ed573] hover:border-[#2ed573] rounded-xl p-2.5 cursor-pointer transition flex items-center gap-3 col-span-2 group">
-                    <img src="https://images.unsplash.com/photo-1548839140-29a749e1cf4c?w=150&auto=format&fit=crop&q=80" alt="Agua" class="w-12 h-12 object-cover rounded-lg shrink-0">
-                    <div class="min-w-0 flex-1">
-                        <h4 class="text-xs font-bold truncate">Agua Purificada</h4>
-                        <span class="text-[#2ed573] font-bold text-xs">$0.75</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TICKET EN CURSO -->
-            <div class="bg-black/40 p-3.5 rounded-xl border border-white/10 space-y-2">
-                <div class="flex justify-between items-center">
-                    <h4 class="text-[11px] uppercase font-bold text-gray-400">Resumen del Pedido:</h4>
-                    <button onclick="limpiarTicket()" class="text-red-400 text-xs hover:underline">Vaciar ticket</button>
-                </div>
-                <div id="ticketItems" class="text-xs text-gray-200 min-h-[30px] max-h-32 overflow-y-auto space-y-1">Ningún producto seleccionado.</div>
-                <div class="flex justify-between items-center border-t border-white/10 pt-2 font-bold text-sm sm:text-base">
-                    <span>Total a Cobrar:</span>
-                    <span id="ticketTotal" class="text-[#2ed573]">$0.00</span>
-                </div>
-            </div>
-
-            <div class="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-2">
-                <button type="button" onclick="closeModalVenta()" class="w-full sm:w-auto px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-                <button type="button" onclick="finalizarVenta()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#2ed573] hover:bg-[#26af5f] text-xs font-bold text-white shadow-md">Procesar Cobro</button>
             </div>
         </div>
-    </div>
 
-    <!-- MODAL AGREGAR/EDITAR INSUMO -->
-    <div id="modalInsumo" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-[#1e1e1e] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
-            <h3 id="modalInsumoTitle" class="text-lg font-bold">Gestión de Insumo</h3>
-            <form onsubmit="saveInsumo(event)" class="space-y-3">
-                <input type="hidden" id="insumoId">
+        <!-- ================= SECTION 3: STATS & ANALYTICS ================= -->
+        <div id="section-stats" class="hidden space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-zinc-400 font-medium">Ventas Totales Hoy</p>
+                        <h3 id="stat-total-sales" class="text-2xl font-bold text-white mt-1">$1,245.00</h3>
+                        <span class="text-emerald-400 text-xs font-semibold"><i class="fa-solid fa-arrow-up mr-1"></i>+14.2% vs ayer</span>
+                    </div>
+                    <div class="bg-pizza-500/10 text-pizza-500 p-3.5 rounded-xl border border-pizza-500/20">
+                        <i class="fa-solid fa-chart-line text-xl"></i>
+                    </div>
+                </div>
+                <div class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-zinc-400 font-medium">Órdenes Procesadas</p>
+                        <h3 id="stat-total-orders" class="text-2xl font-bold text-white mt-1">48</h3>
+                        <span class="text-emerald-400 text-xs font-semibold"><i class="fa-solid fa-arrow-up mr-1"></i>+8.5%</span>
+                    </div>
+                    <div class="bg-amber-500/10 text-amber-500 p-3.5 rounded-xl border border-amber-500/20">
+                        <i class="fa-solid fa-receipt text-xl"></i>
+                    </div>
+                </div>
+                <div class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-zinc-400 font-medium">Pizza Más Vendida</p>
+                        <h3 class="text-lg font-bold text-white mt-1 truncate max-w-[160px]">Pepperoni Suprema</h3>
+                        <span class="text-zinc-400 text-xs">19 unidades</span>
+                    </div>
+                    <div class="bg-rose-500/10 text-rose-500 p-3.5 rounded-xl border border-rose-500/20">
+                        <i class="fa-solid fa-pizza-slice text-xl"></i>
+                    </div>
+                </div>
+                <div class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-zinc-400 font-medium">Ticket Promedio</p>
+                        <h3 class="text-2xl font-bold text-white mt-1">$25.93</h3>
+                        <span class="text-emerald-400 text-xs font-semibold"><i class="fa-solid fa-arrow-up mr-1"></i>Estable</span>
+                    </div>
+                    <div class="bg-emerald-500/10 text-emerald-400 p-3.5 rounded-xl border border-emerald-500/20">
+                        <i class="fa-solid fa-wallet text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl">
+                    <h3 class="text-sm font-bold text-white mb-4"><i class="fa-solid fa-chart-bar text-pizza-500 mr-2"></i>Ventas por Hora del Día</h3>
+                    <div class="h-64 relative">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-zinc-900/70 border border-zinc-800 p-5 rounded-2xl">
+                    <h3 class="text-sm font-bold text-white mb-4"><i class="fa-solid fa-chart-pie text-amber-500 mr-2"></i>Preferencias de Categorías</h3>
+                    <div class="h-64 relative flex justify-center">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Product Edit/Add Modal -->
+    <div id="product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <h3 id="modal-title" class="text-base font-bold text-white mb-4">Agregar Nuevo Producto</h3>
+            <form id="product-form" onsubmit="saveProduct(event)" class="space-y-4">
+                <input type="hidden" id="edit-index" value="-1">
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1">Nombre del Insumo</label>
-                    <input type="text" id="insumoNombre" required class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
+                    <label class="block text-xs text-zinc-400 mb-1">Nombre del Producto</label>
+                    <input type="text" id="prod-name" required class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs text-gray-400 mb-1">Cantidad</label>
-                        <input type="number" step="0.1" id="insumoCantidad" required class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Unidad</label>
-                        <select id="insumoUnidad" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
-                            <option value="Unidades">Unidades</option>
-                            <option value="Kg">Kg</option>
-                            <option value="Libras">Libras</option>
-                            <option value="Litros">Litros</option>
+                        <label class="block text-xs text-zinc-400 mb-1">Categoría</label>
+                        <select id="prod-category" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
+                            <option value="pizza">Pizza</option>
+                            <option value="bebida">Bebida</option>
+                            <option value="extra">Extra</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-xs text-zinc-400 mb-1">Precio ($)</label>
+                        <input type="number" step="0.01" id="prod-price" required class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1">Límite Crítico (Alerta)</label>
-                    <input type="number" step="0.1" id="insumoLimite" placeholder="Ej: 2.0" required class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
+                    <label class="block text-xs text-zinc-400 mb-1">Icono / Emoji (FontAwesome class o emoji)</label>
+                    <input type="text" id="prod-icon" value="fa-pizza-slice" required class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-pizza-500">
                 </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModalInsumo()" class="px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-                    <button type="submit" class="px-5 py-3 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold">Guardar</button>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 rounded-xl text-xs font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-pizza-600 text-white hover:bg-pizza-700 shadow">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL AGREGAR/EDITAR USUARIO CON FOTO -->
-    <div id="modalUsuario" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-[#1e1e1e] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
-            <h3 id="modalUsuarioTitle" class="text-lg font-bold">Gestión de Usuario</h3>
-            <form onsubmit="saveUsuario(event)" class="space-y-3">
-                <input type="hidden" id="usuarioId">
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Nombre o Alias del Trabajador</label>
-                    <input type="text" id="usuarioNombre" required placeholder="Ej: Carlos Pérez" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">URL de la Foto de Perfil (Opcional)</label>
-                    <input type="url" id="usuarioFoto" placeholder="https://ejemplo.com/foto.jpg" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
-                    <p class="text-[10px] text-gray-500 mt-1">Puedes pegar el enlace de una imagen pública de internet.</p>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Usuario de Acceso</label>
-                        <input type="text" id="usuarioUser" required placeholder="Ej: carlosp" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Contraseña</label>
-                        <input type="password" id="usuarioPass" required placeholder="••••••••" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Rol y Permisos</label>
-                    <select id="usuarioRol" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#ff4757]">
-                        <option value="Cajero">Cajero (Solo Operación y Cobros)</option>
-                        <option value="Administrador">Administrador (Control Total)</option>
-                    </select>
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModalUsuario()" class="px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-                    <button type="submit" class="px-5 py-3 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold">Guardar Usuario</button>
-                </div>
-            </form>
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-zinc-900 border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
+        <div id="toast-icon" class="text-emerald-400"><i class="fa-solid fa-circle-check text-lg"></i></div>
+        <div>
+            <p id="toast-title" class="text-xs font-bold">Operación Exitosa</p>
+            <p id="toast-msg" class="text-[11px] text-zinc-400">El elemento se actualizó correctamente.</p>
         </div>
     </div>
 
-    <!-- SCRIPT DE CONTROL Y ROLES -->
     <script>
-        const defaultInventario = [
-            { id: 1, nombre: "Masa (Bollos)", cantidad: 45, unidad: "Unidades", limite: 10 },
-            { id: 2, nombre: "Queso Mozzarella", cantidad: 12.5, unidad: "Kg", limite: 3 },
-            { id: 3, nombre: "Pepperoni", cantidad: 3.2, unidad: "Kg", limite: 1.5 },
-            { id: 4, nombre: "Jamón", cantidad: 0.8, unidad: "Kg", limite: 1 },
-            { id: 5, nombre: "Cajas Familiares", cantidad: 120, unidad: "Unidades", limite: 20 }
+        // Initial Products Catalog for Brother's Pizza
+        let products = [
+            { id: 1, name: 'Pizza Pepperoni Suprema', category: 'pizza', price: 14.99, icon: 'fa-pizza-slice' },
+            { id: 2, name: 'Pizza Hawaiana Clásica', category: 'pizza', price: 13.50, icon: 'fa-pizza-slice' },
+            { id: 3, name: 'Pizza Cuatro Quesos', category: 'pizza', price: 16.00, icon: 'fa-cheese' },
+            { id: 4, name: 'Pizza Carne & BBQ', category: 'pizza', price: 17.50, icon: 'fa-fire' },
+            { id: 5, name: 'Coca-Cola 1.5L', category: 'bebida', price: 3.00, icon: 'fa-bottle-droplet' },
+            { id: 6, name: 'Cerveza Artesanal IPA', category: 'bebida', price: 4.50, icon: 'fa-beer-mug-empty' },
+            { id: 7, name: 'Jugo Natural Maracuyá', category: 'bebida', price: 2.50, icon: 'fa-cup-straw' },
+            { id: 8, name: 'Pan de Ajo con Queso', category: 'extra', price: 4.99, icon: 'fa-bread-slice' },
+            { id: 9, name: 'Alitas BBQ x8', category: 'extra', price: 8.99, icon: 'fa-drumstick-bite' }
         ];
 
-        const defaultUsuarios = [
-            { id: 1, nombre: "Osvaldo (Admin)", user: "admin", pass: "admin123", rol: "Administrador", foto: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" },
-            { id: 2, nombre: "Cajero Local", user: "cajero", pass: "cajero123", rol: "Cajero", foto: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80" }
-        ];
+        let cart = [];
+        let currentFilter = 'all';
+        let salesChartInstance = null;
+        let categoryChartInstance = null;
+        let todaySalesCount = 1245.00;
+        let totalOrdersCount = 48;
 
-        let inventario = JSON.parse(localStorage.getItem('bp_inventario')) || defaultInventario;
-        let ventas = JSON.parse(localStorage.getItem('bp_ventas')) || [];
-        let usuarios = JSON.parse(localStorage.getItem('bp_usuarios')) || defaultUsuarios;
-        let ticketActual = [];
-        let usuarioActual = JSON.parse(localStorage.getItem('bp_session_user')) || null;
-
-        window.onload = () => {
-            if (usuarioActual) {
-                showPanel();
-            }
+        // Initialize App on Window Load
+        window.onload = function() {
+            renderPOSCatalog();
+            renderAdminTable();
+            initCharts();
         };
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('userInput').value.trim();
-            const p = document.getElementById('passInput').value.trim();
-
-            const encontrado = usuarios.find(usr => usr.user === u && usr.pass === p);
-
-            if (encontrado) {
-                usuarioActual = encontrado;
-                localStorage.setItem('bp_session_user', JSON.stringify(usuarioActual));
-                showPanel();
-            } else {
-                document.getElementById('loginError').classList.remove('hidden');
-            }
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('bp_session_user');
-            usuarioActual = null;
-            document.getElementById('mainPanel').classList.add('hidden');
-            document.getElementById('loginSection').classList.remove('hidden');
-            document.getElementById('userInput').value = '';
-            document.getElementById('passInput').value = '';
-            document.getElementById('loginError').classList.add('hidden');
-        }
-
-        function showPanel() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainPanel').classList.remove('hidden');
-            
-            document.getElementById('desktopUserName').innerText = usuarioActual.nombre;
-            document.getElementById('desktopUserRole').innerText = usuarioActual.rol;
-            document.getElementById('mobileUserBadge').innerText = usuarioActual.nombre;
-
-            // ACTUALIZAR AVATARES
-            const avatarHtml = usuarioActual.foto 
-                ? `<img src="${usuarioActual.foto}" alt="Avatar" class="w-full h-full object-cover">` 
-                : `<i class="fa-solid fa-user text-xs"></i>`;
-
-            document.getElementById('desktopUserAvatarContainer').innerHTML = avatarHtml;
-            document.getElementById('mobileUserAvatarContainer').innerHTML = avatarHtml;
-
-            // APLICAR RESTRICCIONES SEGÚN ROL
-            const tabUsuariosBtn = document.getElementById('btnTabUsuarios');
-            const adminCards = document.getElementById('adminFinancialCards');
-            const cajeroNotice = document.getElementById('cajeroNotice');
-
-            if (usuarioActual.rol === 'Cajero') {
-                tabUsuariosBtn.classList.add('hidden');
-                adminCards.classList.add('hidden');
-                cajeroNotice.classList.remove('hidden');
-            } else {
-                tabUsuariosBtn.classList.remove('hidden');
-                adminCards.classList.remove('hidden');
-                cajeroNotice.classList.add('hidden');
-            }
-
-            renderVentas();
-            renderInventario();
-            renderUsuarios();
-        }
-
-        function switchTab(tab) {
-            const btnInv = document.getElementById('btnTabInventario');
-            const btnVen = document.getElementById('btnTabVentas');
-            const btnUsu = document.getElementById('btnTabUsuarios');
-            const secInv = document.getElementById('sectionInventario');
-            const secVen = document.getElementById('sectionVentas');
-            const secUsu = document.getElementById('sectionUsuarios');
-
-            [btnInv, btnVen, btnUsu].forEach(b => {
-                if (b) b.className = "flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2.5 px-3 py-2.5 md:px-4 md:py-3 rounded-xl text-gray-400 hover:bg-white/5 font-semibold text-xs sm:text-sm transition text-left whitespace-nowrap";
+        // Tab Switcher
+        function switchTab(tabId) {
+            ['pos', 'products', 'stats'].forEach(id => {
+                document.getElementById(`section-${id}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-${id}`);
+                const mobBtn = document.getElementById(`mob-tab-${id}`);
+                if (btn) {
+                    btn.className = "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-zinc-400 hover:text-white hover:bg-zinc-800";
+                }
+                if (mobBtn) {
+                    mobBtn.className = "flex-1 py-2 text-center text-xs font-semibold text-zinc-400";
+                }
             });
-            [secInv, secVen, secUsu].forEach(s => s.classList.add('hidden'));
 
-            if (tab === 'ventas') {
-                secVen.classList.remove('hidden');
-                btnVen.className = "flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2.5 px-3 py-2.5 md:px-4 md:py-3 rounded-xl bg-[#2ed573]/10 text-[#2ed573] font-semibold text-xs sm:text-sm transition text-left whitespace-nowrap";
-            } else if (tab === 'inventario') {
-                secInv.classList.remove('hidden');
-                btnInv.className = "flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2.5 px-3 py-2.5 md:px-4 md:py-3 rounded-xl bg-[#ff4757]/10 text-[#ff4757] font-semibold text-xs sm:text-sm transition text-left whitespace-nowrap";
-            } else if (tab === 'usuarios' && usuarioActual.rol === 'Administrador') {
-                secUsu.classList.remove('hidden');
-                btnUsu.className = "flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2.5 px-3 py-2.5 md:px-4 md:py-3 rounded-xl bg-[#ff4757]/10 text-[#ff4757] font-semibold text-xs sm:text-sm transition text-left whitespace-nowrap";
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            const activeMobBtn = document.getElementById(`mob-tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-pizza-600 text-white shadow";
+            }
+            if (activeMobBtn) {
+                activeMobBtn.className = "flex-1 py-2 text-center text-xs font-semibold text-pizza-500 border-b-2 border-pizza-500";
             }
         }
 
-        // VENTAS Y COBROS
-        function openModalVenta() {
-            limpiarTicket();
-            document.getElementById('modalVenta').classList.add('modal-active');
+        // Filter Catalog in POS
+        function filterCategory(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.className = "category-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700 whitespace-nowrap";
+            });
+            event.currentTarget.className = "category-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-pizza-600 text-white whitespace-nowrap shadow";
+            renderPOSCatalog();
         }
 
-        function closeModalVenta() {
-            document.getElementById('modalVenta').classList.remove('modal-active');
+        function filterCatalog() {
+            renderPOSCatalog();
         }
 
-        function agregarProducto(nombre, precio) {
-            ticketActual.push({ nombre, precio });
-            actualizarTicketVisual();
-        }
+        // Render POS Products Grid
+        function renderPOSCatalog() {
+            const grid = document.getElementById('pos-product-grid');
+            const search = document.getElementById('pos-search').value.toLowerCase();
+            grid.innerHTML = '';
 
-        function limpiarTicket() {
-            ticketActual = [];
-            actualizarTicketVisual();
-        }
+            const filtered = products.filter(p => {
+                const matchCat = currentFilter === 'all' || p.category === currentFilter;
+                const matchSearch = p.name.toLowerCase().includes(search);
+                return matchCat && matchSearch;
+            });
 
-        function actualizarTicketVisual() {
-            const container = document.getElementById('ticketItems');
-            const totalEl = document.getElementById('ticketTotal');
-            
-            if (ticketActual.length === 0) {
-                container.innerHTML = '<span class="text-gray-500">Ningún producto seleccionado.</span>';
-                totalEl.innerText = '$0.00';
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10 text-zinc-500 text-sm">No se encontraron productos</div>`;
                 return;
             }
 
-            let total = 0;
-            container.innerHTML = ticketActual.map((item, idx) => {
-                total += item.precio;
-                return `<div class="flex justify-between items-center py-1 border-b border-white/5 text-xs">
-                    <span>${item.nombre}</span>
-                    <span class="font-bold">$${item.precio.toFixed(2)}</span>
-                </div>`;
-            }).join('');
-
-            totalEl.innerText = `$${total.toFixed(2)}`;
+            filtered.forEach(p => {
+                grid.innerHTML += `
+                    <div onclick="addToCart(${p.id})" class="bg-zinc-900/80 hover:bg-zinc-800/90 border border-zinc-800 hover:border-pizza-500/50 p-4 rounded-2xl flex flex-col justify-between cursor-pointer transition-all duration-200 group shadow-lg">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="bg-zinc-800 group-hover:bg-pizza-500/20 text-zinc-300 group-hover:text-pizza-500 p-3 rounded-xl transition-colors">
+                                <i class="fa-solid ${p.icon} text-lg"></i>
+                            </div>
+                            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-zinc-950 text-zinc-400 border border-zinc-800">${p.category}</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-sm text-white line-clamp-1 mb-1">${p.name}</h4>
+                            <span class="text-pizza-500 font-bold text-base">$${p.price.toFixed(2)}</span>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        function finalizarVenta() {
-            if (ticketActual.length === 0) {
-                alert('Selecciona al menos un producto para registrar el cobro.');
+        // Cart Logic
+        function addToCart(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...prod, qty: 1 });
+            }
+            renderCart();
+        }
+
+        function updateQty(id, change) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+            renderCart();
+        }
+
+        function clearCart() {
+            cart = [];
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-zinc-500 text-sm">
+                        <i class="fa-solid fa-basket-shopping text-3xl mb-2 block opacity-40"></i>
+                        El carrito está vacío
+                    </div>
+                `;
+                document.getElementById('cart-subtotal').innerText = '$0.00';
+                document.getElementById('cart-tax').innerText = '$0.00';
+                document.getElementById('cart-total').innerText = '$0.00';
                 return;
             }
 
-            const detalleTexto = ticketActual.map(i => i.nombre).join(' + ');
-            const montoTotal = ticketActual.reduce((acc, curr) => acc + curr.precio, 0);
-            const fecha = new Date().toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' });
-            const atendidoPor = usuarioActual ? usuarioActual.nombre : 'Sistema';
+            container.innerHTML = '';
+            let subtotal = 0;
 
-            ventas.unshift({ detalle: detalleTexto, monto: montoTotal, fecha, atendidoPor });
-            closeModalVenta();
-            renderVentas();
-        }
-
-        function renderVentas() {
-            const tbody = document.getElementById('ventasTableBody');
-            tbody.innerHTML = '';
-            let totalRecaudado = 0;
-
-            ventas.forEach((v, index) => {
-                totalRecaudado += v.monto;
-                const deleteBtn = usuarioActual.rol === 'Administrador' 
-                    ? `<button onclick="deleteVenta(${index})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>`
-                    : `<span class="text-gray-500 text-[10px]">Registrado</span>`;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-white/5 transition">
-                        <td class="p-3.5 sm:p-4 text-xs text-gray-400 whitespace-nowrap">${v.fecha}</td>
-                        <td class="p-3.5 sm:p-4 text-xs font-semibold text-gray-300">${v.atendidoPor || 'Admin'}</td>
-                        <td class="p-3.5 sm:p-4 font-semibold">${v.detalle}</td>
-                        <td class="p-3.5 sm:p-4 font-bold text-[#2ed573] whitespace-nowrap">$${v.monto.toFixed(2)}</td>
-                        <td class="p-3.5 sm:p-4 text-right">${deleteBtn}</td>
-                    </tr>
+            cart.forEach(item => {
+                subtotal += item.price * item.qty;
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-zinc-950/60 border border-zinc-800/80 p-2.5 rounded-xl">
+                        <div class="flex-1 pr-2">
+                            <h5 class="text-xs font-semibold text-white line-clamp-1">${item.name}</h5>
+                            <span class="text-[11px] text-pizza-500 font-semibold">$${(item.price * item.qty).toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-zinc-900 px-2 py-1 rounded-lg border border-zinc-800">
+                            <button onclick="updateQty(${item.id}, -1)" class="text-zinc-400 hover:text-white px-1 text-xs">-</button>
+                            <span class="text-xs font-bold text-white w-4 text-center">${item.qty}</span>
+                            <button onclick="updateQty(${item.id}, 1)" class="text-zinc-400 hover:text-white px-1 text-xs">+</button>
+                        </div>
+                    </div>
                 `;
             });
 
-            const totalPedidos = ventas.length;
-            const promedioVenta = totalPedidos > 0 ? totalRecaudado / totalPedidos : 0;
+            const tax = subtotal * 0.12;
+            const total = subtotal + tax;
 
-            document.getElementById('statTotalVentas').innerText = `$${totalRecaudado.toFixed(2)}`;
-            document.getElementById('statTotalPedidos').innerText = totalPedidos;
-            document.getElementById('statPromedioVenta').innerText = `$${promedioVenta.toFixed(2)}`;
-
-            localStorage.setItem('bp_ventas', JSON.stringify(ventas));
+            document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cart-tax').innerText = `$${tax.toFixed(2)}`;
+            document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
         }
 
-        function deleteVenta(index) {
-            if (usuarioActual.rol !== 'Administrador') return;
-            if (confirm('¿Eliminar este registro de venta?')) {
-                ventas.splice(index, 1);
-                renderVentas();
+        function checkoutOrder(method) {
+            if (cart.length === 0) {
+                showToast("Atención", "Agregue productos al carrito antes de cobrar.", "error");
+                return;
             }
+            const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            const total = subtotal * 1.12;
+            
+            todaySalesCount += total;
+            totalOrdersCount++;
+            
+            document.getElementById('stat-total-sales').innerText = `$${todaySalesCount.toFixed(2)}`;
+            document.getElementById('stat-total-orders').innerText = totalOrdersCount;
+
+            showToast("¡Venta Exitosa!", `Cobro de $${total.toFixed(2)} procesado con ${method}.`, "success");
+            cart = [];
+            renderCart();
+            updateChartsData();
         }
 
-        // INVENTARIO
-        function renderInventario() {
-            const tbody = document.getElementById('inventarioTableBody');
+        // Admin Management Table
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-product-table');
             tbody.innerHTML = '';
-
-            inventario.forEach(item => {
-                let badgeClass = "bg-green-500/20 text-green-400 border-green-500/30";
-                let estadoText = "Óptimo";
-
-                if (item.cantidad <= item.limite) {
-                    badgeClass = "bg-red-500/20 text-red-400 border-red-500/30";
-                    estadoText = "Crítico";
-                } else if (item.cantidad <= item.limite * 2) {
-                    badgeClass = "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-                    estadoText = "Por Agotarse";
-                }
-
+            products.forEach((p, idx) => {
                 tbody.innerHTML += `
-                    <tr class="hover:bg-white/5 transition">
-                        <td class="p-3.5 sm:p-4 font-semibold">${item.nombre}</td>
-                        <td class="p-3.5 sm:p-4 font-bold text-sm sm:text-base">${item.cantidad}</td>
-                        <td class="p-3.5 sm:p-4 text-gray-400">${item.unidad}</td>
-                        <td class="p-3.5 sm:p-4">
-                            <span class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold border ${badgeClass}">${estadoText}</span>
+                    <tr class="hover:bg-zinc-900/40 transition-colors">
+                        <td class="py-3 px-4 flex items-center space-x-3">
+                            <div class="bg-zinc-800 text-pizza-500 p-2 rounded-lg">
+                                <i class="fa-solid ${p.icon}"></i>
+                            </div>
+                            <span class="font-medium text-white">${p.name}</span>
                         </td>
-                        <td class="p-3.5 sm:p-4 text-right space-x-1 sm:space-x-2">
-                            <button onclick="editInsumo(${item.id})" class="text-gray-400 hover:text-white p-1.5"><i class="fa-solid fa-pen"></i></button>
-                            ${usuarioActual.rol === 'Administrador' ? `<button onclick="deleteInsumo(${item.id})" class="text-red-400 hover:text-red-300 p-1.5"><i class="fa-solid fa-trash"></i></button>` : ''}
+                        <td class="py-3 px-4 capitalize"><span class="px-2.5 py-1 rounded-lg bg-zinc-950 text-xs text-zinc-400 border border-zinc-800">${p.category}</span></td>
+                        <td class="py-3 px-4 font-bold text-pizza-500">$${p.price.toFixed(2)}</td>
+                        <td class="py-3 px-4"><span class="text-emerald-400 text-xs font-semibold"><i class="fa-solid fa-circle text-[6px] mr-1"></i>Disponible</span></td>
+                        <td class="py-3 px-4 text-right space-x-2">
+                            <button onclick="editProduct(${idx})" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i>Editar
+                            </button>
+                            <button onclick="deleteProduct(${idx})" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">
+                                <i class="fa-solid fa-trash mr-1"></i>Eliminar
+                            </button>
                         </td>
                     </tr>
                 `;
             });
-            localStorage.setItem('bp_inventario', JSON.stringify(inventario));
         }
 
-        function openModalInsumo() {
-            document.getElementById('insumoId').value = '';
-            document.getElementById('insumoNombre').value = '';
-            document.getElementById('insumoCantidad').value = '';
-            document.getElementById('insumoLimite').value = '';
-            document.getElementById('modalInsumoTitle').innerText = 'Nuevo Insumo';
-            document.getElementById('modalInsumo').classList.add('modal-active');
-        }
-
-        function closeModalInsumo() {
-            document.getElementById('modalInsumo').classList.remove('modal-active');
-        }
-
-        function editInsumo(id) {
-            const item = inventario.find(i => i.id === id);
-            if (!item) return;
-            document.getElementById('insumoId').value = item.id;
-            document.getElementById('insumoNombre').value = item.nombre;
-            document.getElementById('insumoCantidad').value = item.cantidad;
-            document.getElementById('insumoUnidad').value = item.unidad;
-            document.getElementById('insumoLimite').value = item.limite;
-            document.getElementById('modalInsumoTitle').innerText = 'Editar Insumo';
-            document.getElementById('modalInsumo').classList.add('modal-active');
-        }
-
-        function saveInsumo(e) {
-            e.preventDefault();
-            const id = document.getElementById('insumoId').value;
-            const nombre = document.getElementById('insumoNombre').value;
-            const cantidad = parseFloat(document.getElementById('insumoCantidad').value);
-            const unidad = document.getElementById('insumoUnidad').value;
-            const limite = parseFloat(document.getElementById('insumoLimite').value);
-
-            if (id) {
-                const index = inventario.findIndex(i => i.id == id);
-                inventario[index] = { id: parseInt(id), nombre, cantidad, unidad, limite };
+        // Modal Controls for Products
+        function openProductModal(index = -1) {
+            document.getElementById('product-modal').classList.remove('hidden');
+            document.getElementById('edit-index').value = index;
+            if (index > -1) {
+                document.getElementById('modal-title').innerText = "Editar Producto";
+                document.getElementById('prod-name').value = products[index].name;
+                document.getElementById('prod-category').value = products[index].category;
+                document.getElementById('prod-price').value = products[index].price;
+                document.getElementById('prod-icon').value = products[index].icon;
             } else {
-                inventario.push({ id: Date.now(), nombre, cantidad, unidad, limite });
-            }
-            closeModalInsumo();
-            renderInventario();
-        }
-
-        function deleteInsumo(id) {
-            if (usuarioActual.rol !== 'Administrador') return;
-            if (confirm('¿Seguro que deseas eliminar este insumo?')) {
-                inventario = inventario.filter(i => i.id !== id);
-                renderInventario();
+                document.getElementById('modal-title').innerText = "Agregar Nuevo Producto";
+                document.getElementById('product-form').reset();
             }
         }
 
-        // GESTIÓN DE TRABAJADORES Y PERMISOS (SOLO ADMIN)
-        function renderUsuarios() {
-            if (usuarioActual.rol !== 'Administrador') return;
-            const tbody = document.getElementById('usuariosTableBody');
-            tbody.innerHTML = '';
-
-            usuarios.forEach(u => {
-                const badgeRol = u.rol === 'Administrador' ? 'bg-[#ff4757]/20 text-[#ff4757]' : 'bg-[#2ed573]/20 text-[#2ed573]';
-                const avatarMini = u.foto 
-                    ? `<img src="${u.foto}" class="w-9 h-9 rounded-full object-cover border border-white/10">` 
-                    : `<div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-gray-400"><i class="fa-solid fa-user text-xs"></i></div>`;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-white/5 transition">
-                        <td class="p-3.5 sm:p-4">${avatarMini}</td>
-                        <td class="p-3.5 sm:p-4 font-mono text-xs text-sky-400">${u.user}</td>
-                        <td class="p-3.5 sm:p-4 font-semibold">${u.nombre}</td>
-                        <td class="p-3.5 sm:p-4"><span class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${badgeRol}">${u.rol}</span></td>
-                        <td class="p-3.5 sm:p-4 text-right space-x-1 sm:space-x-2">
-                            <button onclick="editUsuario(${u.id})" class="text-gray-400 hover:text-white p-1.5"><i class="fa-solid fa-pen"></i></button>
-                            ${u.user !== 'admin' ? `<button onclick="deleteUsuario(${u.id})" class="text-red-400 hover:text-red-300 p-1.5"><i class="fa-solid fa-trash"></i></button>` : ''}
-                        </td>
-                    </tr>
-                `;
-            });
-            localStorage.setItem('bp_usuarios', JSON.stringify(usuarios));
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
         }
 
-        function openModalUsuario() {
-            if (usuarioActual.rol !== 'Administrador') return;
-            document.getElementById('usuarioId').value = '';
-            document.getElementById('usuarioNombre').value = '';
-            document.getElementById('usuarioFoto').value = '';
-            document.getElementById('usuarioUser').value = '';
-            document.getElementById('usuarioPass').value = '';
-            document.getElementById('modalUsuarioTitle').innerText = 'Nuevo Usuario';
-            document.getElementById('modalUsuario').classList.add('modal-active');
-        }
-
-        function closeModalUsuario() {
-            document.getElementById('modalUsuario').classList.remove('modal-active');
-        }
-
-        function editUsuario(id) {
-            if (usuarioActual.rol !== 'Administrador') return;
-            const item = usuarios.find(u => u.id === id);
-            if (!item) return;
-            document.getElementById('usuarioId').value = item.id;
-            document.getElementById('usuarioNombre').value = item.nombre;
-            document.getElementById('usuarioFoto').value = item.foto || '';
-            document.getElementById('usuarioUser').value = item.user;
-            document.getElementById('usuarioPass').value = item.pass;
-            document.getElementById('usuarioRol').value = item.rol;
-            document.getElementById('modalUsuarioTitle').innerText = 'Editar Permisos / Usuario';
-            document.getElementById('modalUsuario').classList.add('modal-active');
-        }
-
-        function saveUsuario(e) {
+        function saveProduct(e) {
             e.preventDefault();
-            if (usuarioActual.rol !== 'Administrador') return;
-            const id = document.getElementById('usuarioId').value;
-            const nombre = document.getElementById('usuarioNombre').value.trim();
-            const foto = document.getElementById('usuarioFoto').value.trim();
-            const user = document.getElementById('usuarioUser').value.trim();
-            const pass = document.getElementById('usuarioPass').value.trim();
-            const rol = document.getElementById('usuarioRol').value;
+            const index = parseInt(document.getElementById('edit-index').value);
+            const name = document.getElementById('prod-name').value;
+            const category = document.getElementById('prod-category').value;
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const icon = document.getElementById('prod-icon').value;
 
-            if (id) {
-                const index = usuarios.findIndex(u => u.id == id);
-                usuarios[index] = { id: parseInt(id), nombre, foto, user, pass, rol };
-                // Si el usuario editado es el mismo que está logueado actualmente, refrescar la sesión activa
-                if (usuarioActual.id == id) {
-                    usuarioActual = usuarios[index];
-                    localStorage.setItem('bp_session_user', JSON.stringify(usuarioActual));
-                }
+            if (index > -1) {
+                products[index] = { ...products[index], name, category, price, icon };
+                showToast("Actualizado", "El producto se modificó correctamente.", "success");
             } else {
-                if (usuarios.some(u => u.user === user)) {
-                    alert('Este nombre de usuario ya está registrado.');
-                    return;
-                }
-                usuarios.push({ id: Date.now(), nombre, foto, user, pass, rol });
+                const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                products.push({ id: newId, name, category, price, icon });
+                showToast("Creado", "Nuevo producto agregado al catálogo.", "success");
             }
-            closeModalUsuario();
-            renderUsuarios();
-            showPanel();
+
+            closeProductModal();
+            renderAdminTable();
+            renderPOSCatalog();
         }
 
-        function deleteUsuario(id) {
-            if (usuarioActual.rol !== 'Administrador') return;
-            if (confirm('¿Seguro que deseas eliminar este trabajador?')) {
-                usuarios = usuarios.filter(u => u.id !== id);
-                renderUsuarios();
+        function editProduct(idx) {
+            openProductModal(idx);
+        }
+
+        function deleteProduct(idx) {
+            if (confirm("¿Estás seguro de eliminar este producto del menú?")) {
+                products.splice(idx, 1);
+                renderAdminTable();
+                renderPOSCatalog();
+                showToast("Eliminado", "El producto fue removido.", "success");
+            }
+        }
+
+        // Toast Notification Function
+        function showToast(title, msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-msg').innerText = msg;
+            const iconEl = document.getElementById('toast-icon');
+            if (type === 'success') {
+                iconEl.className = "text-emerald-400";
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-check text-lg"></i>';
+            } else {
+                iconEl.className = "text-rose-400";
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation text-lg"></i>';
+            }
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Charts Initialization
+        function initCharts() {
+            const ctxSales = document.getElementById('salesChart').getContext('2d');
+            salesChartInstance = new Chart(ctxSales, {
+                type: 'line',
+                data: {
+                    labels: ['12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data: [120, 250, 180, 420, 680, 510],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#a1a1aa' } },
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#a1a1aa' } }
+                    }
+                }
+            });
+
+            const ctxCat = document.getElementById('categoryChart').getContext('2d');
+            categoryChartInstance = new Chart(ctxCat, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pizzas', 'Bebidas', 'Extras'],
+                    datasets: [{
+                        data: [65, 20, 15],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#a1a1aa', font: { family: 'Inter', size: 12 } } }
+                    }
+                }
+            });
+        }
+
+        function updateChartsData() {
+            if (salesChartInstance) {
+                salesChartInstance.data.datasets[0].data[5] += 50;
+                salesChartInstance.update();
             }
         }
     </script>
