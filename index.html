@@ -1,1155 +1,1810 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#121212">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Brother's Pizza | Las mejores pizzas artesanales en Biblián</title>
-
-    <!-- Favicon -->
-    <link rel="icon" href="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=64&h=64&q=80" type="image/x-icon">
-
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-
-    <!-- AOS Animation Library -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
-
-    <style>
-        :root {
-            --bg-main: #121212;
-            --bg-card: #1e1e1e;
-            --primary-pizza: #ff4757;
-            --secondary-pizza: #ffa502;
-            --text-main: #f1f2f6;
-            --text-muted: #a4b0be;
-            --border-subtle: rgba(255, 255, 255, 0.1);
-            --transition: all 0.3s ease;
-            --header-height: 64px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-tap-highlight-color: rgba(255, 71, 87, 0.15);
-        }
-
-        html {
-            scroll-behavior: smooth;
-            -webkit-text-size-adjust: 100%;
-            scroll-padding-top: var(--header-height);
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-            min-height: 100vh;
-            min-height: 100dvh;
-        }
-
-        /* Evita zoom en inputs y mejora legibilidad */
-        input, textarea, select, button {
-            font-size: 16px;
-            font-family: inherit;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* ============================================================
-           HEADER — MOBILE FIRST
-        ============================================================ */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 5%;
-            background: rgba(18, 18, 18, 0.96);
-            -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-subtle);
-            height: var(--header-height);
-        }
-
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #fff;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .logo i {
-            color: var(--primary-pizza);
-            font-size: 1.2rem;
-        }
-
-        .logo span {
-            color: var(--primary-pizza);
-        }
-
-        /* MENÚ HAMBURGUESA */
-        .menu-toggle {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 44px;
-            height: 44px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            gap: 5px;
-            padding: 0;
-            z-index: 1100;
-            position: relative;
-            border-radius: 10px;
-            transition: var(--transition);
-        }
-
-        .menu-toggle:active {
-            background: rgba(255, 71, 87, 0.15);
-        }
-
-        .menu-toggle span {
-            display: block;
-            width: 24px;
-            height: 2.5px;
-            background: var(--text-main);
-            border-radius: 3px;
-            transition: var(--transition);
-            transform-origin: center;
-        }
-
-        .menu-toggle.active span:nth-child(1) {
-            transform: translateY(7.5px) rotate(45deg);
-            background: var(--primary-pizza);
-        }
-
-        .menu-toggle.active span:nth-child(2) {
-            opacity: 0;
-            transform: scaleX(0);
-        }
-
-        .menu-toggle.active span:nth-child(3) {
-            transform: translateY(-7.5px) rotate(-45deg);
-            background: var(--primary-pizza);
-        }
-
-        /* NAVEGACIÓN */
-        nav {
-            position: fixed;
-            top: var(--header-height);
-            left: 0;
-            width: 100%;
-            height: calc(100vh - var(--header-height));
-            height: calc(100dvh - var(--header-height));
-            background: rgba(15, 15, 15, 0.98);
-            -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);
-            transform: translateX(100%);
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 30px 8%;
-            z-index: 999;
-            overflow-y: auto;
-        }
-
-        nav.open {
-            transform: translateX(0);
-        }
-
-        nav ul {
-            display: flex;
-            flex-direction: column;
-            list-style: none;
-            gap: 8px;
-        }
-
-        nav a {
-            color: var(--text-main);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.15rem;
-            padding: 16px 20px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: var(--transition);
-            border: 1px solid transparent;
-            min-height: 56px;
-        }
-
-        nav a i {
-            color: var(--primary-pizza);
-            width: 24px;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-
-        nav a:active,
-        nav a:hover {
-            background: rgba(255, 71, 87, 0.12);
-            border-color: rgba(255, 71, 87, 0.3);
-            color: var(--primary-pizza);
-        }
-
-        /* Bloquea scroll al abrir menú */
-        body.no-scroll {
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-        }
-
-        /* ============================================================
-           HERO — MOBILE FIRST
-        ============================================================ */
-        .hero {
-            min-height: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: calc(var(--header-height) + 30px) 5% 50px;
-            gap: 30px;
-            background: linear-gradient(135deg, #121212 0%, #1a0f0f 100%);
-            text-align: center;
-        }
-
-        .hero > div {
-            width: 100%;
-            max-width: 520px;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 71, 87, 0.15);
-            color: var(--primary-pizza);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.9rem, 8vw, 3.3rem);
-            font-weight: 800;
-            line-height: 1.15;
-            margin-bottom: 16px;
-        }
-
-        .hero h1 span {
-            color: var(--secondary-pizza);
-        }
-
-        .hero p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-bottom: 20px;
-            line-height: 1.65;
-        }
-
-        .info-box {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 24px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            background: rgba(255, 255, 255, 0.04);
-            padding: 16px;
-            border-radius: 14px;
-            border: 1px solid var(--border-subtle);
-            text-align: left;
-        }
-
-        .info-box > div {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-box i {
-            color: var(--secondary-pizza);
-            font-size: 1rem;
-            width: 20px;
-            flex-shrink: 0;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .btn {
-            padding: 16px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: var(--transition);
-            min-height: 54px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .btn:active {
-            transform: scale(0.97);
-        }
-
-        .btn-primary {
-            background: var(--primary-pizza);
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.35);
-        }
-
-        .btn-primary:hover,
-        .btn-primary:active {
-            background: #ff3838;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.06);
-            color: #fff;
-            border: 1px solid var(--border-subtle);
-        }
-
-        .btn-secondary:hover,
-        .btn-secondary:active {
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        .hero-img {
-            width: 100%;
-            max-width: 100%;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-            border: 2px solid var(--border-subtle);
-            object-fit: cover;
-            height: 260px;
-            aspect-ratio: 4 / 3;
-        }
-
-        /* ============================================================
-           SECCIONES GENERALES
-        ============================================================ */
-        section {
-            padding: 60px 5%;
-        }
-
-        .section-header {
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto 40px;
-        }
-
-        .section-header h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.6rem, 6vw, 2.4rem);
-            margin-bottom: 8px;
-            line-height: 1.2;
-        }
-
-        .section-header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        /* ============================================================
-           TAMAÑOS DE PIZZA
-        ============================================================ */
-        .sizes-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .size-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 14px;
-            padding: 20px 12px;
-            text-align: center;
-            transition: var(--transition);
-            min-height: 110px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .size-card:active {
-            border-color: var(--secondary-pizza);
-            transform: scale(0.98);
-        }
-
-        .size-card h3 {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-weight: 500;
-            line-height: 1.3;
-        }
-
-        .size-card .price {
-            font-size: 1.7rem;
-            font-weight: 800;
-            color: var(--secondary-pizza);
-            font-family: 'Playfair Display', serif;
-        }
-
-        /* ============================================================
-           MENÚ DE SABORES — TARJETAS
-        ============================================================ */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--bg-card);
-            border-radius: 18px;
-            overflow: hidden;
-            border: 1px solid var(--border-subtle);
-            transition: var(--transition);
-        }
-
-        .card:active {
-            transform: scale(0.99);
-            border-color: var(--primary-pizza);
-        }
-
-        .card-img {
-            height: 200px;
-            width: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .card-content {
-            padding: 20px;
-        }
-
-        .card h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .card p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 18px;
-            line-height: 1.6;
-        }
-
-        .order-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 14px;
-            background: rgba(255, 71, 87, 0.1);
-            color: var(--primary-pizza);
-            text-align: center;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.9rem;
-            border: 1.5px solid var(--primary-pizza);
-            transition: var(--transition);
-            min-height: 50px;
-        }
-
-        .order-btn:active {
-            background: var(--primary-pizza);
-            color: #fff;
-            transform: scale(0.98);
-        }
-
-        /* ============================================================
-           DELIVERY
-        ============================================================ */
-        .delivery-section {
-            background: linear-gradient(180deg, transparent, rgba(255, 71, 87, 0.05), transparent);
-            padding: 60px 5%;
-        }
-
-        .delivery-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 18px;
-            padding: 28px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .delivery-card h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.3rem, 5vw, 1.8rem);
-            margin-bottom: 20px;
-            color: var(--secondary-pizza);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            line-height: 1.3;
-        }
-
-        .delivery-card ul {
-            list-style: none;
-            text-align: left;
-            margin: 0 auto 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            color: var(--text-muted);
-            padding: 0;
-        }
-
-        .delivery-card ul li {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 0.92rem;
-            line-height: 1.55;
-        }
-
-        .delivery-card ul li i {
-            color: #2ed573;
-            margin-top: 4px;
-            flex-shrink: 0;
-            font-size: 1rem;
-        }
-
-        /* ============================================================
-           WHATSAPP FLOTANTE — posición segura para móvil
-        ============================================================ */
-        .whatsapp-float {
-            position: fixed;
-            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-            right: 20px;
-            width: 58px;
-            height: 58px;
-            background-color: #25d366;
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
-            z-index: 998;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .whatsapp-float:active {
-            transform: scale(0.9);
-        }
-
-        /* Pulso sutil */
-        .whatsapp-float::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: #25d366;
-            animation: waPulse 2s infinite;
-            z-index: -1;
-        }
-
-        @keyframes waPulse {
-            0% { transform: scale(1); opacity: 0.7; }
-            70% { transform: scale(1.35); opacity: 0; }
-            100% { transform: scale(1.35); opacity: 0; }
-        }
-
-        /* ============================================================
-           FOOTER
-        ============================================================ */
-        footer {
-            text-align: center;
-            padding: 28px 5%;
-            padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
-            background: #0d0d0d;
-            color: var(--text-muted);
-            font-size: 0.82rem;
-            border-top: 1px solid var(--border-subtle);
-            line-height: 1.6;
-        }
-
-        /* ============================================================
-           TABLETS — desde 640px
-        ============================================================ */
-        @media (min-width: 640px) {
-            .hero-img {
-                height: 320px;
-            }
-
-            .btn-group {
-                flex-direction: row;
-                justify-content: center;
-            }
-
-            .btn {
-                width: auto;
-                flex: 1;
-                max-width: 240px;
-            }
-
-            .sizes-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 16px;
-            }
-
-            .grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 24px;
-            }
-
-            .card-img {
-                height: 220px;
-            }
-        }
-
-        /* ============================================================
-           DESKTOP — desde 900px
-        ============================================================ */
-        @media (min-width: 900px) {
-            :root {
-                --header-height: 72px;
-            }
-
-            header {
-                padding: 18px 7%;
-            }
-
-            .logo {
-                font-size: 1.6rem;
-            }
-
-            .logo i {
-                font-size: 1.4rem;
-            }
-
-            .menu-toggle {
-                display: none;
-            }
-
-            nav {
-                position: static;
-                width: auto;
-                height: auto;
-                background: transparent;
-                -webkit-backdrop-filter: none;
-                backdrop-filter: none;
-                transform: none;
-                padding: 0;
-                overflow: visible;
-            }
-
-            nav ul {
-                flex-direction: row;
-                gap: 28px;
-                align-items: center;
-            }
-
-            nav a {
-                padding: 8px 4px;
-                font-size: 0.95rem;
-                min-height: auto;
-                border-radius: 6px;
-                border: none;
-                color: var(--text-muted);
-                position: relative;
-                gap: 0;
-            }
-
-            nav a i {
-                display: none;
-            }
-
-            nav a::after {
-                content: "";
-                position: absolute;
-                bottom: -4px;
-                left: 0;
-                width: 0;
-                height: 2px;
-                background: var(--primary-pizza);
-                transition: width 0.3s ease;
-            }
-
-            nav a:hover,
-            nav a:active {
-                background: transparent;
-                color: var(--primary-pizza);
-                border: none;
-            }
-
-            nav a:hover::after {
-                width: 100%;
-            }
-
-            .hero {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                text-align: left;
-                min-height: 100vh;
-                padding: 140px 7% 80px;
-                gap: 40px;
-            }
-
-            .hero > div {
-                max-width: none;
-            }
-
-            .hero-img {
-                height: 400px;
-                aspect-ratio: auto;
-            }
-
-            .info-box {
-                text-align: left;
-            }
-
-            section {
-                padding: 90px 7%;
-            }
-
-            .sizes-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 20px;
-                max-width: 1100px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .grid {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                gap: 30px;
-                max-width: 1200px;
-                margin: 0 auto;
-            }
-
-            .card-img {
-                height: 220px;
-            }
-
-            .card:hover {
-                transform: translateY(-6px);
-                border-color: var(--primary-pizza);
-                box-shadow: 0 12px 30px rgba(255, 71, 87, 0.2);
-            }
-
-            .delivery-card {
-                padding: 50px 40px;
-            }
-
-            .whatsapp-float {
-                width: 62px;
-                height: 62px;
-                font-size: 32px;
-                bottom: 28px;
-                right: 28px;
-            }
-        }
-
-        /* ============================================================
-           PANTALLAS MUY PEQUEÑAS (<360px)
-        ============================================================ */
-        @media (max-width: 359px) {
-            .logo {
-                font-size: 1.15rem;
-            }
-
-            .logo i {
-                font-size: 1.05rem;
-            }
-
-            .hero h1 {
-                font-size: 1.7rem;
-            }
-
-            .size-card .price {
-                font-size: 1.45rem;
-            }
-
-            .btn {
-                font-size: 0.85rem;
-                padding: 14px 18px;
-            }
-        }
-
-        /* ============================================================
-           REDUCE MOTION (accesibilidad)
-        ============================================================ */
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }
-        }
-
-        /* Landscape en móviles pequeños */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .hero {
-                padding-top: calc(var(--header-height) + 20px);
-            }
-
-            .hero-img {
-                height: 200px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brother's Pizza | Panel Avanzado y POS</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bp-bg: #0b0f19;
+    --bp-panel: #111827;
+    --bp-accent: #ff4757;
+    --bp-accent-hover: #ff3838;
+    --bp-success: #2ed573;
+  }
+  * { -webkit-tap-highlight-color: transparent; }
+  body {
+    background-color: var(--bp-bg);
+    color: #f3f4f6;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .modal-active { display: flex !important; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #111827; }
+  ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+  /* ---------- LOGIN DINÁMICO ---------- */
+  .login-bg {
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,71,87,.18), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(46,213,115,.14), transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(255,165,2,.08), transparent 60%),
+      #0b0f19;
+  }
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+    50%      { transform: translateY(-18px) rotate(calc(var(--rot, 0deg) + 8deg)); }
+  }
+  .float-icon {
+    position: absolute; opacity: .10; pointer-events: none;
+    animation: floaty var(--dur, 8s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    color: #ff4757;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  .shake { animation: shake .4s ease; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .fade-up { animation: fadeUp .5s ease both; }
+
+  .demo-chip {
+    transition: all .2s ease; cursor: pointer;
+  }
+  .demo-chip:hover {
+    background: rgba(255,71,87,.15);
+    border-color: rgba(255,71,87,.5);
+    transform: translateY(-2px);
+  }
+
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- UI ---------- */
+  .tab-btn {
+    display: flex; align-items: center; justify-content: center; gap: .75rem;
+    padding: .75rem 1rem; border-radius: .75rem;
+    font-size: .75rem; font-weight: 600; color: #9ca3af;
+    transition: all .2s ease; white-space: nowrap; flex: 1;
+  }
+  @media (min-width: 768px) {
+    .tab-btn { justify-content: flex-start; flex: none; font-size: .875rem; }
+  }
+  .tab-btn:hover { background: rgba(255,255,255,.05); color: #f3f4f6; }
+  .tab-btn.is-active {
+    background: var(--bp-accent); color: #fff; font-weight: 700;
+    box-shadow: 0 10px 25px -8px rgba(255,71,87,.5);
+  }
+
+  .pos-cat-btn {
+    padding: .5rem 1rem; border-radius: .75rem;
+    font-size: .75rem; font-weight: 700;
+    background: var(--bp-panel); color: #9ca3af;
+    white-space: nowrap; transition: all .2s ease;
+  }
+  .pos-cat-btn:hover { background: rgba(255,255,255,.05); }
+  .pos-cat-btn.is-active { background: var(--bp-accent); color: #fff; }
+
+  .product-card {
+    background: var(--bp-panel);
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 1rem; padding: .75rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+    cursor: pointer; transition: all .2s ease;
+    text-align: left; width: 100%;
+    box-shadow: 0 4px 14px rgba(0,0,0,.25);
+  }
+  .product-card:hover {
+    border-color: var(--bp-accent);
+    transform: translateY(-2px);
+  }
+  .product-card:active { transform: scale(.98); }
+  .product-card:focus-visible { outline: 2px solid var(--bp-accent); outline-offset: 2px; }
+
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      transition-duration: .001ms !important;
+    }
+  }
+</style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col md:flex-row">
 
-    <!-- HEADER -->
-    <header>
-        <a href="#inicio" class="logo">
-            <i class="fa-solid fa-pizza-slice"></i> Brother's <span>Pizza</span>
-        </a>
+<!-- =========================================================
+     LOGIN DINÁMICO
+     ========================================================= -->
+<div id="loginSection" class="login-bg fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden">
 
-        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav">
-            <span></span>
-            <span></span>
-            <span></span>
+  <!-- Iconos flotantes decorativos -->
+  <div aria-hidden="true" class="absolute inset-0 overflow-hidden">
+    <i class="fa-solid fa-pizza-slice float-icon text-6xl" style="top:10%; left:8%;  --rot:-15deg; --dur:9s;  --delay:0s;"></i>
+    <i class="fa-solid fa-pizza-slice float-icon text-4xl" style="top:75%; left:15%; --rot:20deg;  --dur:11s; --delay:1s;"></i>
+    <i class="fa-solid fa-cheese       float-icon text-5xl" style="top:20%; left:82%; --rot:12deg;  --dur:10s; --delay:.5s;"></i>
+    <i class="fa-solid fa-fire         float-icon text-4xl" style="top:65%; left:88%; --rot:-8deg;  --dur:8s;  --delay:1.5s;"></i>
+    <i class="fa-solid fa-beer-mug-empty float-icon text-4xl" style="top:88%; left:60%; --rot:18deg; --dur:12s; --delay:.8s;"></i>
+    <i class="fa-solid fa-pepper-hot    float-icon text-3xl" style="top:35%; left:5%;  --rot:-25deg; --dur:9.5s; --delay:2s;"></i>
+  </div>
+
+  <div class="relative w-full max-w-md fade-up">
+    <div class="bg-[#111827]/90 border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-xl relative overflow-hidden">
+      <div class="absolute -top-16 -right-16 w-48 h-48 bg-[#ff4757]/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-16 -left-16 w-48 h-48 bg-[#2ed573]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#ff4757]/20 text-[#ff4757] mb-3 shadow-inner">
+          <i class="fa-solid fa-pizza-slice text-3xl" aria-hidden="true"></i>
+        </div>
+        <h2 class="text-2xl font-black tracking-wide">Brother's Pizza</h2>
+        <p class="text-gray-400 text-xs mt-1">Sistema de Gestión y Control Dinámico</p>
+      </div>
+
+      <form id="loginForm" class="space-y-4 relative" novalidate>
+        <div>
+          <label for="userInput" class="block text-[11px] uppercase font-bold tracking-wider text-gray-400 mb-1.5">Usuario</label>
+          <div class="relative">
+            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none" aria-hidden="true"></i>
+            <input type="text" id="userInput" required autocomplete="username"
+                   class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
+          </div>
+        </div>
+
+        <div>
+          <label for="passInput" class="block text-[11px] uppercase font-bold tracking-wider text-gray-400 mb-1.5">Contraseña</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none" aria-hidden="true"></i>
+            <input type="password" id="passInput" required autocomplete="current-password"
+                   class="w-full bg-[#1f2937] border border-white/10 rounded-xl pl-10 pr-11 py-3.5 text-sm text-white focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
+            <button type="button" id="togglePass" aria-label="Mostrar u ocultar contraseña"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white p-1.5 rounded-lg transition">
+              <i class="fa-solid fa-eye text-xs" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-[11px]">
+          <label class="flex items-center gap-2 text-gray-400 cursor-pointer select-none">
+            <input type="checkbox" id="rememberUser" class="accent-[#ff4757] w-3.5 h-3.5">
+            Recordar usuario
+          </label>
+          <span class="text-gray-500">v2.0</span>
+        </div>
+
+        <div id="loginError" role="alert"
+             class="hidden text-red-400 text-xs text-center font-medium bg-red-500/10 border border-red-500/20 py-2.5 rounded-lg">
+        </div>
+
+        <button type="submit" id="loginBtn"
+                class="w-full bg-[#ff4757] hover:bg-[#ff3838] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-[#ff4757]/30 text-sm flex items-center justify-center gap-2">
+          <span id="loginBtnText">Ingresar al Sistema</span>
         </button>
+      </form>
 
-        <nav id="mainNav">
-            <ul>
-                <li><a href="#inicio" data-nav><i class="fa-solid fa-house"></i> Inicio</a></li>
-                <li><a href="#precios" data-nav><i class="fa-solid fa-tag"></i> Precios</a></li>
-                <li><a href="#menu" data-nav><i class="fa-solid fa-pizza-slice"></i> Menú</a></li>
-                <li><a href="#delivery" data-nav><i class="fa-solid fa-motorcycle"></i> Delivery</a></li>
-                <li><a href="admin.html"><i class="fa-solid fa-user-lock"></i> Ingreso</a></li>
-</a>
-            </ul>
-        </nav>
-    </header>
+      <!-- Cuentas demo dinámicas -->
+      <div class="mt-6 pt-5 border-t border-white/10 relative">
+        <p class="text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-2.5 text-center">Acceso rápido demo</p>
+        <div id="demoAccounts" class="grid grid-cols-2 gap-2"></div>
+      </div>
 
-    <!-- HERO -->
-    <section class="hero" id="inicio">
-        <div data-aos="fade-up">
-            <div class="badge"><i class="fa-solid fa-fire"></i> Sabor Artesanal en Biblián</div>
-            <h1>Las mejores pizzas hechas entre <span>Hermanos</span></h1>
-            <p>Masa fresca preparada a diario, ingredientes de calidad y el auténtico toque al horno para disfrutar con quienes más quieres.</p>
+      <div class="mt-5 text-center relative">
+        <a href="index.html" class="text-xs text-gray-400 hover:text-white transition">← Volver al sitio web</a>
+      </div>
+    </div>
+  </div>
+</div>
 
-            <div class="info-box">
-                <div><i class="fa-regular fa-clock"></i> <span><strong>Horario:</strong> 17:00 – 22:30</span></div>
-                <div><i class="fa-solid fa-location-dot"></i> <span><strong>Ubicación:</strong> Biblián, Ecuador</span></div>
-                <div><i class="fa-solid fa-phone"></i> <span><strong>WhatsApp:</strong> 098 411 3081</span></div>
-            </div>
+<!-- =========================================================
+     PANEL PRINCIPAL
+     ========================================================= -->
+<div id="mainPanel" class="flex-1 hidden md:flex-row w-full min-h-screen">
 
-            <div class="btn-group">
-                <a href="#menu" class="btn btn-primary"><i class="fa-solid fa-utensils"></i> Ver Sabores</a>
-                <a href="https://wa.me/593984113081?text=Hola,%20quiero%20hacer%20un%20pedido%20a%20Brother's%20Pizza" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp</a>
-            </div>
+  <!-- SIDEBAR -->
+  <aside class="w-full md:w-72 bg-[#111827] border-b md:border-b-0 md:border-r border-white/10 flex flex-col justify-between p-4 sticky top-0 z-30 md:relative">
+    <div class="flex flex-col md:flex-row md:flex-col justify-between items-center md:items-stretch gap-4">
+      <div class="flex items-center justify-between w-full md:w-auto px-2 py-2">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-[#ff4757] grid place-items-center text-white shadow-md">
+            <i class="fa-solid fa-pizza-slice text-sm" aria-hidden="true"></i>
+          </div>
+          <span class="font-black text-base tracking-wide">Brother's Pizza</span>
+        </div>
+        <button data-action="logout" title="Cerrar sesión" aria-label="Cerrar sesión"
+                class="md:hidden text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition">
+          <i class="fa-solid fa-right-from-bracket text-lg" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <nav id="navTabs" class="flex md:flex-col gap-1.5 w-full overflow-x-auto pb-2 md:pb-0" aria-label="Navegación principal">
+        <button data-tab="pos" class="tab-btn is-active">
+          <i class="fa-solid fa-cash-register w-5 text-center" aria-hidden="true"></i><span>Punto de Venta</span>
+        </button>
+        <button data-tab="menu" class="tab-btn" data-role="admin">
+          <i class="fa-solid fa-utensils w-5 text-center" aria-hidden="true"></i><span>Gestión del Menú</span>
+        </button>
+        <button data-tab="inventario" class="tab-btn">
+          <i class="fa-solid fa-boxes-stacked w-5 text-center" aria-hidden="true"></i><span>Inventario</span>
+        </button>
+        <button data-tab="usuarios" class="tab-btn" data-role="admin">
+          <i class="fa-solid fa-users-gear w-5 text-center" aria-hidden="true"></i><span>Trabajadores</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="hidden md:flex pt-4 border-t border-white/10 items-center justify-between gap-2">
+      <div class="flex items-center gap-3 overflow-hidden min-w-0">
+        <div id="desktopAvatar" class="w-10 h-10 rounded-full overflow-hidden bg-white/10 grid place-items-center font-bold text-xs shrink-0 border border-white/15"></div>
+        <div class="truncate min-w-0">
+          <p id="desktopUserName" class="text-xs font-bold truncate">—</p>
+          <p id="desktopUserRole" class="text-[10px] text-gray-400 truncate">—</p>
+        </div>
+      </div>
+      <button data-action="logout" title="Cerrar sesión" aria-label="Cerrar sesión"
+              class="text-gray-400 hover:text-red-400 transition p-2 rounded-lg hover:bg-red-500/10 shrink-0">
+        <i class="fa-solid fa-right-from-bracket text-base" aria-hidden="true"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
+
+    <!-- ========== SECCIÓN POS ========== -->
+    <section id="sectionPos" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black">Caja Registradora y Pedidos</h1>
+          <p class="text-xs text-gray-400">Selecciona los productos del menú dinámico para agregarlos al ticket.</p>
+        </div>
+        <div class="relative w-full sm:w-64">
+          <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs" aria-hidden="true"></i>
+          <input type="search" id="posSearch" autocomplete="off" placeholder="Buscar producto…"
+                 aria-label="Buscar producto"
+                 class="w-full bg-[#111827] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] transition">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-4">
+          <div id="posCategoriasTabs" class="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filtrar por categoría"></div>
+          <div id="posGridProductos" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
         </div>
 
-        <div data-aos="fade-up" data-aos-delay="150">
-            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80"
-                 alt="Pizza Brother's"
-                 class="hero-img"
-                 loading="eager"
-                 decoding="async">
+        <!-- Ticket -->
+        <div class="bg-[#111827] border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xl h-fit lg:sticky lg:top-6">
+          <div class="space-y-4">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+              <h3 class="font-bold text-sm flex items-center gap-2">
+                <i class="fa-solid fa-receipt text-[#ff4757]" aria-hidden="true"></i>
+                Orden en curso
+                <span id="cartCount" class="text-[10px] font-bold bg-white/10 text-gray-300 px-2 py-0.5 rounded-full tabular-nums">0</span>
+              </h3>
+              <button data-action="clear-cart" class="text-xs text-red-400 hover:text-red-300 hover:underline">Vaciar</button>
+            </div>
+
+            <div>
+              <label for="clientName" class="block text-[10px] uppercase font-bold tracking-wider text-gray-500 mb-1">Cliente / Mesa</label>
+              <input type="text" id="clientName" value="Mesa 01" autocomplete="off"
+                     class="w-full bg-[#1f2937] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff4757] transition">
+            </div>
+
+            <div id="carritoItemsContainer" class="space-y-2.5 max-h-64 overflow-y-auto pr-1"></div>
+          </div>
+
+          <div class="border-t border-white/10 pt-4 mt-4 space-y-3">
+            <div class="space-y-1.5 text-xs">
+              <div class="flex justify-between text-gray-400">
+                <span>Subtotal</span><span id="carritoSubtotal" class="tabular-nums">$0.00</span>
+              </div>
+              <div class="flex justify-between text-gray-400">
+                <span>IVA (12%)</span><span id="carritoIva" class="tabular-nums">$0.00</span>
+              </div>
+              <div class="flex justify-between text-base font-black text-white pt-1.5 border-t border-white/10">
+                <span>Total a cobrar</span>
+                <span id="carritoTotal" class="text-[#2ed573] tabular-nums">$0.00</span>
+              </div>
+            </div>
+            <button data-action="checkout"
+                    class="w-full bg-[#2ed573] hover:bg-[#26af5f] text-white font-bold py-3.5 rounded-xl transition text-xs shadow-lg shadow-[#2ed573]/20 flex items-center justify-center gap-2 active:scale-[.99]">
+              <i class="fa-solid fa-check text-sm" aria-hidden="true"></i> Cobrar y registrar pedido
+            </button>
+          </div>
         </div>
+      </div>
+
+      <!-- Historial + chart -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
+        <div class="lg:col-span-2 bg-[#111827] border border-white/10 rounded-2xl p-5 shadow-xl space-y-4">
+          <div class="flex justify-between items-center flex-wrap gap-2">
+            <h3 class="font-bold text-sm">Historial de órdenes recientes</h3>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-gray-400 tabular-nums" id="contadorVentasTotal">0 registros</span>
+              <button data-action="export-csv" title="Exportar CSV"
+                      class="text-xs text-gray-400 hover:text-white px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition">
+                <i class="fa-solid fa-file-csv mr-1" aria-hidden="true"></i>CSV
+              </button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs min-w-[560px]">
+              <thead class="bg-black/30 uppercase text-gray-400 border-b border-white/10 text-[10px]">
+                <tr>
+                  <th class="p-3 font-semibold">Fecha / Hora</th>
+                  <th class="p-3 font-semibold">Atendido por</th>
+                  <th class="p-3 font-semibold">Detalle</th>
+                  <th class="p-3 font-semibold text-right">Total</th>
+                  <th class="p-3 font-semibold text-right">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="ventasTableBody" class="divide-y divide-white/10"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-[#111827] border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-sm mb-1">Rendimiento financiero</h3>
+            <p class="text-[11px] text-gray-400">Ingresos por categoría de venta.</p>
+          </div>
+          <div class="py-4 relative h-48">
+            <canvas id="ventasChart" aria-label="Ingresos por categoría" role="img"></canvas>
+          </div>
+          <div class="bg-black/30 p-3 rounded-xl border border-white/10 flex justify-between items-center text-xs">
+            <span class="text-gray-400 font-semibold">Total recaudado:</span>
+            <span id="statRecaudadoTotal" class="font-black text-[#2ed573] text-sm tabular-nums">$0.00</span>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- TAMAÑOS Y PRECIOS -->
-    <section id="precios">
-        <div class="section-header" data-aos="fade-up">
-            <h2>Nuestros Tamaños & Precios</h2>
-            <p>Elige el tamaño ideal para tu apetito</p>
+    <!-- ========== SECCIÓN MENÚ ========== -->
+    <section id="sectionMenu" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black">Manipulación y control del menú</h1>
+          <p class="text-xs text-gray-400">Agrega, edita precios o elimina platos y bebidas al instante.</p>
         </div>
+        <button data-action="new-menu"
+                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-[#ff4757]/20 w-full sm:w-auto active:scale-[.98]">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i> Nuevo producto
+        </button>
+      </div>
 
-        <div class="sizes-grid">
-            <div class="size-card" data-aos="fade-up" data-aos-delay="50">
-                <h3>Porción / Slice</h3>
-                <div class="price">$1,25</div>
-            </div>
-            <div class="size-card" data-aos="fade-up" data-aos-delay="100">
-                <h3>Pizza Pequeña</h3>
-                <div class="price">$5,00</div>
-            </div>
-            <div class="size-card" data-aos="fade-up" data-aos-delay="150">
-                <h3>Pizza Mediana</h3>
-                <div class="price">$9,00</div>
-            </div>
-            <div class="size-card" data-aos="fade-up" data-aos-delay="200">
-                <h3>Pizza Grande</h3>
-                <div class="price">$13,00</div>
-            </div>
+      <div class="bg-[#111827] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm min-w-[640px]">
+            <thead class="bg-black/30 uppercase text-gray-400 border-b border-white/10 text-[11px]">
+              <tr>
+                <th class="p-4 font-semibold">Imagen</th>
+                <th class="p-4 font-semibold">Producto</th>
+                <th class="p-4 font-semibold">Categoría</th>
+                <th class="p-4 font-semibold">Precio</th>
+                <th class="p-4 font-semibold text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="menuTableBody" class="divide-y divide-white/10"></tbody>
+          </table>
         </div>
+      </div>
     </section>
 
-    <!-- MENÚ DE SABORES -->
-    <section class="menu" id="menu">
-        <div class="section-header" data-aos="fade-up">
-            <h2>Especialidades de la Casa</h2>
-            <p>Sabores únicos preparados con pasión</p>
+    <!-- ========== SECCIÓN INVENTARIO ========== -->
+    <section id="sectionInventario" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black">Control de insumos</h1>
+          <p class="text-xs text-gray-400">Supervisa stock de masa, queso, cajas y bebidas.</p>
         </div>
+        <button data-action="new-insumo"
+                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition w-full sm:w-auto active:scale-[.98]">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i> Nuevo insumo
+        </button>
+      </div>
 
-        <div class="grid">
-            <!-- Pepperoni -->
-            <div class="card" data-aos="fade-up" data-aos-delay="50">
-                <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80"
-                     alt="Pizza de Pepperoni clásica"
-                     class="card-img"
-                     loading="lazy"
-                     decoding="async">
-                <div class="card-content">
-                    <h3>Pepperoni</h3>
-                    <p>Deliciosa capa de pepperoni crujiente y abundante queso mozzarella fundido sobre nuestra salsa de tomate artesanal.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20de%20Pepperoni" target="_blank" rel="noopener" class="order-btn">
-                        <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
-                    </a>
-                </div>
-            </div>
-
-            <!-- Jamón Tradicional -->
-            <div class="card" data-aos="fade-up" data-aos-delay="100">
-                <img src="https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?auto=format&fit=crop&w=500&q=80"
-                     alt="Pizza Jamón Tradicional"
-                     class="card-img"
-                     loading="lazy"
-                     decoding="async">
-                <div class="card-content">
-                    <h3>Jamón Tradicional</h3>
-                    <p>El clásico favorito con finas rodajas de jamón selecto y doble porción de queso derretido en cada bocado.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20de%20Jam%C3%B3n" target="_blank" rel="noopener" class="order-btn">
-                        <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
-                    </a>
-                </div>
-            </div>
-
-            <!-- Hawaiana -->
-            <div class="card" data-aos="fade-up" data-aos-delay="150">
-                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=500&q=80"
-                     alt="Pizza Hawaiana con piña"
-                     class="card-img"
-                     loading="lazy"
-                     decoding="async">
-                <div class="card-content">
-                    <h3>Hawaiana</h3>
-                    <p>La combinación perfecta entre lo dulce y lo salado con trozos de piña en su punto y jamón fresco.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20Hawaiana" target="_blank" rel="noopener" class="order-btn">
-                        <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
-                    </a>
-                </div>
-            </div>
-
-            <!-- Brother's Especial -->
-            <div class="card" data-aos="fade-up" data-aos-delay="200">
-                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80"
-                     alt="Brother's Especial con varios ingredientes"
-                     class="card-img"
-                     loading="lazy"
-                     decoding="async">
-                <div class="card-content">
-                    <h3>Brother’s Especial</h3>
-                    <p>Nuestra joya de la casa: generosa mezcla de queso, pepperoni, jamón, tocino ahumado y nuestra salsa especial propia.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20deseo%20pedir%20una%20Pizza%20Brother's%20Especial" target="_blank" rel="noopener" class="order-btn">
-                        <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
-                    </a>
-                </div>
-            </div>
-
-            <!-- Bebidas -->
-            <div class="card" data-aos="fade-up" data-aos-delay="250">
-                <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=80"
-                     alt="Bebidas frías"
-                     class="card-img"
-                     loading="lazy"
-                     decoding="async">
-                <div class="card-content">
-                    <h3>Bebidas & Complementos</h3>
-                    <p>Acompaña tu pizza favorita con bebidas frías y complementos ideales para redondear tu experiencia.</p>
-                    <a href="https://wa.me/593984113081?text=Hola,%20quiero%20consultar%20las%20bebidas%20y%20complementos%20disponibles" target="_blank" rel="noopener" class="order-btn">
-                        <i class="fa-brands fa-whatsapp"></i> Consultar Bebidas
-                    </a>
-                </div>
-            </div>
+      <div class="bg-[#111827] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm min-w-[560px]">
+            <thead class="bg-black/30 uppercase text-gray-400 border-b border-white/10 text-[11px]">
+              <tr>
+                <th class="p-4 font-semibold">Insumo</th>
+                <th class="p-4 font-semibold">Cantidad</th>
+                <th class="p-4 font-semibold">Unidad</th>
+                <th class="p-4 font-semibold">Estado</th>
+                <th class="p-4 font-semibold text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="inventarioTableBody" class="divide-y divide-white/10"></tbody>
+          </table>
         </div>
+      </div>
     </section>
 
-    <!-- SECCIÓN DELIVERY -->
-    <section class="delivery-section" id="delivery">
-        <div class="delivery-card" data-aos="fade-up">
-            <h3><i class="fa-solid fa-motorcycle"></i> Servicio a Domicilio</h3>
-            <ul>
-                <li><i class="fa-solid fa-circle-check"></i> <span><strong>¡Delivery Gratis!</strong> En compras a partir de $5.00.</span></li>
-                <li><i class="fa-solid fa-circle-check"></i> <span><strong>Cobertura:</strong> Casco urbano de Biblián y alrededores.</span></li>
-                <li><i class="fa-solid fa-circle-check"></i> <span>Para zonas más alejadas o periféricas puede aplicar un pequeño recargo.</span></li>
-            </ul>
-            <a href="https://wa.me/593984113081?text=Hola,%20quiero%20pedir%20delivery%20a%20domicilio%20en%20Biblián" target="_blank" rel="noopener" class="btn btn-primary">
-                <i class="fa-brands fa-whatsapp"></i> Solicitar Delivery
-            </a>
+    <!-- ========== SECCIÓN USUARIOS ========== -->
+    <section id="sectionUsuarios" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black">Trabajadores y credenciales</h1>
+          <p class="text-xs text-gray-400">Crea cuentas, asigna roles y cambia contraseñas.</p>
         </div>
+        <button data-action="new-user"
+                class="bg-[#ff4757] hover:bg-[#ff3838] text-white font-bold px-4 py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition w-full sm:w-auto active:scale-[.98]">
+          <i class="fa-solid fa-user-plus" aria-hidden="true"></i> Registrar trabajador
+        </button>
+      </div>
+
+      <div class="bg-[#111827] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm min-w-[560px]">
+            <thead class="bg-black/30 uppercase text-gray-400 border-b border-white/10 text-[11px]">
+              <tr>
+                <th class="p-4 font-semibold">Foto</th>
+                <th class="p-4 font-semibold">Usuario</th>
+                <th class="p-4 font-semibold">Nombre / Alias</th>
+                <th class="p-4 font-semibold">Rol</th>
+                <th class="p-4 font-semibold text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usuariosTableBody" class="divide-y divide-white/10"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
+  </main>
+</div>
 
-    <!-- WHATSAPP FLOTANTE -->
-    <a href="https://wa.me/593984113081?text=Hola,%20quiero%20hacer%20un%20pedido%20en%20Brother's%20Pizza" target="_blank" rel="noopener" class="whatsapp-float" aria-label="Pedir por WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
+<!-- =========================================================
+     MODALES
+     ========================================================= -->
 
-    <!-- FOOTER -->
-    <footer>
-        <A HREF="ADMIN.HTML" STYLE="COLOR: #333; TEXT-DECORATION: NONE; FONT-SIZE: 12PX; POSITION: ABSOLUTE; BOTTOM: 10PX; RIGHT: 10PX;">ADMINISTRACIÓN</A>
-        <p>&copy; 2026 Brother's Pizza - Biblián, Ecuador. Todos los derechos reservados.</p>
-    </footer>
+<!-- Producto del menú -->
+<div id="modalMenu" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalMenuTitle">
+  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4 fade-up">
+    <h3 id="modalMenuTitle" class="text-base font-black">Gestión de producto del menú</h3>
+    <form id="formMenu" class="space-y-3" novalidate>
+      <input type="hidden" id="menuId">
+      <div>
+        <label for="menuNombre" class="block text-xs text-gray-400 mb-1">Nombre del producto *</label>
+        <input type="text" id="menuNombre" required maxlength="80" data-autofocus
+               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="menuCategoria" class="block text-xs text-gray-400 mb-1">Categoría</label>
+          <select id="menuCategoria" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+            <option value="Pizzas">Pizzas</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Extras">Extras</option>
+          </select>
+        </div>
+        <div>
+          <label for="menuPrecio" class="block text-xs text-gray-400 mb-1">Precio ($) *</label>
+          <input type="number" step="0.01" min="0" id="menuPrecio" required
+                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        </div>
+      </div>
+      <div>
+        <label for="menuImagen" class="block text-xs text-gray-400 mb-1">URL de imagen</label>
+        <input type="url" id="menuImagen" placeholder="https://…"
+               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        <p class="text-[10px] text-gray-500 mt-1">Si se deja vacío se usará una imagen por defecto.</p>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" data-close-modal="modalMenu"
+                class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
+        <button type="submit"
+                class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-    <!-- AOS Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script>
-        // AOS con configuración mobile-friendly
-        AOS.init({
-            duration: 600,
-            once: true,
-            offset: 40,
-            disable: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        });
+<!-- Insumo -->
+<div id="modalInsumo" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalInsumoTitle">
+  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4 fade-up">
+    <h3 id="modalInsumoTitle" class="text-base font-black">Gestión de insumo</h3>
+    <form id="formInsumo" class="space-y-3" novalidate>
+      <input type="hidden" id="insumoId">
+      <div>
+        <label for="insumoNombre" class="block text-xs text-gray-400 mb-1">Nombre *</label>
+        <input type="text" id="insumoNombre" required maxlength="60" data-autofocus
+               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="insumoCantidad" class="block text-xs text-gray-400 mb-1">Cantidad *</label>
+          <input type="number" step="0.01" min="0" id="insumoCantidad" required
+                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        </div>
+        <div>
+          <label for="insumoUnidad" class="block text-xs text-gray-400 mb-1">Unidad</label>
+          <select id="insumoUnidad" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+            <option value="Unidades">Unidades</option>
+            <option value="Kg">Kg</option>
+            <option value="Litros">Litros</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="insumoLimite" class="block text-xs text-gray-400 mb-1">Límite crítico *</label>
+        <input type="number" step="0.01" min="0" id="insumoLimite" required
+               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" data-close-modal="modalInsumo"
+                class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
+        <button type="submit"
+                class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-        // ============================================================
-        // MENÚ HAMBURGUESA
-        // ============================================================
-        const menuToggle = document.getElementById('menuToggle');
-        const mainNav = document.getElementById('mainNav');
-        const navLinks = document.querySelectorAll('[data-nav]');
+<!-- Usuario -->
+<div id="modalUsuario" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalUsuarioTitle">
+  <div class="bg-[#111827] border border-white/10 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4 fade-up">
+    <h3 id="modalUsuarioTitle" class="text-base font-black">Gestión de trabajador</h3>
+    <form id="formUsuario" class="space-y-3" novalidate>
+      <input type="hidden" id="usuarioId">
+      <div>
+        <label for="usuarioNombre" class="block text-xs text-gray-400 mb-1">Nombre o alias *</label>
+        <input type="text" id="usuarioNombre" required maxlength="60" data-autofocus
+               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+      </div>
+      <div>
+        <label for="usuarioFoto" class="block text-xs text-gray-400 mb-1">URL de foto (opcional)</label>
+        <input type="url" id="usuarioFoto" placeholder="https://…"
+               class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="usuarioUser" class="block text-xs text-gray-400 mb-1">Usuario *</label>
+          <input type="text" id="usuarioUser" required maxlength="40"
+                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        </div>
+        <div>
+          <label for="usuarioPass" class="block text-xs text-gray-400 mb-1">Contraseña *</label>
+          <input type="text" id="usuarioPass" required minlength="4"
+                 class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+        </div>
+      </div>
+      <div>
+        <label for="usuarioRol" class="block text-xs text-gray-400 mb-1">Rol en el sistema</label>
+        <select id="usuarioRol" class="w-full bg-[#1f2937] border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#ff4757]">
+          <option value="Cajero">Cajero (POS e Inventario)</option>
+          <option value="Administrador">Administrador (control total)</option>
+        </select>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" data-close-modal="modalUsuario"
+                class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
+        <button type="submit"
+                class="px-5 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-        function toggleMenu() {
-            const isOpen = mainNav.classList.toggle('open');
-            menuToggle.classList.toggle('active');
-            menuToggle.setAttribute('aria-expanded', isOpen);
-            menuToggle.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
-            document.body.classList.toggle('no-scroll', isOpen);
+<!-- Confirmación -->
+<div id="modalConfirm" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="bg-[#111827] border border-white/10 w-full max-w-sm rounded-2xl p-6 shadow-2xl fade-up">
+    <div class="flex items-start gap-3">
+      <div class="bg-red-500/10 text-red-400 p-2.5 rounded-xl border border-red-500/20 shrink-0">
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 id="confirmTitle" class="text-sm font-black text-white">Confirmar acción</h3>
+        <p id="confirmMessage" class="text-xs text-gray-400 mt-1">¿Estás seguro?</p>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-5">
+      <button type="button" data-confirm="cancel"
+              class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
+      <button type="button" id="confirmOk" data-confirm="ok"
+              class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div id="toastHost" class="fixed bottom-5 right-5 z-[80] flex flex-col items-end gap-2 pointer-events-none" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================================
+   Brother's Pizza · Panel Admin & POS · v2.0
+   ========================================================================= */
+(() => {
+  'use strict';
+
+  /* ------------------------------ Helpers ------------------------------ */
+  const $  = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+  const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+                              .format(Number(n) || 0);
+
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const round2 = n => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+  const TAX_RATE = 0.12;
+
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+  const debounce = (fn, ms = 200) => {
+    let t;
+    return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+  };
+
+  const FALLBACK_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+      <rect width="200" height="200" fill="#1f2937"/>
+      <text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"
+            font-family="system-ui" font-size="46" fill="#4b5563">🍕</text>
+    </svg>`
+  );
+
+  /* ------------------------------ Estado ------------------------------ */
+  const STORAGE = {
+    MENU:  'bp_menu',
+    INV:   'bp_inventario',
+    VENTAS:'bp_ventas',
+    USERS: 'bp_usuarios',
+    SESS:  'bp_session_user',
+    REMEMBER: 'bp_remember_user'
+  };
+
+  const DEFAULT_MENU = [
+    { id: 1, nombre: 'Pizza Familiar Pepperoni', categoria: 'Pizzas',  precio: 12.00, imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=300&auto=format&fit=crop&q=80' },
+    { id: 2, nombre: 'Pizza Jamón y Queso',      categoria: 'Pizzas',  precio: 11.00, imagen: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=300&auto=format&fit=crop&q=80' },
+    { id: 3, nombre: 'Slice (Porción) Pepperoni',categoria: 'Pizzas',  precio: 1.50,  imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&auto=format&fit=crop&q=80' },
+    { id: 4, nombre: 'Cola / Gaseosa 1.5L',      categoria: 'Bebidas', precio: 2.25,  imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300&auto=format&fit=crop&q=80' },
+    { id: 5, nombre: 'Agua Purificada 500ml',    categoria: 'Bebidas', precio: 0.75,  imagen: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4c?w=300&auto=format&fit=crop&q=80' },
+    { id: 6, nombre: 'Bordes de Queso Extra',    categoria: 'Extras',  precio: 2.00,  imagen: 'https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=300&auto=format&fit=crop&q=80' }
+  ];
+
+  const DEFAULT_INV = [
+    { id: 1, nombre: 'Masa (Bollos)', cantidad: 50, unidad: 'Unidades', limite: 10 },
+    { id: 2, nombre: 'Queso Mozzarella', cantidad: 15, unidad: 'Kg', limite: 4 },
+    { id: 3, nombre: 'Pepperoni', cantidad: 5, unidad: 'Kg', limite: 2 }
+  ];
+
+  const DEFAULT_USERS = [
+    { id: 1, nombre: 'Osvaldo (Admin)', user: 'admin',  pass: 'admin123',  rol: 'Administrador', foto: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80' },
+    { id: 2, nombre: 'Cajero Local',    user: 'cajero', pass: 'cajero123', rol: 'Cajero',        foto: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80' }
+  ];
+
+  let state = {
+    menu: [],
+    inventario: [],
+    ventas: [],
+    usuarios: [],
+    usuarioActual: null,
+    carrito: [],
+    categoriaPos: 'todos',
+    busquedaPos: ''
+  };
+
+  let salesChart = null;
+  let confirmResolver = null;
+  let lastFocused = null;
+
+  /* ------------------------------ Storage ------------------------------ */
+  const loadJSON = (key, fallback) => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      const parsed = JSON.parse(raw);
+      return parsed ?? fallback;
+    } catch { return fallback; }
+  };
+
+  const saveJSON = (key, value) => {
+    try { localStorage.setItem(key, JSON.stringify(value)); }
+    catch (e) { console.warn('[Brother\'s Pizza] No se pudo guardar', key, e); }
+  };
+
+  function loadState() {
+    state.menu       = loadJSON(STORAGE.MENU, null)     || DEFAULT_MENU.map(p => ({ ...p }));
+    state.inventario = loadJSON(STORAGE.INV, null)      || DEFAULT_INV.map(i => ({ ...i }));
+    state.usuarios   = loadJSON(STORAGE.USERS, null)    || DEFAULT_USERS.map(u => ({ ...u }));
+    state.ventas     = loadJSON(STORAGE.VENTAS, []);
+    state.usuarioActual = loadJSON(STORAGE.SESS, null);
+
+    // Limpieza: sesión inválida (usuario eliminado)
+    if (state.usuarioActual && !state.usuarios.some(u => u.id === state.usuarioActual.id)) {
+      state.usuarioActual = null;
+      localStorage.removeItem(STORAGE.SESS);
+    }
+  }
+
+  const persist = {
+    menu:       () => saveJSON(STORAGE.MENU, state.menu),
+    inventario: () => saveJSON(STORAGE.INV, state.inventario),
+    usuarios:   () => saveJSON(STORAGE.USERS, state.usuarios),
+    ventas:     () => saveJSON(STORAGE.VENTAS, state.ventas),
+    sesion:     () => saveJSON(STORAGE.SESS, state.usuarioActual)
+  };
+
+  /* ------------------------------ Toasts ------------------------------ */
+  function toast(title, message, type = 'success') {
+    const host = $('#toastHost');
+    const el = document.createElement('div');
+    const isError = type === 'error';
+
+    el.className = 'pointer-events-auto flex items-start gap-3 bg-[#111827]/95 border border-white/10 text-white px-4 py-3 rounded-xl shadow-2xl backdrop-blur translate-y-3 opacity-0 transition-all duration-300 max-w-xs';
+    el.innerHTML = `
+      <div class="${isError ? 'text-red-400' : 'text-[#2ed573]'} pt-0.5 shrink-0">
+        <i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'} text-lg" aria-hidden="true"></i>
+      </div>
+      <div class="min-w-0">
+        <p class="text-xs font-bold">${esc(title)}</p>
+        <p class="text-[11px] text-gray-400 break-words">${esc(message)}</p>
+      </div>`;
+    host.appendChild(el);
+    requestAnimationFrame(() => el.classList.remove('translate-y-3', 'opacity-0'));
+    setTimeout(() => {
+      el.classList.add('translate-y-3', 'opacity-0');
+      setTimeout(() => el.remove(), 320);
+    }, 3400);
+  }
+
+  /* ------------------------------ Modales ------------------------------ */
+  function openModal(id) {
+    const m = document.getElementById(id);
+    if (!m) return;
+    lastFocused = document.activeElement;
+    m.classList.add('modal-active');
+    const target = m.querySelector('[data-autofocus]') || m.querySelector('input, select, button');
+    if (target) setTimeout(() => target.focus(), 40);
+  }
+
+  function closeModal(id) {
+    const m = document.getElementById(id);
+    if (!m) return;
+    m.classList.remove('modal-active');
+    if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
+  }
+
+  function dismissModal(id) {
+    if (id === 'modalConfirm') return resolveConfirm(false);
+    closeModal(id);
+  }
+
+  function confirmAction({ title = 'Confirmar acción', message = '¿Estás seguro?', confirmText = 'Eliminar', danger = true } = {}) {
+    return new Promise(resolve => {
+      confirmResolver = resolve;
+      $('#confirmTitle').textContent = title;
+      $('#confirmMessage').textContent = message;
+      const ok = $('#confirmOk');
+      ok.textContent = confirmText;
+      ok.className = danger
+        ? 'px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white'
+        : 'px-4 py-2.5 rounded-xl bg-[#ff4757] hover:bg-[#ff3838] text-xs font-bold text-white';
+      openModal('modalConfirm');
+      ok.focus();
+    });
+  }
+
+  function resolveConfirm(value) {
+    closeModal('modalConfirm');
+    if (confirmResolver) {
+      const r = confirmResolver;
+      confirmResolver = null;
+      r(value);
+    }
+  }
+
+  /* =========================================================================
+     LOGIN DINÁMICO
+     ========================================================================= */
+  function renderDemoAccounts() {
+    const host = $('#demoAccounts');
+    const demos = state.usuarios.slice(0, 4);
+    if (!demos.length) {
+      host.innerHTML = `<p class="col-span-2 text-center text-[11px] text-gray-500">Sin cuentas registradas.</p>`;
+      return;
+    }
+    host.innerHTML = demos.map(u => `
+      <button type="button" class="demo-chip bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-left"
+              data-demo-user="${esc(u.user)}" data-demo-pass="${esc(u.pass)}"
+              title="Rellenar credenciales de ${esc(u.nombre)}">
+        <p class="text-[11px] font-bold text-white truncate">${esc(u.nombre)}</p>
+        <p class="text-[10px] text-gray-400 font-mono truncate">${esc(u.user)}</p>
+      </button>
+    `).join('');
+  }
+
+  function initLogin() {
+    renderDemoAccounts();
+
+    // Autocompletar si "recordar usuario" estaba activo
+    const remembered = localStorage.getItem(STORAGE.REMEMBER);
+    if (remembered) {
+      $('#userInput').value = remembered;
+      $('#rememberUser').checked = true;
+      setTimeout(() => $('#passInput').focus(), 300);
+    } else {
+      setTimeout(() => $('#userInput').focus(), 300);
+    }
+
+    // Toggle mostrar contraseña
+    $('#togglePass').addEventListener('click', () => {
+      const input = $('#passInput');
+      const icon = $('#togglePass').querySelector('i');
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      icon.className = `fa-solid ${show ? 'fa-eye-slash' : 'fa-eye'} text-xs`;
+      input.focus();
+    });
+
+    // Rellenar credenciales demo
+    $('#demoAccounts').addEventListener('click', e => {
+      const btn = e.target.closest('[data-demo-user]');
+      if (!btn) return;
+      $('#userInput').value = btn.dataset.demoUser;
+      $('#passInput').value = btn.dataset.demoPass;
+      $('#loginError').classList.add('hidden');
+      $('#loginBtn').focus();
+    });
+
+    // Envío del formulario
+    $('#loginForm').addEventListener('submit', handleLogin);
+
+    // Limpiar error al escribir
+    ['#userInput', '#passInput'].forEach(sel => {
+      $(sel).addEventListener('input', () => $('#loginError').classList.add('hidden'));
+    });
+  }
+
+  function handleLogin(e) {
+    e.preventDefault();
+
+    const user = $('#userInput').value.trim();
+    const pass = $('#passInput').value.trim();
+    const errorBox = $('#loginError');
+    const btn = $('#loginBtn');
+    const btnText = $('#loginBtnText');
+
+    if (!user || !pass) {
+      errorBox.textContent = 'Completa usuario y contraseña.';
+      errorBox.classList.remove('hidden');
+      $('#loginForm').classList.add('shake');
+      setTimeout(() => $('#loginForm').classList.remove('shake'), 500);
+      return;
+    }
+
+    // Estado de carga
+    btn.disabled = true;
+    btnText.textContent = 'Verificando…';
+    btn.insertAdjacentHTML('beforeend', '<span class="spinner"></span>');
+
+    // Simular latencia
+    setTimeout(() => {
+      btn.disabled = false;
+      btnText.textContent = 'Ingresar al Sistema';
+      const spinner = btn.querySelector('.spinner');
+      if (spinner) spinner.remove();
+
+      const found = state.usuarios.find(u => u.user === user && u.pass === pass);
+
+      if (!found) {
+        errorBox.textContent = 'Usuario o contraseña incorrectos.';
+        errorBox.classList.remove('hidden');
+        $('#loginForm').classList.add('shake');
+        setTimeout(() => $('#loginForm').classList.remove('shake'), 500);
+        $('#passInput').select();
+        return;
+      }
+
+      // Recordar usuario
+      if ($('#rememberUser').checked) localStorage.setItem(STORAGE.REMEMBER, user);
+      else localStorage.removeItem(STORAGE.REMEMBER);
+
+      state.usuarioActual = found;
+      persist.sesion();
+
+      showPanel();
+      toast(`¡Bienvenido, ${found.nombre}!`, `Has ingresado como ${found.rol}.`);
+    }, 550);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem(STORAGE.SESS);
+    state.usuarioActual = null;
+    state.carrito = [];
+
+    $('#mainPanel').classList.add('hidden');
+    $('#loginSection').classList.remove('hidden');
+    $('#passInput').value = '';
+    $('#loginError').classList.add('hidden');
+
+    // Refrescar cuentas demo (por si se agregaron/editaron usuarios)
+    renderDemoAccounts();
+
+    const remembered = localStorage.getItem(STORAGE.REMEMBER);
+    if (remembered) {
+      $('#userInput').value = remembered;
+      $('#rememberUser').checked = true;
+      setTimeout(() => $('#passInput').focus(), 300);
+    } else {
+      $('#userInput').value = '';
+      $('#rememberUser').checked = false;
+      setTimeout(() => $('#userInput').focus(), 300);
+    }
+
+    toast('Sesión cerrada', 'Has salido del panel de administración.');
+  }
+
+  /* =========================================================================
+     PANEL
+     ========================================================================= */
+  function showPanel() {
+    if (!state.usuarioActual) return;
+    $('#loginSection').classList.add('hidden');
+    $('#mainPanel').classList.remove('hidden');
+    $('#mainPanel').classList.add('md:flex-row', 'md:flex');
+
+    // Cabecera
+    $('#desktopUserName').textContent = state.usuarioActual.nombre;
+    $('#desktopUserRole').textContent = state.usuarioActual.rol;
+
+    const avatarHtml = state.usuarioActual.foto
+      ? `<img src="${esc(state.usuarioActual.foto)}" alt="" class="w-full h-full object-cover" onerror="this.replaceWith(Object.assign(document.createElement('i'),{className:'fa-solid fa-user text-xs'}))">`
+      : `<i class="fa-solid fa-user text-xs" aria-hidden="true"></i>`;
+    $('#desktopAvatar').innerHTML = avatarHtml;
+
+    // Visibilidad de pestañas según rol
+    const isAdmin = state.usuarioActual.rol === 'Administrador';
+    $$('[data-role="admin"]').forEach(el => el.classList.toggle('hidden', !isAdmin));
+
+    // Si un cajero estaba en sección admin, volver a POS
+    if (!isAdmin) {
+      const activeTab = $('.tab-btn.is-active')?.dataset.tab;
+      if (activeTab === 'menu' || activeTab === 'usuarios') switchTab('pos');
+    }
+
+    // Render general
+    renderCategoriasPos();
+    renderMenuPOS();
+    renderMenuAdmin();
+    renderInventario();
+    renderVentas();
+    renderUsuarios();
+    renderCarrito();
+  }
+
+  function switchTab(tab) {
+    ['pos', 'menu', 'inventario', 'usuarios'].forEach(t => {
+      const sec = document.getElementById('section' + t.charAt(0).toUpperCase() + t.slice(1));
+      if (sec) sec.classList.toggle('hidden', t !== tab);
+    });
+    $$('.tab-btn').forEach(btn => btn.classList.toggle('is-active', btn.dataset.tab === tab));
+
+    if (tab === 'pos') {
+      if (!salesChart) initChart();
+      else requestAnimationFrame(() => salesChart.resize());
+      renderVentasChart();
+    }
+  }
+
+  /* =========================================================================
+     POS
+     ========================================================================= */
+  function renderCategoriasPos() {
+    const host = $('#posCategoriasTabs');
+    const cats = ['todos', ...new Set(state.menu.map(p => p.categoria))];
+    host.innerHTML = cats.map(c => `
+      <button type="button" data-cat="${esc(c)}"
+              class="pos-cat-btn ${state.categoriaPos === c ? 'is-active' : ''}">
+        ${c === 'todos' ? 'Todos' : esc(c)}
+      </button>
+    `).join('');
+  }
+
+  function renderMenuPOS() {
+    const grid = $('#posGridProductos');
+    const q = state.busquedaPos.trim().toLowerCase();
+
+    const list = state.menu.filter(p =>
+      (state.categoriaPos === 'todos' || p.categoria === state.categoriaPos) &&
+      (!q || p.nombre.toLowerCase().includes(q))
+    );
+
+    if (!list.length) {
+      grid.innerHTML = `
+        <div class="col-span-full text-center py-12 text-xs text-gray-500">
+          <i class="fa-solid fa-magnifying-glass text-3xl block mb-2 opacity-40" aria-hidden="true"></i>
+          No se encontraron productos.
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = list.map(p => `
+      <button type="button" class="product-card group" data-action="add-to-cart" data-id="${p.id}">
+        <div class="h-28 w-full rounded-xl overflow-hidden mb-2 bg-black/40">
+          <img src="${esc(p.imagen || FALLBACK_IMG)}" alt="" loading="lazy"
+               class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+               onerror="this.src='${FALLBACK_IMG}'">
+        </div>
+        <div>
+          <h4 class="text-xs font-bold truncate" title="${esc(p.nombre)}">${esc(p.nombre)}</h4>
+          <div class="flex justify-between items-center mt-2 gap-1">
+            <span class="text-[#2ed573] font-black text-xs tabular-nums">${money(p.precio)}</span>
+            <span class="bg-white/5 px-2 py-0.5 rounded text-[10px] text-gray-400 shrink-0">${esc(p.categoria)}</span>
+          </div>
+        </div>
+      </button>
+    `).join('');
+  }
+
+  function addToCart(id) {
+    const prod = state.menu.find(p => p.id === id);
+    if (!prod) return;
+    const existing = state.carrito.find(i => i.id === id);
+    if (existing) existing.cantidad += 1;
+    else state.carrito.push({ id: prod.id, nombre: prod.nombre, categoria: prod.categoria, precio: prod.precio, cantidad: 1 });
+    renderCarrito();
+  }
+
+  function changeCartQty(id, delta) {
+    const item = state.carrito.find(i => i.id === id);
+    if (!item) return;
+    item.cantidad += delta;
+    if (item.cantidad <= 0) state.carrito = state.carrito.filter(i => i.id !== id);
+    renderCarrito();
+  }
+
+  function removeFromCart(id) {
+    state.carrito = state.carrito.filter(i => i.id !== id);
+    renderCarrito();
+  }
+
+  function vaciarCarrito() {
+    state.carrito = [];
+    renderCarrito();
+  }
+
+  function renderCarrito() {
+    const wrap = $('#carritoItemsContainer');
+    const totalQty = state.carrito.reduce((s, i) => s + i.cantidad, 0);
+    $('#cartCount').textContent = totalQty;
+
+    if (!state.carrito.length) {
+      wrap.innerHTML = `
+        <p class="text-xs text-gray-500 text-center py-6">
+          <i class="fa-solid fa-basket-shopping text-2xl block mb-2 opacity-40" aria-hidden="true"></i>
+          El carrito está vacío.
+        </p>`;
+    } else {
+      wrap.innerHTML = state.carrito.map(item => `
+        <div class="flex justify-between items-center bg-black/25 p-2.5 rounded-xl border border-white/5 text-xs gap-2">
+          <div class="truncate min-w-0">
+            <p class="font-bold truncate" title="${esc(item.nombre)}">${esc(item.nombre)}</p>
+            <p class="text-[10px] text-[#2ed573] tabular-nums">${money(item.precio)} c/u</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" data-action="qty-dec" data-id="${item.id}"
+                    aria-label="Quitar una unidad"
+                    class="w-6 h-6 rounded bg-white/10 hover:bg-white/20 grid place-items-center transition">−</button>
+            <span class="font-bold w-5 text-center tabular-nums">${item.cantidad}</span>
+            <button type="button" data-action="qty-inc" data-id="${item.id}"
+                    aria-label="Agregar una unidad"
+                    class="w-6 h-6 rounded bg-white/10 hover:bg-white/20 grid place-items-center transition">+</button>
+            <button type="button" data-action="remove-item" data-id="${item.id}"
+                    aria-label="Eliminar del carrito"
+                    class="w-6 h-6 rounded hover:bg-red-500/20 text-gray-500 hover:text-red-400 grid place-items-center transition ml-1">
+              <i class="fa-solid fa-xmark text-[11px]" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    const subtotal = round2(state.carrito.reduce((s, i) => s + i.precio * i.cantidad, 0));
+    const iva = round2(subtotal * TAX_RATE);
+    $('#carritoSubtotal').textContent = money(subtotal);
+    $('#carritoIva').textContent = money(iva);
+    $('#carritoTotal').textContent = money(subtotal + iva);
+  }
+
+  function procesarVentaPOS() {
+    if (!state.carrito.length) {
+      toast('Carrito vacío', 'Agrega productos antes de cobrar.', 'error');
+      return;
+    }
+
+    const items = state.carrito.map(i => ({ ...i }));
+    const subtotal = round2(items.reduce((s, i) => s + i.precio * i.cantidad, 0));
+    const iva = round2(subtotal * TAX_RATE);
+    const total = round2(subtotal + iva);
+
+    const venta = {
+      id: uid(),
+      fecha: new Date().toISOString(),
+      fechaTexto: new Date().toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' }),
+      cliente: ($('#clientName').value || '').trim() || 'General',
+      atendidoPor: state.usuarioActual?.nombre || 'Admin',
+      items,
+      subtotal, iva, total
+    };
+
+    state.ventas.unshift(venta);
+    state.carrito = [];
+    persist.ventas();
+
+    renderCarrito();
+    renderVentas();
+    renderVentasChart();
+
+    toast('Venta registrada', `${venta.cliente} · ${money(total)}`);
+  }
+
+  function renderVentas() {
+    const tbody = $('#ventasTableBody');
+    const isAdmin = state.usuarioActual?.rol === 'Administrador';
+
+    if (!state.ventas.length) {
+      tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-xs text-gray-500">Sin órdenes registradas todavía.</td></tr>`;
+    } else {
+      tbody.innerHTML = state.ventas.map((v, idx) => `
+        <tr class="hover:bg-white/5 transition">
+          <td class="p-3 text-gray-400 whitespace-nowrap tabular-nums">${esc(v.fechaTexto || '')}</td>
+          <td class="p-3 font-semibold text-gray-300">${esc(v.atendidoPor || '—')}</td>
+          <td class="p-3 font-medium text-gray-200 max-w-[260px]">
+            <span class="block truncate" title="${esc(v.items ? v.items.map(i => `${i.cantidad}× ${i.nombre}`).join(' + ') : v.detalle || '')}">
+              ${esc(v.items ? v.items.map(i => `${i.cantidad}× ${i.nombre}`).join(' + ') : v.detalle || '')}
+            </span>
+          </td>
+          <td class="p-3 font-bold text-[#2ed573] whitespace-nowrap tabular-nums text-right">${money(v.total ?? v.monto)}</td>
+          <td class="p-3 text-right">
+            ${isAdmin ? `
+              <button data-action="delete-venta" data-idx="${idx}"
+                      class="text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-500/10 transition"
+                      aria-label="Eliminar venta">
+                <i class="fa-solid fa-trash text-xs" aria-hidden="true"></i>
+              </button>` : ''}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    const total = round2(state.ventas.reduce((s, v) => s + (v.total ?? v.monto ?? 0), 0));
+    $('#contadorVentasTotal').textContent = `${state.ventas.length} registro${state.ventas.length === 1 ? '' : 's'}`;
+    $('#statRecaudadoTotal').textContent = money(total);
+  }
+
+  async function deleteVenta(idx) {
+    if (state.usuarioActual?.rol !== 'Administrador') return;
+    const ok = await confirmAction({
+      title: 'Eliminar venta',
+      message: '¿Eliminar este registro del historial? Esta acción no se puede deshacer.',
+      confirmText: 'Eliminar'
+    });
+    if (!ok) return;
+    state.ventas.splice(idx, 1);
+    persist.ventas();
+    renderVentas();
+    renderVentasChart();
+    toast('Registro eliminado', 'La venta fue removida del historial.');
+  }
+
+  /* =========================================================================
+     GRÁFICO
+     ========================================================================= */
+  function initChart() {
+    if (typeof Chart === 'undefined') return;
+    const ctx = $('#ventasChart');
+    if (!ctx) return;
+
+    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+    Chart.defaults.color = '#9ca3af';
+
+    salesChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Pizzas', 'Bebidas', 'Extras'],
+        datasets: [{
+          data: [0, 0, 0],
+          backgroundColor: ['#ff4757', '#2ed573', '#ffa502'],
+          borderWidth: 0,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#9ca3af', font: { size: 10 }, padding: 14, usePointStyle: true, pointStyle: 'circle', boxWidth: 8 }
+          },
+          tooltip: {
+            backgroundColor: '#0b0f19',
+            borderColor: '#374151',
+            borderWidth: 1,
+            padding: 10,
+            callbacks: { label: c => ` ${c.label}: ${money(c.parsed)}` }
+          }
         }
+      }
+    });
+    renderVentasChart();
+  }
 
-        function closeMenu() {
-            if (mainNav.classList.contains('open')) {
-                mainNav.classList.remove('open');
-                menuToggle.classList.remove('active');
-                menuToggle.setAttribute('aria-expanded', 'false');
-                menuToggle.setAttribute('aria-label', 'Abrir menú');
-                document.body.classList.remove('no-scroll');
-            }
+  function renderVentasChart() {
+    if (!salesChart) return;
+
+    const totals = { Pizzas: 0, Bebidas: 0, Extras: 0 };
+    state.ventas.forEach(v => {
+      if (Array.isArray(v.items)) {
+        v.items.forEach(i => {
+          const cat = i.categoria in totals ? i.categoria : 'Extras';
+          totals[cat] += i.precio * i.cantidad;
+        });
+      } else {
+        // Compatibilidad con datos antiguos: aproximación por texto
+        const t = (v.detalle || '').toLowerCase();
+        if (t.includes('pizza') || t.includes('slice') || t.includes('borde')) totals.Pizzas += v.monto || 0;
+        else if (t.includes('cola') || t.includes('gaseosa') || t.includes('agua')) totals.Bebidas += v.monto || 0;
+        else totals.Extras += v.monto || 0;
+      }
+    });
+
+    salesChart.data.datasets[0].data = [
+      round2(totals.Pizzas),
+      round2(totals.Bebidas),
+      round2(totals.Extras)
+    ];
+    salesChart.update();
+  }
+
+  /* =========================================================================
+     ADMIN · MENÚ
+     ========================================================================= */
+  function renderMenuAdmin() {
+    const tbody = $('#menuTableBody');
+    if (!state.menu.length) {
+      tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-xs text-gray-500">Sin productos en el menú.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = state.menu.map(p => `
+      <tr class="hover:bg-white/5 transition">
+        <td class="p-4">
+          <img src="${esc(p.imagen || FALLBACK_IMG)}" alt=""
+               class="w-12 h-12 rounded-xl object-cover border border-white/10"
+               onerror="this.src='${FALLBACK_IMG}'">
+        </td>
+        <td class="p-4 font-bold">${esc(p.nombre)}</td>
+        <td class="p-4">
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/5 text-gray-300">${esc(p.categoria)}</span>
+        </td>
+        <td class="p-4 font-black text-[#2ed573] tabular-nums">${money(p.precio)}</td>
+        <td class="p-4 text-right whitespace-nowrap">
+          <button data-action="edit-menu" data-id="${p.id}"
+                  class="text-gray-400 hover:text-white p-1.5 rounded hover:bg-white/5 transition"
+                  aria-label="Editar producto">
+            <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
+          </button>
+          <button data-action="delete-menu" data-id="${p.id}"
+                  class="text-red-400 hover:text-red-300 p-1.5 rounded hover:bg-red-500/10 transition"
+                  aria-label="Eliminar producto">
+            <i class="fa-solid fa-trash text-xs" aria-hidden="true"></i>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function openModalMenu(product = null) {
+    const form = $('#formMenu');
+    form.reset();
+    if (product) {
+      $('#modalMenuTitle').textContent = 'Editar producto';
+      $('#menuId').value = product.id;
+      $('#menuNombre').value = product.nombre;
+      $('#menuCategoria').value = product.categoria;
+      $('#menuPrecio').value = product.precio;
+      $('#menuImagen').value = product.imagen || '';
+    } else {
+      $('#modalMenuTitle').textContent = 'Nuevo producto en el menú';
+      $('#menuId').value = '';
+      $('#menuImagen').value = '';
+    }
+    openModal('modalMenu');
+  }
+
+  function saveMenuProducto(e) {
+    e.preventDefault();
+    const id = $('#menuId').value;
+    const nombre = $('#menuNombre').value.trim();
+    const categoria = $('#menuCategoria').value;
+    const precio = parseFloat($('#menuPrecio').value);
+    const imagen = $('#menuImagen').value.trim() || FALLBACK_IMG;
+
+    if (!nombre) return toast('Datos incompletos', 'El nombre es obligatorio.', 'error');
+    if (!Number.isFinite(precio) || precio < 0) return toast('Precio inválido', 'Ingresa un precio válido.', 'error');
+
+    if (id) {
+      const p = state.menu.find(i => i.id === Number(id));
+      if (p) Object.assign(p, { nombre, categoria, precio: round2(precio), imagen });
+      toast('Producto actualizado', `"${nombre}" se guardó correctamente.`);
+    } else {
+      state.menu.push({ id: Date.now(), nombre, categoria, precio: round2(precio), imagen });
+      toast('Producto creado', `"${nombre}" se agregó al menú.`);
+    }
+    persist.menu();
+    closeModal('modalMenu');
+    renderMenuAdmin();
+    renderCategoriasPos();
+    renderMenuPOS();
+  }
+
+  async function deleteMenuProducto(id) {
+    const p = state.menu.find(i => i.id === id);
+    if (!p) return;
+    const ok = await confirmAction({
+      title: 'Eliminar producto',
+      message: `¿Eliminar "${p.nombre}" del menú? No se puede deshacer.`,
+      confirmText: 'Eliminar'
+    });
+    if (!ok) return;
+    state.menu = state.menu.filter(i => i.id !== id);
+    state.carrito = state.carrito.filter(i => i.id !== id);
+    persist.menu();
+    renderMenuAdmin();
+    renderCategoriasPos();
+    renderMenuPOS();
+    renderCarrito();
+    toast('Producto eliminado', `"${p.nombre}" fue removido del menú.`);
+  }
+
+  /* =========================================================================
+     INVENTARIO
+     ========================================================================= */
+  function renderInventario() {
+    const tbody = $('#inventarioTableBody');
+    if (!state.inventario.length) {
+      tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-xs text-gray-500">Sin insumos registrados.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = state.inventario.map(item => {
+      const critico = item.cantidad <= item.limite;
+      const badge = critico
+        ? 'bg-red-500/20 text-red-400 border-red-500/30'
+        : 'bg-green-500/20 text-green-400 border-green-500/30';
+      const estado = critico ? 'Crítico' : 'Óptimo';
+      return `
+        <tr class="hover:bg-white/5 transition">
+          <td class="p-4 font-bold">${esc(item.nombre)}</td>
+          <td class="p-4 font-black tabular-nums">${esc(item.cantidad)}</td>
+          <td class="p-4 text-gray-400">${esc(item.unidad)}</td>
+          <td class="p-4">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold border ${badge}">${estado}</span>
+          </td>
+          <td class="p-4 text-right whitespace-nowrap">
+            <button data-action="edit-insumo" data-id="${item.id}"
+                    class="text-gray-400 hover:text-white p-1.5 rounded hover:bg-white/5 transition"
+                    aria-label="Editar insumo">
+              <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
+            </button>
+            <button data-action="delete-insumo" data-id="${item.id}"
+                    class="text-red-400 hover:text-red-300 p-1.5 rounded hover:bg-red-500/10 transition"
+                    aria-label="Eliminar insumo">
+              <i class="fa-solid fa-trash text-xs" aria-hidden="true"></i>
+            </button>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function openModalInsumo(insumo = null) {
+    const form = $('#formInsumo');
+    form.reset();
+    if (insumo) {
+      $('#modalInsumoTitle').textContent = 'Editar insumo';
+      $('#insumoId').value = insumo.id;
+      $('#insumoNombre').value = insumo.nombre;
+      $('#insumoCantidad').value = insumo.cantidad;
+      $('#insumoUnidad').value = insumo.unidad;
+      $('#insumoLimite').value = insumo.limite;
+    } else {
+      $('#modalInsumoTitle').textContent = 'Nuevo insumo';
+      $('#insumoId').value = '';
+    }
+    openModal('modalInsumo');
+  }
+
+  function saveInsumo(e) {
+    e.preventDefault();
+    const id = $('#insumoId').value;
+    const nombre = $('#insumoNombre').value.trim();
+    const cantidad = parseFloat($('#insumoCantidad').value);
+    const unidad = $('#insumoUnidad').value;
+    const limite = parseFloat($('#insumoLimite').value);
+
+    if (!nombre) return toast('Datos incompletos', 'El nombre es obligatorio.', 'error');
+    if (!Number.isFinite(cantidad) || cantidad < 0) return toast('Cantidad inválida', '', 'error');
+    if (!Number.isFinite(limite) || limite < 0) return toast('Límite inválido', '', 'error');
+
+    if (id) {
+      const i = state.inventario.find(x => x.id === Number(id));
+      if (i) Object.assign(i, { nombre, cantidad, unidad, limite });
+      toast('Insumo actualizado', `"${nombre}" se guardó.`);
+    } else {
+      state.inventario.push({ id: Date.now(), nombre, cantidad, unidad, limite });
+      toast('Insumo creado', `"${nombre}" se agregó al inventario.`);
+    }
+    persist.inventario();
+    closeModal('modalInsumo');
+    renderInventario();
+  }
+
+  async function deleteInsumo(id) {
+    const it = state.inventario.find(i => i.id === id);
+    if (!it) return;
+    const ok = await confirmAction({
+      title: 'Eliminar insumo',
+      message: `¿Eliminar "${it.nombre}" del inventario?`,
+      confirmText: 'Eliminar'
+    });
+    if (!ok) return;
+    state.inventario = state.inventario.filter(i => i.id !== id);
+    persist.inventario();
+    renderInventario();
+    toast('Insumo eliminado', `"${it.nombre}" fue removido.`);
+  }
+
+  /* =========================================================================
+     USUARIOS
+     ========================================================================= */
+  function renderUsuarios() {
+    const tbody = $('#usuariosTableBody');
+    if (!state.usuarios.length) {
+      tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center text-xs text-gray-500">Sin trabajadores registrados.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = state.usuarios.map(u => {
+      const isAdmin = u.rol === 'Administrador';
+      const badge = isAdmin ? 'bg-[#ff4757]/20 text-[#ff4757]' : 'bg-[#2ed573]/20 text-[#2ed573]';
+      const avatar = u.foto
+        ? `<img src="${esc(u.foto)}" alt="" class="w-9 h-9 rounded-full object-cover border border-white/10" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-9 h-9 rounded-full bg-white/10 grid place-items-center text-xs',innerHTML:'<i class=\\'fa-solid fa-user\\'></i>'}))">`
+        : `<div class="w-9 h-9 rounded-full bg-white/10 grid place-items-center text-xs"><i class="fa-solid fa-user" aria-hidden="true"></i></div>`;
+      return `
+        <tr class="hover:bg-white/5 transition">
+          <td class="p-4">${avatar}</td>
+          <td class="p-4 font-mono text-xs text-sky-400">${esc(u.user)}</td>
+          <td class="p-4 font-bold">${esc(u.nombre)}</td>
+          <td class="p-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-semibold ${badge}">${esc(u.rol)}</span></td>
+          <td class="p-4 text-right whitespace-nowrap">
+            <button data-action="edit-user" data-id="${u.id}"
+                    class="text-gray-400 hover:text-white p-1.5 rounded hover:bg-white/5 transition"
+                    aria-label="Editar trabajador">
+              <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
+            </button>
+            ${u.user !== 'admin' ? `
+              <button data-action="delete-user" data-id="${u.id}"
+                      class="text-red-400 hover:text-red-300 p-1.5 rounded hover:bg-red-500/10 transition"
+                      aria-label="Eliminar trabajador">
+                <i class="fa-solid fa-trash text-xs" aria-hidden="true"></i>
+              </button>` : ''}
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function openModalUsuario(user = null) {
+    const form = $('#formUsuario');
+    form.reset();
+    if (user) {
+      $('#modalUsuarioTitle').textContent = 'Editar trabajador';
+      $('#usuarioId').value = user.id;
+      $('#usuarioNombre').value = user.nombre;
+      $('#usuarioFoto').value = user.foto || '';
+      $('#usuarioUser').value = user.user;
+      $('#usuarioPass').value = user.pass;
+      $('#usuarioRol').value = user.rol;
+    } else {
+      $('#modalUsuarioTitle').textContent = 'Registrar nuevo trabajador';
+      $('#usuarioId').value = '';
+    }
+    openModal('modalUsuario');
+  }
+
+  function saveUsuario(e) {
+    e.preventDefault();
+    const id = $('#usuarioId').value;
+    const nombre = $('#usuarioNombre').value.trim();
+    const foto = $('#usuarioFoto').value.trim();
+    const user = $('#usuarioUser').value.trim();
+    const pass = $('#usuarioPass').value.trim();
+    const rol = $('#usuarioRol').value;
+
+    if (!nombre || !user || !pass) return toast('Datos incompletos', 'Todos los campos marcados son obligatorios.', 'error');
+    if (pass.length < 4) return toast('Contraseña muy corta', 'Debe tener al menos 4 caracteres.', 'error');
+
+    // Validar usuario único (excluyendo el actual en edición)
+    const dup = state.usuarios.find(u => u.user === user && String(u.id) !== String(id));
+    if (dup) return toast('Usuario duplicado', `El usuario "${user}" ya existe.`, 'error');
+
+    if (id) {
+      const idx = state.usuarios.findIndex(u => u.id === Number(id));
+      if (idx > -1) {
+        // Evitar que el último admin quede como cajero
+        const isLastAdmin = state.usuarios[idx].rol === 'Administrador' &&
+                            rol !== 'Administrador' &&
+                            state.usuarios.filter(u => u.rol === 'Administrador').length === 1;
+        if (isLastAdmin) return toast('No permitido', 'Debe existir al menos un administrador.', 'error');
+
+        state.usuarios[idx] = { id: Number(id), nombre, foto, user, pass, rol };
+        if (state.usuarioActual && state.usuarioActual.id === Number(id)) {
+          state.usuarioActual = state.usuarios[idx];
+          persist.sesion();
         }
+      }
+      toast('Trabajador actualizado', `"${nombre}" se guardó correctamente.`);
+    } else {
+      state.usuarios.push({ id: Date.now(), nombre, foto, user, pass, rol });
+      toast('Trabajador registrado', `"${nombre}" se agregó al sistema.`);
+    }
 
-        menuToggle.addEventListener('click', toggleMenu);
+    persist.usuarios();
+    closeModal('modalUsuario');
+    renderUsuarios();
+    renderDemoAccounts();
+    showPanel();
+  }
 
-        // Cierra menú al hacer click en un enlace
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                setTimeout(closeMenu, 100);
-            });
-        });
+  async function deleteUsuario(id) {
+    const u = state.usuarios.find(x => x.id === id);
+    if (!u || u.user === 'admin') return;
+    if (state.usuarioActual?.id === id) {
+      toast('No permitido', 'No puedes eliminar tu propia sesión activa.', 'error');
+      return;
+    }
+    const ok = await confirmAction({
+      title: 'Eliminar trabajador',
+      message: `¿Eliminar a "${u.nombre}"? No podrá iniciar sesión nuevamente.`,
+      confirmText: 'Eliminar'
+    });
+    if (!ok) return;
+    state.usuarios = state.usuarios.filter(x => x.id !== id);
+    persist.usuarios();
+    renderUsuarios();
+    renderDemoAccounts();
+    toast('Trabajador eliminado', `"${u.nombre}" fue removido del sistema.`);
+  }
 
-        // Cierra menú con tecla Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeMenu();
-        });
+  /* =========================================================================
+     EXPORT CSV
+     ========================================================================= */
+  function exportCSV() {
+    if (!state.ventas.length) return toast('Sin datos', 'No hay ventas para exportar.', 'error');
 
-        // Cierra menú si se redimensiona a desktop
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 900) closeMenu();
-        });
+    const header = ['Fecha', 'Cliente', 'Atendido por', 'Detalle', 'Subtotal', 'IVA', 'Total'];
+    const rows = state.ventas.map(v => {
+      const detalle = Array.isArray(v.items)
+        ? v.items.map(i => `${i.cantidad}x ${i.nombre}`).join(' | ')
+        : (v.detalle || '');
+      return [
+        v.fechaTexto || '',
+        v.cliente || '',
+        v.atendidoPor || '',
+        detalle,
+        (v.subtotal ?? v.monto ?? 0).toFixed(2),
+        (v.iva ?? 0).toFixed(2),
+        (v.total ?? v.monto ?? 0).toFixed(2)
+      ];
+    });
 
-        // ============================================================
-        // HEADER INTELIGENTE (oculta al bajar, muestra al subir)
-        // ============================================================
-        let lastScroll = 0;
-        const header = document.querySelector('header');
-        let ticking = false;
+    const csv = [header, ...rows]
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
 
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const currentScroll = window.pageYOffset;
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `brothers-pizza-ventas-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
 
-                    // Solo oculta el header en móvil
-                    if (window.innerWidth < 900 && currentScroll > 100) {
-                        if (currentScroll > lastScroll) {
-                            header.style.transform = 'translateY(-100%)';
-                            header.style.transition = 'transform 0.3s ease';
-                        } else {
-                            header.style.transform = 'translateY(0)';
-                        }
-                    } else {
-                        header.style.transform = 'translateY(0)';
-                    }
+    toast('Exportación lista', `Se descargaron ${state.ventas.length} registros.`);
+  }
 
-                    lastScroll = currentScroll;
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        }, { passive: true });
+  /* =========================================================================
+     EVENTOS
+     ========================================================================= */
+  function bindEvents() {
+    // Logout (delegado)
+    document.addEventListener('click', e => {
+      if (e.target.closest('[data-action="logout"]')) handleLogout();
+    });
 
-        // ============================================================
-        // SMOOTH SCROLL con offset del header
-        // ============================================================
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href === '#' || href === '') return;
+    // Pestañas
+    $('#navTabs').addEventListener('click', e => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn || btn.classList.contains('hidden')) return;
+      switchTab(btn.dataset.tab);
+    });
 
-                const target = document.querySelector(href);
-                if (!target) return;
+    // POS: categorías
+    $('#posCategoriasTabs').addEventListener('click', e => {
+      const btn = e.target.closest('[data-cat]');
+      if (!btn) return;
+      state.categoriaPos = btn.dataset.cat;
+      $$('.pos-cat-btn').forEach(b => b.classList.toggle('is-active', b === btn));
+      renderMenuPOS();
+    });
 
-                e.preventDefault();
-                const headerOffset = document.querySelector('header').offsetHeight;
-                const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
-                const offsetPosition = elementPosition - headerOffset - 10;
+    // POS: buscador
+    $('#posSearch').addEventListener('input', debounce(e => {
+      state.busquedaPos = e.target.value;
+      renderMenuPOS();
+    }, 180));
 
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
-            });
-        });
-    </script>
+    // POS: añadir al carrito
+    $('#posGridProductos').addEventListener('click', e => {
+      const btn = e.target.closest('[data-action="add-to-cart"]');
+      if (!btn) return;
+      addToCart(Number(btn.dataset.id));
+    });
+
+    // Carrito
+    $('#carritoItemsContainer').addEventListener('click', e => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+      switch (btn.dataset.action) {
+        case 'qty-inc':     changeCartQty(id, 1); break;
+        case 'qty-dec':     changeCartQty(id, -1); break;
+        case 'remove-item': removeFromCart(id); break;
+      }
+    });
+
+    // Vaciar / cobrar
+    $('[data-action="clear-cart"]').addEventListener('click', async () => {
+      if (!state.carrito.length) return toast('Carrito vacío', 'No hay productos que eliminar.', 'error');
+      const ok = await confirmAction({
+        title: 'Vaciar orden',
+        message: '¿Eliminar todos los productos de la orden actual?',
+        confirmText: 'Vaciar'
+      });
+      if (!ok) return;
+      vaciarCarrito();
+      toast('Orden vaciada', 'Se eliminaron los productos del carrito.');
+    });
+
+    $('[data-action="checkout"]').addEventListener('click', procesarVentaPOS);
+
+    // Ventas: eliminar
+    $('#ventasTableBody').addEventListener('click', e => {
+      const btn = e.target.closest('[data-action="delete-venta"]');
+      if (!btn) return;
+      deleteVenta(Number(btn.dataset.idx));
+    });
+
+    // Exportar CSV
+    $('[data-action="export-csv"]').addEventListener('click', exportCSV);
+
+    // Menú admin
+    $('[data-action="new-menu"]').addEventListener('click', () => openModalMenu(null));
+    $('#formMenu').addEventListener('submit', saveMenuProducto);
+    $('#menuTableBody').addEventListener('click', e => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+      if (btn.dataset.action === 'edit-menu') {
+        const p = state.menu.find(i => i.id === id);
+        if (p) openModalMenu(p);
+      } else if (btn.dataset.action === 'delete-menu') {
+        deleteMenuProducto(id);
+      }
+    });
+
+    // Inventario
+    $('[data-action="new-insumo"]').addEventListener('click', () => openModalInsumo(null));
+    $('#formInsumo').addEventListener('submit', saveInsumo);
+    $('#inventarioTableBody').addEventListener('click', e => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+      if (btn.dataset.action === 'edit-insumo') {
+        const i = state.inventario.find(x => x.id === id);
+        if (i) openModalInsumo(i);
+      } else if (btn.dataset.action === 'delete-insumo') {
+        deleteInsumo(id);
+      }
+    });
+
+    // Usuarios
+    $('[data-action="new-user"]').addEventListener('click', () => openModalUsuario(null));
+    $('#formUsuario').addEventListener('submit', saveUsuario);
+    $('#usuariosTableBody').addEventListener('click', e => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+      if (btn.dataset.action === 'edit-user') {
+        const u = state.usuarios.find(x => x.id === id);
+        if (u) openModalUsuario(u);
+      } else if (btn.dataset.action === 'delete-user') {
+        deleteUsuario(id);
+      }
+    });
+
+    // Cierre de modales por botón
+    $$('[data-close-modal]').forEach(btn => {
+      btn.addEventListener('click', () => closeModal(btn.dataset.closeModal));
+    });
+
+    // Confirmación
+    $('#modalConfirm').addEventListener('click', e => {
+      const btn = e.target.closest('[data-confirm]');
+      if (!btn) return;
+      resolveConfirm(btn.dataset.confirm === 'ok');
+    });
+
+    // Clic fuera del modal
+    $$('.modal-backdrop').forEach(modal => {
+      modal.addEventListener('mousedown', e => {
+        if (e.target === modal) dismissModal(modal.id);
+      });
+    });
+
+    // Escape cierra el modal activo
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      const open = $$('.modal-backdrop').find(m => m.classList.contains('modal-active'));
+      if (open) dismissModal(open.id);
+    });
+  }
+
+  /* =========================================================================
+     INICIALIZACIÓN
+     ========================================================================= */
+  function init() {
+    loadState();
+    bindEvents();
+    initLogin();
+
+    if (state.usuarioActual) {
+      showPanel();
+      toast(`Sesión restaurada`, `Bienvenido de nuevo, ${state.usuarioActual.nombre}.`);
+    } else {
+      $('#mainPanel').classList.add('hidden');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
 </body>
 </html>
