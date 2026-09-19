@@ -17,8 +17,6 @@ body{font-family:system-ui,-apple-system,sans-serif}
 .btn-red:hover{background:#b91c1c}.btn-red:active{transform:scale(.97)}
 .btn-gray{background:#27272a;color:#e4e4e7;padding:10px 14px;border-radius:10px;font-size:14px;transition:.2s;cursor:pointer;border:none}
 .btn-gray:hover{background:#3f3f46}.btn-gray:active{transform:scale(.97)}
-.btn-green{background:#059669;color:#fff;padding:10px 14px;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;border:none;transition:.2s}
-.btn-green:hover{background:#047857}
 .tabbtn{padding:8px 14px;border-radius:10px;background:#27272a;color:#a1a1aa;font-size:13px;white-space:nowrap;transition:.2s;border:none;cursor:pointer}
 .tabbtn.act{background:#dc2626;color:#fff}
 .card{background:#18181b;border:1px solid #27272a;border-radius:14px;padding:14px}
@@ -41,45 +39,40 @@ body{font-family:system-ui,-apple-system,sans-serif}
 
 <!-- LOGIN -->
 <div id="login" class="fixed inset-0 bg-zinc-950 flex items-center justify-center p-4 z-50">
-<div class="card w-full max-w-sm">
-<div class="text-center mb-5">
-<div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-red-600 to-amber-500 items-center justify-center text-2xl mb-2">🍕</div>
-<h1 class="font-bold text-lg">Brothers Pizza · Admin</h1>
-<p class="text-xs text-zinc-500 mt-1">Acceso al panel administrativo</p>
-</div>
-<input id="lu" class="inp mb-2" placeholder="Usuario" autocomplete="username">
-<input id="lp" type="password" class="inp mb-2" placeholder="Contraseña" autocomplete="current-password">
-<div id="lerr" class="hide text-red-400 text-xs text-center bg-red-500/10 py-2 rounded mb-2"></div>
-<button onclick="doLogin()" class="btn-red w-full">🔓 Ingresar</button>
-<button onclick="showForgot()" class="text-xs text-red-400 w-full mt-3 hover:underline">¿Olvidaste tu contraseña?</button>
-<button onclick="localStorage.clear();location.reload()" class="text-xs text-zinc-500 w-full mt-2">🔧 Reparar acceso</button>
-</div>
-</div>
+  <div class="card w-full max-w-sm">
+    <div class="text-center mb-6">
+      <div class="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-br from-red-600 to-amber-500 items-center justify-center text-3xl mb-3">🍕</div>
+      <h1 class="font-bold text-xl">Brothers Pizza</h1>
+      <p class="text-xs text-zinc-500 mt-1">Panel Administrativo</p>
+    </div>
 
-<!-- RECUPERAR CONTRASEÑA -->
-<div id="forgot" class="hide fixed inset-0 bg-zinc-950 flex items-center justify-center p-4 z-[60]">
-<div class="card w-full max-w-sm">
-<div class="text-center mb-4">
-<div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-red-600 items-center justify-center text-2xl mb-2">🔐</div>
-<h2 class="font-bold text-lg">Recuperar contraseña</h2>
-<p class="text-xs text-zinc-500 mt-1">Te enviaremos un código a tu correo</p>
-</div>
-<div id="forgotStep1">
-<input id="fUser" class="inp mb-2" placeholder="Usuario o correo electrónico">
-<div id="ferr1" class="hide text-red-400 text-xs text-center bg-red-500/10 py-2 rounded mb-2"></div>
-<button onclick="sendRecoveryCode()" class="btn-red w-full mb-2">📧 Enviar código</button>
-<button onclick="hideForgot()" class="btn-gray w-full text-sm">← Volver al login</button>
-</div>
-<div id="forgotStep2" class="hide">
-<p class="text-xs text-zinc-400 mb-2 text-center">Enviamos un código a <span id="fMail" class="text-white font-semibold"></span></p>
-<input id="fCode" class="inp mb-2" placeholder="Código de 6 dígitos" maxlength="6" inputmode="numeric">
-<input id="fNewPass" type="password" class="inp mb-2" placeholder="Nueva contraseña">
-<input id="fNewPass2" type="password" class="inp mb-3" placeholder="Repetir nueva contraseña">
-<div id="ferr2" class="hide text-red-400 text-xs text-center bg-red-500/10 py-2 rounded mb-2"></div>
-<button onclick="resetPassword()" class="btn-green w-full mb-2">✓ Cambiar contraseña</button>
-<button onclick="hideForgot()" class="btn-gray w-full text-sm">Cancelar</button>
-</div>
-</div>
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs text-zinc-500 font-semibold mb-1.5 ml-1">Usuario</label>
+        <div class="relative">
+          <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+          <input id="lu" type="text" class="inp pl-10" placeholder="Tu usuario" autocomplete="username">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs text-zinc-500 font-semibold mb-1.5 ml-1">Contraseña</label>
+        <div class="relative">
+          <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+          <input id="lp" type="password" class="inp pl-10 pr-10" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" onclick="togglePass()" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white">
+            <i id="eyeIcon" class="fa-solid fa-eye text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="lerr" class="hide text-red-400 text-xs text-center bg-red-500/10 py-2 rounded"></div>
+
+      <button onclick="doLogin()" class="btn-red w-full !py-3 text-sm font-bold">
+        <i class="fa-solid fa-right-to-bracket mr-1"></i> Ingresar
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- APP -->
@@ -108,6 +101,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 <button class="tabbtn" data-t="stats">📊 Ventas</button>
 </div>
 </header>
+
 <main class="max-w-5xl mx-auto p-3 pb-24">
 <section id="t-pos">
 <div class="grid lg:grid-cols-3 gap-3">
@@ -134,6 +128,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 </div>
 </div>
 </section>
+
 <section id="t-menu" class="hide space-y-4">
 <div class="card">
 <div class="flex justify-between mb-3">
@@ -177,6 +172,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 <div id="extraList" class="space-y-2"></div>
 </div>
 </section>
+
 <section id="t-stock" class="hide">
 <div class="flex justify-between mb-3">
 <h2 class="font-bold">📦 Inventario</h2>
@@ -184,6 +180,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 </div>
 <div id="stockList" class="space-y-2"></div>
 </section>
+
 <section id="t-staff" class="hide">
 <div class="flex justify-between mb-3">
 <h2 class="font-bold">👥 Trabajadores</h2>
@@ -191,6 +188,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 </div>
 <div id="staffList" class="space-y-3"></div>
 </section>
+
 <section id="t-fin" class="hide">
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
 <div class="card"><p class="text-[10px] text-emerald-400 font-bold">INGRESOS</p><p id="fIn" class="text-xl font-bold">$0</p></div>
@@ -213,6 +211,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 <div id="debtList" class="space-y-2"></div>
 </div>
 </section>
+
 <section id="t-cash" class="hide">
 <div class="grid grid-cols-3 gap-2 mb-3">
 <div class="card"><p class="text-[10px] text-zinc-500 font-bold">ESTADO</p><p id="kState" class="text-base font-bold">—</p></div>
@@ -230,6 +229,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 </div>
 <div id="cashHist" class="space-y-2"></div>
 </section>
+
 <section id="t-stats" class="hide">
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
 <div class="card"><p class="text-[10px] text-zinc-500 font-bold">HOY</p><p id="sT" class="text-xl font-bold">$0</p></div>
@@ -241,12 +241,17 @@ body{font-family:system-ui,-apple-system,sans-serif}
 </section>
 </main>
 </div>
+
 <div id="modal" class="hide fixed inset-0 z-40 bg-black/70 flex items-end sm:items-center justify-center">
 <div id="modalBody" class="bg-zinc-900 w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl p-5"></div>
 </div>
+
 <div id="toasts" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] space-y-2 pointer-events-none w-[90%] max-w-md"></div>
+
 <script>
-const K={M:"bp_menu",S:"bp_sales",I:"bp_inventory",U:"bp_staff",SE:"bp_session",P:"bp_payroll",E:"bp_expenses",D:"bp_debts",C:"bp_cash",R:"bp_recovery"};
+// ==================== STORAGE ====================
+const K={M:"bp_menu",S:"bp_sales",I:"bp_inventory",U:"bp_staff",SE:"bp_session",P:"bp_payroll",E:"bp_expenses",D:"bp_debts",C:"bp_cash"};
+
 const IMG={
 pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&q=80",
 margarita:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80",
@@ -267,6 +272,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const rj=(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}};
 const wj=(k,v)=>{localStorage.setItem(k,JSON.stringify(v))};
 
+// ==================== SEED ====================
 (function seed(){let m=rj(K.M,null);if(!m||!m.pizzas||!m.tamanos||!m.porcion||!m.pepsi||!m.extras){if(m&&m.cola&&!m.pepsi){m.pepsi={...m.cola,nombre:"Pepsi 1L"};delete m.cola}if(!m||!m.pizzas)m=DEF_M;if(!m.pepsi)m.pepsi=DEF_M.pepsi;if(!m.extras)m.extras=DEF_M.extras;wj(K.M,m)}
 if(!Array.isArray(rj(K.I,null)))wj(K.I,DEF_I);
 let st=rj(K.U,[]);if(!Array.isArray(st))st=[];st=st.filter(x=>x&&x.usuario&&x.pass);
@@ -282,8 +288,8 @@ if(!Array.isArray(rj(K.C,null)))wj(K.C,[])})();
 
 let MENU=rj(K.M,DEF_M),SALES=rj(K.S,[]),INV=rj(K.I,DEF_I),STAFF=rj(K.U,DEF_U);
 let PAY=rj(K.P,[]),EXP=rj(K.E,[]),DEBT=rj(K.D,[]),CASH=rj(K.C,[]),SESSION=rj(K.SE,null),cart=[];
-let RECOVERY={}; // { usuario: { code, expires } }
 
+// ==================== UTILS ====================
 function toast(msg,type="success"){const c=$("#toasts"),el=document.createElement("div");
 const st=type==="error"?"bg-red-600/95 border-red-400":type==="info"?"bg-zinc-800/95 border-zinc-600":"bg-emerald-600/95 border-emerald-400";
 const ic=type==="error"?"fa-circle-exclamation":type==="info"?"fa-circle-info":"fa-circle-check";
@@ -296,7 +302,12 @@ function closeModal(){$("#modal").classList.add("hide")}
 $("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 
-// ========== LOGIN ==========
+// ==================== VER/OCULTAR CONTRASEÑA ====================
+function togglePass(){const i=$("#lp"),ic=$("#eyeIcon");
+if(i.type==="password"){i.type="text";ic.className="fa-solid fa-eye-slash text-sm"}
+else{i.type="password";ic.className="fa-solid fa-eye text-sm"}}
+
+// ==================== LOGIN ====================
 function doLogin(){
 const u=$("#lu").value.trim(),p=$("#lp").value;
 let user=STAFF.find(x=>x.usuario===u&&x.pass===p&&x.activo);
@@ -334,63 +345,9 @@ el.innerHTML=`<i class="fa-solid fa-right-from-bracket text-2xl"></i><div><p cla
 c.appendChild(el);
 setTimeout(()=>{localStorage.removeItem(K.SE);location.reload()},1400)}
 
-// ========== RECUPERAR CONTRASEÑA ==========
-function showForgot(){$("#forgot").classList.remove("hide");$("#forgotStep1").classList.remove("hide");$("#forgotStep2").classList.add("hide");$("#fUser").value="";$("#fCode").value="";$("#fNewPass").value="";$("#fNewPass2").value="";$("#ferr1").classList.add("hide");$("#ferr2").classList.add("hide")}
-function hideForgot(){$("#forgot").classList.add("hide")}
-
-function sendRecoveryCode(){
-const input=$("#fUser").value.trim().toLowerCase();
-if(!input){$("#ferr1").textContent="Ingresa tu usuario o correo";$("#ferr1").classList.remove("hide");return}
-const user=STAFF.find(x=>x.usuario.toLowerCase()===input||(x.email&&x.email.toLowerCase()===input));
-if(!user){$("#ferr1").textContent="No encontramos ninguna cuenta con esos datos";$("#ferr1").classList.remove("hide");return}
-if(!user.email){$("#ferr1").textContent="Esta cuenta no tiene correo de recuperación. Contacta al administrador.";$("#ferr1").classList.remove("hide");return}
-// Generar código de 6 dígitos
-const code=String(Math.floor(100000+Math.random()*900000));
-RECOVERY[user.usuario]={code,expires:Date.now()+10*60*1000,userId:user.id};
-wj(K.R,RECOVERY);
-// Mostrar correo censurado
-const emailCensored=user.email.replace(/(.{2})(.*)(@.*)/,(a,b,c,d)=>b+"***"+d);
-$("#fMail").textContent=emailCensored;
-// Simulación de envío: mostrar el código en consola + toast
-console.log(`%c🔐 CÓDIGO DE RECUPERACIÓN: ${code}`,"background:#dc2626;color:#fff;font-size:16px;padding:6px 12px;border-radius:6px");
-console.log(`%c📧 Para: ${user.email}`,"color:#f59e0b;font-size:12px");
-toast(`Código enviado a ${emailCensored}`,"success");
-$("#forgotStep1").classList.add("hide");
-$("#forgotStep2").classList.remove("hide");
-// MOSTRAR el código también en pantalla como respaldo (modo demo)
-setTimeout(()=>{
-toast(`Demo: el código es ${code}`,"info");
-},1500)}
-
-function resetPassword(){
-const input=$("#fUser").value.trim().toLowerCase();
-const user=STAFF.find(x=>x.usuario.toLowerCase()===input||(x.email&&x.email.toLowerCase()===input));
-if(!user){$("#ferr2").textContent="Error de sesión, vuelve a empezar";$("#ferr2").classList.remove("hide");return}
-const rec=RECOVERY[user.usuario];
-const code=$("#fCode").value.trim();
-const p1=$("#fNewPass").value;
-const p2=$("#fNewPass2").value;
-if(!rec){$("#ferr2").textContent="No hay código pendiente. Solicita uno nuevo.";$("#ferr2").classList.remove("hide");return}
-if(Date.now()>rec.expires){$("#ferr2").textContent="El código expiró. Solicita uno nuevo.";$("#ferr2").classList.remove("hide");return}
-if(code!==rec.code){$("#ferr2").textContent="Código incorrecto";$("#ferr2").classList.remove("hide");return}
-if(!p1||p1.length<4){$("#ferr2").textContent="La contraseña debe tener al menos 4 caracteres";$("#ferr2").classList.remove("hide");return}
-if(p1!==p2){$("#ferr2").textContent="Las contraseñas no coinciden";$("#ferr2").classList.remove("hide");return}
-// Cambiar contraseña
-user.pass=p1;
-wj(K.U,STAFF);
-delete RECOVERY[user.usuario];
-wj(K.R,RECOVERY);
-$("#ferr2").classList.add("hide");
-hideForgot();
-toast("¡Contraseña actualizada! Ya puedes iniciar sesión ✅");
-// Autocompletar el usuario en el login
-$("#lu").value=user.usuario;
-$("#lp").value="";
-setTimeout(()=>$("#lp").focus(),300)}<script>
-// ========== APP ==========
+// ==================== APP ====================
 function startApp(){
 $("#login").classList.add("hide");
-$("#forgot").classList.add("hide");
 $("#app").classList.remove("hide");
 const u=STAFF.find(x=>x.id===SESSION.id);
 $("#whoami").innerHTML=`<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> ${esc(SESSION.nombre)} · ${SESSION.rol}`;
@@ -404,7 +361,7 @@ const el=$("#t-"+t);if(el)el.classList.remove("hide");
 $$(".tabbtn[data-t]").forEach(b=>b.classList.toggle("act",b.dataset.t===t))}
 $$(".tabbtn[data-t]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.t)));
 
-// ========== POS ==========
+// ==================== POS ====================
 function getProds(){const l=[];
 MENU.pizzas.forEach(p=>MENU.tamanos.forEach(t=>l.push({key:`p${p.id}-${t.id}`,tipo:"pizza",nombre:`${p.nombre} ${t.label}`,precio:t.precio,img:imgOf(p.nombre)})));
 l.push({key:"porcion",tipo:"porcion",nombre:"Porción pizza",precio:MENU.porcion.precio,img:IMG.slice});
@@ -442,7 +399,7 @@ const sub=cart.reduce((s,i)=>s+i.precio*i.cantidad,0);const tax=sub*0.12;
 SALES.unshift({id:uid(),fecha:new Date().toISOString(),cliente:$("#cliente").value||"Cliente",metodo:m,items:[...cart],subtotal:sub,impuesto:tax,total:sub+tax,vendedor:SESSION?.nombre||"Sistema"});
 wj(K.S,SALES);cart=[];renderCart();renderStats();renderFin();renderCash();toast(`Venta registrada: ${money(sub+tax)} 💰`)}
 
-// ========== MENÚ ==========
+// ==================== MENÚ ====================
 function renderMenu(){
 $("#sizesBox").innerHTML=MENU.tamanos.map(t=>`<div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-center"><p class="text-[10px] text-zinc-500 font-bold uppercase">${esc(t.label)}</p><p class="text-lg font-bold text-amber-400">${money(t.precio)}</p><p class="text-[10px] text-zinc-500">${t.porciones} porc.</p></div>`).join("");
 $("#porcionP").textContent=money(MENU.porcion.precio);
@@ -504,7 +461,7 @@ wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();closeModal();toast("Ext
 function delExtra(id){if(!confirm("¿Eliminar este extra?"))return;
 MENU.extras=MENU.extras.filter(x=>x.id!==id);wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();toast("Extra eliminado")}
 
-// ========== STOCK ==========
+// ==================== STOCK ====================
 function renderStock(){$("#stockList").innerHTML=INV.map(i=>{const crit=i.stock<=i.min;
 return `<div class="card ${crit?"border-red-600/60":""}">
 <div class="flex justify-between mb-1"><p class="font-semibold text-sm">${esc(i.nombre)}</p>
@@ -528,7 +485,7 @@ if(!data.nombre){toast("Ponle nombre","error");return}
 if(id===0)INV.push({id:uid(),...data});else Object.assign(INV.find(x=>x.id===id),data);
 wj(K.I,INV);renderStock();closeModal();toast("Insumo guardado")}
 
-// ========== STAFF ==========
+// ==================== STAFF ====================
 function renderStaff(){$("#staffList").innerHTML=STAFF.map(s=>`
 <div class="card">
 <div class="flex items-start gap-3 mb-3">
@@ -561,7 +518,7 @@ ${s.foto?`<img src="${s.foto}" class="w-full h-full object-cover rounded-2xl">`:
 ${s.foto?`<button onclick="removeFoto()" class="text-[10px] text-red-400 mt-1">Quitar foto</button>`:""}</div>
 <input type="text" id="sN" class="inp mb-2" value="${esc(s.nombre)}" placeholder="Nombre completo">
 <input type="text" id="sU" class="inp mb-2" value="${esc(s.usuario)}" placeholder="Usuario">
-<input type="email" id="sE" class="inp mb-2" value="${esc(s.email||"")}" placeholder="Correo para recuperación">
+<input type="email" id="sE" class="inp mb-2" value="${esc(s.email||"")}" placeholder="Correo">
 <input type="text" id="sP" class="inp mb-2" value="${esc(s.pass)}" placeholder="Contraseña">
 <input type="number" step="0.01" id="sS" class="inp mb-2" value="${s.sueldo||0}" placeholder="Sueldo mensual">
 <select id="sR" class="inp mb-3"><option value="cajero" ${s.rol==="cajero"?"selected":""}>🧑‍🍳 Cajero</option><option value="cocina" ${s.rol==="cocina"?"selected":""}>👨‍🍳 Cocina</option><option value="admin" ${s.rol==="admin"?"selected":""}>👑 Admin</option></select>
@@ -584,7 +541,7 @@ if(SESSION&&SESSION.id===id){SESSION.nombre=data.nombre;SESSION.foto=data.foto;w
 $("#whoami").innerHTML=`<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> ${esc(data.nombre)} · ${SESSION.rol}`;
 const t=$("#topAvatar");if(data.foto)t.innerHTML=`<img src="${data.foto}" class="w-full h-full object-cover">`;else t.textContent=data.emoji}}
 
-// ========== FINANZAS ==========
+// ==================== FINANZAS ====================
 const monthKey=()=>new Date().toISOString().slice(0,7);
 function renderFin(){const m=monthKey();
 const inc=SALES.filter(s=>s.fecha.slice(0,7)===m).reduce((a,s)=>a+s.total,0);
@@ -604,4 +561,101 @@ return `<div class="card"><div class="flex items-center gap-3 mb-2">
 <div class="text-right"><p class="text-[10px] text-zinc-500">Pendiente</p><p class="text-sm font-bold ${pend>0?"text-red-400":"text-emerald-400"}">${money(pend)}</p></div></div>
 <p class="text-[11px] text-zinc-500 mb-2">Pagado: <b class="text-emerald-400">${money(paid)}</b></p>
 <div class="flex gap-2"><button onclick="paySalary(${s.id})" class="flex-1 bg-emerald-600/30 text-emerald-400 py-1.5 rounded text-xs">💵 Pagar</button><button onclick="editSalary(${s.id})" class="btn-gray flex-1 text-xs">✏️ Sueldo</button></div></div>`}).join("");
-const mExp=EXP
+const mExp=EXP.filter(e=>e.fecha.slice(0,7)===m);
+$("#expList").innerHTML=mExp.length===0?`<p class="text-center text-zinc-500 py-6 text-xs">Sin gastos este mes</p>`:
+mExp.map(e=>`<div class="card flex items-center gap-3"><div class="flex-1 min-w-0"><p class="font-semibold text-sm truncate">${esc(e.descripcion)}</p><p class="text-[11px] text-zinc-500">${esc(e.categoria||"General")} · ${new Date(e.fecha).toLocaleDateString("es-EC")}</p></div>
+<p class="text-red-400 font-bold text-sm">-${money(e.monto)}</p><button onclick="delExpense(${e.id})" class="text-zinc-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button></div>`).join("");
+$("#debtList").innerHTML=DEBT.length===0?`<p class="text-center text-zinc-500 py-6 text-xs">Sin deudas 🎉</p>`:
+DEBT.map(d=>`<div class="card ${d.pagado?"border-emerald-600/40 opacity-60":"border-amber-600/40"}">
+<div class="flex justify-between items-start mb-2"><div class="min-w-0"><p class="font-semibold text-sm truncate">${esc(d.acreedor)}</p><p class="text-[11px] text-zinc-500 truncate">${esc(d.nota||"")}</p></div>
+<div class="text-right shrink-0 ml-2"><p class="font-bold ${d.pagado?"text-emerald-400 line-through":"text-amber-400"} text-sm">${money(d.monto)}</p><p class="text-[10px] text-zinc-500">${d.vence?new Date(d.vence).toLocaleDateString("es-EC"):"—"}</p></div></div>
+<div class="flex gap-2">${!d.pagado?`<button onclick="payDebt(${d.id})" class="flex-1 bg-emerald-600/30 text-emerald-400 py-1.5 rounded text-xs">✓ Pagar</button>`:""}<button onclick="delDebt(${d.id})" class="flex-1 bg-zinc-800 text-red-400 py-1.5 rounded text-xs">Eliminar</button></div></div>`).join("")}
+
+function paySalary(id){const s=STAFF.find(x=>x.id===id);const v=prompt(`Monto a pagar a ${s.nombre}:`,s.sueldo||0);if(v===null)return;
+const monto=parseFloat(v)||0;if(monto<=0)return;
+PAY.push({id:uid(),staffId:id,nombre:s.nombre,monto,fecha:new Date().toISOString()});wj(K.P,PAY);renderFin();toast(`Pago registrado: ${money(monto)}`)}
+function editSalary(id){const s=STAFF.find(x=>x.id===id);const v=prompt(`Sueldo mensual de ${s.nombre}:`,s.sueldo||0);if(v===null)return;
+s.sueldo=parseFloat(v)||0;wj(K.U,STAFF);renderFin();renderStaff();toast("Sueldo actualizado")}
+function newExpense(){modal(`<h3 class="font-bold mb-4">Nuevo gasto</h3>
+<input type="text" id="exD" class="inp mb-2" placeholder="Descripción">
+<input type="number" step="0.01" id="exA" class="inp mb-2" placeholder="Monto">
+<select id="exC" class="inp mb-3"><option>Servicios</option><option>Arriendo</option><option>Insumos</option><option>Sueldos</option><option>Otros</option></select>
+<div class="flex gap-2"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveExpense()" class="btn-red flex-1">Guardar</button></div>`)}
+function saveExpense(){const d=$("#exD").value.trim(),m=parseFloat($("#exA").value)||0;if(!d||m<=0){toast("Completa los datos","error");return}
+EXP.push({id:uid(),descripcion:d,monto:m,categoria:$("#exC").value,fecha:new Date().toISOString()});wj(K.E,EXP);renderFin();closeModal();toast("Gasto registrado")}
+function delExpense(id){if(!confirm("¿Eliminar?"))return;EXP=EXP.filter(e=>e.id!==id);wj(K.E,EXP);renderFin();toast("Gasto eliminado")}
+function newDebt(){modal(`<h3 class="font-bold mb-4">Nueva deuda</h3>
+<input type="text" id="dN" class="inp mb-2" placeholder="Acreedor">
+<input type="number" step="0.01" id="dA" class="inp mb-2" placeholder="Monto">
+<input type="date" id="dV" class="inp mb-2">
+<input type="text" id="dNo" class="inp mb-3" placeholder="Nota (opcional)">
+<div class="flex gap-2"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveDebt()" class="btn-red flex-1">Guardar</button></div>`)}
+function saveDebt(){const n=$("#dN").value.trim(),m=parseFloat($("#dA").value)||0;if(!n||m<=0){toast("Completa los datos","error");return}
+DEBT.push({id:uid(),acreedor:n,monto:m,vence:$("#dV").value||null,nota:$("#dNo").value.trim(),pagado:false,fecha:new Date().toISOString()});wj(K.D,DEBT);renderFin();closeModal();toast("Deuda registrada")}
+function payDebt(id){const d=DEBT.find(x=>x.id===id);if(!confirm(`¿Marcar pagada: ${d.acreedor} - ${money(d.monto)}?`))return;
+d.pagado=true;d.fechaPago=new Date().toISOString();wj(K.D,DEBT);renderFin();toast("Deuda pagada")}
+function delDebt(id){if(!confirm("¿Eliminar?"))return;DEBT=DEBT.filter(d=>d.id!==id);wj(K.D,DEBT);renderFin();toast("Deuda eliminada")}
+$$(".tabbtn[data-f]").forEach(b=>b.addEventListener("click",()=>{$$(".tabbtn[data-f]").forEach(x=>x.classList.remove("act"));b.classList.add("act");
+["salary","exp","debt"].forEach(t=>{const el=$("#f-"+t);if(el)el.classList.toggle("hide",t!==b.dataset.f)})}));
+
+// ==================== CAJA ====================
+function renderCash(){const today=new Date().toISOString().slice(0,10);
+const c=CASH.find(x=>x.fecha===today);
+const salesToday=SALES.filter(s=>s.fecha.slice(0,10)===today);
+const cashSales=salesToday.filter(s=>s.metodo==="Efectivo").reduce((a,s)=>a+s.total,0);
+const isOpen=c&&!c.cerrada;
+$("#kState").textContent=isOpen?"ABIERTA":"CERRADA";$("#kState").style.color=isOpen?"#34d399":"#a1a1aa";
+const exp=(c?.montoApertura||0)+cashSales;$("#kExp").textContent=money(exp);
+const counted=c?.montoContado??null;const dif=counted!==null?counted-exp:0;
+$("#kDif").textContent=counted!==null?money(dif):"$0";
+$("#kDif").style.color=counted===null?"#fff":Math.abs(dif)<0.5?"#34d399":"#f87171";
+$("#cashHint").textContent=`💵 ${money(cashSales)} efectivo · 💳 ${money(salesToday.filter(s=>s.metodo==="Tarjeta").reduce((a,s)=>a+s.total,0))} tarjeta`;
+$("#cashHist").innerHTML=CASH.length===0?`<p class="text-center text-zinc-500 py-4 text-xs">Sin cierres</p>`:
+CASH.slice().reverse().slice(0,10).map(c=>{const d=c.diferencia??0;
+return `<div class="card flex justify-between items-center"><div><p class="text-xs font-semibold">${new Date(c.fecha).toLocaleDateString("es-EC")}</p><p class="text-[10px] text-zinc-500">Apertura ${money(c.montoApertura)} · Contado ${money(c.montoContado||0)}</p></div>
+<p class="text-sm font-bold ${Math.abs(d)<0.5?"text-emerald-400":"text-red-400"}">${money(d)}</p></div>`}).join("")}
+function openCash(){const amt=parseFloat($("#cashOpen").value)||0;if(amt<=0){toast("Ingresa el monto","error");return}
+const today=new Date().toISOString().slice(0,10);
+if(CASH.find(c=>c.fecha===today&&!c.cerrada)){toast("Ya hay caja abierta","error");return}
+CASH.push({id:uid(),fecha:today,apertura:new Date().toISOString(),montoApertura:amt,cerrada:false,abiertaPor:SESSION?.nombre||"Sistema"});
+wj(K.C,CASH);renderCash();toast(`Caja abierta con ${money(amt)}`)}
+function closeCash(){const today=new Date().toISOString().slice(0,10);
+const c=CASH.find(x=>x.fecha===today&&!x.cerrada);if(!c){toast("No hay caja abierta","error");return}
+const cnt=parseFloat($("#cashCount").value);if(isNaN(cnt)){toast("Ingresa el efectivo contado","error");return}
+const cs=SALES.filter(s=>s.fecha.slice(0,10)===today&&s.metodo==="Efectivo").reduce((a,s)=>a+s.total,0);
+const exp=c.montoApertura+cs;c.cerrada=true;c.cierre=new Date().toISOString();c.montoContado=cnt;c.esperado=exp;c.diferencia=cnt-exp;c.cerradaPor=SESSION?.nombre||"Sistema";
+wj(K.C,CASH);renderCash();toast(`Caja cerrada. Diferencia: ${money(c.diferencia)}`)}
+
+// ==================== STATS ====================
+function renderStats(){const today=new Date().toISOString().slice(0,10);const m=monthKey();
+const sT=SALES.filter(s=>s.fecha.slice(0,10)===today);const sM=SALES.filter(s=>s.fecha.slice(0,7)===m);
+$("#sT").textContent=money(sT.reduce((a,s)=>a+s.total,0));$("#sO").textContent=sT.length;
+$("#sM").textContent=money(sM.reduce((a,s)=>a+s.total,0));$("#sA").textContent=money(SALES.length?SALES.reduce((a,s)=>a+s.total,0)/SALES.length:0);
+$("#salesList").innerHTML=SALES.length===0?`<p class="text-center text-zinc-500 py-6 text-xs">Sin ventas</p>`:
+SALES.slice(0,15).map(s=>`<div class="card flex items-center gap-3"><div class="text-lg">${s.metodo==="Efectivo"?"💵":"💳"}</div>
+<div class="flex-1 min-w-0"><p class="text-xs font-semibold truncate">${esc(s.cliente)}</p><p class="text-[10px] text-zinc-500">${new Date(s.fecha).toLocaleString("es-EC",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"})}</p></div>
+<p class="text-amber-400 font-bold text-sm">${money(s.total)}</p></div>`).join("")}
+
+// ==================== RENDER ALL ====================
+function renderAll(){
+try{renderPOS()}catch(e){console.error("POS:",e)}
+try{renderCart()}catch(e){console.error("Cart:",e)}
+try{renderMenu()}catch(e){console.error("Menu:",e)}
+try{renderStock()}catch(e){console.error("Stock:",e)}
+try{renderStaff()}catch(e){console.error("Staff:",e)}
+try{renderFin()}catch(e){console.error("Fin:",e)}
+try{renderCash()}catch(e){console.error("Cash:",e)}
+try{renderStats()}catch(e){console.error("Stats:",e)}}
+
+// ==================== SYNC ====================
+window.addEventListener("storage",e=>{
+if(e.key===K.M){MENU=rj(K.M,DEF_M);renderMenu();renderPOS()}
+if(e.key===K.I){INV=rj(K.I,DEF_I);renderStock()}
+if(e.key===K.S){SALES=rj(K.S,[]);renderStats();renderFin();renderCash()}
+if(e.key===K.U){STAFF=rj(K.U,DEF_U);renderStaff();renderFin()}});
+
+// ==================== INIT ====================
+if(SESSION&&STAFF.find(s=>s.id===SESSION.id)){startApp()}
+</script>
+</body>
+</html>
