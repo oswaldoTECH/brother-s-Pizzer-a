@@ -2,20 +2,36 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#09090b">
 <title>Admin · Brothers Pizza</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  body { font-family: system-ui, sans-serif; }
-  .inp { width:100%; background:#09090b; border:1px solid #3f3f46; border-radius:10px; padding:10px; color:#fff; font-size:14px; }
-  .inp:focus { outline:none; border-color:#ef4444; }
-  .btn-red { background:#dc2626; color:#fff; padding:10px 14px; border-radius:10px; font-weight:600; font-size:14px; }
-  .btn-gray { background:#27272a; color:#e4e4e7; padding:10px 14px; border-radius:10px; font-size:14px; }
-  .tabbtn { padding:8px 14px; border-radius:10px; background:#27272a; color:#a1a1aa; font-size:13px; white-space:nowrap; }
-  .tabbtn.act { background:#dc2626; color:#fff; }
-  .card { background:#18181b; border:1px solid #27272a; border-radius:14px; padding:14px; }
-  .hide { display:none !important; }
+  :root { --safe-bottom: env(safe-area-inset-bottom, 0px); }
+  * { -webkit-tap-highlight-color: transparent; }
+  body { font-family: system-ui, -apple-system, sans-serif; }
+  .inp { width: 100%; background: #09090b; border: 1px solid #3f3f46; border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 14px; }
+  .inp:focus { outline: none; border-color: #ef4444; }
+  .btn-red { background: #dc2626; color: #fff; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: .2s; }
+  .btn-red:active { transform: scale(.97); }
+  .btn-gray { background: #27272a; color: #e4e4e7; padding: 10px 14px; border-radius: 10px; font-size: 14px; }
+  .tabbtn { padding: 8px 14px; border-radius: 10px; background: #27272a; color: #a1a1aa; font-size: 13px; white-space: nowrap; transition: .2s; }
+  .tabbtn.act { background: #dc2626; color: #fff; }
+  .card { background: #18181b; border: 1px solid #27272a; border-radius: 14px; padding: 14px; }
+  .hide { display: none !important; }
+
+  @keyframes toast-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .toast { animation: toast-in .3s ease-out; }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(46,213,115,.7); }
+    70% { box-shadow: 0 0 0 9px rgba(46,213,115,0); }
+    100% { box-shadow: 0 0 0 0 rgba(46,213,115,0); }
+  }
+  .live-dot { animation: pulse-ring 1.8s infinite; }
+
+  .avatar { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; background: #3f3f46; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .avatar-lg { width: 72px; height: 72px; border-radius: 16px; }
 </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen">
@@ -24,31 +40,41 @@
 <div id="login" class="fixed inset-0 bg-zinc-950 flex items-center justify-center p-4 z-50">
   <div class="card w-full max-w-sm">
     <div class="text-center mb-5">
-      <div class="inline-block w-12 h-12 rounded-xl bg-red-600 text-white text-xl leading-[3rem]">🍕</div>
-      <h1 class="font-bold mt-2">Brothers Pizza · Admin</h1>
+      <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-red-600 to-amber-500 items-center justify-center text-2xl mb-2">🍕</div>
+      <h1 class="font-bold text-lg">Brothers Pizza · Admin</h1>
+      <p class="text-xs text-zinc-500 mt-1">Acceso al panel administrativo</p>
     </div>
     <input id="lu" class="inp mb-2" value="admin" placeholder="Usuario">
     <input id="lp" type="password" class="inp mb-2" value="admin123" placeholder="Contraseña">
     <div id="lerr" class="hide text-red-400 text-xs text-center bg-red-500/10 py-2 rounded mb-2"></div>
-    <button onclick="doLogin()" class="btn-red w-full">Ingresar</button>
-    <button onclick="localStorage.clear();location.reload()" class="text-xs text-zinc-500 w-full mt-3">🔧 Reparar acceso</button>
+    <button onclick="doLogin()" class="btn-red w-full">🔓 Ingresar</button>
+    <div class="mt-4 pt-3 border-t border-zinc-800">
+      <p class="text-[10px] uppercase tracking-wider text-zinc-500 text-center font-bold mb-2">Acceso rápido</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="fillLogin('admin','admin123')" class="btn-gray text-xs">👑 Admin</button>
+        <button onclick="fillLogin('cajero','cajero123')" class="btn-gray text-xs">🧑‍🍳 Cajero</button>
+      </div>
+      <button onclick="localStorage.clear();location.reload()" class="text-xs text-zinc-500 w-full mt-3">🔧 Reparar acceso</button>
+    </div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app" class="hide">
   <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
-    <div class="max-w-5xl mx-auto px-3 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <div class="w-9 h-9 rounded-lg bg-red-600 flex items-center justify-center">🍕</div>
-        <div>
+    <div class="max-w-5xl mx-auto px-3 py-3 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <div id="topAvatar" class="w-9 h-9 rounded-lg bg-gradient-to-br from-red-600 to-amber-500 flex items-center justify-center text-lg shrink-0">🍕</div>
+        <div class="min-w-0">
           <p class="font-bold text-sm">Brothers Pizza</p>
-          <p id="whoami" class="text-[10px] text-zinc-500">—</p>
+          <p id="whoami" class="text-[10px] text-zinc-500 truncate flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> —
+          </p>
         </div>
       </div>
       <div class="flex gap-2">
-        <a href="index.html" target="_blank" class="btn-gray text-xs">👁️ Ver menú</a>
-        <button onclick="logout()" class="btn-gray text-xs">Salir</button>
+        <a href="index.html" target="_blank" class="btn-gray text-xs">👁️<span class="hidden sm:inline ml-1">Ver menú</span></a>
+        <button onclick="doLogout()" class="btn-gray text-xs">Salir</button>
       </div>
     </div>
     <div class="max-w-5xl mx-auto px-3 pb-2 flex gap-1 overflow-x-auto">
@@ -68,10 +94,10 @@
     <section id="t-pos">
       <div class="grid lg:grid-cols-3 gap-3">
         <div class="lg:col-span-2">
-          <input id="pq" class="inp mb-2" placeholder="🔍 Buscar...">
+          <input id="pq" class="inp mb-2" placeholder="🔍 Buscar producto...">
           <div id="pgrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
         </div>
-        <div class="card h-fit">
+        <div class="card h-fit lg:sticky lg:top-32">
           <div class="flex justify-between mb-2">
             <b class="text-sm">🛒 Orden <span id="cc" class="text-red-500">(0)</span></b>
             <button onclick="clearCart()" class="text-xs text-zinc-500">Limpiar</button>
@@ -80,7 +106,7 @@
           <div id="cartList" class="space-y-1 max-h-60 overflow-y-auto mb-2"></div>
           <div class="text-xs border-t border-zinc-800 pt-2 space-y-1">
             <div class="flex justify-between"><span>Subtotal</span><span id="cSub">$0</span></div>
-            <div class="flex justify-between"><span>IVA</span><span id="cTax">$0</span></div>
+            <div class="flex justify-between"><span>IVA 12%</span><span id="cTax">$0</span></div>
             <div class="flex justify-between font-bold text-base pt-1"><span>Total</span><span id="cTot" class="text-red-500">$0</span></div>
           </div>
           <div class="grid grid-cols-2 gap-2 mt-2">
@@ -91,22 +117,72 @@
       </div>
     </section>
 
-    <!-- MENU -->
-    <section id="t-menu" class="hide">
-      <div class="flex justify-between mb-3">
-        <h2 class="font-bold">📋 Menú</h2>
-        <button onclick="editPizza(0)" class="btn-red">+ Nueva pizza</button>
+    <!-- MENÚ -->
+    <section id="t-menu" class="hide space-y-4">
+      <!-- Tamaños -->
+      <div class="card">
+        <div class="flex justify-between mb-3">
+          <h3 class="font-bold text-sm">📐 Tamaños y precios</h3>
+          <button onclick="editSizes()" class="text-xs text-red-400">✏️ Editar</button>
+        </div>
+        <div id="sizesBox" class="grid grid-cols-3 gap-2"></div>
       </div>
-      <div id="sizesBox" class="grid grid-cols-3 gap-2 mb-3"></div>
-      <button onclick="editSizes()" class="text-xs text-red-400 mb-3">✏️ Editar tamaños</button>
-      <div id="pizzaList" class="space-y-2"></div>
+
+      <!-- Promos -->
+      <div class="card">
+        <h3 class="font-bold text-sm mb-3">⭐ Promos y adicionales</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div class="bg-zinc-950 p-3 rounded-lg flex items-center gap-2">
+            <div class="text-2xl">🍕</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-semibold">Porción</p>
+              <p id="porcionP" class="text-amber-400 font-bold text-sm">$1.25</p>
+            </div>
+            <button onclick="editPorcion()" class="text-xs text-red-400">✏️</button>
+          </div>
+          <div class="bg-zinc-950 p-3 rounded-lg flex items-center gap-2">
+            <div class="text-2xl">🥤</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-semibold">Pepsi 1L</p>
+              <p id="pepsiP" class="text-amber-400 font-bold text-sm">$0.75</p>
+            </div>
+            <button onclick="editPepsi()" class="text-xs text-red-400">✏️</button>
+          </div>
+          <div class="bg-zinc-950 p-3 rounded-lg flex items-center gap-2">
+            <div class="text-2xl">➕</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-semibold">Extras</p>
+              <p id="extraP" class="text-amber-400 font-bold text-sm">$0.25</p>
+            </div>
+            <button onclick="editExtrasPrice()" class="text-xs text-red-400">✏️</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pizzas -->
+      <div class="card">
+        <div class="flex justify-between mb-3">
+          <h3 class="font-bold text-sm">🍕 Pizzas en el menú</h3>
+          <button onclick="editPizza(0)" class="btn-red text-xs">+ Nueva pizza</button>
+        </div>
+        <div id="pizzaList" class="space-y-2"></div>
+      </div>
+
+      <!-- Extras individuales -->
+      <div class="card">
+        <div class="flex justify-between mb-3">
+          <h3 class="font-bold text-sm">🧀 Extras individuales</h3>
+          <button onclick="editExtra(0)" class="btn-red text-xs">+ Nuevo extra</button>
+        </div>
+        <div id="extraList" class="space-y-2"></div>
+      </div>
     </section>
 
     <!-- STOCK -->
     <section id="t-stock" class="hide">
       <div class="flex justify-between mb-3">
         <h2 class="font-bold">📦 Inventario</h2>
-        <button onclick="editInsumo(0)" class="btn-red">+ Nuevo</button>
+        <button onclick="editInsumo(0)" class="btn-red text-xs">+ Nuevo</button>
       </div>
       <div id="stockList" class="space-y-2"></div>
     </section>
@@ -115,9 +191,9 @@
     <section id="t-staff" class="hide">
       <div class="flex justify-between mb-3">
         <h2 class="font-bold">👥 Trabajadores</h2>
-        <button onclick="editStaff(0)" class="btn-red">+ Nuevo</button>
+        <button onclick="editStaff(0)" class="btn-red text-xs">+ Nuevo trabajador</button>
       </div>
-      <div id="staffList" class="space-y-2"></div>
+      <div id="staffList" class="space-y-3"></div>
     </section>
 
     <!-- FINANZAS -->
@@ -128,18 +204,18 @@
         <div class="card"><p class="text-[10px] text-amber-400 font-bold">NÓMINA</p><p id="fPay" class="text-xl font-bold">$0</p></div>
         <div class="card"><p class="text-[10px] text-blue-400 font-bold">BALANCE</p><p id="fBal" class="text-xl font-bold">$0</p></div>
       </div>
-      <div class="flex gap-2 mb-3">
+      <div class="flex gap-2 mb-3 overflow-x-auto">
         <button class="tabbtn act" data-f="salary">💼 Sueldos</button>
         <button class="tabbtn" data-f="exp">🧾 Gastos</button>
         <button class="tabbtn" data-f="debt">💳 Deudas</button>
       </div>
       <div id="f-salary"><div id="salaryList" class="space-y-2"></div></div>
       <div id="f-exp" class="hide">
-        <button onclick="newExpense()" class="btn-red mb-3">+ Nuevo gasto</button>
+        <button onclick="newExpense()" class="btn-red mb-3 text-xs">+ Nuevo gasto</button>
         <div id="expList" class="space-y-2"></div>
       </div>
       <div id="f-debt" class="hide">
-        <button onclick="newDebt()" class="btn-red mb-3">+ Nueva deuda</button>
+        <button onclick="newDebt()" class="btn-red mb-3 text-xs">+ Nueva deuda</button>
         <div id="debtList" class="space-y-2"></div>
       </div>
     </section>
@@ -182,37 +258,73 @@
   <div id="modalBody" class="bg-zinc-900 w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl p-5"></div>
 </div>
 
-<script>
-// ==================== STORAGE ====================
-const K = { M:"bp_menu", S:"bp_sales", I:"bp_inventory", U:"bp_staff", SE:"bp_session", P:"bp_payroll", E:"bp_expenses", D:"bp_debts", C:"bp_cash" };
+<!-- TOAST CONTAINER -->
+<div id="toasts" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] space-y-2 pointer-events-none w-[90%] max-w-md"></div>
 
+<script>
+// ==================== STORAGE KEYS ====================
+const K = {
+  M:"bp_menu", S:"bp_sales", I:"bp_inventory", U:"bp_staff", SE:"bp_session",
+  P:"bp_payroll", E:"bp_expenses", D:"bp_debts", C:"bp_cash"
+};
+
+// ==================== IMÁGENES ====================
+const IMG = {
+  pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&q=80",
+  margarita:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80",
+  hawaiana:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80",
+  jamon:"https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=800&q=80",
+  pepsi:"https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=800&q=80",
+  slice:"https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=800&q=80",
+  def:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80"
+};
+function imgOf(n="") {
+  n = n.toLowerCase();
+  if (n.includes("pepperoni")) return IMG.pepperoni;
+  if (n.includes("margarita")) return IMG.margarita;
+  if (n.includes("hawaiana")) return IMG.hawaiana;
+  if (n.includes("jamón") || n.includes("jamon")) return IMG.jamon;
+  if (n.includes("pepsi") || n.includes("cola") || n.includes("gaseosa")) return IMG.pepsi;
+  if (n.includes("porci")) return IMG.slice;
+  return IMG.def;
+}
+
+// ==================== DEFAULT DATA ====================
 const DEF_M = {
-  tamanos:[
-    {id:"personal",label:"Personal",precio:5,porciones:4},
-    {id:"mediana",label:"Mediana",precio:9,porciones:10},
-    {id:"familiar",label:"Familiar",precio:13,porciones:12}
+  tamanos: [
+    { id:"personal", label:"Personal", precio:5, porciones:4 },
+    { id:"mediana", label:"Mediana", precio:9, porciones:10 },
+    { id:"familiar", label:"Familiar", precio:13, porciones:12 }
   ],
-  pizzas:[
-    {id:1,nombre:"Pizza Pepperoni",desc:"Pepperoni y mozzarella",badge:"hot"},
-    {id:2,nombre:"Pizza Margarita",desc:"Mozzarella y tomate"},
-    {id:3,nombre:"Pizza Hawaiana",desc:"Jamón y piña"},
-    {id:4,nombre:"Pizza de Jamón",desc:"Jamón y mozzarella",badge:"new"}
+  pizzas: [
+    { id:1, nombre:"Pizza Pepperoni", desc:"Pepperoni y mozzarella", badge:"hot" },
+    { id:2, nombre:"Pizza Margarita", desc:"Mozzarella, albahaca y tomate" },
+    { id:3, nombre:"Pizza Hawaiana", desc:"Jamón, piña y mozzarella" },
+    { id:4, nombre:"Pizza de Jamón", desc:"Jamón y mozzarella", badge:"new" }
   ],
-  porcion:{id:200,nombre:"Porción de Pizza",precio:1.25},
-  cola:{id:300,nombre:"Cola 1L",precio:0.75}
+  porcion: { id:200, nombre:"Porción de Pizza", precio:1.25 },
+  pepsi: { id:300, nombre:"Pepsi 1L", precio:0.75 },
+  extras: [
+    { id:"ex-pepperoni", nombre:"Pepperoni extra", emoji:"🍕", precio:0.25 },
+    { id:"ex-jamon", nombre:"Jamón extra", emoji:"🥓", precio:0.25 },
+    { id:"ex-pina", nombre:"Piña extra", emoji:"🍍", precio:0.25 },
+    { id:"ex-queso", nombre:"Queso extra", emoji:"🧀", precio:0.25 }
+  ]
 };
 
 const DEF_I = [
-  {id:1,nombre:"Harina",unidad:"kg",stock:25,min:10,costo:1.20,prov:"Molinos"},
-  {id:2,nombre:"Queso",unidad:"kg",stock:8,min:5,costo:6.50,prov:"Lácteos"},
-  {id:3,nombre:"Pepperoni",unidad:"kg",stock:4,min:3,costo:8,prov:"Carnes"},
-  {id:4,nombre:"Jamón",unidad:"kg",stock:2,min:3,costo:5.50,prov:"Carnes"},
-  {id:5,nombre:"Cola 1L",unidad:"botella",stock:20,min:12,costo:0.50,prov:"Distribuidora"}
+  { id:1, nombre:"Harina", unidad:"kg", stock:25, min:10, costo:1.20, prov:"Molinos Andinos" },
+  { id:2, nombre:"Queso Mozzarella", unidad:"kg", stock:8, min:5, costo:6.50, prov:"Lácteos Biblián" },
+  { id:3, nombre:"Pepperoni", unidad:"kg", stock:4, min:3, costo:8, prov:"Carnes Pérez" },
+  { id:4, nombre:"Jamón", unidad:"kg", stock:2, min:3, costo:5.50, prov:"Carnes Pérez" },
+  { id:5, nombre:"Piña enlatada", unidad:"kg", stock:3, min:2, costo:3, prov:"Del Monte" },
+  { id:6, nombre:"Pepsi 1L", unidad:"botella", stock:20, min:12, costo:0.50, prov:"Distribuidora Sur" },
+  { id:7, nombre:"Cajas pizza", unidad:"unidad", stock:45, min:20, costo:0.15, prov:"Empaques EC" }
 ];
 
 const DEF_U = [
-  {id:1,nombre:"Administrador",usuario:"admin",pass:"admin123",rol:"admin",activo:true,emoji:"👑",sueldo:600},
-  {id:2,nombre:"Cajero",usuario:"cajero",pass:"cajero123",rol:"cajero",activo:true,emoji:"🧑‍🍳",sueldo:400}
+  { id:1, nombre:"Administrador", usuario:"admin", pass:"admin123", rol:"admin", activo:true, emoji:"👑", sueldo:600, foto:null },
+  { id:2, nombre:"Cajero", usuario:"cajero", pass:"cajero123", rol:"cajero", activo:true, emoji:"🧑‍🍳", sueldo:400, foto:null }
 ];
 
 // ==================== HELPERS ====================
@@ -227,8 +339,14 @@ const wj = (k,v) => { localStorage.setItem(k, JSON.stringify(v)); };
 // ==================== SEED ====================
 (function seed(){
   let m = rj(K.M,null);
-  if (!m || !m.pizzas || !m.tamanos || !m.porcion || !m.cola) wj(K.M, DEF_M);
-
+  if (!m || !m.pizzas || !m.tamanos || !m.porcion || !m.pepsi || !m.extras) {
+    // Migrar de "cola" a "pepsi" si existía
+    if (m && m.cola && !m.pepsi) { m.pepsi = { ...m.cola, nombre: "Pepsi 1L" }; delete m.cola; }
+    if (!m || !m.pizzas) m = DEF_M;
+    if (!m.pepsi) m.pepsi = DEF_M.pepsi;
+    if (!m.extras) m.extras = DEF_M.extras;
+    wj(K.M, m);
+  }
   if (!Array.isArray(rj(K.I,null))) wj(K.I, DEF_I);
 
   let st = rj(K.U,[]);
@@ -259,33 +377,44 @@ let CASH = rj(K.C, []);
 let SESSION = rj(K.SE, null);
 let cart = [];
 
-// ==================== IMÁGENES ====================
-const IMG = {
-  pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=300&q=70",
-  margarita:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=300&q=70",
-  hawaiana:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&q=70",
-  jamon:"https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=300&q=70",
-  cola:"https://images.unsplash.com/photo-1554866585-cd94860890b7?w=300&q=70",
-  slice:"https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=300&q=70",
-  def:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&q=70"
-};
-function imgOf(n="") {
-  n = n.toLowerCase();
-  if (n.includes("pepperoni")) return IMG.pepperoni;
-  if (n.includes("margarita")) return IMG.margarita;
-  if (n.includes("hawaiana")) return IMG.hawaiana;
-  if (n.includes("jamón") || n.includes("jamon")) return IMG.jamon;
-  if (n.includes("cola") || n.includes("coca")) return IMG.cola;
-  if (n.includes("porci")) return IMG.slice;
-  return IMG.def;
+// ==================== TOASTS ====================
+function toast(msg, type = "success") {
+  const cont = $("#toasts");
+  const el = document.createElement("div");
+  const styles = type === "error"
+    ? "bg-red-600/95 border-red-400"
+    : type === "info"
+    ? "bg-zinc-800/95 border-zinc-600"
+    : "bg-emerald-600/95 border-emerald-400";
+  const icon = type === "error" ? "fa-circle-exclamation" : type === "info" ? "fa-circle-info" : "fa-circle-check";
+  el.className = `toast pointer-events-auto rounded-2xl px-4 py-3 shadow-2xl backdrop-blur-md border text-white text-sm font-semibold flex items-center gap-3 ${styles}`;
+  el.innerHTML = `<i class="fa-solid ${icon} text-lg"></i><span class="flex-1">${esc(msg)}</span>`;
+  cont.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = "opacity .3s, transform .3s";
+    el.style.opacity = "0";
+    el.style.transform = "translateY(20px)";
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
+}
+
+// Toast especial de cierre de sesión (rojo, más grande)
+function logoutToast() {
+  const cont = $("#toasts");
+  const el = document.createElement("div");
+  el.className = "toast pointer-events-auto rounded-2xl px-5 py-4 shadow-2xl backdrop-blur-md border-2 border-red-400 bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-bold flex items-center gap-3";
+  el.innerHTML = `<i class="fa-solid fa-right-from-bracket text-2xl"></i><div><p class="text-base">Sesión cerrada</p><p class="text-xs opacity-90 font-normal mt-0.5">¡Vuelve pronto, ${esc(SESSION?.nombre || "")}! 👋</p></div>`;
+  cont.appendChild(el);
 }
 
 // ==================== MODAL ====================
 function modal(html) { $("#modalBody").innerHTML = html; $("#modal").classList.remove("hide"); }
 function closeModal() { $("#modal").classList.add("hide"); }
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
 // ==================== LOGIN ====================
+function fillLogin(u,p) { $("#lu").value = u; $("#lp").value = p; $("#lerr").classList.add("hide"); }
 function doLogin() {
   const u = $("#lu").value.trim(), p = $("#lp").value;
   let user = STAFF.find(x => x.usuario === u && x.pass === p && x.activo);
@@ -298,19 +427,34 @@ function doLogin() {
     $("#lerr").classList.remove("hide");
     return;
   }
-  SESSION = { id:user.id, nombre:user.nombre, rol:user.rol };
+  SESSION = { id:user.id, nombre:user.nombre, rol:user.rol, foto: user.foto };
   wj(K.SE, SESSION);
   startApp();
+  toast(`Bienvenido, ${user.nombre} 👋`);
 }
-function logout() {
-  if (!confirm("¿Cerrar sesión?")) return;
-  localStorage.removeItem(K.SE);
-  location.reload();
+
+function doLogout() {
+  // Mostrar toast elegante de sesión cerrada (rojo, abajo)
+  logoutToast();
+  // Esperar a que se vea el toast antes de redirigir
+  setTimeout(() => {
+    localStorage.removeItem(K.SE);
+    location.reload();
+  }, 1200);
 }
+
 function startApp() {
   $("#login").classList.add("hide");
   $("#app").classList.remove("hide");
-  $("#whoami").textContent = `${SESSION.nombre} · ${SESSION.rol}`;
+  const u = STAFF.find(x => x.id === SESSION.id);
+  $("#whoami").innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> ${esc(SESSION.nombre)} · ${SESSION.rol}`;
+  // Avatar con foto o emoji
+  const topAv = $("#topAvatar");
+  if (u && u.foto) {
+    topAv.innerHTML = `<img src="${u.foto}" class="w-full h-full object-cover rounded-lg">`;
+  } else {
+    topAv.textContent = u?.emoji || "🍕";
+  }
   renderAll();
 }
 
@@ -329,14 +473,18 @@ function getProds() {
     key:`p${p.id}-${t.id}`, tipo:"pizza", nombre:`${p.nombre} ${t.label}`, precio:t.precio, img:imgOf(p.nombre)
   })));
   l.push({ key:"porcion", tipo:"porcion", nombre:"Porción pizza", precio:MENU.porcion.precio, img:IMG.slice });
-  l.push({ key:"cola", tipo:"extra", nombre:MENU.cola.nombre, precio:MENU.cola.precio, img:IMG.cola });
+  l.push({ key:"pepsi", tipo:"extra", nombre:MENU.pepsi.nombre, precio:MENU.pepsi.precio, img:IMG.pepsi });
+  (MENU.extras || []).forEach(ex => l.push({
+    key: ex.id, tipo:"extra", nombre: ex.nombre, precio: ex.precio, img: IMG.def
+  }));
   return l;
 }
+
 function renderPOS(q="") {
   let list = getProds();
   if (q) list = list.filter(p => p.nombre.toLowerCase().includes(q.toLowerCase()));
   $("#pgrid").innerHTML = list.map((p,i) => `
-    <button onclick="addCart(${i})" data-idx="${i}" class="prod-card bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden text-left hover:border-red-600">
+    <button onclick="addCart(${i})" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden text-left hover:border-red-600 transition">
       <div class="h-20 bg-zinc-800 overflow-hidden">
         <img src="${p.img}" class="w-full h-full object-cover" onerror="this.src='${IMG.def}'">
       </div>
@@ -346,15 +494,12 @@ function renderPOS(q="") {
       </div>
     </button>
   `).join("") || `<p class="col-span-full text-center text-zinc-500 py-8 text-sm">Sin resultados</p>`;
-
-  // Guardar la lista actual para addCart
   window._posList = list;
 }
 $("#pq").addEventListener("input", e => renderPOS(e.target.value));
 
 function addCart(i) {
-  const p = window._posList[i];
-  if (!p) return;
+  const p = window._posList[i]; if (!p) return;
   const f = cart.find(x => x.key === p.key);
   if (f) f.cantidad++; else cart.push({ ...p, cantidad:1 });
   renderCart();
@@ -380,11 +525,11 @@ function renderCart() {
         <button onclick="changeQty(${i},-1)" class="w-6 h-6 rounded bg-zinc-800 text-xs">−</button>
         <span class="text-xs font-bold w-5 text-center">${it.cantidad}</span>
         <button onclick="changeQty(${i},1)" class="w-6 h-6 rounded bg-zinc-800 text-xs">+</button>
-      </div>
-    `).join("");
+      </div>`).join("");
 }
+
 function pay(m) {
-  if (!cart.length) { alert("Carrito vacío"); return; }
+  if (!cart.length) { toast("Carrito vacío", "error"); return; }
   const sub = cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
   const tax = sub * 0.12;
   SALES.unshift({
@@ -395,19 +540,24 @@ function pay(m) {
   });
   wj(K.S, SALES);
   cart = []; renderCart(); renderStats(); renderFin(); renderCash();
-  alert(`✅ Venta registrada: ${money(sub+tax)} (${m})`);
+  toast(`Venta registrada: ${money(sub+tax)} 💰`);
 }
 
-// ==================== MENU ====================
+// ==================== MENÚ ====================
 function renderMenu() {
   $("#sizesBox").innerHTML = MENU.tamanos.map(t => `
-    <div class="card text-center">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-center">
       <p class="text-[10px] text-zinc-500 font-bold uppercase">${esc(t.label)}</p>
       <p class="text-lg font-bold text-amber-400">${money(t.precio)}</p>
       <p class="text-[10px] text-zinc-500">${t.porciones} porc.</p>
     </div>`).join("");
+
+  $("#porcionP").textContent = money(MENU.porcion.precio);
+  $("#pepsiP").textContent = money(MENU.pepsi.precio);
+  $("#extraP").textContent = money(MENU.extras?.[0]?.precio || 0.25);
+
   $("#pizzaList").innerHTML = MENU.pizzas.map(p => `
-    <div class="card flex gap-3 items-center">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 flex gap-3 items-center">
       <div class="w-14 h-14 rounded-lg overflow-hidden bg-zinc-800 shrink-0">
         <img src="${imgOf(p.nombre)}" class="w-full h-full object-cover" onerror="this.src='${IMG.def}'">
       </div>
@@ -418,7 +568,19 @@ function renderMenu() {
       <button onclick="editPizza(${p.id})" class="w-8 h-8 rounded bg-zinc-800 text-xs"><i class="fa-solid fa-pen"></i></button>
       <button onclick="delPizza(${p.id})" class="w-8 h-8 rounded bg-zinc-800 text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
     </div>`).join("");
+
+  $("#extraList").innerHTML = (MENU.extras || []).map(ex => `
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 flex gap-3 items-center">
+      <div class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-xl shrink-0">${ex.emoji || "➕"}</div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm truncate">${esc(ex.nombre)}</p>
+        <p class="text-[11px] text-emerald-400 font-bold">${money(ex.precio)}</p>
+      </div>
+      <button onclick="editExtra('${ex.id}')" class="w-8 h-8 rounded bg-zinc-800 text-xs"><i class="fa-solid fa-pen"></i></button>
+      <button onclick="delExtra('${ex.id}')" class="w-8 h-8 rounded bg-zinc-800 text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+    </div>`).join("");
 }
+
 function editPizza(id) {
   const p = id === 0 ? { id:uid(), nombre:"", desc:"", badge:"" } : MENU.pizzas.find(x => x.id === id);
   modal(`
@@ -438,19 +600,22 @@ function editPizza(id) {
 }
 function savePizza(id) {
   const nombre = $("#pN").value.trim();
-  if (!nombre) { alert("Ponle nombre"); return; }
+  if (!nombre) { toast("Ponle nombre", "error"); return; }
   const data = { nombre, desc: $("#pD").value.trim(), badge: $("#pB").value };
   if (id === 0) MENU.pizzas.push({ id: uid(), ...data });
   else Object.assign(MENU.pizzas.find(x => x.id === id), data);
   wj(K.M, MENU); MENU = rj(K.M, DEF_M);
   renderMenu(); renderPOS(); closeModal();
+  toast(id === 0 ? "Pizza agregada ✨" : "Pizza actualizada");
 }
 function delPizza(id) {
-  if (!confirm("¿Eliminar?")) return;
+  if (!confirm("¿Eliminar esta pizza?")) return;
   MENU.pizzas = MENU.pizzas.filter(x => x.id !== id);
   wj(K.M, MENU); MENU = rj(K.M, DEF_M);
   renderMenu(); renderPOS();
+  toast("Pizza eliminada");
 }
+
 function editSizes() {
   modal(`
     <h3 class="font-bold mb-4">Tamaños y precios</h3>
@@ -475,6 +640,66 @@ function saveSizes() {
   });
   wj(K.M, MENU); MENU = rj(K.M, DEF_M);
   renderMenu(); renderPOS(); closeModal();
+  toast("Tamaños actualizados");
+}
+
+function editPorcion() {
+  const v = prompt("Precio de la porción:", MENU.porcion.precio);
+  if (v === null) return;
+  MENU.porcion.precio = parseFloat(v) || MENU.porcion.precio;
+  wj(K.M, MENU); MENU = rj(K.M, DEF_M);
+  renderMenu(); renderPOS(); toast("Porción actualizada");
+}
+function editPepsi() {
+  const v = prompt("Precio de Pepsi 1L:", MENU.pepsi.precio);
+  if (v === null) return;
+  MENU.pepsi.precio = parseFloat(v) || MENU.pepsi.precio;
+  wj(K.M, MENU); MENU = rj(K.M, DEF_M);
+  renderMenu(); renderPOS(); toast("Pepsi actualizada");
+}
+function editExtrasPrice() {
+  const actual = MENU.extras?.[0]?.precio || 0.25;
+  const v = prompt("Precio de TODOS los extras:", actual);
+  if (v === null) return;
+  const precio = parseFloat(v) || actual;
+  (MENU.extras || []).forEach(ex => ex.precio = precio);
+  wj(K.M, MENU); MENU = rj(K.M, DEF_M);
+  renderMenu(); renderPOS(); toast("Precio de extras actualizado");
+}
+
+function editExtra(id) {
+  const isNew = !id || id === 0;
+  const ex = isNew ? { id:"ex-"+uid(), nombre:"", emoji:"➕", precio:0.25 } : MENU.extras.find(x => x.id === id);
+  if (!ex) return;
+  modal(`
+    <h3 class="font-bold mb-4">${isNew?"Nuevo":"Editar"} extra</h3>
+    <input type="text" id="exN" class="inp mb-2" value="${esc(ex.nombre)}" placeholder="Nombre (ej: Champiñones extra)">
+    <div class="grid grid-cols-2 gap-2 mb-3">
+      <input type="text" id="exE" class="inp" value="${esc(ex.emoji||"➕")}" placeholder="Emoji" maxlength="4">
+      <input type="number" step="0.01" id="exP" class="inp" value="${ex.precio}" placeholder="Precio">
+    </div>
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
+      <button onclick="saveExtra('${isNew?ex.id:id}')" class="btn-red flex-1">Guardar</button>
+    </div>
+  `);
+}
+function saveExtra(id) {
+  const nombre = $("#exN").value.trim();
+  if (!nombre) { toast("Ponle nombre", "error"); return; }
+  const data = { nombre, emoji: $("#exE").value.trim() || "➕", precio: parseFloat($("#exP").value) || 0.25 };
+  if (!MENU.extras) MENU.extras = [];
+  const found = MENU.extras.find(x => x.id === id);
+  if (found) Object.assign(found, data);
+  else MENU.extras.push({ id, ...data });
+  wj(K.M, MENU); MENU = rj(K.M, DEF_M);
+  renderMenu(); renderPOS(); closeModal(); toast("Extra guardado");
+}
+function delExtra(id) {
+  if (!confirm("¿Eliminar este extra?")) return;
+  MENU.extras = MENU.extras.filter(x => x.id !== id);
+  wj(K.M, MENU); MENU = rj(K.M, DEF_M);
+  renderMenu(); renderPOS(); toast("Extra eliminado");
 }
 
 // ==================== STOCK ====================
@@ -503,7 +728,7 @@ function addStock(id) {
   const q = prompt(`¿Cuánto sumar a "${i.nombre}"?`, "10");
   if (q === null) return;
   i.stock += parseFloat(q) || 0;
-  wj(K.I, INV); renderStock();
+  wj(K.I, INV); renderStock(); toast("Stock actualizado");
 }
 function editInsumo(id) {
   const i = id === 0 ? { id:uid(), nombre:"", unidad:"kg", stock:0, min:0, costo:0, prov:"" } : INV.find(x => x.id === id);
@@ -534,40 +759,64 @@ function saveInsumo(id) {
     min: parseFloat($("#iM").value) || 0,
     prov: $("#iP").value.trim()
   };
-  if (!data.nombre) { alert("Ponle nombre"); return; }
+  if (!data.nombre) { toast("Ponle nombre", "error"); return; }
   if (id === 0) INV.push({ id: uid(), ...data });
   else Object.assign(INV.find(x => x.id === id), data);
-  wj(K.I, INV); renderStock(); closeModal();
+  wj(K.I, INV); renderStock(); closeModal(); toast("Insumo guardado");
 }
 
-// ==================== STAFF ====================
+// ==================== STAFF CON FOTO ====================
 function renderStaff() {
   $("#staffList").innerHTML = STAFF.map(s => `
     <div class="card">
-      <div class="flex items-center gap-3 mb-2">
-        <div class="w-10 h-10 rounded-lg ${s.rol==="admin"?"bg-red-600":"bg-emerald-600"} flex items-center justify-center text-lg">${s.emoji||"👤"}</div>
+      <div class="flex items-start gap-3 mb-3">
+        <div class="avatar" ${s.foto ? '' : `style="background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff;font-size:22px"`}>
+          ${s.foto ? `<img src="${s.foto}" class="avatar w-full h-full object-cover">` : (s.emoji || "👤")}
+        </div>
         <div class="flex-1 min-w-0">
-          <p class="font-semibold text-sm truncate">${esc(s.nombre)}</p>
-          <p class="text-[11px] text-zinc-500">@${esc(s.usuario)} · ${s.rol}</p>
+          <p class="font-bold text-sm truncate">${esc(s.nombre)}</p>
+          <p class="text-[11px] text-zinc-500 truncate">@${esc(s.usuario)}</p>
+          <div class="flex gap-2 mt-1">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${s.rol==="admin"?"bg-red-600/20 text-red-400":"bg-emerald-600/20 text-emerald-400"}">
+              ${s.rol==="admin"?"👑 Admin":"🧑‍🍳 Cajero"}
+            </span>
+            <span class="text-[10px] ${s.activo?"text-emerald-400":"text-red-400"}">
+              <i class="fa-solid fa-circle text-[6px] mr-1"></i>${s.activo?"Activo":"Inactivo"}
+            </span>
+          </div>
         </div>
       </div>
-      <p class="text-xs text-zinc-400 mb-2">Sueldo: <b class="text-white">${money(s.sueldo||0)}</b></p>
-      <div class="flex gap-2">
-        <button onclick="editStaff(${s.id})" class="btn-gray flex-1 text-xs">Editar</button>
-        <button onclick="toggleStaff(${s.id})" class="btn-gray flex-1 text-xs">${s.activo?"Pausar":"Activar"}</button>
+      <p class="text-xs text-zinc-400 mb-2">💵 Sueldo: <b class="text-white">${money(s.sueldo||0)}</b></p>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="editStaff(${s.id})" class="btn-gray text-xs">✏️ Editar</button>
+        <button onclick="toggleStaff(${s.id})" class="btn-gray text-xs">${s.activo?"⏸️ Pausar":"▶️ Activar"}</button>
       </div>
     </div>`).join("");
 }
 function toggleStaff(id) {
   const s = STAFF.find(x => x.id === id);
-  if (s.usuario === "admin" && s.activo) { alert("No puedes desactivar al admin"); return; }
+  if (s.usuario === "admin" && s.activo) { toast("No puedes desactivar al admin principal", "error"); return; }
   s.activo = !s.activo;
-  wj(K.U, STAFF); renderStaff();
+  wj(K.U, STAFF); renderStaff(); toast(s.activo ? "Activado" : "Pausado");
 }
 function editStaff(id) {
-  const s = id === 0 ? { id:uid(), nombre:"", usuario:"", pass:"", rol:"cajero", activo:true, emoji:"🧑‍🍳", sueldo:0 } : STAFF.find(x => x.id === id);
+  const isNew = id === 0;
+  const s = isNew ? { id:uid(), nombre:"", usuario:"", pass:"", rol:"cajero", activo:true, emoji:"🧑‍🍳", sueldo:0, foto:null } : STAFF.find(x => x.id === id);
+  if (!s) return;
   modal(`
-    <h3 class="font-bold mb-4">${id?"Editar":"Nuevo"} trabajador</h3>
+    <h3 class="font-bold mb-4">${isNew?"Nuevo":"Editar"} trabajador</h3>
+
+    <div class="flex flex-col items-center mb-4">
+      <div id="prevAvatar" class="avatar avatar-lg mb-2" ${s.foto ? '' : `style="background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff;font-size:32px"`}>
+        ${s.foto ? `<img src="${s.foto}" class="w-full h-full object-cover rounded-2xl">` : (s.emoji || "🧑‍🍳")}
+      </div>
+      <label class="cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-xs px-4 py-2 rounded-lg font-semibold">
+        📷 Subir foto
+        <input type="file" id="sFoto" accept="image/*" class="hidden" onchange="handleFoto(event)">
+      </label>
+      ${s.foto ? `<button onclick="removeFoto()" class="text-[10px] text-red-400 mt-1">Quitar foto</button>` : ""}
+    </div>
+
     <input type="text" id="sN" class="inp mb-2" value="${esc(s.nombre)}" placeholder="Nombre completo">
     <input type="text" id="sU" class="inp mb-2" value="${esc(s.usuario)}" placeholder="Usuario">
     <input type="text" id="sP" class="inp mb-2" value="${esc(s.pass)}" placeholder="Contraseña">
@@ -582,6 +831,29 @@ function editStaff(id) {
       <button onclick="saveStaff(${id})" class="btn-red flex-1">Guardar</button>
     </div>
   `);
+  window._tempFoto = s.foto || null;
+}
+function handleFoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 800 * 1024) { toast("Foto muy grande (máx 800KB)", "error"); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    window._tempFoto = ev.target.result;
+    const prev = $("#prevAvatar");
+    prev.innerHTML = `<img src="${ev.target.result}" class="w-full h-full object-cover rounded-2xl">`;
+    prev.style.background = "transparent";
+    toast("Foto cargada ✅");
+  };
+  reader.readAsDataURL(file);
+}
+function removeFoto() {
+  window._tempFoto = null;
+  const prev = $("#prevAvatar");
+  prev.innerHTML = "🧑‍🍳";
+  prev.style.background = "linear-gradient(135deg,#dc2626,#f59e0b)";
+  prev.style.color = "#fff";
+  prev.style.fontSize = "32px";
 }
 function saveStaff(id) {
   const data = {
@@ -590,12 +862,24 @@ function saveStaff(id) {
     pass: $("#sP").value.trim(),
     sueldo: parseFloat($("#sS").value) || 0,
     rol: $("#sR").value,
-    emoji: $("#sR").value === "admin" ? "👑" : $("#sR").value === "cocina" ? "👨‍🍳" : "🧑‍🍳"
+    emoji: $("#sR").value === "admin" ? "👑" : $("#sR").value === "cocina" ? "👨‍🍳" : "🧑‍🍳",
+    foto: window._tempFoto || null
   };
-  if (!data.nombre || !data.usuario || !data.pass) { alert("Completa los campos"); return; }
+  if (!data.nombre || !data.usuario || !data.pass) { toast("Completa los campos", "error"); return; }
   if (id === 0) STAFF.push({ id: uid(), ...data, activo: true });
   else Object.assign(STAFF.find(x => x.id === id), data);
   wj(K.U, STAFF); renderStaff(); renderFin(); closeModal();
+  toast(id === 0 ? "Trabajador agregado ✨" : "Trabajador actualizado");
+  // Si es el usuario actual, actualizar la sesión
+  if (SESSION && SESSION.id === id) {
+    SESSION.nombre = data.nombre;
+    SESSION.foto = data.foto;
+    wj(K.SE, SESSION);
+    $("#whoami").innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> ${esc(data.nombre)} · ${SESSION.rol}`;
+    const topAv = $("#topAvatar");
+    if (data.foto) topAv.innerHTML = `<img src="${data.foto}" class="w-full h-full object-cover rounded-lg">`;
+    else topAv.textContent = data.emoji;
+  }
 }
 
 // ==================== FINANZAS ====================
@@ -616,15 +900,17 @@ function renderFin() {
   $("#fBal").textContent = money(bal);
   $("#fBal").style.color = bal >= 0 ? "#34d399" : "#f87171";
 
-  // Sueldos
   $("#salaryList").innerHTML = STAFF.map(s => {
     const paid = PAY.filter(p => p.staffId === s.id && (p.fecha||"").slice(0,7) === m).reduce((a,p) => a+p.monto, 0);
     const pend = Math.max(0, (s.sueldo||0) - paid);
     return `
       <div class="card">
-        <div class="flex justify-between items-start mb-2">
-          <div>
-            <p class="font-semibold text-sm">${esc(s.nombre)}</p>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="avatar" ${s.foto ? '' : `style="background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff"`}>
+            ${s.foto ? `<img src="${s.foto}" class="w-full h-full object-cover rounded-xl">` : (s.emoji || "👤")}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-sm truncate">${esc(s.nombre)}</p>
             <p class="text-[11px] text-zinc-500">Sueldo: ${money(s.sueldo||0)}</p>
           </div>
           <div class="text-right">
@@ -640,7 +926,6 @@ function renderFin() {
       </div>`;
   }).join("");
 
-  // Gastos
   const mExp = EXP.filter(e => e.fecha.slice(0,7) === m);
   $("#expList").innerHTML = mExp.length === 0
     ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin gastos este mes</p>`
@@ -654,7 +939,6 @@ function renderFin() {
         <button onclick="delExpense(${e.id})" class="text-zinc-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
       </div>`).join("");
 
-  // Deudas
   $("#debtList").innerHTML = DEBT.length === 0
     ? `<p class="text-center text-zinc-500 py-6 text-xs">Sin deudas 🎉</p>`
     : DEBT.map(d => `
@@ -682,14 +966,14 @@ function paySalary(id) {
   const monto = parseFloat(v) || 0;
   if (monto <= 0) return;
   PAY.push({ id: uid(), staffId: id, nombre: s.nombre, monto, fecha: new Date().toISOString() });
-  wj(K.P, PAY); renderFin();
+  wj(K.P, PAY); renderFin(); toast(`Pago registrado: ${money(monto)}`);
 }
 function editSalary(id) {
   const s = STAFF.find(x => x.id === id);
   const v = prompt(`Sueldo mensual de ${s.nombre}:`, s.sueldo || 0);
   if (v === null) return;
   s.sueldo = parseFloat(v) || 0;
-  wj(K.U, STAFF); renderFin(); renderStaff();
+  wj(K.U, STAFF); renderFin(); renderStaff(); toast("Sueldo actualizado");
 }
 function newExpense() {
   modal(`
@@ -707,14 +991,14 @@ function newExpense() {
 }
 function saveExpense() {
   const d = $("#exD").value.trim(), m = parseFloat($("#exA").value) || 0;
-  if (!d || m <= 0) { alert("Completa los datos"); return; }
+  if (!d || m <= 0) { toast("Completa los datos", "error"); return; }
   EXP.push({ id: uid(), descripcion: d, monto: m, categoria: $("#exC").value, fecha: new Date().toISOString() });
-  wj(K.E, EXP); renderFin(); closeModal();
+  wj(K.E, EXP); renderFin(); closeModal(); toast("Gasto registrado");
 }
 function delExpense(id) {
   if (!confirm("¿Eliminar?")) return;
   EXP = EXP.filter(e => e.id !== id);
-  wj(K.E, EXP); renderFin();
+  wj(K.E, EXP); renderFin(); toast("Gasto eliminado");
 }
 function newDebt() {
   modal(`
@@ -731,20 +1015,20 @@ function newDebt() {
 }
 function saveDebt() {
   const n = $("#dN").value.trim(), m = parseFloat($("#dA").value) || 0;
-  if (!n || m <= 0) { alert("Completa los datos"); return; }
+  if (!n || m <= 0) { toast("Completa los datos", "error"); return; }
   DEBT.push({ id: uid(), acreedor: n, monto: m, vence: $("#dV").value || null, nota: $("#dNo").value.trim(), pagado: false, fecha: new Date().toISOString() });
-  wj(K.D, DEBT); renderFin(); closeModal();
+  wj(K.D, DEBT); renderFin(); closeModal(); toast("Deuda registrada");
 }
 function payDebt(id) {
   const d = DEBT.find(x => x.id === id);
   if (!confirm(`¿Marcar pagada: ${d.acreedor} - ${money(d.monto)}?`)) return;
   d.pagado = true; d.fechaPago = new Date().toISOString();
-  wj(K.D, DEBT); renderFin();
+  wj(K.D, DEBT); renderFin(); toast("Deuda pagada");
 }
 function delDebt(id) {
   if (!confirm("¿Eliminar?")) return;
   DEBT = DEBT.filter(d => d.id !== id);
-  wj(K.D, DEBT); renderFin();
+  wj(K.D, DEBT); renderFin(); toast("Deuda eliminada");
 }
 $$(".tabbtn[data-f]").forEach(b => b.addEventListener("click", () => {
   $$(".tabbtn[data-f]").forEach(x => x.classList.remove("act"));
@@ -788,25 +1072,25 @@ function renderCash() {
 }
 function openCash() {
   const amt = parseFloat($("#cashOpen").value) || 0;
-  if (amt <= 0) { alert("Ingresa el monto"); return; }
+  if (amt <= 0) { toast("Ingresa el monto", "error"); return; }
   const today = new Date().toISOString().slice(0,10);
-  if (CASH.find(c => c.fecha === today && !c.cerrada)) { alert("Ya hay caja abierta"); return; }
+  if (CASH.find(c => c.fecha === today && !c.cerrada)) { toast("Ya hay caja abierta", "error"); return; }
   CASH.push({ id: uid(), fecha: today, apertura: new Date().toISOString(), montoApertura: amt, cerrada: false, abiertaPor: SESSION?.nombre || "Sistema" });
-  wj(K.C, CASH); renderCash();
+  wj(K.C, CASH); renderCash(); toast(`Caja abierta con ${money(amt)}`);
 }
 function closeCash() {
   const today = new Date().toISOString().slice(0,10);
   const c = CASH.find(x => x.fecha === today && !x.cerrada);
-  if (!c) { alert("No hay caja abierta"); return; }
+  if (!c) { toast("No hay caja abierta", "error"); return; }
   const cnt = parseFloat($("#cashCount").value);
-  if (isNaN(cnt)) { alert("Ingresa el efectivo contado"); return; }
+  if (isNaN(cnt)) { toast("Ingresa el efectivo contado", "error"); return; }
   const cs = SALES.filter(s => s.fecha.slice(0,10) === today && s.metodo === "Efectivo").reduce((a,s) => a+s.total, 0);
   const exp = c.montoApertura + cs;
   c.cerrada = true; c.cierre = new Date().toISOString();
   c.montoContado = cnt; c.esperado = exp; c.diferencia = cnt - exp;
   c.cerradaPor = SESSION?.nombre || "Sistema";
   wj(K.C, CASH); renderCash();
-  alert(`Caja cerrada. Diferencia: ${money(c.diferencia)}`);
+  toast(`Caja cerrada. Diferencia: ${money(c.diferencia)}`);
 }
 
 // ==================== STATS ====================
@@ -844,6 +1128,14 @@ function renderAll() {
   try { renderCash(); } catch(e) { console.error("Cash:", e); }
   try { renderStats(); } catch(e) { console.error("Stats:", e); }
 }
+
+// ==================== SYNC ====================
+window.addEventListener("storage", e => {
+  if (e.key === K.M) { MENU = rj(K.M, DEF_M); renderMenu(); renderPOS(); }
+  if (e.key === K.I) { INV = rj(K.I, DEF_I); renderStock(); }
+  if (e.key === K.S) { SALES = rj(K.S, []); renderStats(); renderFin(); renderCash(); }
+  if (e.key === K.U) { STAFF = rj(K.U, DEF_U); renderStaff(); renderFin(); }
+});
 
 // ==================== INIT ====================
 if (SESSION && STAFF.find(s => s.id === SESSION.id)) {
