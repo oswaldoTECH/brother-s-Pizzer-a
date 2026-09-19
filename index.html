@@ -19,7 +19,6 @@
     --bp-accent: #ff4757;
     --bp-success: #2ed573;
     --bp-gold: #ffa502;
-    --bp-warm: #ff6b35;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
   * { -webkit-tap-highlight-color: transparent; }
@@ -27,7 +26,7 @@
   body {
     background-color: var(--bp-bg);
     color: #f3f4f6;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
@@ -37,6 +36,62 @@
   ::-webkit-scrollbar-track { background: #12121c; }
   ::-webkit-scrollbar-thumb { background: #374151; border-radius: 999px; }
 
+  /* ===== MARQUEE ===== */
+  .marquee {
+    overflow: hidden;
+    background: linear-gradient(90deg, #ff4757, #ff6b35, #ffa502, #ff4757);
+    background-size: 300% 100%;
+    animation: grad 8s ease infinite;
+  }
+  @keyframes grad {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .marquee-track {
+    display: flex; gap: 2.5rem; width: max-content;
+    padding: 8px 0;
+    animation: scroll 32s linear infinite;
+    color: #fff; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ===== STATUS BAR ===== */
+  #statusBar {
+    background: #0a0a0f;
+    border-top: 1px solid rgba(255,255,255,.05);
+    padding: 8px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  #statusBar .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #6b7280;
+    margin-right: 6px;
+    vertical-align: middle;
+    transition: all .3s;
+  }
+  #statusBar .dot.open {
+    background: #2ed573;
+    animation: pulse-dot 1.8s infinite;
+  }
+  #statusBar .dot.closed { background: #ff4757; }
+  @keyframes pulse-dot {
+    0% { box-shadow: 0 0 0 0 rgba(46,213,115,.7); }
+    70% { box-shadow: 0 0 0 9px rgba(46,213,115,0); }
+    100% { box-shadow: 0 0 0 0 rgba(46,213,115,0); }
+  }
+  .txt-open { color: #2ed573; }
+  .txt-closed { color: #ff4757; }
+
+  /* ===== SCROLL PROGRESS ===== */
   #scrollProgress {
     position: fixed; top: 0; left: 0; height: 3px; width: 0%;
     background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573);
@@ -44,7 +99,7 @@
     box-shadow: 0 0 12px rgba(255,71,87,.7);
   }
 
-  /* ---------- Hero ---------- */
+  /* ===== HERO ===== */
   .hero-bg {
     background:
       radial-gradient(ellipse at top, rgba(255,71,87,.32), transparent 55%),
@@ -52,22 +107,16 @@
       linear-gradient(to bottom, rgba(10,10,15,.75), rgba(10,10,15,.98)),
       url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1800&auto=format&fit=crop&q=80') center/cover no-repeat;
   }
-
   .gradient-text {
     background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573, #ff4757);
     background-size: 300% 100%;
     -webkit-background-clip: text; background-clip: text;
-    color: transparent; animation: gradient-shift 6s ease infinite;
+    color: transparent; animation: grad 6s ease infinite;
   }
   .fire-text {
     background: linear-gradient(180deg, #fff 20%, #ffa502 60%, #ff4757 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  @keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
-
   @keyframes float-y {
     0%, 100% { transform: translateY(0) rotate(0deg); }
     50% { transform: translateY(-16px) rotate(8deg); }
@@ -75,7 +124,6 @@
   .float-slow  { animation: float-y 5.5s ease-in-out infinite; }
   .float-med   { animation: float-y 4.5s ease-in-out infinite; animation-delay: .8s; }
   .float-fast  { animation: float-y 3.8s ease-in-out infinite; animation-delay: 1.4s; }
-
   @keyframes blob {
     0%, 100% { transform: translate(0,0) scale(1); }
     33% { transform: translate(30px,-20px) scale(1.1); }
@@ -83,42 +131,14 @@
   }
   .blob { animation: blob 12s ease-in-out infinite; }
 
-  @keyframes steam {
-    0% { opacity: 0; transform: translateY(0) scale(.6); }
-    40% { opacity: .5; }
-    100% { opacity: 0; transform: translateY(-40px) scale(1.3); }
-  }
-  .steam span {
-    position: absolute; display: block;
-    width: 6px; height: 18px; border-radius: 50%;
-    background: rgba(255,255,255,.35); filter: blur(4px);
-    animation: steam 3s ease-out infinite;
-  }
-
-  .btn-glow { position: relative; overflow: hidden; }
-  .btn-glow::before {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
-    transform: translateX(-100%); transition: transform .7s ease;
-  }
-  .btn-glow:hover::before { transform: translateX(100%); }
-
-  .ripple { position: relative; overflow: hidden; }
-  .ripple > .ripple-ink {
-    position: absolute; border-radius: 50%; transform: scale(0);
-    background: rgba(255,255,255,.45); pointer-events: none;
-    animation: ripple-anim .65s ease-out forwards; z-index: 1;
-  }
-  @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
-
-  /* ---------- Cards ---------- */
+  /* ===== CARDS ===== */
   @keyframes card-in {
     from { opacity: 0; transform: translateY(22px) scale(.97); }
     to   { opacity: 1; transform: none; }
   }
   .product-card {
     animation: card-in .55s cubic-bezier(.22,1,.36,1) both;
-    transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+    transition: transform .35s, border-color .35s, box-shadow .35s;
     position: relative; overflow: hidden;
   }
   @media (min-width: 768px) {
@@ -131,10 +151,7 @@
   }
   .product-card .product-img { transition: transform .8s cubic-bezier(.22,1,.36,1); }
 
-  .img-frame {
-    position: relative; overflow: hidden;
-    background: linear-gradient(135deg, #1f2937, #0f0f18);
-  }
+  .img-frame { position: relative; overflow: hidden; background: linear-gradient(135deg, #1f2937, #0f0f18); }
   .img-frame::after {
     content: ''; position: absolute; inset: 0;
     background: linear-gradient(180deg, transparent 45%, rgba(10,10,15,.92) 100%);
@@ -154,36 +171,22 @@
     50% { transform: scale(1.07); }
   }
 
-  /* ---------- Size selector ---------- */
   .size-btn {
-    padding: 10px 4px;
-    border-radius: 14px;
+    padding: 10px 4px; border-radius: 14px;
     border: 1px solid rgba(255,255,255,.1);
-    background: rgba(0,0,0,.35);
-    color: #9ca3af;
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    transition: all .25s ease;
-    text-align: center;
-    line-height: 1.2;
-    cursor: pointer;
-    min-height: 66px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
+    background: rgba(0,0,0,.35); color: #9ca3af;
+    font-size: 9px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .05em;
+    transition: all .25s ease; text-align: center;
+    line-height: 1.2; cursor: pointer;
+    min-height: 66px; display: flex;
+    flex-direction: column; justify-content: center; gap: 2px;
   }
   .size-btn .sb-label { font-size: 10px; }
-  .size-btn .sb-porciones {
-    font-size: 9px; color: #9ca3af;
-    text-transform: lowercase; font-weight: 600;
-    letter-spacing: 0;
-  }
+  .size-btn .sb-porciones { font-size: 9px; color: #9ca3af; text-transform: lowercase; font-weight: 600; }
   .size-btn .sb-price {
     color: #fff; font-size: 17px; display: block;
-    font-family: 'Bebas Neue', sans-serif; letter-spacing: .04em;
+    font-family: 'Bebas Neue', sans-serif;
   }
   .size-btn.active {
     background: linear-gradient(135deg, #ff4757, #ff6b35);
@@ -193,15 +196,10 @@
   }
   .size-btn.active .sb-porciones { color: rgba(255,255,255,.9); }
 
-  /* ---------- Slice cards ---------- */
-  .slice-card {
-    transition: all .3s ease;
-    cursor: pointer;
-  }
+  .slice-card { transition: all .3s ease; cursor: pointer; }
   .slice-card:active { transform: scale(.96); }
   .slice-card:hover { border-color: rgba(255,165,2,.5) !important; }
 
-  /* ---------- Cola banner ---------- */
   .cola-banner {
     position: relative; overflow: hidden;
     background: linear-gradient(135deg, rgba(255,165,2,.15), rgba(255,71,87,.15));
@@ -214,35 +212,32 @@
     animation: blob 8s ease-in-out infinite;
   }
 
-  .stars i { font-size: 11px; }
+  .btn-glow { position: relative; overflow: hidden; }
+  .btn-glow::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+    transform: translateX(-100%); transition: transform .7s ease;
+  }
+  .btn-glow:hover::before { transform: translateX(100%); }
 
   .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
   .reveal.in { opacity: 1; transform: none; }
 
-  @keyframes pop-in {
-    from { opacity: 0; transform: translateY(12px) scale(.98); }
-    to   { opacity: 1; transform: none; }
-  }
-  .pop-in { animation: pop-in .25s ease-out both; }
-
-  /* ---------- Cart ---------- */
-  .cart-fab { transition: transform .3s cubic-bezier(.22,1,.36,1); }
+  /* ===== CART ===== */
+  .cart-fab { transition: transform .3s; }
   @keyframes fab-pulse {
     0% { box-shadow: 0 0 0 0 rgba(255,71,87,.65); }
     70% { box-shadow: 0 0 0 18px rgba(255,71,87,0); }
     100% { box-shadow: 0 0 0 0 rgba(255,71,87,0); }
   }
   .cart-fab.pulse { animation: fab-pulse 1.6s infinite; }
-  .cart-fab .cart-count { transition: transform .25s cubic-bezier(.22,1.5,.36,1); }
+  .cart-fab .cart-count { transition: transform .25s; }
   .cart-fab.bump .cart-count { transform: scale(1.35); }
 
-  /* Mobile sticky cart bar */
   .mobile-cart-bar {
-    position: fixed; left: 0; right: 0; bottom: 0;
-    z-index: 48;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 48;
     background: rgba(10,10,15,.96);
     backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid rgba(255,255,255,.1);
     padding: 10px 14px calc(10px + var(--safe-bottom));
     transform: translateY(120%);
@@ -252,57 +247,6 @@
   .mobile-cart-bar.show { transform: translateY(0); }
   @media (min-width: 768px) { .mobile-cart-bar { display: none !important; } }
 
-  .fly-ghost {
-    position: fixed; z-index: 90; pointer-events: none;
-    background-size: cover; background-position: center;
-    border-radius: 16px;
-    transition: all .85s cubic-bezier(.5,-0.15,.7,1);
-    box-shadow: 0 10px 30px rgba(255,71,87,.55);
-  }
-  .plus-one {
-    position: fixed; z-index: 95; pointer-events: none;
-    color: #2ed573; font-weight: 900; font-size: 18px;
-    text-shadow: 0 2px 8px rgba(46,213,115,.7);
-    animation: plus-up 1s ease-out forwards;
-  }
-  @keyframes plus-up {
-    0% { opacity: 0; transform: translateY(0) scale(.6); }
-    20% { opacity: 1; transform: translateY(-10px) scale(1.15); }
-    100% { opacity: 0; transform: translateY(-60px) scale(.9); }
-  }
-
-  .confetti-piece {
-    position: fixed; width: 9px; height: 9px; pointer-events: none; z-index: 100;
-    animation: confetti-fall 1.3s cubic-bezier(.22,1,.36,1) forwards;
-  }
-  @keyframes confetti-fall {
-    0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
-    100% { transform: translate(var(--cx), var(--cy)) rotate(720deg) scale(.4); opacity: 0; }
-  }
-
-  @keyframes toast-bar { from { width: 100%; } to { width: 0%; } }
-  .toast-bar {
-    position: absolute; bottom: 0; left: 0; height: 2px;
-    background: linear-gradient(90deg, #2ed573, #ffa502);
-    animation: toast-bar 3.2s linear forwards;
-  }
-  .toast-error .toast-bar { background: linear-gradient(90deg, #ff4757, #ff3838); }
-
-  @keyframes pulse-ring {
-    0% { box-shadow: 0 0 0 0 rgba(46,213,115,.7); }
-    70% { box-shadow: 0 0 0 9px rgba(46,213,115,0); }
-    100% { box-shadow: 0 0 0 0 rgba(46,213,115,0); }
-  }
-  .dot-live { animation: pulse-ring 1.8s infinite; }
-
-  .cat-chip { transition: all .25s ease; white-space: nowrap; flex-shrink: 0; }
-  .cat-chip.active {
-    background: linear-gradient(135deg, #ff4757, #ff6b35);
-    color: #fff; border-color: transparent;
-    box-shadow: 0 8px 20px -8px rgba(255,71,87,.7);
-  }
-
-  /* Cart drawer */
   .cart-backdrop {
     position: fixed; inset: 0; z-index: 55;
     background: rgba(0,0,0,.7);
@@ -326,10 +270,7 @@
   }
   .cart-drawer.open { transform: translateY(0); }
   @media (min-width: 640px) {
-    .cart-drawer {
-      left: auto; right: 24px; bottom: 24px;
-      width: 420px; border-radius: 26px; max-height: 80vh;
-    }
+    .cart-drawer { left: auto; right: 24px; bottom: 24px; width: 420px; border-radius: 26px; max-height: 80vh; }
   }
   .cart-handle {
     width: 40px; height: 4px; border-radius: 999px;
@@ -338,55 +279,57 @@
   }
   @media (min-width: 640px) { .cart-handle { display: none; } }
 
-  .cart-body {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 8px 20px 12px;
-    flex: 1;
-  }
-  .cart-item {
-    display: flex; gap: 12px; align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255,255,255,.06);
-  }
+  .cart-body { overflow-y: auto; padding: 8px 20px 12px; flex: 1; }
+  .cart-item { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
   .cart-item:last-child { border-bottom: none; }
-  .cart-item-img {
-    width: 52px; height: 52px; border-radius: 12px;
-    background-size: cover; background-position: center;
-    flex-shrink: 0; border: 1px solid rgba(255,255,255,.08);
-  }
+  .cart-item-img { width: 52px; height: 52px; border-radius: 12px; background-size: cover; background-position: center; flex-shrink: 0; border: 1px solid rgba(255,255,255,.08); }
   .qty-btn {
     width: 32px; height: 32px; border-radius: 9px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.1);
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
     color: #fff; display: grid; place-items: center;
-    font-size: 12px; cursor: pointer;
-    transition: all .2s; flex-shrink: 0;
+    font-size: 12px; cursor: pointer; transition: all .2s;
   }
   .qty-btn:active { background: #ff4757; border-color: #ff4757; transform: scale(.9); }
 
+  @keyframes pop-in { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+  .pop-in { animation: pop-in .25s ease-out both; }
+
+  @keyframes toast-bar { from { width: 100%; } to { width: 0%; } }
+  .toast-bar { position: absolute; bottom: 0; left: 0; height: 2px; background: linear-gradient(90deg, #2ed573, #ffa502); animation: toast-bar 3.2s linear forwards; }
+  .toast-error .toast-bar { background: linear-gradient(90deg, #ff4757, #ff3838); }
+
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: .001ms !important;
-      transition-duration: .001ms !important;
-    }
+    *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
   }
-
-  .empty-state { animation: pop-in .4s ease both; }
-
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-[#ff4757] selection:text-white">
 
-<div id="scrollProgress" aria-hidden="true"></div>
+<div id="scrollProgress"></div>
 
-<!-- ============================ HEADER ============================ -->
+<!-- ===== MARQUEE ===== -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>🍕 Masa fresca todos los días</span>
+    <span>🔥 Horno artesanal</span>
+    <span>🚚 Envío GRATIS desde $5 en Biblián urbano</span>
+    <span>⏰ Todos los días 17:00 - 22:30</span>
+    <span>📞 Pedidos: 098 411 3081</span>
+    <span>🧀 Ingredientes de primera calidad</span>
+    <span>🍕 Masa fresca todos los días</span>
+    <span>🔥 Horno artesanal</span>
+    <span>🚚 Envío GRATIS desde $5 en Biblián urbano</span>
+    <span>⏰ Todos los días 17:00 - 22:30</span>
+    <span>📞 Pedidos: 098 411 3081</span>
+    <span>🧀 Ingredientes de primera calidad</span>
+  </div>
+</div>
+
+<!-- ===== HEADER ===== -->
 <header class="sticky top-0 z-40 bg-[#0a0a0f]/92 backdrop-blur-lg border-b border-white/10">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-3">
-    <a href="#" class="flex items-center gap-2.5 shrink-0 group" aria-label="Brothers Pizza, inicio">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff4757] to-[#ff6b35] grid place-items-center text-white shadow-lg shadow-[#ff4757]/40 transition-transform duration-300 group-hover:rotate-[18deg] group-hover:scale-110">
+    <a href="#" class="flex items-center gap-2.5 shrink-0">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff4757] to-[#ff6b35] grid place-items-center text-white shadow-lg shadow-[#ff4757]/40">
         <i class="fa-solid fa-pizza-slice text-lg"></i>
       </div>
       <div class="leading-tight">
@@ -396,130 +339,89 @@
     </a>
 
     <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-      <a href="#menu" class="relative text-gray-300 hover:text-[#ff4757] transition group">
-        Menú
-        <span class="absolute left-0 -bottom-1 h-0.5 w-0 bg-[#ff4757] transition-all duration-300 group-hover:w-full"></span>
-      </a>
-      <a href="#porciones" class="relative text-gray-300 hover:text-[#ff4757] transition group">
-        Porciones
-        <span class="absolute left-0 -bottom-1 h-0.5 w-0 bg-[#ff4757] transition-all duration-300 group-hover:w-full"></span>
-      </a>
-      <a href="#delivery" class="relative text-gray-300 hover:text-[#ff4757] transition group">
-        Delivery
-        <span class="absolute left-0 -bottom-1 h-0.5 w-0 bg-[#ff4757] transition-all duration-300 group-hover:w-full"></span>
-      </a>
+      <a href="#menu" class="text-gray-300 hover:text-[#ff4757] transition">Menú</a>
+      <a href="#porciones" class="text-gray-300 hover:text-[#ff4757] transition">Porciones</a>
+      <a href="#delivery" class="text-gray-300 hover:text-[#ff4757] transition">Delivery</a>
     </nav>
 
     <div class="flex items-center gap-2">
-      <a href="https://wa.me/593984113081?text=Hola%2C%20deseo%20hacer%20un%20pedido%20en%20Brothers%20Pizza" target="_blank" rel="noopener"
+      <a href="https://wa.me/593984113081?text=Hola%2C%20deseo%20hacer%20un%20pedido" target="_blank" rel="noopener"
          class="hidden sm:flex btn-glow bg-[#2ed573] hover:bg-[#26af5f] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition items-center gap-2 shadow-lg shadow-[#2ed573]/25">
-        <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+        <i class="fa-brands fa-whatsapp"></i> WhatsApp
       </a>
-
       <a href="admin.html"
-         title="Ingreso al sistema de ventas"
-         class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-gray-300 hover:text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95 min-h-[42px]">
+         class="bg-[#1f2937] hover:bg-[#374151] border border-white/10 text-gray-300 hover:text-white px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
         <i class="fa-solid fa-right-to-bracket text-[#ff4757]"></i>
         <span class="hidden sm:inline">Ingreso</span>
       </a>
     </div>
   </div>
 
-  <div id="statusBar" class="border-t border-white/5 text-[11px] font-semibold">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-center gap-2 text-gray-400">
-      <span id="statusDot" class="w-2 h-2 rounded-full bg-gray-500"></span>
-      <span id="statusText">Cargando horario…</span>
-    </div>
+  <!-- BARRA DE ESTADO -->
+  <div id="statusBar">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">Cargando horario…</span>
   </div>
 </header>
 
-<!-- ============================ HERO ============================ -->
+<!-- ===== HERO ===== -->
 <section class="hero-bg py-14 sm:py-20 lg:py-28 border-b border-white/10 text-center px-4 relative overflow-hidden">
   <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-[#ff4757]/30 blur-3xl blob"></div>
   <div class="absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-[#ffa502]/20 blur-3xl blob" style="animation-delay:2s"></div>
 
-  <span class="hidden md:block absolute top-16 left-[8%] text-5xl float-slow opacity-90 drop-shadow-[0_8px_20px_rgba(255,71,87,.6)]">🍕</span>
+  <span class="hidden md:block absolute top-16 left-[8%] text-5xl float-slow opacity-90">🍕</span>
   <span class="hidden md:block absolute bottom-24 left-[14%] text-4xl float-med opacity-85">🧀</span>
   <span class="hidden md:block absolute top-24 right-[10%] text-5xl float-fast opacity-90">🔥</span>
   <span class="hidden md:block absolute bottom-20 right-[16%] text-4xl float-slow opacity-85">🍅</span>
 
   <div class="max-w-3xl mx-auto space-y-5 relative z-10">
-    <span class="bg-[#ff4757]/10 border border-[#ff4757]/40 text-[#ff6b6b] text-[10px] sm:text-xs font-bold px-3 sm:px-4 py-1.5 rounded-full uppercase tracking-wider inline-flex items-center gap-2 reveal">
-      <span class="w-1.5 h-1.5 rounded-full bg-[#2ed573] dot-live"></span>
+    <span class="bg-[#ff4757]/10 border border-[#ff4757]/40 text-[#ff6b6b] text-[10px] sm:text-xs font-bold px-3 sm:px-4 py-1.5 rounded-full uppercase tracking-wider inline-block reveal">
       Masa fresca · Horno artesanal
     </span>
     <h1 class="font-display text-5xl sm:text-7xl lg:text-8xl tracking-tight leading-[0.9] reveal" style="transition-delay:.1s">
       <span class="fire-text">SABOR QUE</span><br>
       <span class="gradient-text">ENAMORA</span>
     </h1>
-    <p class="text-gray-300 text-sm sm:text-base max-w-xl mx-auto reveal px-2" style="transition-delay:.2s">
+    <p class="text-gray-300 text-sm sm:text-base max-w-xl mx-auto reveal" style="transition-delay:.2s">
       🍕 Pizzas artesanales hechas al momento · 🚚 Envío GRATIS desde $5 en Biblián urbano
     </p>
-
-    <div class="pt-2 flex flex-col sm:flex-row justify-center gap-3 reveal px-4" style="transition-delay:.3s">
-      <a href="#menu" class="btn-glow ripple bg-gradient-to-r from-[#ff4757] to-[#ff6b35] text-white font-bold px-8 py-4 rounded-2xl text-sm transition shadow-xl shadow-[#ff4757]/40 active:scale-95 inline-flex items-center justify-center gap-2 min-h-[52px]">
+    <div class="pt-2 flex flex-col sm:flex-row justify-center gap-3 reveal" style="transition-delay:.3s">
+      <a href="#menu" class="btn-glow bg-gradient-to-r from-[#ff4757] to-[#ff6b35] text-white font-bold px-8 py-4 rounded-2xl text-sm shadow-xl shadow-[#ff4757]/40 inline-flex items-center justify-center gap-2">
         <i class="fa-solid fa-utensils"></i> Ver Menú
       </a>
-      <a href="#porciones" class="bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold px-8 py-4 rounded-2xl text-sm transition active:scale-95 inline-flex items-center justify-center gap-2 min-h-[52px]">
+      <a href="#porciones" class="bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold px-8 py-4 rounded-2xl text-sm inline-flex items-center justify-center gap-2">
         <i class="fa-solid fa-pizza-slice"></i> Porciones $1.25
       </a>
-    </div>
-
-    <div class="pt-4 flex justify-center gap-5 sm:gap-10 text-xs reveal" style="transition-delay:.4s">
-      <div class="text-center">
-        <div class="font-display text-2xl sm:text-3xl text-[#ffa502]">4</div>
-        <div class="text-gray-400 uppercase tracking-wider text-[9px] sm:text-[10px]">Sabores</div>
-      </div>
-      <div class="w-px bg-white/10"></div>
-      <div class="text-center">
-        <div class="font-display text-2xl sm:text-3xl text-[#2ed573]">3</div>
-        <div class="text-gray-400 uppercase tracking-wider text-[9px] sm:text-[10px]">Tamaños</div>
-      </div>
-      <div class="text-center">
-        <div class="font-display text-2xl sm:text-3xl text-[#ff4757]">$1.25</div>
-        <div class="text-gray-400 uppercase tracking-wider text-[9px] sm:text-[10px]">Porción</div>
-      </div>
     </div>
   </div>
 </section>
 
-<!-- ============================ MAIN ============================ -->
+<!-- ===== MAIN ===== -->
 <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-14 sm:space-y-20 w-full">
 
-  <!-- ===== PIZZAS ===== -->
-  <section id="menu" class="space-y-6 sm:space-y-8 scroll-mt-24 sm:scroll-mt-28">
+  <!-- PIZZAS -->
+  <section id="menu" class="space-y-6 scroll-mt-24">
     <div class="text-center space-y-2 reveal">
       <span class="text-[#ffa502] text-xs font-bold uppercase tracking-widest">— Delicias —</span>
       <h2 class="font-display text-4xl sm:text-5xl">NUESTRAS <span class="gradient-text">PIZZAS</span></h2>
-      <p class="text-xs sm:text-sm text-gray-400 max-w-lg mx-auto px-4">Elige tamaño y agrega a tu pedido. Cada pizza se hace al momento 🔥</p>
+      <p class="text-xs sm:text-sm text-gray-400 max-w-lg mx-auto px-4">Elige tamaño y agrega a tu pedido 🔥</p>
     </div>
-
-    <div class="space-y-3 max-w-4xl mx-auto reveal" style="transition-delay:.1s">
-      <div class="relative">
-        <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-        <input type="search" id="menuSearch" autocomplete="off" placeholder="Buscar pizza…"
-               inputmode="search"
-               class="w-full bg-[#12121c] border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#ff4757] focus:ring-2 focus:ring-[#ff4757]/20 transition">
-      </div>
-    </div>
-
-    <div id="publicMenuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"></div>
+    <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
   </section>
 
-  <!-- ===== PORCIONES INDIVIDUALES ===== -->
-  <section id="porciones" class="space-y-6 scroll-mt-24 sm:scroll-mt-28">
+  <!-- PORCIONES -->
+  <section id="porciones" class="space-y-6 scroll-mt-24">
     <div class="text-center space-y-2 reveal">
       <span class="text-[#ffa502] text-xs font-bold uppercase tracking-widest">— Sin compromiso —</span>
       <h2 class="font-display text-4xl sm:text-5xl">PORCIONES <span class="gradient-text">INDIVIDUALES</span></h2>
       <p class="text-xs sm:text-sm text-gray-400 max-w-lg mx-auto px-4">
-        ¿Antojo de una sola rebanada? Lleva <strong class="text-[#ffa502]">1 porción de $1.25</strong> del sabor que quieras.
+        1 porción de <strong class="text-[#ffa502]">$1.25</strong> del sabor que quieras.
       </p>
     </div>
-
-    <div id="porcionesGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4"></div>
+    <div id="porcionesGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
   </section>
 
-  <!-- ===== COLA BANNER ===== -->
+  <!-- COLA -->
   <section class="reveal">
     <div class="cola-banner rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 relative z-10">
       <div class="text-6xl sm:text-7xl float-slow shrink-0">🥤</div>
@@ -532,85 +434,53 @@
         <p class="text-xs sm:text-sm text-gray-300 mt-1">Bien fría para acompañar tu pizza 🍕</p>
       </div>
       <button type="button" id="addColaBtn"
-        class="btn-glow ripple bg-gradient-to-r from-[#ffa502] to-[#ff6b35] text-white font-black px-6 py-4 rounded-2xl text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#ffa502]/40 active:scale-95 min-h-[56px] w-full sm:w-auto shrink-0 relative z-10">
+        class="btn-glow bg-gradient-to-r from-[#ffa502] to-[#ff6b35] text-white font-black px-6 py-4 rounded-2xl text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#ffa502]/40 w-full sm:w-auto shrink-0 relative z-10">
         <i class="fa-solid fa-plus"></i> Agregar por $0.75
       </button>
     </div>
   </section>
 
-  <!-- ===== DELIVERY & HORARIOS ===== -->
-  <section id="delivery" class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 scroll-mt-24">
-    <div class="reveal bg-[#12121c] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-5 shadow-xl">
-      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-[#ff4757] to-[#ff6b35] text-white grid place-items-center text-xl sm:text-2xl float-slow shadow-lg shadow-[#ff4757]/40">
-        <i class="fa-solid fa-motorcycle"></i>
-      </div>
-      <div>
-        <h3 class="font-display text-2xl sm:text-3xl mb-1">SERVICIO DE DELIVERY</h3>
-        <p class="text-xs text-gray-400 mb-4">Llevamos tu pizza caliente a tu puerta.</p>
-      </div>
-      <div class="space-y-3 text-xs sm:text-sm">
-        <div class="flex items-start gap-3 bg-gradient-to-r from-[#2ed573]/10 to-transparent p-3.5 rounded-2xl border border-[#2ed573]/30">
-          <i class="fa-solid fa-truck-fast text-[#2ed573] mt-1 text-base"></i>
-          <div>
-            <p class="font-bold text-[#2ed573] mb-0.5">🚚 ENVÍO GRATIS desde $5.00</p>
-            <p class="text-gray-300 text-xs">En todo el casco urbano de Biblián.</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 bg-black/30 p-3.5 rounded-2xl border border-white/5">
-          <i class="fa-solid fa-map-location-dot text-[#ffa502] mt-1"></i>
-          <div>
-            <p class="font-bold text-white mb-0.5">Zonas rurales</p>
-            <p class="text-gray-400 text-xs">Con <span class="text-[#ffa502] font-bold">cargo adicional</span> según distancia.</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 bg-black/30 p-3.5 rounded-2xl border border-white/5">
-          <i class="fa-solid fa-circle-info text-[#ff4757] mt-1"></i>
-          <div>
-            <p class="font-bold text-white mb-0.5">Compra mínima</p>
-            <p class="text-gray-400 text-xs">Mínimo <span class="text-[#ff4757] font-bold">$5.00</span> para delivery.</p>
-          </div>
-        </div>
-      </div>
+  <!-- DELIVERY -->
+  <section id="delivery" class="scroll-mt-24">
+    <div class="text-center space-y-2 mb-6 reveal">
+      <span class="text-[#2ed573] text-xs font-bold uppercase tracking-widest">— Servicio a domicilio —</span>
+      <h2 class="font-display text-4xl sm:text-5xl">INFORMACIÓN DE <span class="gradient-text">DELIVERY</span></h2>
     </div>
 
-    <div id="horarios" class="reveal bg-[#12121c] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-5 shadow-xl scroll-mt-24">
-      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-[#2ed573] to-[#26af5f] text-white grid place-items-center text-xl sm:text-2xl float-med shadow-lg shadow-[#2ed573]/40">
-        <i class="fa-solid fa-clock"></i>
-      </div>
-      <div>
-        <h3 class="font-display text-2xl sm:text-3xl mb-1">HORARIOS</h3>
-        <p class="text-xs text-gray-400 mb-4">Todos los días.</p>
-      </div>
-      <div class="space-y-3">
-        <div class="flex items-center justify-between bg-black/30 p-3.5 rounded-2xl border border-white/5">
-          <div class="flex items-center gap-2.5">
-            <i class="fa-solid fa-calendar-day text-[#ff4757]"></i>
-            <span class="text-xs sm:text-sm font-semibold">Lunes a Domingo</span>
-          </div>
-          <span class="text-xs sm:text-sm font-bold text-[#2ed573]">17:00 - 22:30</span>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-[#12121c] border border-white/10 rounded-3xl p-6 space-y-4 reveal">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#ff4757] to-[#ff6b35] grid place-items-center text-2xl float-slow">🛵</div>
+        <h3 class="font-display text-2xl">ZONA URBANA</h3>
+        <div class="bg-gradient-to-r from-[#2ed573]/10 to-transparent p-4 rounded-2xl border border-[#2ed573]/30">
+          <p class="font-bold text-[#2ed573] mb-1">🚚 ENVÍO GRATIS desde $5.00</p>
+          <p class="text-xs text-gray-300">En todo el casco urbano de Biblián, sin costo adicional.</p>
         </div>
-        <div class="flex items-center justify-between bg-black/30 p-3.5 rounded-2xl border border-white/5">
-          <div class="flex items-center gap-2.5">
-            <i class="fa-solid fa-phone text-[#ffa502]"></i>
-            <span class="text-xs sm:text-sm font-semibold">Pedidos</span>
-          </div>
-          <a href="tel:0984113081" class="text-xs sm:text-sm font-bold text-[#ffa502]">098 411 3081</a>
+        <div class="bg-black/30 p-4 rounded-2xl border border-white/5">
+          <p class="font-bold text-white mb-1">🛒 Compra mínima</p>
+          <p class="text-xs text-gray-400">Mínimo <span class="text-[#ff4757] font-bold">$5.00</span> para delivery.</p>
         </div>
-        <div class="flex items-center justify-between bg-black/30 p-3.5 rounded-2xl border border-white/5">
-          <div class="flex items-center gap-2.5">
-            <i class="fa-solid fa-location-dot text-[#2ed573]"></i>
-            <span class="text-xs sm:text-sm font-semibold">Ubicación</span>
-          </div>
-          <span class="text-xs sm:text-sm font-bold text-gray-300">Biblián, Ecuador</span>
+      </div>
+
+      <div class="bg-[#12121c] border border-white/10 rounded-3xl p-6 space-y-4 reveal" style="transition-delay:.1s">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#ffa502] to-[#ff6b35] grid place-items-center text-2xl float-med">🏘️</div>
+        <h3 class="font-display text-2xl">ZONAS RURALES</h3>
+        <div class="bg-black/30 p-4 rounded-2xl border border-white/5">
+          <p class="font-bold text-white mb-1">📍 Cargo adicional</p>
+          <p class="text-xs text-gray-400">Los envíos a zonas rurales tienen un <span class="text-[#ffa502] font-bold">cargo adicional</span> según la distancia.</p>
+        </div>
+        <div class="bg-black/30 p-4 rounded-2xl border border-white/5">
+          <p class="font-bold text-white mb-1">⏰ Horario de atención</p>
+          <p class="text-xs text-gray-400">Todos los días de <span class="text-[#2ed573] font-bold">17:00 a 22:30</span></p>
         </div>
       </div>
     </div>
   </section>
+
 </main>
 
-<!-- ============================ FOOTER ============================ -->
+<!-- ===== FOOTER ===== -->
 <footer class="border-t border-white/10 bg-[#0a0a0f] py-8 mt-8">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center space-y-3">
+  <div class="max-w-6xl mx-auto px-4 text-center space-y-3">
     <div class="flex items-center justify-center gap-3">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff4757] to-[#ff6b35] grid place-items-center text-white">
         <i class="fa-solid fa-pizza-slice text-lg"></i>
@@ -618,19 +488,17 @@
       <span class="font-display text-2xl tracking-wide">Brothers Pizza</span>
     </div>
     <p class="text-xs text-gray-500">© <span id="year"></span> Brothers Pizza · Biblián, Ecuador</p>
-    <p class="text-[10px] text-gray-600">Hecho con 🍕 y mucho queso</p>
   </div>
 </footer>
 
-<!-- ============================ DESKTOP FAB ============================ -->
+<!-- ===== CARRITO FAB (DESKTOP) ===== -->
 <button type="button" id="cartFab"
-  class="cart-fab hidden md:grid fixed bottom-6 right-6 z-40 bg-gradient-to-br from-[#ff4757] to-[#ff6b35] text-white rounded-full w-16 h-16 shadow-2xl shadow-[#ff4757]/50 place-items-center text-2xl opacity-0 pointer-events-none"
-  aria-label="Ver carrito">
+  class="cart-fab hidden md:grid fixed bottom-6 right-6 z-40 bg-gradient-to-br from-[#ff4757] to-[#ff6b35] text-white rounded-full w-16 h-16 shadow-2xl shadow-[#ff4757]/50 place-items-center text-2xl opacity-0 pointer-events-none">
   <i class="fa-solid fa-bag-shopping"></i>
   <span class="cart-count absolute -top-1 -right-1 bg-[#2ed573] text-white text-xs font-bold rounded-full w-6 h-6 grid place-items-center border-2 border-[#0a0a0f]">0</span>
 </button>
 
-<!-- ============================ MOBILE STICKY CART ============================ -->
+<!-- ===== CARRITO MÓVIL BAR ===== -->
 <div class="mobile-cart-bar" id="mobileCartBar">
   <div class="flex-1 flex items-center gap-3">
     <div class="relative">
@@ -639,33 +507,31 @@
       </div>
       <span class="cart-count absolute -top-1 -right-1 bg-[#2ed573] text-white text-[10px] font-black rounded-full w-5 h-5 grid place-items-center border-2 border-[#0a0a0f]">0</span>
     </div>
-    <div class="leading-tight">
+    <div>
       <p class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Tu pedido</p>
       <p class="font-display text-2xl text-[#ffa502]" id="mobileCartTotal">$0.00</p>
     </div>
   </div>
   <button type="button" data-action="open-cart"
-    class="btn-glow ripple bg-gradient-to-r from-[#2ed573] to-[#26af5f] text-white font-black px-5 py-3 rounded-2xl text-xs flex items-center gap-2 shadow-lg shadow-[#2ed573]/40 active:scale-95 min-h-[48px]">
+    class="btn-glow bg-gradient-to-r from-[#2ed573] to-[#26af5f] text-white font-black px-5 py-3 rounded-2xl text-xs flex items-center gap-2 shadow-lg shadow-[#2ed573]/40">
     <i class="fa-solid fa-bag-shopping"></i> Ver pedido
   </button>
 </div>
 
-<!-- ============================ CART DRAWER ============================ -->
+<!-- ===== CART DRAWER ===== -->
 <div class="cart-backdrop" id="cartBackdrop"></div>
-<aside class="cart-drawer" id="cartDrawer" aria-label="Tu pedido">
+<aside class="cart-drawer" id="cartDrawer">
   <div class="cart-handle"></div>
   <div class="px-5 pb-3 pt-2 flex items-center justify-between">
     <div>
       <h3 class="font-display text-2xl">TU PEDIDO</h3>
       <p class="text-[11px] text-gray-500" id="cartSubtitle">Aún no agregas nada</p>
     </div>
-    <button type="button" id="closeCart" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 grid place-items-center text-gray-400 hover:text-white transition" aria-label="Cerrar">
+    <button type="button" id="closeCart" class="w-10 h-10 rounded-xl bg-white/5 grid place-items-center text-gray-400">
       <i class="fa-solid fa-xmark text-lg"></i>
     </button>
   </div>
-
   <div class="cart-body" id="cartBody"></div>
-
   <div class="border-t border-white/8 px-5 py-4" style="padding-bottom: calc(16px + var(--safe-bottom)); background:#12121c;">
     <div class="flex items-center justify-between mb-3">
       <span class="text-xs uppercase tracking-wider text-gray-400 font-bold">Total</span>
@@ -673,7 +539,7 @@
     </div>
     <p class="text-[10px] text-gray-500 mb-3" id="cartHint"></p>
     <button type="button" id="checkoutBtn"
-      class="btn-glow ripple w-full bg-gradient-to-r from-[#2ed573] to-[#26af5f] text-white font-black py-4 rounded-2xl text-sm transition flex items-center justify-center gap-2 shadow-xl shadow-[#2ed573]/30 active:scale-[.97] min-h-[56px]">
+      class="btn-glow w-full bg-gradient-to-r from-[#2ed573] to-[#26af5f] text-white font-black py-4 rounded-2xl text-sm flex items-center justify-center gap-2 shadow-xl shadow-[#2ed573]/30">
       <i class="fa-brands fa-whatsapp text-lg"></i> Enviar pedido por WhatsApp
     </button>
   </div>
@@ -682,190 +548,134 @@
 <div id="toastContainer" class="fixed bottom-24 md:bottom-24 right-4 md:right-6 z-[80] space-y-2 pointer-events-none"></div>
 
 <script>
-/* =========================================================
-   IMÁGENES AUTOMÁTICAS
-   ========================================================= */
-const IMG = {
-  pepperoni: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&auto=format&fit=crop&q=80",
-  margarita: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&auto=format&fit=crop&q=80",
-  hawaiana:  "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&auto=format&fit=crop&q=80",
-  jamon:     "https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=800&auto=format&fit=crop&q=80",
-  cola:      "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=600&auto=format&fit=crop&q=80",
-  slice:     "https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=600&auto=format&fit=crop&q=80",
-  default:   "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80",
+// ==================== CONFIG ====================
+const CONFIG = {
+  whatsapp: "593984113081",
+  horaApertura: 17,
+  horaCierre: 22.5,
+  envioGratisDesde: 5.00,
+  compraMinima: 5.00
 };
-function autoImage(nombre = "") {
-  const n = nombre.toLowerCase();
+
+const IMG = {
+  pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&q=80",
+  margarita:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80",
+  hawaiana:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80",
+  jamon:"https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=800&q=80",
+  cola:"https://images.unsplash.com/photo-1554866585-cd94860890b7?w=600&q=80",
+  slice:"https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=600&q=80",
+  def:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80"
+};
+function imgOf(n="") {
+  n = n.toLowerCase();
   if (n.includes("pepperoni")) return IMG.pepperoni;
   if (n.includes("margarita")) return IMG.margarita;
   if (n.includes("hawaiana")) return IMG.hawaiana;
   if (n.includes("jamón") || n.includes("jamon")) return IMG.jamon;
   if (n.includes("cola") || n.includes("coca")) return IMG.cola;
-  return IMG.default;
+  if (n.includes("porci")) return IMG.slice;
+  return IMG.def;
 }
 
-/* =========================================================
-   📦 MENÚ POR DEFECTO (editable desde admin.html)
-   localStorage key: "bp_menu"
-   ========================================================= */
-window.BP_MENU_DEFAULT = {
-  version: 2,
-  config: {
-    whatsapp: "593984113081",
-    telefono: "098 411 3081",
-    horaApertura: 17,
-    horaCierre: 22.5,
-    envioGratisDesde: 5.00,
-    compraMinima: 5.00,
-  },
+// ==================== MENÚ POR DEFECTO ====================
+const DEF_MENU = {
   tamanos: [
-    { id: "personal", label: "Personal", precio: 5.00,  porciones: 4 },
-    { id: "mediana",  label: "Mediana",  precio: 9.00,  porciones: 10 },
-    { id: "familiar", label: "Familiar", precio: 13.00, porciones: 12 },
+    { id:"personal", label:"Personal", precio:5, porciones:4 },
+    { id:"mediana", label:"Mediana", precio:9, porciones:10 },
+    { id:"familiar", label:"Familiar", precio:13, porciones:12 }
   ],
   pizzas: [
-    { id: 1, nombre: "Pizza Pepperoni", desc: "Clásica con pepperoni, mozzarella y salsa de tomate artesanal.", badge: "hot", rating: 5 },
-    { id: 2, nombre: "Pizza Margarita", desc: "Mozzarella fresca, albahaca y tomate. La reina de las pizzas.", rating: 5 },
-    { id: 3, nombre: "Pizza Hawaiana",  desc: "Jamón, piña y mozzarella. Dulce y salada, ¡irresistible!", rating: 5 },
-    { id: 4, nombre: "Pizza de Jamón",  desc: "Jamón de primera calidad con mozzarella y salsa de la casa.", badge: "new", rating: 5 },
+    { id:1, nombre:"Pizza Pepperoni", desc:"Pepperoni y mozzarella", badge:"hot" },
+    { id:2, nombre:"Pizza Margarita", desc:"Mozzarella, albahaca y tomate" },
+    { id:3, nombre:"Pizza Hawaiana", desc:"Jamón, piña y mozzarella" },
+    { id:4, nombre:"Pizza de Jamón", desc:"Jamón y mozzarella", badge:"new" }
   ],
-  porcion: { id: 200, nombre: "Porción de Pizza", precio: 1.25 },
-  cola:    { id: 300, nombre: "Cola 1L", precio: 0.75 },
+  porcion: { id:200, nombre:"Porción de Pizza", precio:1.25 },
+  cola: { id:300, nombre:"Cola 1L", precio:0.75 }
 };
 
-function loadMenu() {
+// ==================== CARGAR MENÚ DESDE ADMIN ====================
+function cargarMenu() {
   try {
     const saved = localStorage.getItem("bp_menu");
     if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed && parsed.pizzas && parsed.tamanos) return parsed;
+      const m = JSON.parse(saved);
+      if (m && Array.isArray(m.pizzas) && Array.isArray(m.tamanos) && m.porcion && m.cola) {
+        return m;
+      }
     }
-  } catch(e) { console.warn("Menú corrupto, usando default"); }
-  return JSON.parse(JSON.stringify(window.BP_MENU_DEFAULT));
+  } catch(e) { console.warn("Menú inválido, usando default"); }
+  // Sembrar el menú por defecto para que el admin lo encuentre
+  localStorage.setItem("bp_menu", JSON.stringify(DEF_MENU));
+  return DEF_MENU;
 }
+let MENU = cargarMenu();
 
-let MENU     = loadMenu();
-let TAMANOS  = MENU.tamanos;
-let PIZZAS   = MENU.pizzas;
-let PORCION  = MENU.porcion;
-let COLA     = MENU.cola;
-const CONFIG = MENU.config;
-
-/* =========================================================
-   UTILIDADES
-   ========================================================= */
-const $  = (s, c = document) => c.querySelector(s);
-const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+// ==================== UTILS ====================
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 const money = v => "$" + Number(v).toFixed(2);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+// ==================== BARRA DE ESTADO ====================
+function actualizarEstado() {
+  const ahora = new Date();
+  const h = ahora.getHours() + ahora.getMinutes() / 60;
+  const abierto = h >= CONFIG.horaApertura && h <= CONFIG.horaCierre;
+
+  const dot = document.getElementById("statusDot");
+  const txt = document.getElementById("statusText");
+
+  if (abierto) {
+    dot.className = "dot open";
+    txt.innerHTML = '<span class="txt-open">ABIERTO AHORA</span> · Cerramos a las 22:30';
+  } else {
+    dot.className = "dot closed";
+    txt.innerHTML = '<span class="txt-closed">CERRADO</span> · Abrimos a las 17:00';
+  }
+}
+actualizarEstado();
+setInterval(actualizarEstado, 60000);
+
+// ==================== TOAST ====================
 function toast(msg, type = "success") {
   const cont = $("#toastContainer");
   const el = document.createElement("div");
   const isError = type === "error";
-  el.className = `pop-in relative overflow-hidden pointer-events-auto rounded-2xl px-4 py-3 shadow-2xl backdrop-blur-md border text-xs sm:text-sm font-semibold flex items-center gap-2.5 max-w-[90vw] ${
+  el.className = `pop-in relative overflow-hidden pointer-events-auto rounded-2xl px-4 py-3 shadow-2xl backdrop-blur-md border text-xs font-semibold flex items-center gap-2.5 max-w-[90vw] ${
     isError ? "bg-[#ff4757]/15 border-[#ff4757]/40 text-[#ff8a94] toast-error"
             : "bg-[#2ed573]/15 border-[#2ed573]/40 text-[#7bed9f]"
   }`;
-  el.innerHTML = `
-    <i class="fa-solid ${isError ? "fa-circle-exclamation" : "fa-circle-check"} text-base"></i>
-    <span>${msg}</span>
-    <span class="toast-bar"></span>`;
+  el.innerHTML = `<i class="fa-solid ${isError ? "fa-circle-exclamation" : "fa-circle-check"}"></i><span>${esc(msg)}</span><span class="toast-bar"></span>`;
   cont.appendChild(el);
   setTimeout(() => {
     el.style.transition = "opacity .35s, transform .35s";
-    el.style.opacity = "0"; el.style.transform = "translateX(30px)";
+    el.style.opacity = "0";
+    el.style.transform = "translateX(30px)";
     setTimeout(() => el.remove(), 350);
   }, 3200);
 }
 
-document.addEventListener("click", e => {
-  const btn = e.target.closest(".ripple");
-  if (!btn) return;
-  const r = btn.getBoundingClientRect();
-  const size = Math.max(r.width, r.height);
-  const ink = document.createElement("span");
-  ink.className = "ripple-ink";
-  ink.style.width = ink.style.height = size + "px";
-  ink.style.left = (e.clientX - r.left - size / 2) + "px";
-  ink.style.top  = (e.clientY - r.top  - size / 2) + "px";
-  btn.appendChild(ink);
-  setTimeout(() => ink.remove(), 700);
-});
-
-function confetti(x, y) {
-  const colors = ["#ff4757", "#ffa502", "#2ed573", "#ff6b35", "#ffffff"];
-  for (let i = 0; i < 22; i++) {
-    const p = document.createElement("div");
-    p.className = "confetti-piece";
-    p.style.left = x + "px"; p.style.top = y + "px";
-    p.style.background = colors[Math.floor(Math.random() * colors.length)];
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 80 + Math.random() * 140;
-    p.style.setProperty("--cx", Math.cos(angle) * dist + "px");
-    p.style.setProperty("--cy", Math.sin(angle) * dist + "px");
-    p.style.borderRadius = Math.random() > .5 ? "50%" : "2px";
-    document.body.appendChild(p);
-    setTimeout(() => p.remove(), 1400);
-  }
-}
-
-function flyToCart(fromEl, imgSrc, targetEl) {
-  if (!targetEl || !fromEl) return;
-  const fromR = fromEl.getBoundingClientRect();
-  const toR   = targetEl.getBoundingClientRect();
-  const ghost = document.createElement("div");
-  ghost.className = "fly-ghost";
-  ghost.style.left = fromR.left + "px"; ghost.style.top = fromR.top + "px";
-  ghost.style.width = "80px"; ghost.style.height = "80px";
-  ghost.style.backgroundImage = `url('${imgSrc}')`;
-  document.body.appendChild(ghost);
-  requestAnimationFrame(() => {
-    ghost.style.left = (toR.left + toR.width / 2 - 20) + "px";
-    ghost.style.top  = (toR.top  + toR.height / 2 - 20) + "px";
-    ghost.style.width = "40px"; ghost.style.height = "40px";
-    ghost.style.opacity = ".5"; ghost.style.transform = "rotate(360deg)";
-  });
-  setTimeout(() => ghost.remove(), 900);
-}
-
-function plusOne(x, y) {
-  const el = document.createElement("span");
-  el.className = "plus-one"; el.textContent = "+1";
-  el.style.left = (x - 10) + "px"; el.style.top = (y - 20) + "px";
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1000);
-}
-
-/* =========================================================
-   CARRITO
-   ========================================================= */
+// ==================== CARRITO ====================
 let cart = [];
-const cartFab        = $("#cartFab");
-const cartDrawer     = $("#cartDrawer");
-const cartBk         = $("#cartBackdrop");
-const mobileCartBar  = $("#mobileCartBar");
-
-function cartCount() { return cart.reduce((s, i) => s + i.cantidad, 0); }
-function cartTotal() { return cart.reduce((s, i) => s + i.precio * i.cantidad, 0); }
-
-function getCartTarget() {
-  return window.innerWidth >= 768 ? cartFab : mobileCartBar.querySelector("div");
-}
+const cartFab = $("#cartFab");
+const cartDrawer = $("#cartDrawer");
+const cartBk = $("#cartBackdrop");
+const mobileCartBar = $("#mobileCartBar");
 
 function renderCart() {
-  const count = cartCount();
-  const total = cartTotal();
+  const count = cart.reduce((s,i) => s + i.cantidad, 0);
+  const total = cart.reduce((s,i) => s + i.precio * i.cantidad, 0);
 
   // FAB desktop
-  $(".cart-count", cartFab).textContent = count;
+  $$(".cart-count", cartFab).forEach(el => el.textContent = count);
   cartFab.classList.toggle("opacity-0", count === 0);
   cartFab.classList.toggle("pointer-events-none", count === 0);
   if (count > 0) cartFab.classList.add("pulse");
   else cartFab.classList.remove("pulse");
 
-  // Bar móvil
-  const mobileCount = $(".cart-count", mobileCartBar);
-  mobileCount.textContent = count;
+  // Barra móvil
+  $$(".cart-count", mobileCartBar).forEach(el => el.textContent = count);
   $("#mobileCartTotal").textContent = money(total);
   mobileCartBar.classList.toggle("show", count > 0);
 
@@ -888,157 +698,93 @@ function renderCart() {
       <div class="text-center py-10 space-y-3">
         <div class="text-5xl">🛒</div>
         <p class="text-sm text-gray-400">Tu carrito está vacío</p>
-        <p class="text-xs text-gray-500">Agrega una pizza o porción para empezar</p>
       </div>`;
     return;
   }
-  body.innerHTML = cart.map((item, idx) => {
-    const img = item.imagen || autoImage(item.nombre);
-    return `
-      <div class="cart-item">
-        <div class="cart-item-img" style="background-image:url('${img}')"></div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-bold leading-tight truncate">${item.nombre}</p>
-          <p class="text-[11px] text-gray-500 mt-0.5">${money(item.precio)} c/u</p>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <button type="button" class="qty-btn" data-qty="-" data-idx="${idx}" aria-label="Quitar">
-            <i class="fa-solid fa-minus"></i>
-          </button>
-          <span class="text-sm font-bold min-w-[20px] text-center">${item.cantidad}</span>
-          <button type="button" class="qty-btn" data-qty="+" data-idx="${idx}" aria-label="Agregar">
-            <i class="fa-solid fa-plus"></i>
-          </button>
-        </div>
+  body.innerHTML = cart.map((it, i) => `
+    <div class="cart-item">
+      <div class="cart-item-img" style="background-image:url('${it.imagen}')"></div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-bold truncate">${esc(it.nombre)}</p>
+        <p class="text-[11px] text-gray-500">${money(it.precio)} c/u</p>
       </div>
-    `;
-  }).join("");
+      <div class="flex items-center gap-1.5">
+        <button class="qty-btn" data-qty="-" data-idx="${i}"><i class="fa-solid fa-minus"></i></button>
+        <span class="text-sm font-bold min-w-[20px] text-center">${it.cantidad}</span>
+        <button class="qty-btn" data-qty="+" data-idx="${i}"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+  `).join("");
 
-  $$(".qty-btn", body).forEach(b => {
-    b.addEventListener("click", () => {
-      const idx = Number(b.dataset.idx);
-      const op = b.dataset.qty;
-      if (op === "+") cart[idx].cantidad++;
-      else {
-        cart[idx].cantidad--;
-        if (cart[idx].cantidad <= 0) cart.splice(idx, 1);
-      }
-      renderCart();
-    });
-  });
+  $$("[data-qty]", body).forEach(b => b.addEventListener("click", () => {
+    const idx = Number(b.dataset.idx);
+    if (b.dataset.qty === "+") cart[idx].cantidad++;
+    else { cart[idx].cantidad--; if (cart[idx].cantidad <= 0) cart.splice(idx, 1); }
+    renderCart();
+  }));
 }
 
-function addToCart(item, fromEl) {
+function addToCart(item) {
   const found = cart.find(i => i.key === item.key);
   if (found) found.cantidad++;
   else cart.push({ ...item, cantidad: 1 });
-
   renderCart();
-
-  const target = getCartTarget();
-  if (target && fromEl) {
-    const img = item.imagen || autoImage(item.nombre);
-    flyToCart(fromEl, img, target);
-    const r = fromEl.getBoundingClientRect();
-    plusOne(r.left + r.width / 2, r.top + r.height / 2);
-    target.classList.add("bump");
-    setTimeout(() => target.classList.remove("bump"), 300);
-  }
-
+  cartFab.classList.add("bump");
+  setTimeout(() => cartFab.classList.remove("bump"), 300);
   toast(`${item.nombre} agregado 🍕`);
 }
 
-/* =========================================================
-   DRAWER
-   ========================================================= */
-function openDrawer() {
-  cartDrawer.classList.add("open");
-  cartBk.classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-function closeDrawer() {
-  cartDrawer.classList.remove("open");
-  cartBk.classList.remove("open");
-  document.body.style.overflow = "";
-}
+// ==================== DRAWER ====================
+function openDrawer() { cartDrawer.classList.add("open"); cartBk.classList.add("open"); document.body.style.overflow = "hidden"; }
+function closeDrawer() { cartDrawer.classList.remove("open"); cartBk.classList.remove("open"); document.body.style.overflow = ""; }
 
-/* =========================================================
-   RENDER PIZZAS
-   ========================================================= */
-let currentQuery = "";
+cartFab.addEventListener("click", openDrawer);
+document.querySelector("[data-action='open-cart']").addEventListener("click", openDrawer);
+$("#closeCart").addEventListener("click", closeDrawer);
+cartBk.addEventListener("click", closeDrawer);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
 
+// ==================== RENDER PIZZAS ====================
 function renderPizzas() {
-  const grid = $("#publicMenuGrid");
-  let list = PIZZAS;
-  if (currentQuery.trim()) {
-    const q = currentQuery.toLowerCase();
-    list = list.filter(p =>
-      p.nombre.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)
-    );
-  }
-
-  if (!list.length) {
-    grid.innerHTML = `
-      <div class="empty-state col-span-full text-center py-16 space-y-4">
-        <div class="text-6xl">🍽️</div>
-        <h3 class="font-display text-3xl text-gray-300">Sin resultados</h3>
-        <p class="text-sm text-gray-500">Prueba con otro nombre.</p>
-      </div>`;
+  const grid = $("#menuGrid");
+  if (!MENU.pizzas.length) {
+    grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">Sin productos</div>`;
     return;
   }
-
-  grid.innerHTML = list.map((p, idx) => {
-    const img = p.imagen || autoImage(p.nombre);
-    const badgeHTML =
-      p.badge === "hot" ? `<span class="badge-hot absolute top-3 left-3 z-10 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-fire"></i> Popular</span>` :
-      p.badge === "new" ? `<span class="badge-new absolute top-3 left-3 z-10 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star"></i> Nuevo</span>` : "";
-
-    const stars = p.rating
-      ? `<div class="stars flex items-center gap-0.5 text-[#ffa502]">${Array.from({length:5}).map((_,i)=>`<i class="fa-solid fa-star ${i < p.rating ? "" : "opacity-25"}"></i>`).join("")}<span class="text-[10px] text-gray-400 ml-1.5 font-semibold">${p.rating}.0</span></div>`
+  grid.innerHTML = MENU.pizzas.map((p, idx) => {
+    const img = imgOf(p.nombre);
+    const badge = p.badge === "hot"
+      ? `<span class="badge-hot absolute top-3 left-3 z-10 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full"><i class="fa-solid fa-fire"></i> Popular</span>`
+      : p.badge === "new"
+      ? `<span class="badge-new absolute top-3 left-3 z-10 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full"><i class="fa-solid fa-star"></i> Nuevo</span>`
       : "";
 
-    const sizeBtns = TAMANOS.map((t, i) => `
+    const sizes = MENU.tamanos.map((t, i) => `
       <button type="button" class="size-btn ${i === 0 ? "active" : ""}" data-size="${t.id}">
-        <span class="sb-label">${t.label}</span>
+        <span class="sb-label">${esc(t.label)}</span>
         <span class="sb-porciones">${t.porciones} porciones</span>
         <span class="sb-price">${money(t.precio)}</span>
       </button>
     `).join("");
 
-    const primerPrecio = money(TAMANOS[0].precio);
-
     return `
-      <article class="product-card bg-[#12121c] border border-white/10 rounded-3xl overflow-hidden flex flex-col" style="animation-delay:${idx * 50}ms" data-id="${p.id}">
+      <article class="product-card bg-[#12121c] border border-white/10 rounded-3xl overflow-hidden flex flex-col" style="animation-delay:${idx*50}ms" data-id="${p.id}">
         <div class="img-frame h-44 sm:h-52 relative">
-          ${badgeHTML}
-          <img src="${img}" alt="${p.nombre}" loading="lazy"
-               class="product-img w-full h-full object-cover"
-               onerror="this.src='${IMG.default}'">
-          <div class="absolute top-3 right-3 z-10 text-3xl drop-shadow-[0_4px_10px_rgba(0,0,0,.6)]">🍕</div>
-          <div class="steam absolute bottom-4 left-1/2 -translate-x-1/2 w-16 h-12 pointer-events-none">
-            <span style="left:20%;animation-delay:0s"></span>
-            <span style="left:50%;animation-delay:.7s"></span>
-            <span style="left:75%;animation-delay:1.3s"></span>
-          </div>
+          ${badge}
+          <img src="${img}" alt="${esc(p.nombre)}" loading="lazy" class="product-img w-full h-full object-cover" onerror="this.src='${IMG.def}'">
+          <div class="absolute top-3 right-3 z-10 text-3xl">🍕</div>
         </div>
-
         <div class="p-4 sm:p-5 flex-1 flex flex-col gap-3 relative z-10">
           <div class="flex items-start justify-between gap-3">
-            <h3 class="font-bold text-base leading-tight">${p.nombre}</h3>
-            <span class="text-[#ffa502] font-display text-2xl shrink-0 price-display">${primerPrecio}</span>
+            <h3 class="font-bold text-base leading-tight">${esc(p.nombre)}</h3>
+            <span class="text-[#ffa502] font-display text-2xl shrink-0 price-display">${money(MENU.tamanos[0].precio)}</span>
           </div>
-          <p class="text-xs text-gray-400 leading-relaxed line-clamp-2">${p.desc}</p>
-          ${stars}
-
+          <p class="text-xs text-gray-400 line-clamp-2">${esc(p.desc || "")}</p>
           <div class="mt-1">
             <p class="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-2">Elige el tamaño</p>
-            <div class="grid grid-cols-3 gap-2 size-picker">
-              ${sizeBtns}
-            </div>
+            <div class="grid grid-cols-3 gap-2">${sizes}</div>
           </div>
-
-          <button type="button"
-            class="add-btn ripple mt-auto btn-glow w-full bg-gradient-to-r from-[#ff4757] to-[#ff6b35] text-white font-bold py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-[#ff4757]/30 active:scale-[.97] min-h-[48px]">
+          <button type="button" class="add-btn mt-auto bg-gradient-to-r from-[#ff4757] to-[#ff6b35] text-white font-bold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#ff4757]/30">
             <i class="fa-solid fa-cart-plus"></i> Agregar al pedido
           </button>
         </div>
@@ -1046,7 +792,7 @@ function renderPizzas() {
     `;
   }).join("");
 
-  // Listeners tamaño
+  // Listeners de tamaño
   $$(".product-card", grid).forEach(card => {
     const btns = $$(".size-btn", card);
     const priceDisplay = $(".price-display", card);
@@ -1054,60 +800,49 @@ function renderPizzas() {
       btn.addEventListener("click", () => {
         btns.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        const tamano = TAMANOS.find(t => t.id === btn.dataset.size);
-        priceDisplay.textContent = money(tamano.precio);
+        const t = MENU.tamanos.find(x => x.id === btn.dataset.size);
+        priceDisplay.textContent = money(t.precio);
       });
     });
   });
 
-  // Listeners agregar pizza
+  // Listeners de agregar
   $$(".add-btn", grid).forEach(btn => {
-    btn.addEventListener("click", e => {
+    btn.addEventListener("click", () => {
       const card = btn.closest(".product-card");
       const id = Number(card.dataset.id);
-      const p = PIZZAS.find(m => m.id === id);
+      const p = MENU.pizzas.find(m => m.id === id);
       const activeSize = $(".size-btn.active", card);
-      const tamano = TAMANOS.find(t => t.id === activeSize.dataset.size);
+      const t = MENU.tamanos.find(x => x.id === activeSize.dataset.size);
       const imgEl = $(".product-img", card);
 
       addToCart({
-        key: `pizza-${p.id}-${tamano.id}`,
+        key: `pizza-${p.id}-${t.id}`,
         id: p.id,
-        nombre: `${p.nombre} (${tamano.label} · ${tamano.porciones} porciones)`,
-        precio: tamano.precio,
-        imagen: imgEl ? imgEl.src : IMG.default,
-      }, card);
-
-      confetti(e.clientX, e.clientY);
+        nombre: `${p.nombre} (${t.label} · ${t.porciones} porciones)`,
+        precio: t.precio,
+        imagen: imgEl ? imgEl.src : IMG.def
+      });
     });
   });
 }
 
-/* =========================================================
-   RENDER PORCIONES
-   ========================================================= */
+// ==================== RENDER PORCIONES ====================
 function renderPorciones() {
   const grid = $("#porcionesGrid");
-  grid.innerHTML = PIZZAS.map((p, idx) => {
-    const img = p.imagen || autoImage(p.nombre);
-    const emoji = p.nombre.toLowerCase().includes("pepperoni") ? "🍕" :
-                  p.nombre.toLowerCase().includes("margarita") ? "🌿" :
-                  p.nombre.toLowerCase().includes("hawaiana") ? "🍍" : "🥓";
+  grid.innerHTML = MENU.pizzas.map((p, idx) => {
+    const img = imgOf(p.nombre);
     return `
-      <article class="slice-card bg-[#12121c] border border-white/10 rounded-2xl overflow-hidden flex flex-col relative" style="animation-delay:${idx * 50}ms" data-id="${p.id}">
-        <div class="img-frame h-28 sm:h-32 relative">
-          <img src="${img}" alt="Porción ${p.nombre}" loading="lazy"
-               class="product-img w-full h-full object-cover"
-               onerror="this.src='${IMG.default}'">
-          <div class="absolute top-2 right-2 z-10 text-2xl drop-shadow-[0_4px_10px_rgba(0,0,0,.6)]">${emoji}</div>
+      <article class="slice-card bg-[#12121c] border border-white/10 rounded-2xl overflow-hidden flex flex-col" style="animation-delay:${idx*50}ms" data-id="${p.id}">
+        <div class="img-frame h-28 relative">
+          <img src="${img}" alt="${esc(p.nombre)}" loading="lazy" class="product-img w-full h-full object-cover" onerror="this.src='${IMG.def}'">
+          <div class="absolute top-2 right-2 z-10 text-2xl">🍕</div>
         </div>
         <div class="p-3 flex-1 flex flex-col gap-2">
-          <h3 class="font-bold text-xs leading-tight">${p.nombre.replace("Pizza ", "")}</h3>
+          <h3 class="font-bold text-xs leading-tight">${esc(p.nombre.replace("Pizza ",""))}</h3>
           <div class="flex items-center justify-between mt-auto pt-1">
-            <span class="font-display text-xl text-[#ffa502]">${money(PORCION.precio)}</span>
-            <button type="button"
-              class="add-slice-btn ripple w-9 h-9 rounded-xl bg-gradient-to-br from-[#ffa502] to-[#ff6b35] text-white grid place-items-center active:scale-90 transition shadow-lg shadow-[#ffa502]/40 min-w-[36px] min-h-[36px]"
-              aria-label="Agregar porción de ${p.nombre}">
+            <span class="font-display text-xl text-[#ffa502]">${money(MENU.porcion.precio)}</span>
+            <button type="button" class="add-slice w-9 h-9 rounded-xl bg-gradient-to-br from-[#ffa502] to-[#ff6b35] text-white grid place-items-center shadow-lg shadow-[#ffa502]/40" data-id="${p.id}">
               <i class="fa-solid fa-plus text-xs"></i>
             </button>
           </div>
@@ -1116,61 +851,38 @@ function renderPorciones() {
     `;
   }).join("");
 
-  $$(".add-slice-btn", grid).forEach(btn => {
-    btn.addEventListener("click", ev => {
+  $$(".add-slice", grid).forEach(btn => {
+    btn.addEventListener("click", () => {
       const card = btn.closest(".slice-card");
       const id = Number(card.dataset.id);
-      const p = PIZZAS.find(m => m.id === id);
+      const p = MENU.pizzas.find(m => m.id === id);
       const imgEl = $(".product-img", card);
-
       addToCart({
         key: `porcion-${p.id}`,
         id: p.id + 100,
-        nombre: `Porción · ${p.nombre.replace("Pizza ", "")}`,
-        precio: PORCION.precio,
-        imagen: imgEl ? imgEl.src : IMG.default,
-      }, card);
-
-      confetti(ev.clientX, ev.clientY);
+        nombre: `Porción · ${p.nombre.replace("Pizza ","")}`,
+        precio: MENU.porcion.precio,
+        imagen: imgEl ? imgEl.src : IMG.slice
+      });
     });
   });
 }
 
-/* =========================================================
-   BOTÓN COLA
-   ========================================================= */
-$("#addColaBtn").addEventListener("click", e => {
+// ==================== BOTÓN COLA ====================
+$("#addColaBtn").addEventListener("click", () => {
   addToCart({
-    key: `cola-${COLA.id}`,
-    id: COLA.id,
-    nombre: COLA.nombre,
-    precio: COLA.precio,
-    imagen: IMG.cola,
-  }, e.currentTarget);
-  confetti(e.clientX, e.clientY);
+    key: `cola-${MENU.cola.id}`,
+    id: MENU.cola.id,
+    nombre: MENU.cola.nombre,
+    precio: MENU.cola.precio,
+    imagen: IMG.cola
+  });
 });
 
-/* =========================================================
-   EVENTOS
-   ========================================================= */
-$("#menuSearch").addEventListener("input", e => {
-  currentQuery = e.target.value;
-  renderPizzas();
-});
-
-cartFab.addEventListener("click", openDrawer);
-document.querySelector("[data-action='open-cart']").addEventListener("click", openDrawer);
-$("#closeCart").addEventListener("click", closeDrawer);
-cartBk.addEventListener("click", closeDrawer);
-
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeDrawer();
-});
-
-// Checkout
+// ==================== CHECKOUT ====================
 $("#checkoutBtn").addEventListener("click", () => {
   if (!cart.length) { toast("Tu carrito está vacío", "error"); return; }
-  const total = cartTotal();
+  const total = cart.reduce((s,i) => s + i.precio * i.cantidad, 0);
   if (total < CONFIG.compraMinima) {
     toast(`El mínimo para delivery es ${money(CONFIG.compraMinima)}`, "error");
     return;
@@ -1181,91 +893,37 @@ $("#checkoutBtn").addEventListener("click", () => {
   window.open(`https://wa.me/${CONFIG.whatsapp}?text=${msg}`, "_blank");
 });
 
-/* =========================================================
-   ESTADO ABIERTO / CERRADO
-   ========================================================= */
-function updateStatus() {
-  const now = new Date();
-  const h = now.getHours() + now.getMinutes() / 60;
-  const open = h >= CONFIG.horaApertura && h <= CONFIG.horaCierre;
-  const dot = $("#statusDot");
-  const txt = $("#statusText");
-
-  if (open) {
-    dot.className = "w-2 h-2 rounded-full bg-[#2ed573] dot-live";
-    txt.innerHTML = `<span class="text-[#2ed573] font-bold">ABIERTO AHORA</span> · Cerramos a las 22:30`;
-  } else {
-    dot.className = "w-2 h-2 rounded-full bg-[#ff4757]";
-    txt.innerHTML = `<span class="text-[#ff4757] font-bold">CERRADO</span> · Abrimos a las 17:00`;
+// ==================== SYNC CON ADMIN ====================
+window.addEventListener("storage", e => {
+  if (e.key === "bp_menu") {
+    MENU = cargarMenu();
+    renderPizzas();
+    renderPorciones();
+    toast("Menú actualizado desde el admin ✨");
   }
-}
+});
 
-/* =========================================================
-   SCROLL + REVEAL
-   ========================================================= */
-function updateProgress() {
+// ==================== SCROLL PROGRESS ====================
+window.addEventListener("scroll", () => {
   const h = document.documentElement;
-  const scrollable = h.scrollHeight - h.clientHeight;
-  const pct = scrollable > 0 ? (h.scrollTop / scrollable) * 100 : 0;
+  const sc = h.scrollHeight - h.clientHeight;
+  const pct = sc > 0 ? (h.scrollTop / sc) * 100 : 0;
   $("#scrollProgress").style.width = pct + "%";
-}
-window.addEventListener("scroll", updateProgress, { passive: true });
+}, { passive: true });
 
+// ==================== REVEAL ====================
 const io = new IntersectionObserver(entries => {
   entries.forEach(en => {
     if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
   });
 }, { threshold: 0.12 });
+$$(".reveal").forEach(el => io.observe(el));
 
-function observeReveals() { $$(".reveal").forEach(el => io.observe(el)); }
-
-/* =========================================================
-   SYNC EN VIVO CON admin.html
-   ========================================================= */
-window.addEventListener("storage", e => {
-  if (e.key === "bp_menu") {
-    MENU = loadMenu();
-    TAMANOS = MENU.tamanos;
-    PIZZAS  = MENU.pizzas;
-    PORCION = MENU.porcion;
-    COLA    = MENU.cola;
-    Object.assign(CONFIG, MENU.config);
-    renderPizzas();
-    renderPorciones();
-    updateStatus();
-    toast("Menú actualizado desde el sistema ✨");
-  }
-});
-
-/* =========================================================
-   INIT
-   ========================================================= */
-document.addEventListener("DOMContentLoaded", () => {
-  $("#year").textContent = new Date().getFullYear();
-  renderPizzas();
-  renderPorciones();
-  renderCart();
-  observeReveals();
-  updateStatus();
-  updateProgress();
-  setInterval(updateStatus, 60000);
-});
-
-/* =========================================================
-   🌐 API pública para admin.html
-   ========================================================= */
-window.BP = {
-  getMenu: () => loadMenu(),
-  saveMenu(menu) {
-    localStorage.setItem("bp_menu", JSON.stringify(menu));
-    window.dispatchEvent(new StorageEvent("storage", { key: "bp_menu", newValue: JSON.stringify(menu) }));
-  },
-  resetMenu() {
-    localStorage.removeItem("bp_menu");
-    window.dispatchEvent(new StorageEvent("storage", { key: "bp_menu", newValue: null }));
-  },
-  DEFAULT: window.BP_MENU_DEFAULT,
-};
+// ==================== INIT ====================
+document.getElementById("year").textContent = new Date().getFullYear();
+renderPizzas();
+renderPorciones();
+renderCart();
 </script>
 </body>
 </html>
