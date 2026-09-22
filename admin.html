@@ -7,6 +7,9 @@
 <title>Admin · Brothers Pizza</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--safe-bottom:env(safe-area-inset-bottom,0px)}
 *{-webkit-tap-highlight-color:transparent}
@@ -36,7 +39,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
     <div class="text-center mb-6">
       <div class="inline-flex w-18 h-18 rounded-3xl bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 items-center justify-center text-4xl mb-3 shadow-lg shadow-red-600/30">🍕</div>
       <h1 class="font-bold text-2xl tracking-tight">Brothers Pizza</h1>
-      <p class="text-xs text-zinc-400 mt-1 font-medium">Panel Administrativo Local</p>
+      <p class="text-xs text-zinc-400 mt-1 font-medium">Panel Administrativo Cloud</p>
     </div>
     <div class="space-y-4">
       <div>
@@ -72,7 +75,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-md shadow-red-600/20">🍕</div>
 <div class="min-w-0">
 <p class="font-bold text-sm tracking-tight">Brothers Pizza</p>
-<p id="whoami" class="text-[11px] text-zinc-400 truncate flex items-center gap-1.5 font-medium mt-0.5"><span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> Sistema Activo</p>
+<p id="whoami" class="text-[11px] text-zinc-400 truncate flex items-center gap-1.5 font-medium mt-0.5"><span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> Sincronizado Cloud</p>
 </div>
 </div>
 <div class="flex gap-2">
@@ -177,6 +180,28 @@ body{font-family:system-ui,-apple-system,sans-serif}
 <div id="toasts" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] space-y-2 pointer-events-none w-[92%] max-w-md"></div>
 
 <script>
+// ==================== CONFIGURACIÓN FIREBASE (brotherspizza-a85a4) ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyAHwQ5eRRImp03oROAP5E0EzFzz7blA7bw",
+  authDomain: "brotherspizza-a85a4.firebaseapp.com",
+  projectId: "brotherspizza-a85a4",
+  storageBucket: "brotherspizza-a85a4.firebasestorage.app",
+  messagingSenderId: "14812443695",
+  appId: "1:14812443695:web:5ff7081567a49a295cc2da",
+  measurementId: "G-LYCYXYGP97"
+};
+
+let db = null;
+let useCloud = false;
+
+try {
+  if (firebaseConfig.apiKey) {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    useCloud = true;
+  }
+} catch(e) { console.warn("Error al iniciar Firebase", e); }
+
 // ==================== DATOS INICIALES ====================
 const IMG={
 pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&q=80",
@@ -221,6 +246,28 @@ function saveData(){
   localStorage.setItem("bp_menu", JSON.stringify(MENU));
   localStorage.setItem("bp_sales", JSON.stringify(SALES));
   localStorage.setItem("bp_staff", JSON.stringify(STAFF));
+
+  if(useCloud && db){
+    db.collection("brothers_pizza").doc("data").set({menu:MENU, sales:SALES, staff:STAFF})
+      .catch(err=>console.error("Error al sincronizar con nube:", err));
+  }
+}
+
+function initCloudSync(){
+  if(useCloud && db){
+    db.collection("brothers_pizza").doc("data").onSnapshot(doc=>{
+      if(doc.exists){
+        const dat=doc.data();
+        if(dat.menu) MENU=dat.menu;
+        if(dat.sales) SALES=dat.sales;
+        if(dat.staff) STAFF=dat.staff;
+        localStorage.setItem("bp_menu", JSON.stringify(MENU));
+        localStorage.setItem("bp_sales", JSON.stringify(SALES));
+        localStorage.setItem("bp_staff", JSON.stringify(STAFF));
+        renderAll();
+      }
+    });
+  }
 }
 
 const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
@@ -264,6 +311,7 @@ function startApp(){
   $("#login").classList.add("hide");
   $("#app").classList.remove("hide");
   $("#whoami").textContent=`${SESSION?.nombre} · ${SESSION?.rol}`;
+  initCloudSync();
   renderAll();
 }
 
@@ -343,7 +391,7 @@ function pay(m){
   cart=[];
   renderCart();
   renderFin();
-  toast("¡Venta registrada con éxito! 💰");
+  toast("¡Venta registrada con éxito y sincronizada! 💰");
 }
 
 // ==================== MENÚ Y STOCK CRUD ====================
