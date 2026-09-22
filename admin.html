@@ -1,510 +1,690 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brother's Pizza - Panel Administrativo & POS (Cloud)</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // CONFIGURACIÓN DE FIREBASE (Tus credenciales reales)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAHwQ5eRRImp03oROAP5E0EzFzz7blA7bw",
-            authDomain: "brotherspizza-a85a4.firebaseapp.com",
-            projectId: "brotherspizza-a85a4",
-            storageBucket: "brotherspizza-a85a4.firebasestorage.app",
-            messagingSenderId: "14812443695",
-            appId: "1:14812443695:web:5ff7081567a49a295cc2da",
-            measurementId: "G-LYCYXYGP97"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        window.db = db;
-        window.FB_helpers = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc };
-        
-        window.dispatchEvent(new Event('firebase-ready'));
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#09090b">
+<title>Admin · Brothers Pizza</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<style>
+:root{--safe-bottom:env(safe-area-inset-bottom,0px)}
+*{-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,sans-serif}
+.inp{width:100%;background:#09090b;border:1px solid #3f3f46;border-radius:12px;padding:12px 14px;color:#fff;font-size:14px;transition:all .2s}
+.inp:focus{outline:none;border-color:#ef4444;box-shadow:0 0 0 4px rgba(239,68,68,.15)}
+.btn-red{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;padding:12px 16px;border-radius:12px;font-weight:600;font-size:14px;transition:.2s;cursor:pointer;border:none;box-shadow:0 4px 12px rgba(220,38,38,.3)}
+.btn-red:hover{background:linear-gradient(135deg,#ef4444,#b91c1c);transform:translateY(-1px)}.btn-red:active{transform:scale(.97)}
+.btn-gray{background:#27272a;color:#e4e4e7;padding:12px 16px;border-radius:12px;font-size:14px;font-weight:500;transition:.2s;cursor:pointer;border:none}
+.btn-gray:hover{background:#3f3f46;color:#fff}.btn-gray:active{transform:scale(.97)}
+.tabbtn{padding:10px 16px;border-radius:12px;background:#18181b;color:#a1a1aa;font-size:13px;font-weight:600;white-space:nowrap;transition:.2s;border:1px solid #27272a;cursor:pointer}
+.tabbtn.act{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border-color:#ef4444;box-shadow:0 4px 12px rgba(220,38,38,.25)}
+.card{background:linear-gradient(145deg,#18181b,#111113);border:1px solid #27272a;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.hide{display:none!important}
+.avatar{width:46px;height:46px;border-radius:14px;object-fit:cover;background:#3f3f46;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.avatar-lg{width:84px;height:84px;border-radius:20px;font-size:40px}
+@keyframes toast-in{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.toast{animation:toast-in .3s cubic-bezier(.16,1,.3,1)}
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(46,213,115,.7)}70%{box-shadow:0 0 0 10px rgba(46,213,115,0)}100%{box-shadow:0 0 0 0 rgba(46,213,115,0)}}
+.live-dot{animation:pulse-ring 1.8s infinite}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.shake{animation:shake .4s ease}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#09090b}::-webkit-scrollbar-thumb{background:#27272a;border-radius:3px}::-webkit-scrollbar-thumb:hover{background:#3f3f46}
+</style>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans antialiased">
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
 
-    <!-- CONTENEDOR PRINCIPAL DE AUTENTICACIÓN -->
-    <div id="login-container" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-red-950 via-gray-900 to-black">
-        <div class="bg-gray-800 border border-red-900/50 p-8 rounded-2xl shadow-2xl w-full max-w-md">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-red-600/20 text-red-500 rounded-full mb-4 text-2xl font-bold border border-red-500/30">
-                    <i class="fa-solid fa-pizza-slice"></i>
-                </div>
-                <h1 class="text-2xl font-black tracking-wider text-white">BROTHER'S PIZZA</h1>
-                <p class="text-sm text-gray-400 mt-1">Sistema Cloud & POS</p>
-            </div>
-            <form id="login-form" onsubmit="doLogin(event)" class="space-y-5">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Usuario</label>
-                    <input type="text" id="login-user" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors" placeholder="Ej. admin">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Contraseña</label>
-                    <input type="password" id="login-pass" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors" placeholder="••••••••">
-                </div>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-red-600/30">
-                    Iniciar Sesión
-                </button>
-                <div class="text-center text-xs text-gray-500 mt-4">
-                    Credenciales: <span class="text-gray-300">admin / admin123</span> o <span class="text-gray-300">cajero / cajero123</span>
-                </div>
-            </form>
+<!-- LOGIN -->
+<div id="login" class="fixed inset-0 bg-zinc-950/95 backdrop-blur-xl flex items-center justify-center p-4 z-50">
+  <div class="card w-full max-w-sm border-zinc-800/80 shadow-2xl">
+    <div class="text-center mb-6">
+      <div class="inline-flex w-18 h-18 rounded-3xl bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 items-center justify-center text-4xl mb-3 shadow-lg shadow-red-600/30">🍕</div>
+      <h1 class="font-bold text-2xl tracking-tight">Brothers Pizza</h1>
+      <p class="text-xs text-zinc-400 mt-1 font-medium">Panel Administrativo Cloud</p>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs text-zinc-400 font-bold mb-1.5 ml-1">Usuario</label>
+        <div class="relative">
+          <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+          <input id="lu" type="text" class="inp pl-11" placeholder="Tu usuario" autocomplete="username">
         </div>
-    </div>
-
-    <!-- APLICACIÓN PRINCIPAL -->
-    <div id="app-container" class="hidden min-h-screen flex flex-col">
-        <header class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center shadow-md">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-red-600 text-white rounded-xl flex items-center justify-center font-bold">
-                    <i class="fa-solid fa-pizza-slice"></i>
-                </div>
-                <div>
-                    <h2 class="font-black text-lg tracking-wide text-white">BROTHER'S PIZZA</h2>
-                    <span id="user-role-badge" class="text-xs px-2 py-0.5 rounded bg-red-900/50 text-red-300 border border-red-700/50">Admin</span>
-                </div>
-            </div>
-            <nav class="hidden md:flex space-x-1 bg-gray-900 p-1.5 rounded-xl border border-gray-700">
-                <button onclick="switchTab('pos')" id="btn-tab-pos" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-red-600 text-white">POS / Ventas</button>
-                <button onclick="switchTab('menu')" id="btn-tab-menu" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all text-gray-400 hover:text-white">Menú & Stock</button>
-                <button onclick="switchTab('staff')" id="btn-tab-staff" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all text-gray-400 hover:text-white">Personal & Finanzas</button>
-            </nav>
-            <div class="flex items-center space-x-4">
-                <span id="current-time" class="text-xs text-gray-400 hidden lg:inline"></span>
-                <button onclick="doLogout()" class="bg-gray-700 hover:bg-red-600/30 hover:text-red-400 text-gray-300 p-2.5 rounded-xl transition-all">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </button>
-            </div>
-        </header>
-
-        <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full">
-            <!-- POS -->
-            <section id="tab-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 space-y-4">
-                    <div class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-gray-800 p-4 rounded-2xl border border-gray-700">
-                        <div class="relative w-full sm:w-72">
-                            <i class="fa-solid fa-search absolute left-3 top-3.5 text-gray-400 text-sm"></i>
-                            <input type="text" id="pos-search" oninput="loadPOSProducts()" placeholder="Buscar producto..." class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
-                        </div>
-                        <div class="flex space-x-2 w-full sm:w-auto overflow-x-auto pb-1">
-                            <button onclick="filterCategory('todos')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-red-600 text-white whitespace-nowrap">Todos</button>
-                            <button onclick="filterCategory('pizza')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 whitespace-nowrap">Pizzas</button>
-                            <button onclick="filterCategory('bebida')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 whitespace-nowrap">Bebidas</button>
-                            <button onclick="filterCategory('extra')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 whitespace-nowrap">Extras</button>
-                        </div>
-                    </div>
-                    <div id="pos-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto pr-1"></div>
-                </div>
-
-                <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 flex flex-col justify-between h-[75vh] lg:h-auto">
-                    <div>
-                        <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
-                            <h3 class="font-bold text-white flex items-center gap-2"><i class="fa-solid fa-cart-shopping text-red-500"></i> Factura Actual</h3>
-                            <button onclick="clearCart()" class="text-xs text-gray-400 hover:text-red-400">Vaciar</button>
-                        </div>
-                        <div id="cart-items" class="space-y-3 overflow-y-auto max-h-[40vh] pr-1">
-                            <p class="text-gray-500 text-center py-8 text-sm">El carrito está vacío</p>
-                        </div>
-                    </div>
-                    <div class="border-t border-gray-700 pt-4 space-y-2 mt-4">
-                        <div class="flex justify-between text-xl font-bold text-white pt-2">
-                            <span>Total a Pagar</span>
-                            <span id="cart-total" class="text-red-500">$0.00</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 pt-3">
-                            <button onclick="processCheckout('Efectivo')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl text-sm shadow-lg shadow-emerald-600/20"><i class="fa-solid fa-money-bill-wave mr-1"></i> Efectivo</button>
-                            <button onclick="processCheckout('Tarjeta')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl text-sm shadow-lg shadow-blue-600/20"><i class="fa-solid fa-credit-card mr-1"></i> Tarjeta</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- MENÚ & INVENTARIO -->
-            <section id="tab-menu" class="hidden space-y-6">
-                <div class="flex justify-between items-center bg-gray-800 p-5 rounded-2xl border border-gray-700">
-                    <div>
-                        <h3 class="text-lg font-bold text-white">Gestión de Menú e Inventario (Cloud)</h3>
-                        <p class="text-xs text-gray-400">Sincronizado en tiempo real con Firestore.</p>
-                    </div>
-                    <button onclick="openProductModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2.5 rounded-xl text-sm"><i class="fa-solid fa-plus mr-1"></i> Nuevo Producto</button>
-                </div>
-                <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-900 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-700">
-                                <th class="p-4">Producto</th>
-                                <th class="p-4">Categoría</th>
-                                <th class="p-4">Precio</th>
-                                <th class="p-4">Stock</th>
-                                <th class="p-4 text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventory-table-body" class="divide-y divide-gray-700 text-sm"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- PERSONAL & FINANZAS -->
-            <section id="tab-staff" class="hidden space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-gray-800 border border-gray-700 p-5 rounded-2xl">
-                        <span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Ventas Totales Registradas</span>
-                        <h4 id="fin-daily-sales" class="text-2xl font-black text-emerald-400 mt-2">$0.00</h4>
-                    </div>
-                    <div class="bg-gray-800 border border-gray-700 p-5 rounded-2xl">
-                        <span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Estado Cloud</span>
-                        <h4 class="text-lg font-bold text-blue-400 mt-1"><i class="fa-solid fa-cloud text-xs mr-1"></i> Conectado a Firestore</h4>
-                    </div>
-                </div>
-                <div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl space-y-6">
-                    <div class="flex justify-between items-center border-b border-gray-700 pb-4">
-                        <h3 class="text-lg font-bold text-white">Personal</h3>
-                        <button onclick="openStaffModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-xl text-sm"><i class="fa-solid fa-user-plus mr-1"></i> Agregar Empleado</button>
-                    </div>
-                    <div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- MODAL PRODUCTO -->
-    <div id="product-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 w-full max-w-md space-y-4">
-            <h3 id="product-modal-title" class="text-lg font-bold text-white">Nuevo Producto</h3>
-            <form id="product-form" onsubmit="saveProduct(event)" class="space-y-4">
-                <input type="hidden" id="prod-id">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Nombre</label>
-                    <input type="text" id="prod-name" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Categoría</label>
-                        <select id="prod-cat" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
-                            <option value="pizza">Pizza</option>
-                            <option value="bebida">Bebida</option>
-                            <option value="extra">Extra</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Precio ($)</label>
-                        <input type="number" step="0.01" id="prod-price" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Stock</label>
-                    <input type="number" id="prod-stock" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
-                </div>
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeProductModal()" class="bg-gray-700 text-white px-4 py-2 rounded-xl text-sm">Cancelar</button>
-                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm">Guardar</button>
-                </div>
-            </form>
+      </div>
+      <div>
+        <label class="block text-xs text-zinc-400 font-bold mb-1.5 ml-1">Contraseña</label>
+        <div class="relative">
+          <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+          <input id="lp" type="password" class="inp pl-11 pr-11" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" onclick="togglePass()" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white">
+            <i id="eyeIcon" class="fa-solid fa-eye text-sm"></i>
+          </button>
         </div>
+      </div>
+      <div id="lerr" class="hide text-red-400 text-xs text-center bg-red-500/10 border border-red-500/20 py-2.5 rounded-xl font-medium"></div>
+      <button onclick="doLogin()" class="btn-red w-full !py-3.5 text-sm font-bold shadow-lg shadow-red-600/30">
+        <i class="fa-solid fa-right-to-bracket mr-2"></i> Ingresar al Sistema
+      </button>
     </div>
+  </div>
+</div>
 
-    <!-- MODAL STAFF -->
-    <div id="staff-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 w-full max-w-md space-y-4">
-            <h3 class="text-lg font-bold text-white">Registrar Personal</h3>
-            <form id="staff-form" onsubmit="saveStaff(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Nombre Completo</label>
-                    <input type="text" id="staff-name" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Rol / Cargo</label>
-                    <input type="text" id="staff-role" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm" placeholder="Ej. Cajero / Pizzero">
-                </div>
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeStaffModal()" class="bg-gray-700 text-white px-4 py-2 rounded-xl text-sm">Cancelar</button>
-                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<!-- APP -->
+<div id="app" class="hide">
+<header class="bg-zinc-900/90 backdrop-blur-md border-b border-zinc-800/80 sticky top-0 z-30 shadow-md">
+<div class="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div id="topAvatar" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-md shadow-red-600/20">🍕</div>
+<div class="min-w-0">
+<p class="font-bold text-sm tracking-tight">Brothers Pizza</p>
+<p id="whoami" class="text-[11px] text-zinc-400 truncate flex items-center gap-1.5 font-medium mt-0.5"><span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> Sincronizado</p>
+</div>
+</div>
+<div class="flex gap-2">
+<a href="index.html" target="_blank" class="btn-gray text-xs !py-2 !px-3">👁️<span class="hidden sm:inline ml-1.5">Ver menú</span></a>
+<button onclick="doLogout()" class="btn-gray text-xs !py-2 !px-3 text-red-400 hover:text-red-300">Salir</button>
+</div>
+</div>
+<div class="max-w-5xl mx-auto px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+<button class="tabbtn act" data-t="pos">🍕 POS</button>
+<button class="tabbtn" data-t="menu">📋 Menú</button>
+<button class="tabbtn" data-t="stock">📦 Stock</button>
+<button class="tabbtn" data-t="staff">👥 Staff</button>
+<button class="tabbtn" data-t="fin">💰 Finanzas</button>
+<button class="tabbtn" data-t="cash">💵 Caja</button>
+<button class="tabbtn" data-t="stats">📊 Ventas</button>
+</div>
+</header>
 
-    <!-- SCRIPT DE LÓGICA Y CONEXIÓN -->
-    <script>
-        let currentUser = JSON.parse(localStorage.getItem('bp_user')) || null;
-        let currentCategory = 'todos';
-        let cart = [];
-        let productsCache = [];
+<main class="max-w-5xl mx-auto p-4 pb-28">
+<section id="t-pos">
+<div class="grid lg:grid-cols-3 gap-4">
+<div class="lg:col-span-2 space-y-3">
+<div class="relative">
+<i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+<input id="pq" class="inp pl-11" placeholder="🔍 Buscar producto en el menú...">
+</div>
+<div id="pgrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+</div>
+<div class="card h-fit lg:sticky lg:top-36 space-y-3">
+<div class="flex justify-between items-center">
+<b class="text-sm font-bold flex items-center gap-1.5">🛒 Orden <span id="cc" class="text-red-500 font-extrabold">(0)</span></b>
+<button onclick="clearCart()" class="text-xs text-zinc-400 hover:text-red-400 font-medium transition">Limpiar</button>
+</div>
+<div>
+<label class="block text-[10px] text-zinc-500 font-bold mb-1 ml-1">CLIENTE / MESA</label>
+<input id="cliente" class="inp !py-2.5 text-sm font-medium" value="Mesa 1">
+</div>
+<div id="cartList" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+<div class="text-xs border-t border-zinc-800/80 pt-3 space-y-1.5">
+<div class="flex justify-between text-zinc-400"><span>Subtotal</span><span id="cSub" class="text-zinc-200 font-medium">$0.00</span></div>
+<div class="flex justify-between text-zinc-400"><span>IVA 12%</span><span id="cTax" class="text-zinc-200 font-medium">$0.00</span></div>
+<div class="flex justify-between font-bold text-base pt-1 border-t border-zinc-800/40"><span>Total</span><span id="cTot" class="text-red-500 text-lg">$0.00</span></div>
+</div>
+<div class="grid grid-cols-2 gap-2.5 pt-1">
+<button onclick="pay('Efectivo')" class="btn-gray !py-3 flex items-center justify-center gap-1.5 font-bold">💵 Efectivo</button>
+<button onclick="pay('Tarjeta')" class="btn-red !py-3 flex items-center justify-center gap-1.5 shadow-lg shadow-red-600/20">💳 Tarjeta</button>
+</div>
+</div>
+</div>
+</section>
 
-        window.addEventListener('firebase-ready', () => {
-            if (currentUser) showApp();
-            else showLogin();
-            setInterval(updateClock, 1000);
-        });
+<section id="t-menu" class="hide space-y-4">
+<div class="card">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold text-sm flex items-center gap-2">📐 Tamaños y precios</h3>
+<button onclick="editSizes()" class="text-xs text-red-400 hover:text-red-300 font-bold">✏️ Editar Tamaños</button>
+</div>
+<div id="sizesBox" class="grid grid-cols-3 gap-3"></div>
+</div>
+<div class="card">
+<h3 class="font-bold text-sm mb-3">⭐ Promos y adicionales rápidos</h3>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div class="bg-zinc-950/80 border border-zinc-900 p-3.5 rounded-xl flex items-center gap-3">
+<div class="text-3xl">🍕</div>
+<div class="flex-1 min-w-0"><p class="text-xs font-semibold text-zinc-400">Porción</p><p id="porcionP" class="text-amber-400 font-bold text-base">$1.25</p></div>
+<button onclick="editPorcion()" class="text-xs text-red-400 hover:bg-zinc-900 p-2 rounded-lg">✏️</button>
+</div>
+<div class="bg-zinc-950/80 border border-zinc-900 p-3.5 rounded-xl flex items-center gap-3">
+<div class="text-3xl">🥤</div>
+<div class="flex-1 min-w-0"><p class="text-xs font-semibold text-zinc-400">Pepsi 1L</p><p id="pepsiP" class="text-amber-400 font-bold text-base">$0.75</p></div>
+<button onclick="editPepsi()" class="text-xs text-red-400 hover:bg-zinc-900 p-2 rounded-lg">✏️</button>
+</div>
+<div class="bg-zinc-950/80 border border-zinc-900 p-3.5 rounded-xl flex items-center gap-3">
+<div class="text-3xl">➕</div>
+<div class="flex-1 min-w-0"><p class="text-xs font-semibold text-zinc-400">Extras</p><p id="extraP" class="text-amber-400 font-bold text-base">$0.25</p></div>
+<button onclick="editExtrasPrice()" class="text-xs text-red-400 hover:bg-zinc-900 p-2 rounded-lg">✏️</button>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="flex justify-between items-center mb-3">
+<h3 class="font-bold text-sm">🍕 Pizzas en el menú</h3>
+<button onclick="editPizza(0)" class="btn-red text-xs !py-2">+ Nueva pizza</button>
+</div>
+<div id="pizzaList" class="space-y-2.5"></div>
+</div>
+<div class="card">
+<div class="flex justify-between items-center mb-3">
+<h3 class="font-bold text-sm">🧀 Extras individuales</h3>
+<button onclick="editExtra(0)" class="btn-red text-xs !py-2">+ Nuevo extra</button>
+</div>
+<div id="extraList" class="space-y-2.5"></div>
+</div>
+</section>
 
-        window.addEventListener('DOMContentLoaded', () => {
-            if (!currentUser) showLogin();
-        });
+<section id="t-stock" class="hide space-y-3">
+<div class="flex justify-between items-center mb-1">
+<h2 class="font-bold text-lg">📦 Inventario e Insumos</h2>
+<button onclick="editInsumo(0)" class="btn-red text-xs !py-2.5">+ Nuevo Insumo</button>
+</div>
+<div id="stockList" class="space-y-2.5"></div>
+</section>
 
-        function updateClock() {
-            const now = new Date();
-            const el = document.getElementById('current-time');
-            if(el) el.innerText = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-        }
+<section id="t-staff" class="hide space-y-3">
+<div class="flex justify-between items-center mb-1">
+<h2 class="font-bold text-lg">👥 Gestión de Personal</h2>
+<button onclick="editStaff(0)" class="btn-red text-xs !py-2.5">+ Nuevo trabajador</button>
+</div>
+<div id="staffList" class="space-y-3"></div>
+</section>
 
-        function doLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('login-user').value.trim();
-            const p = document.getElementById('login-pass').value.trim();
+<section id="t-fin" class="hide space-y-3">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+<div class="card border-emerald-500/20"><p class="text-[11px] text-emerald-400 font-bold mb-1">INGRESOS</p><p id="fIn" class="text-2xl font-black text-emerald-400">$0.00</p></div>
+<div class="card border-red-500/20"><p class="text-[11px] text-red-400 font-bold mb-1">EGRESOS</p><p id="fEx" class="text-2xl font-black text-red-400">$0.00</p></div>
+<div class="card border-amber-500/20"><p class="text-[11px] text-amber-400 font-bold mb-1">NÓMINA</p><p id="fPay" class="text-2xl font-black text-amber-400">$0.00</p></div>
+<div class="card border-blue-500/20"><p class="text-[11px] text-blue-400 font-bold mb-1">BALANCE NETO</p><p id="fBal" class="text-2xl font-black">$0.00</p></div>
+</div>
+<div class="flex gap-2 overflow-x-auto no-scrollbar mb-3">
+<button class="tabbtn act" data-f="salary">💼 Sueldos</button>
+<button class="tabbtn" data-f="exp">🧾 Gastos</button>
+<button class="tabbtn" data-f="debt">💳 Deudas</button>
+</div>
+<div id="f-salary"><div id="salaryList" class="space-y-2.5"></div></div>
+<div id="f-exp" class="hide space-y-3">
+<button onclick="newExpense()" class="btn-red text-xs !py-2.5">+ Nuevo gasto</button>
+<div id="expList" class="space-y-2.5"></div>
+</div>
+<div id="f-debt" class="hide space-y-3">
+<button onclick="newDebt()" class="btn-red text-xs !py-2.5">+ Nueva deuda</button>
+<div id="debtList" class="space-y-2.5"></div>
+</div>
+</section>
 
-            if ((u === 'admin' && p === 'admin123') || (u === 'cajero' && p === 'cajero123')) {
-                currentUser = { username: u, role: u === 'admin' ? 'Administrador' : 'Cajero' };
-                localStorage.setItem('bp_user', JSON.stringify(currentUser));
-                showApp();
-            } else {
-                alert('Credenciales incorrectas (admin/admin123)');
-            }
-        }
+<section id="t-cash" class="hide space-y-3">
+<div class="grid grid-cols-3 gap-3 mb-3">
+<div class="card"><p class="text-[10px] text-zinc-400 font-bold mb-1">ESTADO</p><p id="kState" class="text-base font-bold">—</p></div>
+<div class="card"><p class="text-[10px] text-zinc-400 font-bold mb-1">ESPERADO</p><p id="kExp" class="text-xl font-black text-emerald-400">$0.00</p></div>
+<div class="card"><p class="text-[10px] text-zinc-400 font-bold mb-1">DIFERENCIA</p><p id="kDif" class="text-xl font-black">$0.00</p></div>
+</div>
+<div class="card space-y-3">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+<input id="cashOpen" type="number" step="0.01" class="inp" placeholder="Monto de apertura">
+<button onclick="openCash()" class="btn-gray flex items-center justify-center gap-1">🔓 Abrir Caja</button>
+<button onclick="closeCash()" class="btn-red flex items-center justify-center gap-1 shadow-lg shadow-red-600/20">🔒 Cerrar Caja</button>
+</div>
+<input id="cashCount" type="number" step="0.01" class="inp" placeholder="Efectivo contado físicamente en caja">
+<p id="cashHint" class="text-xs text-zinc-400 font-medium"></p>
+</div>
+<div id="cashHist" class="space-y-2.5"></div>
+</section>
 
-        function doLogout() {
-            localStorage.removeItem('bp_user');
-            currentUser = null;
-            showLogin();
-        }
+<section id="t-stats" class="hide space-y-3">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+<div class="card"><p class="text-[11px] text-zinc-400 font-bold mb-1">VENTAS HOY</p><p id="sT" class="text-2xl font-black text-emerald-400">$0.00</p></div>
+<div class="card"><p class="text-[11px] text-zinc-400 font-bold mb-1">ÓRDENES HOY</p><p id="sO" class="text-2xl font-black">0</p></div>
+<div class="card"><p class="text-[11px] text-zinc-400 font-bold mb-1">VENTAS DEL MES</p><p id="sM" class="text-2xl font-black text-amber-400">$0.00</p></div>
+<div class="card"><p class="text-[11px] text-zinc-400 font-bold mb-1">TICKET PROMEDIO</p><p id="sA" class="text-2xl font-black">$0.00</p></div>
+</div>
+<div id="salesList" class="space-y-2.5"></div>
+</section>
+</main>
+</div>
 
-        function showLogin() {
-            document.getElementById('login-container').classList.remove('hidden');
-            document.getElementById('app-container').classList.add('hidden');
-        }
+<div id="modal" class="hide fixed inset-0 z-40 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+<div id="modalBody" class="bg-zinc-900 border border-zinc-800 w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl"></div>
+</div>
 
-        function showApp() {
-            document.getElementById('login-container').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
-            document.getElementById('user-role-badge').innerText = currentUser.role;
-            loadDataFromCloud();
-        }
+<div id="toasts" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] space-y-2 pointer-events-none w-[92%] max-w-md"></div>
 
-        function switchTab(tab) {
-            ['pos', 'menu', 'staff'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`btn-tab-${t}`).className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all text-gray-400 hover:text-white";
-            });
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`btn-tab-${tab}`).className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-red-600 text-white";
-        }
+<script>
+// ==================== CONFIGURACIÓN FIREBASE ====================
+// Reemplaza con tus credenciales reales de tu proyecto en Firebase Console
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "brotherspizza-a85a4.firebaseapp.com",
+  projectId: "brotherspizza-a85a4",
+  storageBucket: "brotherspizza-a85a4.appspot.com",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
 
-        // CARGAR DATOS DESDE FIRESTORE
-        async function loadDataFromCloud() {
-            await loadInventoryCloud();
-            await loadStaffCloud();
-            await loadSalesCloud();
-        }
+// Inicializar Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
 
-        async function loadInventoryCloud() {
-            const querySnapshot = await window.FB_helpers.getDocs(window.FB_helpers.collection(window.db, "productos"));
-            productsCache = [];
-            querySnapshot.forEach((doc) => {
-                productsCache.push({ id: doc.id, ...doc.data() });
-            });
-            loadPOSProducts();
-            loadInventoryTable();
-        }
+// ==================== ESTADOS Y DATOS POR DEFECTO ====================
+const IMG={
+pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&q=80",
+margarita:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80",
+hawaiana:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80",
+jamon:"https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=800&q=80",
+pepsi:"https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=800&q=80",
+slice:"https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=800&q=80",
+def:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80"};
+function imgOf(n=""){n=n.toLowerCase();if(n.includes("pepperoni"))return IMG.pepperoni;if(n.includes("margarita"))return IMG.margarita;if(n.includes("hawaiana"))return IMG.hawaiana;if(n.includes("jamón")||n.includes("jamon"))return IMG.jamon;if(n.includes("pepsi")||n.includes("cola")||n.includes("gaseosa"))return IMG.pepsi;if(n.includes("porci"))return IMG.slice;return IMG.def}
 
-        function loadPOSProducts() {
-            const search = document.getElementById('pos-search').value.toLowerCase();
-            const grid = document.getElementById('pos-products-grid');
-            grid.innerHTML = '';
+const DEF_M={tamanos:[{id:"personal",label:"Personal",precio:5,porciones:4},{id:"mediana",label:"Mediana",precio:9,porciones:10},{id:"familiar",label:"Familiar",precio:13,porciones:12}],pizzas:[{id:1,nombre:"Pizza Pepperoni",desc:"Pepperoni y mozzarella",badge:"hot"},{id:2,nombre:"Pizza Margarita",desc:"Mozzarella, albahaca y tomate"},{id:3,nombre:"Pizza Hawaiana",desc:"Jamón, piña y mozzarella"},{id:4,nombre:"Pizza de Jamón",desc:"Jamón y mozzarella",badge:"new"}],porcion:{id:200,nombre:"Porción de Pizza",precio:1.25},pepsi:{id:300,nombre:"Pepsi 1L",precio:0.75},extras:[{id:"ex-pepperoni",nombre:"Pepperoni extra",emoji:"🍕",precio:0.25},{id:"ex-jamon",nombre:"Jamón extra",emoji:"🥓",precio:0.25},{id:"ex-pina",nombre:"Piña extra",emoji:"🍍",precio:0.25},{id:"ex-queso",nombre:"Queso extra",emoji:"🧀",precio:0.25}]};
+const DEF_I=[{id:1,nombre:"Harina",unidad:"kg",stock:25,min:10,costo:1.20,prov:"Molinos Andinos"},{id:2,nombre:"Queso Mozzarella",unidad:"kg",stock:8,min:5,costo:6.50,prov:"Lácteos Biblián"},{id:3,nombre:"Pepperoni",unidad:"kg",stock:4,min:3,costo:8,prov:"Carnes Pérez"},{id:4,nombre:"Jamón",unidad:"kg",stock:2,min:3,costo:5.50,prov:"Carnes Pérez"},{id:5,nombre:"Piña enlatada",unidad:"kg",stock:3,min:2,costo:3,prov:"Del Monte"},{id:6,nombre:"Pepsi 1L",unidad:"botella",stock:20,min:12,costo:0.50,prov:"Distribuidora Sur"},{id:7,nombre:"Cajas pizza",unidad:"unidad",stock:45,min:20,costo:0.15,prov:"Empaques EC"}];
+const DEF_U=[{id:1,nombre:"Administrador",usuario:"admin",pass:"admin123",rol:"admin",activo:true,emoji:"👑",sueldo:600,foto:null},{id:2,nombre:"Cajero",usuario:"cajero",pass:"cajero123",rol:"cajero",activo:true,emoji:"🧑🍳",sueldo:400,foto:null}];
 
-            const filtered = productsCache.filter(p => {
-                const matchCat = currentCategory === 'todos' || p.category === currentCategory;
-                const matchName = p.name.toLowerCase().includes(search);
-                return matchCat && matchName;
-            });
+const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
+const money=v=>"$"+Number(v||0).toFixed(2);const uid=()=>Date.now()+Math.floor(Math.random()*1000);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-            if (filtered.length === 0) {
-                grid.innerHTML = '<p class="text-gray-500 col-span-full text-center py-8 text-sm">No hay productos en la nube (Agrega en Menú & Stock)</p>';
-                return;
-            }
+let MENU=DEF_M,SALES=[],INV=DEF_I,STAFF=DEF_U;
+let PAY=[],EXP=[],DEBT=[],CASH=[],SESSION=JSON.parse(localStorage.getItem("bp_session")||"null"),cart=[];
 
-            filtered.forEach(p => {
-                grid.innerHTML += `
-                    <div onclick="addToCart('${p.id}')" class="bg-gray-800 border border-gray-700 hover:border-red-500/50 p-4 rounded-2xl cursor-pointer transition-all flex flex-col justify-between group">
-                        <div>
-                            <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-gray-900 text-gray-400">${p.category}</span>
-                            <h4 class="font-bold text-white text-sm mt-2">${p.name}</h4>
-                        </div>
-                        <div class="flex justify-between items-center mt-4 pt-2 border-t border-gray-700/50">
-                            <span class="text-red-400 font-black text-sm">$${Number(p.price).toFixed(2)}</span>
-                            <span class="text-xs text-gray-500">Stock: ${p.stock}</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
+// ==================== FIRESTORE SYNC EN TIEMPO REAL ====================
+function initFirestoreSync(){
+  // Menú
+  db.collection("config").doc("menu").onSnapshot(doc=>{
+    if(doc.exists){MENU=doc.data();renderMenu();renderPOS();}
+    else{db.collection("config").doc("menu").set(DEF_M);}
+  });
+  // Inventario
+  db.collection("inventory").onSnapshot(snapshot=>{
+    INV=[];snapshot.forEach(doc=>INV.push(doc.data()));
+    if(INV.length===0){DEF_I.forEach(i=>db.collection("inventory").doc(String(i.id)).set(i));}
+    renderStock();
+  });
+  // Staff
+  db.collection("staff").onSnapshot(snapshot=>{
+    STAFF=[];snapshot.forEach(doc=>STAFF.push(doc.data()));
+    if(STAFF.length===0){DEF_U.forEach(u=>db.collection("staff").doc(String(u.id)).set(u));}
+    renderStaff();renderFin();
+  });
+  // Ventas
+  db.collection("sales").onSnapshot(snapshot=>{
+    SALES=[];snapshot.forEach(doc=>SALES.push(doc.data()));
+    SALES.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+    renderStats();renderFin();renderCash();
+  });
+  // Finanzas (Pay, Exp, Debt, Cash)
+  db.collection("finance").doc("data").onSnapshot(doc=>{
+    if(doc.exists){
+      const d=doc.data();
+      PAY=d.pay||[];EXP=d.exp||[];DEBT=d.debt||[];CASH=d.cash||[];
+      renderFin();renderCash();
+    }
+  });
+}
 
-        function filterCategory(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.pos-cat-btn').forEach(btn => btn.className = "pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 whitespace-nowrap");
-            event.target.className = "pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-red-600 text-white whitespace-nowrap";
-            loadPOSProducts();
-        }
+function saveFinanceCloud(){
+  db.collection("finance").doc("data").set({pay:PAY,exp:EXP,debt:DEBT,cash:CASH});
+}
 
-        function addToCart(id) {
-            const prod = productsCache.find(p => p.id === id);
-            if (!prod || prod.stock <= 0) {
-                alert('Sin stock disponible.');
-                return;
-            }
-            const existing = cart.find(item => item.id === id);
-            if (existing) {
-                if (existing.qty < prod.stock) existing.qty++;
-                else alert('No hay más stock.');
-            } else {
-                cart.push({ id: prod.id, name: prod.name, price: Number(prod.price), qty: 1 });
-            }
-            renderCart();
-        }
+// ==================== UTILS ====================
+function toast(msg,type="success"){const c=$("#toasts"),el=document.createElement("div");
+const st=type==="error"?"bg-red-600/95 border-red-500/40":type==="info"?"bg-zinc-800/95 border-zinc-700":"bg-emerald-600/95 border-emerald-500/40";
+const ic=type==="error"?"fa-circle-exclamation":type==="info"?"fa-circle-info":"fa-circle-check";
+el.className=`toast pointer-events-auto rounded-2xl px-4 py-3.5 shadow-2xl backdrop-blur-md border text-white text-sm font-semibold flex items-center gap-3 ${st}`;
+el.innerHTML=`<i class="fa-solid ${ic} text-lg"></i><span class="flex-1">${esc(msg)}</span>`;
+c.appendChild(el);setTimeout(()=>{el.style.transition="opacity .3s,transform .3s";el.style.opacity="0";el.style.transform="translateY(20px)";setTimeout(()=>el.remove(),300)},3000)}
 
-        function renderCart() {
-            const container = document.getElementById('cart-items');
-            if (cart.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center py-8 text-sm">El carrito está vacío</p>';
-                updateCartTotals();
-                return;
-            }
-            container.innerHTML = '';
-            cart.forEach((item, index) => {
-                container.innerHTML += `
-                    <div class="flex justify-between items-center bg-gray-900/60 p-3 rounded-xl border border-gray-700/50 text-sm">
-                        <div>
-                            <h5 class="font-semibold text-white">${item.name}</h5>
-                            <span class="text-xs text-gray-400">$${item.price.toFixed(2)} x ${item.qty}</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="font-bold text-red-400">$${(item.price * item.qty).toFixed(2)}</span>
-                            <button onclick="cart.splice(${index},1); renderCart()" class="text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
-                        </div>
-                    </div>
-                `;
-            });
-            updateCartTotals();
-        }
+function modal(h){$("#modalBody").innerHTML=h;$("#modal").classList.remove("hide")}
+function closeModal(){$("#modal").classList.add("hide")}
+$("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 
-        function clearCart() { cart = []; renderCart(); }
+function togglePass(){const i=$("#lp"),ic=$("#eyeIcon");
+if(i.type==="password"){i.type="text";ic.className="fa-solid fa-eye-slash text-sm"}
+else{i.type="password";ic.className="fa-solid fa-eye text-sm"}}
 
-        function updateCartTotals() {
-            const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-            document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
-        }
+// ==================== LOGIN ====================
+function doLogin(){
+  const u=$("#lu").value.trim(),p=$("#lp").value;
+  let user=STAFF.find(x=>x.usuario===u&&x.pass===p&&x.activo);
+  if(!user){
+    $("#lerr").textContent="❌ Usuario o contraseña incorrectos";
+    $("#lerr").classList.remove("hide");
+    $("#lu").classList.add("shake");$("#lp").classList.add("shake");
+    setTimeout(()=>{$("#lu").classList.remove("shake");$("#lp").classList.remove("shake")},500);
+    return;
+  }
+  $("#lerr").classList.add("hide");
+  SESSION={id:user.id,nombre:user.nombre,rol:user.rol,foto:user.foto};
+  localStorage.setItem("bp_session",JSON.stringify(SESSION));
+  startApp();
+  toast(`¡Bienvenido, ${user.nombre}! 🍕`);
+}
 
-        async function processCheckout(method) {
-            if (cart.length === 0) return alert('Carrito vacío');
-            const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+function doLogout(){
+  localStorage.removeItem("bp_session");
+  location.reload();
+}
 
-            for (let item of cart) {
-                const prod = productsCache.find(p => p.id === item.id);
-                const newStock = prod.stock - item.qty;
-                const docRef = window.FB_helpers.doc(window.db, "productos", item.id);
-                await window.FB_helpers.updateDoc(docRef, { stock: newStock });
-            }
+// ==================== APP START ====================
+function startApp(){
+  $("#login").classList.add("hide");
+  $("#app").classList.remove("hide");
+  const u=STAFF.find(x=>x.id===SESSION?.id);
+  $("#whoami").innerHTML=`<span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> ${esc(SESSION?.nombre)} · ${SESSION?.rol}`;
+  const topAv=$("#topAvatar");
+  if(u&&u.foto)topAv.innerHTML=`<img src="${u.foto}" class="w-full h-full object-cover">`;
+  else topAv.textContent=u?.emoji||"🍕";
+  initFirestoreSync();
+  renderAll();
+}
 
-            await window.FB_helpers.addDoc(window.FB_helpers.collection(window.db, "ventas"), {
-                date: new Date().toISOString(),
-                total,
-                method,
-                items: cart
-            });
+function showTab(t){$$("main > section").forEach(s=>s.classList.add("hide"));
+const el=$("#t-"+t);if(el)el.classList.remove("hide");
+$$(".tabbtn[data-t]").forEach(b=>b.classList.toggle("act",b.dataset.t===t))} $$
+(".tabbtn[data-t]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.t)));
 
-            alert(`Venta registrada en la nube por $${total.toFixed(2)} (${method})`);
-            cart = [];
-            renderCart();
-            loadDataFromCloud();
-        }
+// ==================== POS ====================
+function getProds(){const l=[];
+MENU.pizzas.forEach(p=>MENU.tamanos.forEach(t=>l.push({key:`p${p.id}-${t.id}`,tipo:"pizza",nombre:`${p.nombre} ${t.label}`,precio:t.precio,img:imgOf(p.nombre)})));
+l.push({key:"porcion",tipo:"porcion",nombre:"Porción pizza",precio:MENU.porcion.precio,img:IMG.slice});
+l.push({key:"pepsi",tipo:"extra",nombre:MENU.pepsi.nombre,precio:MENU.pepsi.precio,img:IMG.pepsi});
+(MENU.extras||[]).forEach(ex=>l.push({key:ex.id,tipo:"extra",nombre:ex.nombre,precio:ex.precio,img:IMG.def}));
+return l}
 
-        function loadInventoryTable() {
-            const tbody = document.getElementById('inventory-table-body');
-            tbody.innerHTML = '';
-            productsCache.forEach(p => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-gray-700/30">
-                        <td class="p-4 font-semibold text-white">${p.name}</td>
-                        <td class="p-4"><span class="text-xs uppercase bg-gray-900 px-2 py-0.5 rounded text-gray-400">${p.category}</span></td>
-                        <td class="p-4 text-red-400 font-bold">$${Number(p.price).toFixed(2)}</td>
-                        <td class="p-4">${p.stock}</td>
-                        <td class="p-4 text-center space-x-2">
-                            <button onclick="deleteProduct('${p.id}')" class="text-gray-400 hover:text-red-400 p-1.5"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
+function renderPOS(q=""){let list=getProds();
+if(q)list=list.filter(p=>p.nombre.toLowerCase().includes(q.toLowerCase()));
+$("#pgrid").innerHTML=list.map((p,i)=>`
+<button onclick="addCart(${i})" class="bg-zinc-900 border border-zinc-800/80 rounded-2xl overflow-hidden text-left hover:border-red-500 hover:shadow-lg hover:shadow-red-500/10 transition group">
+<div class="h-24 bg-zinc-950 overflow-hidden relative"><img src="${p.img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='${IMG.def}'"></div>
+<div class="p-3"><p class="text-xs font-bold leading-tight line-clamp-2 min-h-[2rem] text-zinc-200">${esc(p.nombre)}</p><p class="text-amber-400 font-extrabold text-sm mt-1.5">${money(p.precio)}</p></div>
+</button>`).join("")||`<p class="col-span-full text-center text-zinc-500 py-10 text-sm">Sin resultados</p>`;
+window._posList=list}
+$("#pq").addEventListener("input",e=>renderPOS(e.target.value));
 
-        function openProductModal() { document.getElementById('product-modal').classList.remove('hidden'); }
-        function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
+function addCart(i){const p=window._posList[i];if(!p)return;
+const f=cart.find(x=>x.key===p.key);if(f)f.cantidad++;else cart.push({...p,cantidad:1});renderCart()}
+function changeQty(i,d){cart[i].cantidad+=d;if(cart[i].cantidad<=0)cart.splice(i,1);renderCart()}
+function clearCart(){cart=[];renderCart()}
+function renderCart(){const cnt=cart.reduce((s,i)=>s+i.cantidad,0);
+const sub=cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
+const tax=sub*0.12;
+$("#cc").textContent=`(${cnt})`;$("#cSub").textContent=money(sub);$("#cTax").textContent=money(tax);$("#cTot").textContent=money(sub+tax);
+$("#cartList").innerHTML=cart.length===0?`<p class="text-center text-zinc-600 py-6 text-xs font-medium">Carrito vacío</p>`:
+cart.map((it,i)=>`<div class="flex items-center gap-2.5 bg-zinc-950/80 p-2.5 rounded-xl border border-zinc-900">
+<div class="flex-1 min-w-0"><p class="text-xs font-bold truncate text-zinc-200">${esc(it.nombre)}</p><p class="text-[10px] text-zinc-400">${money(it.precio)}</p></div>
+<button onclick="changeQty(${i},-1)" class="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-xs font-bold flex items-center justify-center text-zinc-300">−</button>
+<span class="text-xs font-bold w-5 text-center">${it.cantidad}</span>
+<button onclick="changeQty(${i},1)" class="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-xs font-bold flex items-center justify-center text-zinc-300">+</button></div>`).join("")}
 
-        async function saveProduct(e) {
-            e.preventDefault();
-            const name = document.getElementById('prod-name').value;
-            const category = document.getElementById('prod-cat').value;
-            const price = parseFloat(document.getElementById('prod-price').value);
-            const stock = parseInt(document.getElementById('prod-stock').value);
+function pay(m){if(!cart.length){toast("Carrito vacío","error");return}
+const sub=cart.reduce((s,i)=>s+i.precio*i.cantidad,0);const tax=sub*0.12;
+const newSale={id:uid(),fecha:new Date().toISOString(),cliente:$("#cliente").value||"Cliente",metodo:m,items:[...cart],subtotal:sub,impuesto:tax,total:sub+tax,vendedor:SESSION?.nombre||"Sistema"};
+db.collection("sales").doc(String(newSale.id)).set(newSale).then(()=>{
+  cart=[];renderCart();renderStats();renderFin();renderCash();
+  toast(`Venta registrada con éxito: ${money(sub+tax)} 💰`);
+});}
 
-            await window.FB_helpers.addDoc(window.FB_helpers.collection(window.db, "productos"), { name, category, price, stock });
-            closeProductModal();
-            loadDataFromCloud();
-        }
+// ==================== MENÚ ====================
+function renderMenu(){
+$("#sizesBox").innerHTML=MENU.tamanos.map(t=>`<div class="bg-zinc-950/80 border border-zinc-900 rounded-xl p-3.5 text-center"><p class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">${esc(t.label)}</p><p class="text-lg font-black text-amber-400 mt-0.5">${money(t.precio)}</p><p class="text-[10px] text-zinc-500 mt-0.5">${t.porciones} porc.</p></div>`).join("");
+$("#porcionP").textContent=money(MENU.porcion.precio);
+$("#pepsiP").textContent=money(MENU.pepsi.precio);
+$("#extraP").textContent=money(MENU.extras?.[0]?.precio||0.25);
+$("#pizzaList").innerHTML=MENU.pizzas.map(p=>`<div class="bg-zinc-950/80 border border-zinc-900 rounded-2xl p-3 flex gap-3.5 items-center">
+<div class="w-14 h-14 rounded-xl overflow-hidden bg-zinc-900 shrink-0"><img src="${imgOf(p.nombre)}" class="w-full h-full object-cover" onerror="this.src='${IMG.def}'"></div>
+<div class="flex-1 min-w-0"><p class="font-bold text-sm truncate text-zinc-200">${esc(p.nombre)}</p><p class="text-[11px] text-zinc-400 truncate mt-0.5">${esc(p.desc||"")}</p></div>
+<button onclick="editPizza(${p.id})" class="w-9 h-9 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-xs text-zinc-300 flex items-center justify-center"><i class="fa-solid fa-pen"></i></button>
+<button onclick="delPizza(${p.id})" class="w-9 h-9 rounded-xl bg-zinc-900 hover:bg-red-500/20 text-red-400 text-xs flex items-center justify-center"><i class="fa-solid fa-trash"></i></button></div>`).join("");
+$("#extraList").innerHTML=(MENU.extras||[]).map(ex=>`<div class="bg-zinc-950/80 border border-zinc-900 rounded-2xl p-3 flex gap-3.5 items-center">
+<div class="w-11 h-11 rounded-xl bg-zinc-900 flex items-center justify-center text-xl shrink-0">${ex.emoji||"➕"}</div>
+<div class="flex-1 min-w-0"><p class="font-bold text-sm truncate text-zinc-200">${esc(ex.nombre)}</p><p class="text-[11px] text-emerald-400 font-bold mt-0.5">${money(ex.precio)}</p></div>
+<button onclick="editExtra('${ex.id}')" class="w-9 h-9 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-xs text-zinc-300 flex items-center justify-center"><i class="fa-solid fa-pen"></i></button>
+<button onclick="delExtra('${ex.id}')" class="w-9 h-9 rounded-xl bg-zinc-900 hover:bg-red-500/20 text-red-400 text-xs flex items-center justify-center"><i class="fa-solid fa-trash"></i></button></div>`).join("")}
 
-        async function deleteProduct(id) {
-            if (confirm('¿Eliminar producto de la nube?')) {
-                await window.FB_helpers.deleteDoc(window.FB_helpers.doc(window.db, "productos", id));
-                loadDataFromCloud();
-            }
-        }
+function editPizza(id){const p=id===0?{id:uid(),nombre:"",desc:"",badge:""}:MENU.pizzas.find(x=>x.id===id);
+modal(`<h3 class="font-bold text-lg mb-4">${id?"Editar":"Nueva"} pizza</h3>
+<input type="text" id="pN" class="inp mb-3" value="${esc(p.nombre)}" placeholder="Nombre de la pizza">
+<input type="text" id="pD" class="inp mb-3" value="${esc(p.desc||"")}" placeholder="Descripción (ingredientes)">
+<select id="pB" class="inp mb-4"><option value="">Normal</option><option value="hot" ${p.badge==="hot"?"selected":""}>🔥 Popular</option><option value="new" ${p.badge==="new"?"selected":""}>⭐ Nuevo</option></select>
+<div class="flex gap-3"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="savePizza(${id})" class="btn-red flex-1">Guardar</button></div>`)}
 
-        async function loadSalesCloud() {
-            const querySnapshot = await window.FB_helpers.getDocs(window.FB_helpers.collection(window.db, "ventas"));
-            let totalSales = 0;
-            querySnapshot.forEach(doc => { totalSales += doc.data().total; });
-            document.getElementById('fin-daily-sales').innerText = `$${totalSales.toFixed(2)}`;
-        }
+function savePizza(id){const nombre=$("#pN").value.trim();if(!nombre){toast("Ponle nombre","error");return}
+const data={nombre,desc:$("#pD").value.trim(),badge:$("#pB").value};
+if(id===0)MENU.pizzas.push({id:uid(),...data});else{const idx=MENU.pizzas.findIndex(x=>x.id===id);if(idx>=0)MENU.pizzas[idx]={...MENU.pizzas[idx],...data};}
+db.collection("config").doc("menu").set(MENU).then(()=>{renderMenu();renderPOS();closeModal();toast("Menú actualizado en la nube ✨");});}
 
-        function openStaffModal() { document.getElementById('staff-modal').classList.remove('hidden'); }
-        function closeStaffModal() { document.getElementById('staff-modal').classList.add('hidden'); }
+function delPizza(id){if(!confirm("¿Eliminar esta pizza?"))return;
+MENU.pizzas=MENU.pizzas.filter(x=>x.id!==id);
+db.collection("config").doc("menu").set(MENU).then(()=>{renderMenu();renderPOS();toast("Pizza eliminada");});}
 
-        async function saveStaff(e) {
-            e.preventDefault();
-            const name = document.getElementById('staff-name').value;
-            const role = document.getElementById('staff-role').value;
+function editSizes(){modal(`<h3 class="font-bold text-lg mb-4">Editar Tamaños y Precios</h3>
+${MENU.tamanos.map((t,i)=>`<div class="bg-zinc-950 p-4 rounded-xl border border-zinc-900 mb-3"><p class="text-xs font-bold uppercase text-zinc-400 mb-2">${esc(t.label)}</p>
+<div class="grid grid-cols-2 gap-3"><input type="number" step="0.01" id="sp${i}" value="${t.precio}" class="inp" placeholder="Precio ($)"><input type="number" id="sr${i}" value="${t.porciones}" class="inp" placeholder="Porciones"></div></div>`).join("")}
+<div class="flex gap-3 mt-4"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveSizes()" class="btn-red flex-1">Guardar</button></div>`)}
 
-            await window.FB_helpers.addDoc(window.FB_helpers.collection(window.db, "personal"), { name, role });
-            closeStaffModal();
-            loadStaffCloud();
-        }
+function saveSizes(){MENU.tamanos.forEach((t,i)=>{t.precio=parseFloat($("#sp"+i).value)\vert{}\vert{}0;t.porciones=parseInt($("#sr"+i).value)||t.porciones});
+db.collection("config").doc("menu").set(MENU).then(()=>{renderMenu();renderPOS();closeModal();toast("Tamaños actualizados en la nube");});}
 
-        async function loadStaffCloud() {
-            const querySnapshot = await window.FB_helpers.getDocs(window.FB_helpers.collection(window.db, "personal"));
-            const grid = document.getElementById('staff-grid');
-            grid.innerHTML = '';
-            querySnapshot.forEach(doc => {
-                const s = doc.data();
-                grid.innerHTML += `
-                    <div class="bg-gray-900 border border-gray-700 p-4 rounded-2xl flex items-center space-x-4">
-                        <div class="flex-1">
-                            <h4 class="font-bold text-white text-sm">${s.name}</h4>
-                            <span class="text-xs text-red-400">${s.role}</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-    </script>
+function editPorcion(){const v=prompt("Precio de la porción:",MENU.porcion.precio);if(v===null)return;
+MENU.porcion.precio=parseFloat(v)||MENU.porcion.precio;db.collection("config").doc("menu").set(MENU).then(()=>{renderMenu();renderPOS();toast("Porción actualizada");});}
+function editPepsi(){const v=prompt("Precio de Pepsi 1L:",MENU.pepsi.precio);if(v===null)return;
+MENU.pepsi.precio=parseFloat(v)||MENU.pepsi.precio;db.collection("config").doc("menu").set(MENU).then(()=>{renderMenu();renderPOS();toast("Pepsi actualizada");});}
+function editExtrasPrice(){const act=MENU.extras?.[0]?.precio||0.25;const v=prompt("Precio de TODOS los extras:",act);if(v===null)return;
+const precio=parseFloat(v)||act;(MENU.extras||[]).forEach(ex=>ex.precio=precio);db.collection("config").doc("menu").set(MENU).then(()=>{renderMenu();renderPOS();toast("Extras actualizados");});}
+
+function editExtra(id){const isNew=!id||id===0;
+const ex=isNew?{id:"ex-"+uid(),nombre:"",emoji:"➕",precio:0.25}:MENU.extras.find(x=>x.id===id);if(!ex)return;
+modal(`<h3 class="font-bold text-lg mb-4">${isNew?"Nuevo":"Editar"} extra</h3>
+<input type="text" id="exN" class="inp mb-3" value="${esc(ex.nombre)}" placeholder="Nombre (ej: Champiñones)">
+<div class="grid grid-cols-2 gap-3 mb-4"><input type="text" id="exE" class="inp" value="${esc(ex.emoji||"➕")}" placeholder="Emoji" maxlength="4"><input type="number" step="0.01" id="exP" class="inp" value="${ex.precio}" placeholder="Precio"></div>
+<div class="flex gap-3"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveExtra('${isNew?ex.id:id}')" class="btn-red flex-1">Guardar</button></div>`)}
+
+function saveExtra(id){const nombre=$("#exN").value.trim();if(!nombre){toast("Ponle nombre","error");return}
+const data={nombre,emoji:$("#exE").value.trim()\vert{}\vert{}"➕",precio:parseFloat($("#exP").value)||0.25};
+if(!MENU.extras)MENU.extras=[];
+const f=MENU.extras.find(x=>x.id===id);if(f)Object.assign(f,data);else MENU.extras.push({id,...data});
+db.collection("config").doc("menu").set(MENU).then(()=>{renderMenu();renderPOS();closeModal();toast("Extra guardado");});}
+function delExtra(id){if(!confirm("¿Eliminar este extra?"))return;
+MENU.extras=MENU.extras.filter(x=>x.id!==id);db.collection("config").doc("menu").set(MENU).then(()=>{renderMenu();renderPOS();toast("Extra eliminado");});}
+
+// ==================== STOCK ====================
+function renderStock(){$("#stockList").innerHTML=INV.map(i=>{const crit=i.stock<=i.min;
+return `<div class="card ${crit?"border-red-500/50 bg-red-950/10":""}">
+<div class="flex justify-between items-center mb-1.5"><p class="font-bold text-sm text-zinc-200">${esc(i.nombre)}</p>
+<span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${crit?"bg-red-500/20 text-red-400":"bg-emerald-500/20 text-emerald-400"}">${crit?"⚠️ CRÍTICO":"OK"}</span></div>
+<p class="text-xs text-zinc-400 mb-3">${esc(i.prov||"Sin proveedor")} · <b class="text-zinc-300">${money(i.costo)}</b>/${esc(i.unidad)}</p>
+<div class="flex items-center justify-between"><span class="text-xs text-zinc-300">Stock: <b class="text-white text-sm">${i.stock} ${esc(i.unidad)}</b></span>
+<div class="flex gap-2"><button onclick="addStock(${i.id})" class="text-xs px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold">+ Sumar</button><button onclick="editInsumo(${i.id})" class="text-xs px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold">Editar</button></div></div></div>`}).join("")}
+
+function addStock(id){const i=INV.find(x=>x.id===id);const q=prompt(`¿Cuánto sumar a "${i.nombre}"?`,"10");if(q===null)return;
+i.stock+=parseFloat(q)||0;db.collection("inventory").doc(String(id)).set(i).then(()=>{renderStock();toast("Stock actualizado en la nube");});}
+function editInsumo(id){const i=id===0?{id:uid(),nombre:"",unidad:"kg",stock:0,min:0,costo:0,prov:""}:INV.find(x=>x.id===id);
+modal(`<h3 class="font-bold text-lg mb-4">${id?"Editar":"Nuevo"} insumo</h3>
+<input type="text" id="iN" class="inp mb-3" value="${esc(i.nombre)}" placeholder="Nombre del insumo">
+<div class="grid grid-cols-2 gap-3 mb-3"><input type="text" id="iU" class="inp" value="${esc(i.unidad)}" placeholder="Unidad (kg, lt, u)"><input type="number" step="0.01" id="iC" class="inp" value="${i.costo}" placeholder="Costo unitario"></div>
+<div class="grid grid-cols-2 gap-3 mb-3"><input type="number" step="0.01" id="iS" class="inp" value="${i.stock}" placeholder="Stock actual"><input type="number" step="0.01" id="iM" class="inp" value="${i.min}" placeholder="Stock mínimo"></div>
+<input type="text" id="iP" class="inp mb-4" value="${esc(i.prov||"")}" placeholder="Proveedor">
+<div class="flex gap-3"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveInsumo(${id})" class="btn-red flex-1">Guardar</button></div>`)}
+
+function saveInsumo(id){const data={id:id===0?uid():id,nombre:$("#iN").value.trim(),unidad:$("#iU").value.trim()||"kg",costo:parseFloat($("#iC").value)\vert{}\vert{}0,stock:parseFloat($("#iS").value)||0,min:parseFloat($("#iM").value)\vert{}\vert{}0,prov:$("#iP").value.trim()};
+if(!data.nombre){toast("Ponle nombre","error");return}
+db.collection("inventory").doc(String(data.id)).set(data).then(()=>{renderStock();closeModal();toast("Insumo guardado en la nube");});}
+
+// ==================== STAFF ====================
+function renderStaff(){$("#staffList").innerHTML=STAFF.map(s=>`
+<div class="card">
+<div class="flex items-start gap-3.5 mb-3.5">
+<div class="avatar" ${s.foto?'':`style="background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff;font-size:24px"`}>${s.foto?`<img src="${s.foto}" class="w-full h-full object-cover">`:(s.emoji||"👤")}</div>
+<div class="flex-1 min-w-0"><p class="font-bold text-sm truncate text-zinc-200">${esc(s.nombre)}</p>
+<p class="text-[11px] text-zinc-400 truncate mt-0.5">@${esc(s.usuario)}</p>
+<div class="flex gap-2 mt-2">
+<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${s.rol==="admin"?"bg-red-500/20 text-red-400":"bg-emerald-500/20 text-emerald-400"}">${s.rol==="admin"?"👑 Admin":s.rol==="cocina"?"👨🍳 Cocina":"🧑🍳 Cajero"}</span>
+<span class="text-[10px] font-semibold ${s.activo?"text-emerald-400":"text-red-400"} flex items-center"><i class="fa-solid fa-circle text-[6px] mr-1.5"></i>${s.activo?"Activo":"Inactivo"}</span>
+</div></div></div>
+<p class="text-xs text-zinc-400 mb-3">💵 Sueldo mensual: <b class="text-white">${money(s.sueldo||0)}</b></p>
+<div class="grid grid-cols-2 gap-2.5">
+<button onclick="editStaff(${s.id})" class="btn-gray text-xs !py-2.5">✏️ Editar</button>
+<button onclick="toggleStaff(${s.id})" class="btn-gray text-xs !py-2.5">${s.activo?"⏸️ Pausar":"▶️ Activar"}</button>
+</div></div>`).join("")}
+
+function toggleStaff(id){const s=STAFF.find(x=>x.id===id);
+if(s.usuario==="admin"&&s.activo){toast("No puedes desactivar al admin principal","error");return}
+s.activo=!s.activo;db.collection("staff").doc(String(id)).set(s).then(()=>{renderStaff();toast(s.activo?"Activado":"Pausado");});}
+
+function editStaff(id){const isNew=id===0;
+const s=isNew?{id:uid(),nombre:"",usuario:"",pass:"",rol:"cajero",activo:true,emoji:"🧑🍳",sueldo:0,foto:null}:STAFF.find(x=>x.id===id);
+if(!s)return;
+modal(`<h3 class="font-bold text-lg mb-4">${isNew?"Nuevo":"Editar"} trabajador</h3>
+<div class="flex flex-col items-center mb-4">
+<div id="prevAvatar" class="avatar avatar-lg mb-2" ${s.foto?'':`style="background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff;font-size:40px"`}>
+${s.foto?`<img src="${s.foto}" class="w-full h-full object-cover rounded-2xl">`:(s.emoji||"🧑🍳")}</div>
+<label class="cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-xs px-4 py-2.5 rounded-xl font-semibold text-zinc-200">📷 Subir foto<input type="file" id="sFoto" accept="image/*" class="hidden" onchange="handleFoto(event)"></label>
+${s.foto?`<button onclick="removeFoto()" class="text-[11px] text-red-400 mt-2 font-medium">Quitar foto</button>`:""}</div>
+<input type="text" id="sN" class="inp mb-3" value="${esc(s.nombre)}" placeholder="Nombre completo">
+<input type="text" id="sU" class="inp mb-3" value="${esc(s.usuario)}" placeholder="Usuario">
+<input type="text" id="sP" class="inp mb-3" value="${esc(s.pass)}" placeholder="Contraseña">
+<input type="number" step="0.01" id="sS" class="inp mb-3" value="${s.sueldo||0}" placeholder="Sueldo mensual">
+<select id="sR" class="inp mb-4"><option value="cajero" ${s.rol==="cajero"?"selected":""}>🧑🍳 Cajero</option><option value="cocina" ${s.rol==="cocina"?"selected":""}>👨🍳 Cocina</option><option value="admin" ${s.rol==="admin"?"selected":""}>👑 Admin</option></select>
+<div class="flex gap-3"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveStaff(${isNew?0:s.id})" class="btn-red flex-1">Guardar</button></div>`);
+window._tempFoto=s.foto||null}
+
+function handleFoto(e){const f=e.target.files[0];if(!f)return;
+const reader=new FileReader();
+reader.onload=ev=>{const img=new Image();
+img.onload=()=>{const MAX=300;let w=img.width,h=img.height;if(w>h){if(w>MAX){h=h*(MAX/w);w=MAX}}else{if(h>MAX){w=w*(MAX/h);h=MAX}}
+const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+const ctx=canvas.getContext("2d");ctx.drawImage(img,0,0,w,h);
+const compressed=canvas.toDataURL("image/jpeg",0.8);window._tempFoto=compressed;
+const p=$("#prevAvatar");p.innerHTML=`<img src="${compressed}" class="w-full h-full object-cover rounded-2xl">`;
+toast("Foto cargada ✅");};img.src=ev.target.result;};reader.readAsDataURL(f);}
+function removeFoto(){window._tempFoto=null;const p=$("#prevAvatar");p.innerHTML="🧑🍳";p.style.background="linear-gradient(135deg,#dc2626,#f59e0b)";p.style.color="#fff";p.style.fontSize="40px"}
+
+function saveStaff(id){const realId=id===0?uid():id;
+const data={id:realId,nombre:$("#sN").value.trim(),usuario:$("#sU").value.trim(),pass:$("#sP").value.trim(),sueldo:parseFloat($("#sS").value)\vert{}\vert{}0,rol:$("#sR").value,emoji:$("#sR").value==="admin"?"👑":$("#sR").value==="cocina"?"👨🍳":"🧑🍳",foto:window._tempFoto||null,activo:true};
+if(!data.nombre||!data.usuario||!data.pass){toast("Completa los campos","error");return}
+db.collection("staff").doc(String(realId)).set(data).then(()=>{
+  renderStaff();closeModal();toast("Trabajador guardado en la nube ✨");
+  if(SESSION&&SESSION.id===realId){SESSION.nombre=data.nombre;SESSION.foto=data.foto;localStorage.setItem("bp_session",JSON.stringify(SESSION));}
+});}
+
+// ==================== FINANZAS ====================
+const monthKey=()=>new Date().toISOString().slice(0,7);
+function renderFin(){const m=monthKey();
+const inc=SALES.filter(s=>s.fecha.slice(0,7)===m).reduce((a,s)=>a+s.total,0);
+const payPaid=PAY.filter(p=>(p.fecha||"").slice(0,7)===m).reduce((a,p)=>a+p.monto,0);
+const expSum=EXP.filter(e=>e.fecha.slice(0,7)===m).reduce((a,e)=>a+e.monto,0);
+const debtPaid=DEBT.filter(d=>(d.fechaPago||"").slice(0,7)===m&&d.pagado).reduce((a,d)=>a+d.monto,0);
+const totalEx=payPaid+expSum+debtPaid;
+const payExp=STAFF.reduce((a,s)=>a+(s.sueldo||0),0);
+const bal=inc-totalEx;
+$("#fIn").textContent=money(inc);$("#fEx").textContent=money(totalEx);$("#fPay").textContent=money(payExp);$("#fBal").textContent=money(bal);
+$("#fBal").style.color=bal>=0?"#34d399":"#f87171";
+$("#salaryList").innerHTML=STAFF.map(s=>{const paid=PAY.filter(p=>p.staffId===s.id&&(p.fecha||"").slice(0,7)===m).reduce((a,p)=>a+p.monto,0);
+const pend=Math.max(0,(s.sueldo||0)-paid);
+return `<div class="card"><div class="flex items-center gap-3.5 mb-2.5">
+<div class="avatar" ${s.foto?'':`style="background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff"`}>${s.foto?`<img src="${s.foto}" class="w-full h-full object-cover">`:(s.emoji||"👤")}</div>
+<div class="flex-1 min-w-0"><p class="font-bold text-sm truncate text-zinc-200">${esc(s.nombre)}</p><p class="text-xs text-zinc-400">Sueldo: ${money(s.sueldo||0)}</p></div>
+<div class="text-right"><p class="text-[10px] text-zinc-400 font-bold">Pendiente</p><p class="text-sm font-black ${pend>0?"text-red-400":"text-emerald-400"}">${money(pend)}</p></div></div>
+<p class="text-xs text-zinc-400 mb-3">Pagado este mes: <b class="text-emerald-400">${money(paid)}</b></p>
+<div class="flex gap-2.5"><button onclick="paySalary(${s.id})" class="flex-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 py-2 rounded-xl text-xs font-bold">💵 Pagar Sueldo</button><button onclick="editSalary(${s.id})" class="btn-gray flex-1 text-xs !py-2">✏️ Cambiar Sueldo</button></div></div>`}).join("");
+const mExp=EXP.filter(e=>e.fecha.slice(0,7)===m);
+$("#expList").innerHTML=mExp.length===0?`<p class="text-center text-zinc-500 py-6 text-xs font-medium">Sin gastos este mes</p>`:
+mExp.map(e=>`<div class="card flex items-center gap-3.5"><div class="flex-1 min-w-0"><p class="font-bold text-sm truncate text-zinc-200">${esc(e.descripcion)}</p><p class="text-xs text-zinc-400">${esc(e.categoria||"General")} · ${new Date(e.fecha).toLocaleDateString("es-EC")}</p></div>
+<p class="text-red-400 font-black text-sm">-${money(e.monto)}</p><button onclick="delExpense(${e.id})" class="text-zinc-500 hover:text-red-400 text-xs p-2"><i class="fa-solid fa-trash"></i></button></div>`).join("");
+$("#debtList").innerHTML=DEBT.length===0?`<p class="text-center text-zinc-500 py-6 text-xs font-medium">Sin deudas pendientes 🎉</p>`:
+DEBT.map(d=>`<div class="card ${d.pagado?"border-emerald-500/30 opacity-60":""}">
+<div class="flex justify-between items-start mb-2.5"><div class="min-w-0"><p class="font-bold text-sm truncate text-zinc-200">${esc(d.acreedor)}</p><p class="text-xs text-zinc-400 truncate mt-0.5">${esc(d.nota||"")}</p></div>
+<div class="text-right shrink-0 ml-3"><p class="font-black ${d.pagado?"text-emerald-400 line-through":"text-amber-400"} text-sm">${money(d.monto)}</p><p class="text-[10px] text-zinc-500 mt-0.5">${d.vence?new Date(d.vence).toLocaleDateString("es-EC"):"Sin vencimiento"}</p></div></div>
+<div class="flex gap-2.5">${!d.pagado?`<button onclick="payDebt(${d.id})" class="flex-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 py-2 rounded-xl text-xs font-bold">✓ Pagar Deuda</button>`:""}<button onclick="delDebt(${d.id})" class="flex-1 bg-zinc-900 hover:bg-zinc-800 text-red-400 py-2 rounded-xl text-xs font-semibold">Eliminar</button></div></div>`).join("")}
+
+function paySalary(id){const s=STAFF.find(x=>x.id===id);const v=prompt(`Monto a pagar a ${s.nombre}:`,s.sueldo||0);if(v===null)return;
+const monto=parseFloat(v)||0;if(monto<=0)return;
+PAY.push({id:uid(),staffId:id,nombre:s.nombre,monto,fecha:new Date().toISOString()});saveFinanceCloud();toast(`Pago registrado: ${money(monto)}`);}
+function editSalary(id){const s=STAFF.find(x=>x.id===id);const v=prompt(`Sueldo mensual de ${s.nombre}:`,s.sueldo||0);if(v===null)return;
+s.sueldo=parseFloat(v)||0;db.collection("staff").doc(String(id)).set(s).then(()=>{renderFin();renderStaff();toast("Sueldo actualizado");});}
+function newExpense(){modal(`<h3 class="font-bold text-lg mb-4">Nuevo gasto</h3>
+<input type="text" id="exD" class="inp mb-3" placeholder="Descripción del gasto">
+<input type="number" step="0.01" id="exA" class="inp mb-3" placeholder="Monto ($)">
+<select id="exC" class="inp mb-4"><option>Servicios</option><option>Arriendo</option><option>Insumos</option><option>Sueldos</option><option>Otros</option></select>
+<div class="flex gap-3"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveExpense()" class="btn-red flex-1">Guardar</button></div>`)}
+function saveExpense(){const d=$("#exD").value.trim(),m=parseFloat($("#exA").value)||0;if(!d||m<=0){toast("Completa los datos","error");return}
+EXP.push({id:uid(),descripcion:d,monto:m,categoria:$("#exC").value,fecha:new Date().toISOString()});saveFinanceCloud();closeModal();toast("Gasto registrado");}
+function delExpense(id){if(!confirm("¿Eliminar?"))return;EXP=EXP.filter(e=>e.id!==id);saveFinanceCloud();toast("Gasto eliminado");}
+function newDebt(){modal(`<h3 class="font-bold text-lg mb-4">Nueva deuda</h3>
+<input type="text" id="dN" class="inp mb-3" placeholder="Acreedor">
+<input type="number" step="0.01" id="dA" class="inp mb-3" placeholder="Monto ($)">
+<input type="date" id="dV" class="inp mb-3">
+<input type="text" id="dNo" class="inp mb-4" placeholder="Nota o detalle (opcional)">
+<div class="flex gap-3"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveDebt()" class="btn-red flex-1">Guardar</button></div>`)}
+function saveDebt(){const n=$("#dN").value.trim(),m=parseFloat($("#dA").value)||0;if(!n||m<=0){toast("Completa los datos","error");return}
+DEBT.push({id:uid(),acreedor:n,monto:m,vence:$("#dV").value\vert{}\vert{}null,nota:$("#dNo").value.trim(),pagado:false,fecha:new Date().toISOString()});saveFinanceCloud();closeModal();toast("Deuda registrada");}
+function payDebt(id){const d=DEBT.find(x=>x.id===id);if(!confirm(`¿Marcar pagada: ${d.acreedor}?`))return;
+d.pagado=true;d.fechaPago=new Date().toISOString();saveFinanceCloud();toast("Deuda pagada");}
+function delDebt(id){if(!confirm("¿Eliminar?"))return;DEBT=DEBT.filter(d=>d.id!==id);saveFinanceCloud();toast("Deuda eliminada");}
+$$(".tabbtn[data-f]").forEach(b=>b.addEventListener("click",()=>{$$
+(".tabbtn[data-f]").forEach(x=>x.classList.remove("act"));b.classList.add("act");
+["salary","exp","debt"].forEach(t=>{const el=$("#f-"+t);if(el)el.classList.toggle("hide",t!==b.dataset.f)})}));
+
+// ==================== CAJA ====================
+function renderCash(){const today=new Date().toISOString().slice(0,10);
+const c=CASH.find(x=>x.fecha===today);
+const salesToday=SALES.filter(s=>s.fecha.slice(0,10)===today);
+const cashSales=salesToday.filter(s=>s.metodo==="Efectivo").reduce((a,s)=>a+s.total,0);
+const isOpen=c&&!c.cerrada;
+$("#kState").textContent=isOpen?"ABIERTA":"CERRADA";$("#kState").style.color=isOpen?"#34d399":"#a1a1aa";
+const exp=(c?.montoApertura||0)+cashSales;$("#kExp").textContent=money(exp);
+const counted=c?.montoContado??null;const dif=counted!==null?counted-exp:0;
+$("#kDif").textContent=counted!==null?money(dif):"$0.00";
+$("#kDif").style.color=counted===null?"#fff":Math.abs(dif)<0.5?"#34d399":"#f87171";
+$("#cashHint").textContent=`💵 ${money(cashSales)} en efectivo · 💳 ${money(salesToday.filter(s=>s.metodo==="Tarjeta").reduce((a,s)=>a+s.total,0))} en tarjeta`;
+$("#cashHist").innerHTML=CASH.length===0?`<p class="text-center text-zinc-500 py-6 text-xs font-medium">Sin cierres registrados</p>`:
+CASH.slice().reverse().slice(0,10).map(c=>{const d=c.diferencia??0;
+return `<div class="card flex justify-between items-center"><div><p class="text-xs font-bold text-zinc-200">${new Date(c.fecha).toLocaleDateString("es-EC")}</p><p class="text-[11px] text-zinc-400 mt-0.5">Apertura ${money(c.montoApertura)} · Contado ${money(c.montoContado||0)}</p></div>
+<p class="text-sm font-black ${Math.abs(d)<0.5?"text-emerald-400":"text-red-400"}">${money(d)}</p></div>`}).join("")}
+
+function openCash(){const amt=parseFloat($("#cashOpen").value)||0;if(amt<=0){toast("Ingresa el monto de apertura","error");return}
+const today=new Date().toISOString().slice(0,10);
+if(CASH.find(c=>c.fecha===today&&!c.cerrada)){toast("Ya hay caja abierta hoy","error");return}
+CASH.push({id:uid(),fecha:today,apertura:new Date().toISOString(),montoApertura:amt,cerrada:false,abiertaPor:SESSION?.nombre||"Sistema"});
+saveFinanceCloud();renderCash();toast(`Caja abierta con ${money(amt)} 🔓`);}
+
+function closeCash(){const today=new Date().toISOString().slice(0,10);
+const c=CASH.find(x=>x.fecha===today&&!x.cerrada);if(!c){toast("No hay caja abierta","error");return}
+const cnt=parseFloat($("#cashCount").value);if(isNaN(cnt)){toast("Ingresa el efectivo contado físicamente","error");return}
+const cs=SALES.filter(s=>s.fecha.slice(0,10)===today&&s.metodo==="Efectivo").reduce((a,s)=>a+s.total,0);
+const exp=c.montoApertura+cs;c.cerrada=true;c.cierre=new Date().toISOString();c.montoContado=cnt;c.esperado=exp;c.diferencia=cnt-exp;c.cerradaPor=SESSION?.nombre||"Sistema";
+saveFinanceCloud();renderCash();toast(`Caja cerrada. Diferencia: ${money(c.diferencia)} 🔒`);}
+
+// ==================== STATS ====================
+function renderStats(){const today=new Date().toISOString().slice(0,10);const m=monthKey();
+const sT=SALES.filter(s=>s.fecha.slice(0,10)===today);const sM=SALES.filter(s=>s.fecha.slice(0,7)===m);
+$("#sT").textContent=money(sT.reduce((a,s)=>a+s.total,0));$("#sO").textContent=sT.length;
+$("#sM").textContent=money(sM.reduce((a,s)=>a+s.total,0));$("#sA").textContent=money(SALES.length?SALES.reduce((a,s)=>a+s.total,0)/SALES.length:0);
+$("#salesList").innerHTML=SALES.length===0?`<p class="text-center text-zinc-500 py-8 text-xs font-medium">Sin ventas registradas</p>`:
+SALES.slice(0,20).map(s=>`<div class="card flex items-center gap-3.5"><div class="text-xl w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center">${s.metodo==="Efectivo"?"💵":"💳"}</div>
+<div class="flex-1 min-w-0"><p class="text-xs font-bold truncate text-zinc-200">${esc(s.cliente)} <span class="text-[10px] text-zinc-400 font-normal">(${esc(s.vendedor)})</span></p><p class="text-[11px] text-zinc-400 mt-0.5">${new Date(s.fecha).toLocaleString("es-EC",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"})}</p></div>
+<p class="text-amber-400 font-black text-sm">${money(s.total)}</p></div>`).join("")}
+
+// ==================== RENDER ALL ====================
+function renderAll(){
+try{renderPOS()}catch(e){}
+try{renderCart()}catch(e){}
+try{renderMenu()}catch(e){}
+try{renderStock()}catch(e){}
+try{renderStaff()}catch(e){}
+try{renderFin()}catch(e){}
+try{renderCash()}catch(e){}
+try{renderStats()}catch(e){}
+}
+
+// ==================== INIT SESSION ====================
+if(SESSION){
+  startApp();
+}
+</script>
 </body>
 </html>
