@@ -3,11 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brother's Pizza - Panel Administrativo & POS</title>
+    <title>Brother's Pizza - Panel Administrativo & POS (Cloud)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // CONFIGURACIÓN DE FIREBASE (Tus credenciales reales)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHwQ5eRRImp03oROAP5E0EzFzz7blA7bw",
+            authDomain: "brotherspizza-a85a4.firebaseapp.com",
+            projectId: "brotherspizza-a85a4",
+            storageBucket: "brotherspizza-a85a4.firebasestorage.app",
+            messagingSenderId: "14812443695",
+            appId: "1:14812443695:web:5ff7081567a49a295cc2da",
+            measurementId: "G-LYCYXYGP97"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.FB_helpers = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc };
+        
+        window.dispatchEvent(new Event('firebase-ready'));
+    </script>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans antialiased">
 
@@ -19,7 +44,7 @@
                     <i class="fa-solid fa-pizza-slice"></i>
                 </div>
                 <h1 class="text-2xl font-black tracking-wider text-white">BROTHER'S PIZZA</h1>
-                <p class="text-sm text-gray-400 mt-1">Sistema de Gestión & POS</p>
+                <p class="text-sm text-gray-400 mt-1">Sistema Cloud & POS</p>
             </div>
             <form id="login-form" onsubmit="doLogin(event)" class="space-y-5">
                 <div>
@@ -34,15 +59,14 @@
                     Iniciar Sesión
                 </button>
                 <div class="text-center text-xs text-gray-500 mt-4">
-                    Credenciales por defecto: <span class="text-gray-300">admin / admin123</span> o <span class="text-gray-300">cajero / cajero123</span>
+                    Credenciales: <span class="text-gray-300">admin / admin123</span> o <span class="text-gray-300">cajero / cajero123</span>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- APLICACIÓN PRINCIPAL (OCULTA HASTA LOGIN) -->
+    <!-- APLICACIÓN PRINCIPAL -->
     <div id="app-container" class="hidden min-h-screen flex flex-col">
-        <!-- Barra de Navegación Superior -->
         <header class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center shadow-md">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-red-600 text-white rounded-xl flex items-center justify-center font-bold">
@@ -60,44 +84,36 @@
             </nav>
             <div class="flex items-center space-x-4">
                 <span id="current-time" class="text-xs text-gray-400 hidden lg:inline"></span>
-                <button onclick="doLogout()" class="bg-gray-700 hover:bg-red-600/30 hover:text-red-400 text-gray-300 p-2.5 rounded-xl transition-all" title="Cerrar Sesión">
+                <button onclick="doLogout()" class="bg-gray-700 hover:bg-red-600/30 hover:text-red-400 text-gray-300 p-2.5 rounded-xl transition-all">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
         </header>
 
-        <!-- CONTENIDO DE LAS PESTAÑAS -->
         <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full">
-            
-            <!-- PESTAÑA 1: POS / VENTAS -->
+            <!-- POS -->
             <section id="tab-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Productos / Catálogo -->
                 <div class="lg:col-span-2 space-y-4">
                     <div class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-gray-800 p-4 rounded-2xl border border-gray-700">
                         <div class="relative w-full sm:w-72">
                             <i class="fa-solid fa-search absolute left-3 top-3.5 text-gray-400 text-sm"></i>
-                            <input type="text" id="pos-search" oninput="filterPOSProducts()" placeholder="Buscar producto..." class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+                            <input type="text" id="pos-search" oninput="loadPOSProducts()" placeholder="Buscar producto..." class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
                         </div>
-                        <div class="flex space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-                            <button onclick="filterCategory('todos')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-red-600 text-white transition-all whitespace-nowrap">Todos</button>
-                            <button onclick="filterCategory('pizza')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 hover:text-white transition-all whitespace-nowrap">Pizzas</button>
-                            <button onclick="filterCategory('bebida')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 hover:text-white transition-all whitespace-nowrap">Bebidas</button>
-                            <button onclick="filterCategory('extra')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 hover:text-white transition-all whitespace-nowrap">Extras</button>
+                        <div class="flex space-x-2 w-full sm:w-auto overflow-x-auto pb-1">
+                            <button onclick="filterCategory('todos')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-red-600 text-white whitespace-nowrap">Todos</button>
+                            <button onclick="filterCategory('pizza')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 whitespace-nowrap">Pizzas</button>
+                            <button onclick="filterCategory('bebida')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 whitespace-nowrap">Bebidas</button>
+                            <button onclick="filterCategory('extra')" class="pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 whitespace-nowrap">Extras</button>
                         </div>
                     </div>
-                    <div id="pos-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto pr-1">
-                        <!-- Generado dinámicamente -->
-                    </div>
+                    <div id="pos-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- Carrito y Pago -->
                 <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 flex flex-col justify-between h-[75vh] lg:h-auto">
                     <div>
                         <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
-                            <h3 class="font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-cart-shopping text-red-500"></i> Factura Actual
-                            </h3>
-                            <button onclick="clearCart()" class="text-xs text-gray-400 hover:text-red-400 transition-colors">Vaciar</button>
+                            <h3 class="font-bold text-white flex items-center gap-2"><i class="fa-solid fa-cart-shopping text-red-500"></i> Factura Actual</h3>
+                            <button onclick="clearCart()" class="text-xs text-gray-400 hover:text-red-400">Vaciar</button>
                         </div>
                         <div id="cart-items" class="space-y-3 overflow-y-auto max-h-[40vh] pr-1">
                             <p class="text-gray-500 text-center py-8 text-sm">El carrito está vacío</p>
@@ -109,87 +125,56 @@
                             <span id="cart-total" class="text-red-500">$0.00</span>
                         </div>
                         <div class="grid grid-cols-2 gap-2 pt-3">
-                            <button onclick="processCheckout('Efectivo')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl text-sm transition-all shadow-lg shadow-emerald-600/20">
-                                <i class="fa-solid fa-money-bill-wave mr-1"></i> Efectivo
-                            </button>
-                            <button onclick="processCheckout('Tarjeta')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-600/20">
-                                <i class="fa-solid fa-credit-card mr-1"></i> Tarjeta
-                            </button>
+                            <button onclick="processCheckout('Efectivo')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl text-sm shadow-lg shadow-emerald-600/20"><i class="fa-solid fa-money-bill-wave mr-1"></i> Efectivo</button>
+                            <button onclick="processCheckout('Tarjeta')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl text-sm shadow-lg shadow-blue-600/20"><i class="fa-solid fa-credit-card mr-1"></i> Tarjeta</button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- PESTAÑA 2: MENÚ E INVENTARIO -->
+            <!-- MENÚ & INVENTARIO -->
             <section id="tab-menu" class="hidden space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-800 p-5 rounded-2xl border border-gray-700">
+                <div class="flex justify-between items-center bg-gray-800 p-5 rounded-2xl border border-gray-700">
                     <div>
-                        <h3 class="text-lg font-bold text-white">Gestión de Menú e Inventario</h3>
-                        <p class="text-xs text-gray-400">Agrega productos, modifica precios y controla existencias.</p>
+                        <h3 class="text-lg font-bold text-white">Gestión de Menú e Inventario (Cloud)</h3>
+                        <p class="text-xs text-gray-400">Sincronizado en tiempo real con Firestore.</p>
                     </div>
-                    <button onclick="openProductModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition-all shadow-lg shadow-red-600/30">
-                        <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
-                    </button>
+                    <button onclick="openProductModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2.5 rounded-xl text-sm"><i class="fa-solid fa-plus mr-1"></i> Nuevo Producto</button>
                 </div>
                 <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-900 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-700">
-                                    <th class="p-4">Producto</th>
-                                    <th class="p-4">Categoría</th>
-                                    <th class="p-4">Precio</th>
-                                    <th class="p-4">Stock</th>
-                                    <th class="p-4 text-center">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inventory-table-body" class="divide-y divide-gray-700 text-sm">
-                                <!-- Dinámico -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-900 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-700">
+                                <th class="p-4">Producto</th>
+                                <th class="p-4">Categoría</th>
+                                <th class="p-4">Precio</th>
+                                <th class="p-4">Stock</th>
+                                <th class="p-4 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body" class="divide-y divide-gray-700 text-sm"></tbody>
+                    </table>
                 </div>
             </section>
 
-            <!-- PESTAÑA 3: PERSONAL Y FINANZAS -->
+            <!-- PERSONAL & FINANZAS -->
             <section id="tab-staff" class="hidden space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Tarjeta de Resumen Financiero -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-gray-800 border border-gray-700 p-5 rounded-2xl">
-                        <span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Ventas del Día</span>
+                        <span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Ventas Totales Registradas</span>
                         <h4 id="fin-daily-sales" class="text-2xl font-black text-emerald-400 mt-2">$0.00</h4>
-                        <p class="text-xs text-gray-500 mt-1">Registradas en el POS actual</p>
                     </div>
                     <div class="bg-gray-800 border border-gray-700 p-5 rounded-2xl">
-                        <span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Gastos / Insumos</span>
-                        <h4 id="fin-total-expenses" class="text-2xl font-black text-red-400 mt-2">$0.00</h4>
-                        <p class="text-xs text-gray-500 mt-1">Registrados este mes</p>
-                    </div>
-                    <div class="bg-gray-800 border border-gray-700 p-5 rounded-2xl flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Control de Caja</span>
-                            <h4 id="cash-status-label" class="text-lg font-bold text-amber-400 mt-1">Caja Abierta</h4>
-                        </div>
-                        <button onclick="toggleCashRegister()" id="btn-cash-toggle" class="mt-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-3 rounded-xl text-xs transition-all">
-                            Cerrar Caja
-                        </button>
+                        <span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Estado Cloud</span>
+                        <h4 class="text-lg font-bold text-blue-400 mt-1"><i class="fa-solid fa-cloud text-xs mr-1"></i> Conectado a Firestore</h4>
                     </div>
                 </div>
-
-                <!-- Sección Staff -->
                 <div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl space-y-6">
                     <div class="flex justify-between items-center border-b border-gray-700 pb-4">
-                        <div>
-                            <h3 class="text-lg font-bold text-white">Gestión de Personal</h3>
-                            <p class="text-xs text-gray-400">Control de empleados y fotografía comprimida optimizada.</p>
-                        </div>
-                        <button onclick="openStaffModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-all">
-                            <i class="fa-solid fa-user-plus mr-1"></i> Agregar Empleado
-                        </button>
+                        <h3 class="text-lg font-bold text-white">Personal</h3>
+                        <button onclick="openStaffModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-xl text-sm"><i class="fa-solid fa-user-plus mr-1"></i> Agregar Empleado</button>
                     </div>
-                    <div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Dinámico -->
-                    </div>
+                    <div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 </div>
             </section>
         </main>
@@ -203,12 +188,12 @@
                 <input type="hidden" id="prod-id">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Nombre</label>
-                    <input type="text" id="prod-name" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-red-500">
+                    <input type="text" id="prod-name" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Categoría</label>
-                        <select id="prod-cat" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-red-500">
+                        <select id="prod-cat" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
                             <option value="pizza">Pizza</option>
                             <option value="bebida">Bebida</option>
                             <option value="extra">Extra</option>
@@ -216,16 +201,16 @@
                     </div>
                     <div>
                         <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Precio ($)</label>
-                        <input type="number" step="0.01" id="prod-price" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-red-500">
+                        <input type="number" step="0.01" id="prod-price" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Stock Inicial</label>
-                    <input type="number" id="prod-stock" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-red-500">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Stock</label>
+                    <input type="number" id="prod-stock" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeProductModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-xl text-sm transition-all">Cancelar</button>
-                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm transition-all">Guardar</button>
+                    <button type="button" onclick="closeProductModal()" class="bg-gray-700 text-white px-4 py-2 rounded-xl text-sm">Cancelar</button>
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm">Guardar</button>
                 </div>
             </form>
         </div>
@@ -238,55 +223,35 @@
             <form id="staff-form" onsubmit="saveStaff(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Nombre Completo</label>
-                    <input type="text" id="staff-name" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-red-500">
+                    <input type="text" id="staff-name" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm">
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Rol / Cargo</label>
-                    <input type="text" id="staff-role" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-red-500" placeholder="Ej. Cajero / Pizzero">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Foto (Se comprimirá automáticamente)</label>
-                    <input type="file" id="staff-photo-input" accept="image/*" onchange="handleFoto(event)" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700">
+                    <input type="text" id="staff-role" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm" placeholder="Ej. Cajero / Pizzero">
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeStaffModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-xl text-sm transition-all">Cancelar</button>
-                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm transition-all">Guardar</button>
+                    <button type="button" onclick="closeStaffModal()" class="bg-gray-700 text-white px-4 py-2 rounded-xl text-sm">Cancelar</button>
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- SCRIPTS DE FUNCIONALIDAD -->
+    <!-- SCRIPT DE LÓGICA Y CONEXIÓN -->
     <script>
-        // ESTADO GLOBAL Y PERSISTENCIA (LOCALSTORAGE)
         let currentUser = JSON.parse(localStorage.getItem('bp_user')) || null;
-        let activeTab = 'pos';
         let currentCategory = 'todos';
         let cart = [];
-        let compressedPhotoBase64 = '';
+        let productsCache = [];
 
-        // Datos iniciales de ejemplo si no existen
-        if (!localStorage.getItem('bp_menu')) {
-            localStorage.setItem('bp_menu', JSON.stringify([
-                { id: 1, name: 'Pizza Pepperoni Familiar', category: 'pizza', price: 14.50, stock: 25 },
-                { id: 2, name: 'Pizza Hawaiana Mediana', category: 'pizza', price: 10.00, stock: 30 },
-                { id: 3, name: 'Coca-Cola 1.5L', category: 'bebida', price: 2.50, stock: 50 },
-                { id: 4, name: 'Borde de Queso Extra', category: 'extra', price: 2.00, stock: 100 }
-            ]));
-        }
-        if (!localStorage.getItem('bp_sales')) localStorage.setItem('bp_sales', JSON.stringify([]));
-        if (!localStorage.getItem('bp_staff')) localStorage.setItem('bp_staff', JSON.stringify([]));
-        if (!localStorage.getItem('bp_expenses')) localStorage.setItem('bp_expenses', JSON.stringify('120.50'));
-
-        // INICIALIZACIÓN
-        window.addEventListener('DOMContentLoaded', () => {
-            if (currentUser) {
-                showApp();
-            } else {
-                showLogin();
-            }
-            updateClock();
+        window.addEventListener('firebase-ready', () => {
+            if (currentUser) showApp();
+            else showLogin();
             setInterval(updateClock, 1000);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!currentUser) showLogin();
         });
 
         function updateClock() {
@@ -295,7 +260,6 @@
             if(el) el.innerText = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
         }
 
-        // AUTENTICACIÓN
         function doLogin(e) {
             e.preventDefault();
             const u = document.getElementById('login-user').value.trim();
@@ -306,7 +270,7 @@
                 localStorage.setItem('bp_user', JSON.stringify(currentUser));
                 showApp();
             } else {
-                alert('Credenciales incorrectas. Use admin/admin123 o cajero/cajero123');
+                alert('Credenciales incorrectas (admin/admin123)');
             }
         }
 
@@ -325,15 +289,10 @@
             document.getElementById('login-container').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
             document.getElementById('user-role-badge').innerText = currentUser.role;
-            loadPOSProducts();
-            loadInventory();
-            loadStaff();
-            updateFinances();
+            loadDataFromCloud();
         }
 
-        // NAVEGACIÓN DE PESTAÑAS
         function switchTab(tab) {
-            activeTab = tab;
             ['pos', 'menu', 'staff'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
                 document.getElementById(`btn-tab-${t}`).className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all text-gray-400 hover:text-white";
@@ -342,33 +301,48 @@
             document.getElementById(`btn-tab-${tab}`).className = "px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-red-600 text-white";
         }
 
-        // MÓDULO POS
+        // CARGAR DATOS DESDE FIRESTORE
+        async function loadDataFromCloud() {
+            await loadInventoryCloud();
+            await loadStaffCloud();
+            await loadSalesCloud();
+        }
+
+        async function loadInventoryCloud() {
+            const querySnapshot = await window.FB_helpers.getDocs(window.FB_helpers.collection(window.db, "productos"));
+            productsCache = [];
+            querySnapshot.forEach((doc) => {
+                productsCache.push({ id: doc.id, ...doc.data() });
+            });
+            loadPOSProducts();
+            loadInventoryTable();
+        }
+
         function loadPOSProducts() {
-            const products = JSON.parse(localStorage.getItem('bp_menu'));
             const search = document.getElementById('pos-search').value.toLowerCase();
             const grid = document.getElementById('pos-products-grid');
             grid.innerHTML = '';
 
-            const filtered = products.filter(p => {
+            const filtered = productsCache.filter(p => {
                 const matchCat = currentCategory === 'todos' || p.category === currentCategory;
                 const matchName = p.name.toLowerCase().includes(search);
                 return matchCat && matchName;
             });
 
             if (filtered.length === 0) {
-                grid.innerHTML = '<p class="text-gray-500 col-span-full text-center py-8 text-sm">No se encontraron productos</p>';
+                grid.innerHTML = '<p class="text-gray-500 col-span-full text-center py-8 text-sm">No hay productos en la nube (Agrega en Menú & Stock)</p>';
                 return;
             }
 
             filtered.forEach(p => {
                 grid.innerHTML += `
-                    <div onclick="addToCart(${p.id})" class="bg-gray-800 border border-gray-700 hover:border-red-500/50 p-4 rounded-2xl cursor-pointer transition-all flex flex-col justify-between group shadow-md">
+                    <div onclick="addToCart('${p.id}')" class="bg-gray-800 border border-gray-700 hover:border-red-500/50 p-4 rounded-2xl cursor-pointer transition-all flex flex-col justify-between group">
                         <div>
                             <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-gray-900 text-gray-400">${p.category}</span>
-                            <h4 class="font-bold text-white text-sm mt-2 group-hover:text-red-400 transition-colors">${p.name}</h4>
+                            <h4 class="font-bold text-white text-sm mt-2">${p.name}</h4>
                         </div>
                         <div class="flex justify-between items-center mt-4 pt-2 border-t border-gray-700/50">
-                            <span class="text-red-400 font-black text-sm">$${p.price.toFixed(2)}</span>
+                            <span class="text-red-400 font-black text-sm">$${Number(p.price).toFixed(2)}</span>
                             <span class="text-xs text-gray-500">Stock: ${p.stock}</span>
                         </div>
                     </div>
@@ -378,34 +352,23 @@
 
         function filterCategory(cat) {
             currentCategory = cat;
-            document.querySelectorAll('.pos-cat-btn').forEach(btn => {
-                btn.className = "pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 hover:text-white transition-all whitespace-nowrap";
-            });
-            event.target.className = "pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-red-600 text-white transition-all whitespace-nowrap";
-            loadPOSProducts();
-        }
-
-        function filterPOSProducts() {
+            document.querySelectorAll('.pos-cat-btn').forEach(btn => btn.className = "pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-900 text-gray-400 whitespace-nowrap");
+            event.target.className = "pos-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-red-600 text-white whitespace-nowrap";
             loadPOSProducts();
         }
 
         function addToCart(id) {
-            const products = JSON.parse(localStorage.getItem('bp_menu'));
-            const prod = products.find(p => p.id === id);
+            const prod = productsCache.find(p => p.id === id);
             if (!prod || prod.stock <= 0) {
-                alert('Producto sin stock disponible.');
+                alert('Sin stock disponible.');
                 return;
             }
-
             const existing = cart.find(item => item.id === id);
             if (existing) {
-                if (existing.qty < prod.stock) {
-                    existing.qty++;
-                } else {
-                    alert('No hay más stock disponible.');
-                }
+                if (existing.qty < prod.stock) existing.qty++;
+                else alert('No hay más stock.');
             } else {
-                cart.push({ id: prod.id, name: prod.name, price: prod.price, qty: 1 });
+                cart.push({ id: prod.id, name: prod.name, price: Number(prod.price), qty: 1 });
             }
             renderCart();
         }
@@ -417,7 +380,6 @@
                 updateCartTotals();
                 return;
             }
-
             container.innerHTML = '';
             cart.forEach((item, index) => {
                 container.innerHTML += `
@@ -428,7 +390,7 @@
                         </div>
                         <div class="flex items-center space-x-2">
                             <span class="font-bold text-red-400">$${(item.price * item.qty).toFixed(2)}</span>
-                            <button onclick="removeFromCart(${index})" class="text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
+                            <button onclick="cart.splice(${index},1); renderCart()" class="text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
                         </div>
                     </div>
                 `;
@@ -436,254 +398,112 @@
             updateCartTotals();
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            renderCart();
-        }
-
-        function clearCart() {
-            cart = [];
-            renderCart();
-        }
+        function clearCart() { cart = []; renderCart(); }
 
         function updateCartTotals() {
             const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
             document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
         }
 
-        function processCheckout(method) {
-            if (cart.length === 0) {
-                alert('El carrito está vacío');
-                return;
-            }
+        async function processCheckout(method) {
+            if (cart.length === 0) return alert('Carrito vacío');
             const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-            // Actualizar stock
-            let products = JSON.parse(localStorage.getItem('bp_menu'));
-            cart.forEach(cartItem => {
-                const p = products.find(prod => prod.id === cartItem.id);
-                if (p) p.stock -= cartItem.qty;
+            for (let item of cart) {
+                const prod = productsCache.find(p => p.id === item.id);
+                const newStock = prod.stock - item.qty;
+                const docRef = window.FB_helpers.doc(window.db, "productos", item.id);
+                await window.FB_helpers.updateDoc(docRef, { stock: newStock });
+            }
+
+            await window.FB_helpers.addDoc(window.FB_helpers.collection(window.db, "ventas"), {
+                date: new Date().toISOString(),
+                total,
+                method,
+                items: cart
             });
-            localStorage.setItem('bp_menu', JSON.stringify(products));
 
-            // Registrar venta
-            let sales = JSON.parse(localStorage.getItem('bp_sales'));
-            sales.push({ date: new Date().toISOString(), total, method, items: [...cart] });
-            localStorage.setItem('bp_sales', JSON.stringify(sales));
-
-            alert(`Venta procesada con éxito por $${total.toFixed(2)} (${method})`);
+            alert(`Venta registrada en la nube por $${total.toFixed(2)} (${method})`);
             cart = [];
             renderCart();
-            loadPOSProducts();
-            loadInventory();
-            updateFinances();
+            loadDataFromCloud();
         }
 
-        // MÓDULO MENÚ / INVENTARIO
-        function loadInventory() {
-            const products = JSON.parse(localStorage.getItem('bp_menu'));
+        function loadInventoryTable() {
             const tbody = document.getElementById('inventory-table-body');
             tbody.innerHTML = '';
-
-            products.forEach(p => {
+            productsCache.forEach(p => {
                 tbody.innerHTML += `
-                    <tr class="hover:bg-gray-700/30 transition-colors">
+                    <tr class="hover:bg-gray-700/30">
                         <td class="p-4 font-semibold text-white">${p.name}</td>
                         <td class="p-4"><span class="text-xs uppercase bg-gray-900 px-2 py-0.5 rounded text-gray-400">${p.category}</span></td>
-                        <td class="p-4 text-red-400 font-bold">$${p.price.toFixed(2)}</td>
-                        <td class="p-4 ${p.stock < 10 ? 'text-amber-400 font-bold' : 'text-gray-300'}">${p.stock}</td>
+                        <td class="p-4 text-red-400 font-bold">$${Number(p.price).toFixed(2)}</td>
+                        <td class="p-4">${p.stock}</td>
                         <td class="p-4 text-center space-x-2">
-                            <button onclick="editProduct(${p.id})" class="text-gray-400 hover:text-white p-1.5"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteProduct(${p.id})" class="text-gray-400 hover:text-red-400 p-1.5"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="deleteProduct('${p.id}')" class="text-gray-400 hover:text-red-400 p-1.5"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        function openProductModal(id = null) {
-            document.getElementById('product-modal').classList.remove('hidden');
-            if (id) {
-                const products = JSON.parse(localStorage.getItem('bp_menu'));
-                const p = products.find(prod => prod.id === id);
-                document.getElementById('product-modal-title').innerText = "Editar Producto";
-                document.getElementById('prod-id').value = p.id;
-                document.getElementById('prod-name').value = p.name;
-                document.getElementById('prod-cat').value = p.category;
-                document.getElementById('prod-price').value = p.price;
-                document.getElementById('prod-stock').value = p.stock;
-            } else {
-                document.getElementById('product-modal-title').innerText = "Nuevo Producto";
-                document.getElementById('product-form').reset();
-                document.getElementById('prod-id').value = '';
-            }
-        }
+        function openProductModal() { document.getElementById('product-modal').classList.remove('hidden'); }
+        function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
 
-        function closeProductModal() {
-            document.getElementById('product-modal').classList.add('hidden');
-        }
-
-        function saveProduct(e) {
+        async function saveProduct(e) {
             e.preventDefault();
-            const id = document.getElementById('prod-id').value;
             const name = document.getElementById('prod-name').value;
             const category = document.getElementById('prod-cat').value;
             const price = parseFloat(document.getElementById('prod-price').value);
             const stock = parseInt(document.getElementById('prod-stock').value);
 
-            let products = JSON.parse(localStorage.getItem('bp_menu'));
-
-            if (id) {
-                const p = products.find(prod => prod.id == id);
-                p.name = name;
-                p.category = category;
-                p.price = price;
-                p.stock = stock;
-            } else {
-                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ id: newId, name, category, price, stock });
-            }
-
-            localStorage.setItem('bp_menu', JSON.stringify(products));
+            await window.FB_helpers.addDoc(window.FB_helpers.collection(window.db, "productos"), { name, category, price, stock });
             closeProductModal();
-            loadInventory();
-            loadPOSProducts();
+            loadDataFromCloud();
         }
 
-        function editProduct(id) {
-            openProductModal(id);
-        }
-
-        function deleteProduct(id) {
-            if (confirm('¿Está seguro de eliminar este producto?')) {
-                let products = JSON.parse(localStorage.getItem('bp_menu'));
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('bp_menu', JSON.stringify(products));
-                loadInventory();
-                loadPOSProducts();
+        async function deleteProduct(id) {
+            if (confirm('¿Eliminar producto de la nube?')) {
+                await window.FB_helpers.deleteDoc(window.FB_helpers.doc(window.db, "productos", id));
+                loadDataFromCloud();
             }
         }
 
-        // MÓDULO PERSONAL Y COMPRESIÓN DE IMÁGENES
-        function handleFoto(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const MAX_WIDTH = 300;
-                    const MAX_HEIGHT = 300;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    compressedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        async function loadSalesCloud() {
+            const querySnapshot = await window.FB_helpers.getDocs(window.FB_helpers.collection(window.db, "ventas"));
+            let totalSales = 0;
+            querySnapshot.forEach(doc => { totalSales += doc.data().total; });
+            document.getElementById('fin-daily-sales').innerText = `$${totalSales.toFixed(2)}`;
         }
 
-        function loadStaff() {
-            const staff = JSON.parse(localStorage.getItem('bp_staff'));
-            const grid = document.getElementById('staff-grid');
-            grid.innerHTML = '';
+        function openStaffModal() { document.getElementById('staff-modal').classList.remove('hidden'); }
+        function closeStaffModal() { document.getElementById('staff-modal').classList.add('hidden'); }
 
-            if (staff.length === 0) {
-                grid.innerHTML = '<p class="text-gray-500 col-span-full text-center py-6 text-sm">No hay personal registrado</p>';
-                return;
-            }
-
-            staff.forEach((s, index) => {
-                grid.innerHTML = grid.innerHTML + `
-                    <div class="bg-gray-900 border border-gray-700 p-4 rounded-2xl flex items-center space-x-4">
-                        <img src="${s.photo || 'https://via.placeholder.com/150'}" class="w-16 h-16 rounded-full object-cover border border-red-500/30" alt="Avatar">
-                        <div class="flex-1">
-                            <h4 class="font-bold text-white text-sm">${s.name}</h4>
-                            <span class="text-xs text-red-400 bg-red-950/50 px-2 py-0.5 rounded border border-red-900/50 inline-block mt-1">${s.role}</span>
-                        </div>
-                        <button onclick="deleteStaff(${index})" class="text-gray-500 hover:text-red-400 p-2"><i class="fa-solid fa-trash text-sm"></i></button>
-                    </div>
-                `;
-            });
-        }
-
-        function openStaffModal() {
-            document.getElementById('staff-modal').classList.remove('hidden');
-            document.getElementById('staff-form').reset();
-            compressedPhotoBase64 = '';
-        }
-
-        function closeStaffModal() {
-            document.getElementById('staff-modal').classList.add('hidden');
-        }
-
-        function saveStaff(e) {
+        async function saveStaff(e) {
             e.preventDefault();
             const name = document.getElementById('staff-name').value;
             const role = document.getElementById('staff-role').value;
 
-            let staff = JSON.parse(localStorage.getItem('bp_staff'));
-            staff.push({ name, role, photo: compressedPhotoBase64 || 'https://via.placeholder.com/150' });
-            localStorage.setItem('bp_staff', JSON.stringify(staff));
-
+            await window.FB_helpers.addDoc(window.FB_helpers.collection(window.db, "personal"), { name, role });
             closeStaffModal();
-            loadStaff();
+            loadStaffCloud();
         }
 
-        function deleteStaff(index) {
-            if (confirm('¿Eliminar empleado?')) {
-                let staff = JSON.parse(localStorage.getItem('bp_staff'));
-                staff.splice(index, 1);
-                localStorage.setItem('bp_staff', JSON.stringify(staff));
-                loadStaff();
-            }
-        }
-
-        function updateFinances() {
-            const sales = JSON.parse(localStorage.getItem('bp_sales'));
-            const todayStr = new Date().toDateString();
-            const dailyTotal = sales
-                .filter(s => new Date(s.date).toDateString() === todayStr)
-                .reduce((acc, s) => acc + s.total, 0);
-
-            document.getElementById('fin-daily-sales').innerText = `$${dailyTotal.toFixed(2)}`;
-            const expenses = parseFloat(localStorage.getItem('bp_expenses')) || 0;
-            document.getElementById('fin-total-expenses').innerText = `$${expenses.toFixed(2)}`;
-        }
-
-        function toggleCashRegister() {
-            const label = document.getElementById('cash-status-label');
-            const btn = document.getElementById('btn-cash-toggle');
-            if (label.innerText.includes('Abierta')) {
-                label.innerText = "Caja Cerrada";
-                label.className = "text-lg font-bold text-red-400 mt-1";
-                btn.innerText = "Abrir Caja";
-                btn.className = "mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded-xl text-xs transition-all";
-            } else {
-                label.innerText = "Caja Abierta";
-                label.className = "text-lg font-bold text-amber-400 mt-1";
-                btn.innerText = "Cerrar Caja";
-                btn.className = "mt-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-3 rounded-xl text-xs transition-all";
-            }
+        async function loadStaffCloud() {
+            const querySnapshot = await window.FB_helpers.getDocs(window.FB_helpers.collection(window.db, "personal"));
+            const grid = document.getElementById('staff-grid');
+            grid.innerHTML = '';
+            querySnapshot.forEach(doc => {
+                const s = doc.data();
+                grid.innerHTML += `
+                    <div class="bg-gray-900 border border-gray-700 p-4 rounded-2xl flex items-center space-x-4">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-white text-sm">${s.name}</h4>
+                            <span class="text-xs text-red-400">${s.role}</span>
+                        </div>
+                    </div>
+                `;
+            });
         }
     </script>
 </body>
