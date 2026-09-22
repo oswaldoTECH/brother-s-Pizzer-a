@@ -11,46 +11,63 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <style>
   * { font-family: 'Outfit', system-ui, -apple-system, sans-serif; }
-  body { background: #09090b; color: #f4f4f5;
-    background-image: radial-gradient(circle at 15% 10%, rgba(220,38,38,0.12) 0%, transparent 45%), radial-gradient(circle at 85% 90%, rgba(245,158,11,0.10) 0%, transparent 45%);
-    background-attachment: fixed; }
-  body::before { content: ''; position: fixed; inset: 0;
-    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 42px 42px; pointer-events: none; z-index: 0; }
+  body {
+    background: #09090b; color: #f4f4f5;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(220,38,38,0.14) 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(245,158,11,0.12) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(139,92,246,0.06) 0%, transparent 60%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 42px 42px; pointer-events: none; z-index: 0;
+  }
   .glass { background: linear-gradient(135deg, rgba(24,24,27,0.85), rgba(24,24,27,0.65)); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.06); }
-  .card { background: linear-gradient(145deg, rgba(24,24,27,0.95), rgba(15,15,18,0.9)); border: 1px solid #27272a; border-radius: 18px; padding: 18px; transition: all .3s cubic-bezier(.2,.8,.2,1); position: relative; }
+  .card { background: linear-gradient(145deg, rgba(24,24,27,0.95), rgba(15,15,18,0.9)); border: 1px solid #27272a; border-radius: 18px; padding: 18px; transition: all .3s cubic-bezier(.2,.8,.2,1); position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent, rgba(255,255,255,0.02)); opacity: 0; transition: opacity .3s; pointer-events: none; }
+  .card:hover::before { opacity: 1; }
   .card:hover { border-color: #3f3f46; }
   .inp { width: 100%; background: rgba(9,9,11,0.8); border: 1px solid #3f3f46; border-radius: 12px; padding: 12px 15px; color: #fff; font-size: 14px; transition: all .2s; }
-  .inp:focus { outline: none; border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.18); }
-  .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626 50%, #b91c1c); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: all .25s; box-shadow: 0 6px 20px rgba(220,38,38,0.35); }
-  .btn-red:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(220,38,38,0.5); }
+  .inp:focus { outline: none; border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.18), 0 0 24px rgba(239,68,68,0.12); }
+  .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626 50%, #b91c1c); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: all .25s cubic-bezier(.2,.8,.2,1); box-shadow: 0 6px 20px rgba(220,38,38,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+  .btn-red:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(220,38,38,0.5), inset 0 1px 0 rgba(255,255,255,0.2); }
   .btn-gray { background: linear-gradient(135deg, #27272a, #1f1f23); color: #e4e4e7; padding: 12px 20px; border-radius: 12px; cursor: pointer; border: 1px solid #3f3f46; transition: all .2s; font-weight: 500; }
-  .btn-gray:hover { background: #3f3f46; border-color: #52525b; transform: translateY(-1px); }
-  .btn-green { background: linear-gradient(135deg, #10b981, #059669 50%, #047857); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 6px 20px rgba(16,185,129,0.35); transition: all .25s; }
-  .btn-green:hover { transform: translateY(-1px); }
+  .btn-gray:hover { background: linear-gradient(135deg, #3f3f46, #2a2a30); border-color: #52525b; transform: translateY(-1px); }
+  .btn-green { background: linear-gradient(135deg, #10b981, #059669 50%, #047857); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 6px 20px rgba(16,185,129,0.35), inset 0 1px 0 rgba(255,255,255,0.15); transition: all .25s; }
+  .btn-green:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(16,185,129,0.5); }
   .btn-amber { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 6px 20px rgba(245,158,11,0.35); transition: all .25s; }
-  .btn-amber:hover { transform: translateY(-1px); }
-  .tab-btn { padding: 10px 18px; border-radius: 12px; background: rgba(24,24,27,0.7); border: 1px solid #27272a; color: #a1a1aa; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .25s; white-space: nowrap; }
-  .tab-btn:hover { border-color: #52525b; color: #e4e4e7; }
-  .tab-btn.active { background: linear-gradient(135deg, #ef4444, #dc2626); border-color: transparent; color: #fff; box-shadow: 0 6px 20px rgba(220,38,38,0.45); }
+  .btn-amber:hover { transform: translateY(-2px); }
+  .btn-sky { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 6px 20px rgba(14,165,233,0.35); transition: all .25s; }
+  .btn-sky:hover { transform: translateY(-2px); }
+  .tab-btn { padding: 10px 18px; border-radius: 12px; background: rgba(24,24,27,0.7); border: 1px solid #27272a; color: #a1a1aa; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .25s cubic-bezier(.2,.8,.2,1); white-space: nowrap; }
+  .tab-btn:hover { border-color: #52525b; color: #e4e4e7; transform: translateY(-1px); }
+  .tab-btn.active { background: linear-gradient(135deg, #ef4444, #dc2626); border-color: transparent; color: #fff; box-shadow: 0 6px 20px rgba(220,38,38,0.45), inset 0 1px 0 rgba(255,255,255,0.15); }
   .hide { display: none !important; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(#3f3f46, #27272a); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #52525b; }
   .fade-in { animation: fadeIn .3s cubic-bezier(.2,.8,.2,1); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to {opacity:1; transform:none;} }
   .slide-up { animation: slideUp .35s cubic-bezier(.2,.8,.2,1); }
   @keyframes slideUp { from { opacity:0; transform: translateY(20px) scale(.98);} to {opacity:1; transform:none;} }
-  .toast-anim { animation: slideIn .3s; }
-  @keyframes slideIn { from { opacity: 0; transform: translateX(30px);} to {opacity:1; transform:none;} }
-  .prod-card { cursor: pointer; transition: all .3s; }
-  .prod-card:hover { transform: translateY(-4px); border-color: rgba(239,68,68,0.6) !important; box-shadow: 0 20px 40px -12px rgba(220,38,38,0.35); }
-  .prod-emoji-box { background: linear-gradient(135deg, #1a1a20, #0e0e11); transition: all .35s; }
+  .toast-anim { animation: slideIn .3s cubic-bezier(.2,.8,.2,1); }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(30px) scale(.95);} to {opacity:1; transform:none;} }
+  .prod-card { cursor: pointer; transition: all .3s cubic-bezier(.2,.8,.2,1); }
+  .prod-card:hover { transform: translateY(-4px); border-color: rgba(239,68,68,0.6) !important; box-shadow: 0 20px 40px -12px rgba(220,38,38,0.35), 0 0 0 1px rgba(239,68,68,0.3); }
+  .prod-emoji-box { background: linear-gradient(135deg, #1a1a20, #0e0e11); transition: all .35s cubic-bezier(.2,.8,.2,1); position: relative; overflow: hidden; }
+  .prod-emoji-box::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.06), transparent 70%); }
   .prod-card:hover .prod-emoji-box { transform: scale(1.05) rotate(-2deg); filter: drop-shadow(0 0 12px rgba(239,68,68,0.5)); }
   .glow-red { box-shadow: 0 0 30px rgba(220,38,38,0.4); }
   .glow-green { box-shadow: 0 0 30px rgba(16,185,129,0.4); }
   .glow-amber { box-shadow: 0 0 30px rgba(245,158,11,0.4); }
-  .pizza-float { animation: float 4s ease-in-out infinite; }
+  .glow-sky { box-shadow: 0 0 30px rgba(14,165,233,0.4); }
+  .pizza-float { animation: float 4s ease-in-out infinite; filter: drop-shadow(0 12px 30px rgba(220,38,38,0.4)); }
   @keyframes float { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-10px) rotate(3deg); } }
   .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 0 0 rgba(16,185,129,0.7); animation: pulseDot 2s infinite; }
   @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7);} 70% { box-shadow: 0 0 0 10px rgba(16,185,129,0);} 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0);} }
@@ -61,17 +78,24 @@
   .brand-gradient { background: linear-gradient(135deg, #ef4444, #f59e0b 50%, #ef4444); background-size: 200% 200%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 4s ease-in-out infinite; }
   @keyframes shimmer { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
   .stock-bar { height: 6px; border-radius: 3px; background: #27272a; overflow: hidden; }
-  .stock-bar-fill { height: 100%; border-radius: 3px; transition: width .4s cubic-bezier(.2,.8,.2,1); }
+  .stock-bar-fill { height: 100%; border-radius: 3px; transition: width .5s cubic-bezier(.2,.8,.2,1); }
+  .stat-card { position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.05), transparent 30%); animation: rotate 8s linear infinite; pointer-events: none; }
+  @keyframes rotate { to { transform: rotate(360deg); } }
+  .worker-avatar { background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(239,68,68,0.25)); position: relative; }
+  .worker-avatar::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15), transparent 60%); }
   #printArea { display: none; }
   @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { display: block !important; position: absolute; left: 0; top: 0; width: 100%; color: #000; background: #fff; font-family: 'Courier New', monospace; padding: 10px; font-size: 12px; } }
   .modal-backdrop { background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.85), rgba(0,0,0,0.95)); backdrop-filter: blur(8px); }
+  .scroll-fade { mask-image: linear-gradient(to right, black 92%, transparent); -webkit-mask-image: linear-gradient(to right, black 92%, transparent); }
+  .number-gradient { background: linear-gradient(135deg, #f87171, #fbbf24); -webkit-background-clip: text; background-clip: text; color: transparent; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
   <!-- LOGIN -->
   <div id="loginScreen" class="fixed inset-0 flex items-center justify-center p-4 z-50">
-    <div class="absolute inset-0" style="background: radial-gradient(circle at 20% 20%, rgba(220,38,38,0.18), transparent 50%), radial-gradient(circle at 80% 80%, rgba(245,158,11,0.15), transparent 50%);"></div>
+    <div class="absolute inset-0" style="background: radial-gradient(circle at 20% 20%, rgba(220,38,38,0.2), transparent 50%), radial-gradient(circle at 80% 80%, rgba(245,158,11,0.18), transparent 50%);"></div>
     <div class="glass w-full max-w-md text-center shadow-2xl rounded-3xl p-8 slide-up relative z-10">
       <div class="inline-flex w-24 h-24 rounded-3xl bg-gradient-to-br from-red-500 via-red-600 to-amber-500 items-center justify-center text-5xl mb-5 shadow-2xl glow-red pizza-float">🍕</div>
       <h1 class="font-black text-3xl mb-1 tracking-tight brand-gradient">Brother's Pizza</h1>
@@ -104,7 +128,7 @@
       </div>
     </header>
 
-    <nav id="appNav" class="bg-zinc-900/40 backdrop-blur border-b border-zinc-800/80 px-6 py-3 flex gap-2 overflow-x-auto">
+    <nav id="appNav" class="bg-zinc-900/40 backdrop-blur border-b border-zinc-800/80 px-6 py-3 flex gap-2 overflow-x-auto scroll-fade">
       <button class="tab-btn active" data-tab="pos" onclick="switchTab('pos')"><i class="fa-solid fa-cash-register mr-2"></i> POS</button>
       <button class="tab-btn admin-only" data-tab="menu" onclick="switchTab('menu')"><i class="fa-solid fa-utensils mr-2"></i> Menú</button>
       <button class="tab-btn admin-only" data-tab="stock" onclick="switchTab('stock')"><i class="fa-solid fa-boxes-stacked mr-2"></i> Stock</button>
@@ -131,7 +155,7 @@
           </div>
           <div id="posProductsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
         </div>
-        <div class="card h-fit flex flex-col shadow-2xl sticky top-24">
+        <div class="card h-fit flex flex-col shadow-2xl sticky top-24 border-zinc-800/80">
           <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-3">
             <h3 class="font-bold text-sm flex items-center gap-2 text-white"><i class="fa-solid fa-receipt text-red-500"></i> Orden
               <span id="cartCount" class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-bold">0</span></h3>
@@ -139,13 +163,13 @@
           </div>
           <div id="cartItemsList" class="space-y-2.5 max-h-72 overflow-y-auto mb-4 pr-1 text-xs"></div>
           <div class="border-t border-zinc-800 pt-3 space-y-2 text-xs mb-3">
-            <div class="flex justify-between items-center text-zinc-400"><span>Descuento (%)</span>
+            <div class="flex justify-between items-center text-zinc-400"><span class="flex items-center gap-1.5"><i class="fa-solid fa-tag text-[10px]"></i> Descuento (%)</span>
               <input id="cartDiscount" type="number" min="0" max="100" step="1" value="0" oninput="renderCart()" class="w-16 text-right bg-zinc-900 border border-zinc-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-red-500"></div>
             <div class="flex justify-between text-zinc-400"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
             <div id="cartDiscountRow" class="hide flex justify-between text-amber-400 font-medium"><span>Descuento</span><span id="cartDiscountValue">-$0.00</span></div>
             <div class="flex justify-between font-black text-xl pt-2 border-t border-zinc-800">
               <span class="text-white">Total</span>
-              <span id="cartTotal" class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-400">$0.00</span></div>
+              <span id="cartTotal" class="number-gradient">$0.00</span></div>
           </div>
           <div class="mb-3"><input id="orderNote" type="text" class="inp text-xs py-2.5" placeholder="📝 Nota / cliente (opcional)"></div>
           <button onclick="openPaymentModal()" class="btn-red w-full text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-money-bill-wave"></i> Cobrar (F4)</button>
@@ -169,16 +193,16 @@
       <!-- STOCK -->
       <section id="tab-stock" class="hide space-y-6">
         <div class="grid sm:grid-cols-3 gap-4">
-          <div class="card border-sky-500/20">
-            <p class="text-[10px] text-sky-400 uppercase font-bold tracking-wider mb-2"><i class="fa-solid fa-boxes-stacked mr-1"></i>Items Totales</p>
+          <div class="card stat-card border-sky-500/20">
+            <div class="flex items-center justify-between mb-2"><p class="text-[10px] text-sky-400 uppercase font-bold tracking-wider"><i class="fa-solid fa-boxes-stacked mr-1"></i>Insumos</p><i class="fa-solid fa-warehouse text-sky-500/60"></i></div>
             <h3 id="stockTotalItems" class="text-3xl font-black text-sky-400">0</h3>
           </div>
-          <div class="card border-amber-500/20">
-            <p class="text-[10px] text-amber-400 uppercase font-bold tracking-wider mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Stock Bajo</p>
+          <div class="card stat-card border-amber-500/20">
+            <div class="flex items-center justify-between mb-2"><p class="text-[10px] text-amber-400 uppercase font-bold tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Stock Bajo</p><i class="fa-solid fa-bell text-amber-500/60"></i></div>
             <h3 id="stockLowCount" class="text-3xl font-black text-amber-400">0</h3>
           </div>
-          <div class="card border-red-500/20">
-            <p class="text-[10px] text-red-400 uppercase font-bold tracking-wider mb-2"><i class="fa-solid fa-circle-xmark mr-1"></i>Agotados</p>
+          <div class="card stat-card border-red-500/20">
+            <div class="flex items-center justify-between mb-2"><p class="text-[10px] text-red-400 uppercase font-bold tracking-wider"><i class="fa-solid fa-circle-xmark mr-1"></i>Agotados</p><i class="fa-solid fa-ban text-red-500/60"></i></div>
             <h3 id="stockOutCount" class="text-3xl font-black text-red-400">0</h3>
           </div>
         </div>
@@ -193,21 +217,41 @@
           </div>
           <div id="stockGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
+
+        <!-- HISTORIAL DE MOVIMIENTOS CON FILTRO POR CAJERO -->
+        <div class="card">
+          <div class="flex justify-between items-center mb-5 flex-wrap gap-3">
+            <h3 class="font-bold text-base text-white">
+              <i class="fa-solid fa-clock-rotate-left text-red-500 mr-2"></i> Historial de Movimientos
+            </h3>
+            <div class="flex gap-2 flex-wrap">
+              <select id="stockHistFilterCajero" onchange="renderStockHistory()" class="inp text-xs py-2 max-w-[180px]">
+                <option value="">👤 Todos los cajeros</option>
+              </select>
+              <select id="stockHistFilterType" onchange="renderStockHistory()" class="inp text-xs py-2 max-w-[150px]">
+                <option value="">📋 Todos</option>
+                <option value="entrada">⬇ Entradas</option>
+                <option value="salida">⬆ Salidas</option>
+              </select>
+            </div>
+          </div>
+          <div id="stockHistoryList" class="space-y-2 text-xs max-h-[500px] overflow-y-auto pr-1"></div>
+        </div>
       </section>
 
-      <!-- WORKERS / DEUDAS -->
+      <!-- WORKERS -->
       <section id="tab-workers" class="hide space-y-6">
         <div class="grid sm:grid-cols-3 gap-4">
-          <div class="card border-red-500/20">
-            <p class="text-[10px] text-red-400 uppercase font-bold tracking-wider mb-2"><i class="fa-solid fa-money-bill-transfer mr-1"></i>Deuda Total</p>
+          <div class="card stat-card border-red-500/20">
+            <div class="flex items-center justify-between mb-2"><p class="text-[10px] text-red-400 uppercase font-bold tracking-wider"><i class="fa-solid fa-money-bill-transfer mr-1"></i>Deuda Total</p><i class="fa-solid fa-arrow-up text-red-500/60"></i></div>
             <h3 id="workersTotalDebt" class="text-3xl font-black text-red-400">$0.00</h3>
           </div>
-          <div class="card border-emerald-500/20">
-            <p class="text-[10px] text-emerald-400 uppercase font-bold tracking-wider mb-2"><i class="fa-solid fa-circle-check mr-1"></i>Total Pagado</p>
+          <div class="card stat-card border-emerald-500/20">
+            <div class="flex items-center justify-between mb-2"><p class="text-[10px] text-emerald-400 uppercase font-bold tracking-wider"><i class="fa-solid fa-circle-check mr-1"></i>Total Pagado</p><i class="fa-solid fa-arrow-down text-emerald-500/60"></i></div>
             <h3 id="workersTotalPaid" class="text-3xl font-black text-emerald-400">$0.00</h3>
           </div>
-          <div class="card border-amber-500/20">
-            <p class="text-[10px] text-amber-400 uppercase font-bold tracking-wider mb-2"><i class="fa-solid fa-scale-balanced mr-1"></i>Saldo Pendiente</p>
+          <div class="card stat-card border-amber-500/20">
+            <div class="flex items-center justify-between mb-2"><p class="text-[10px] text-amber-400 uppercase font-bold tracking-wider"><i class="fa-solid fa-scale-balanced mr-1"></i>Saldo Pendiente</p><i class="fa-solid fa-equals text-amber-500/60"></i></div>
             <h3 id="workersTotalBalance" class="text-3xl font-black text-amber-400">$0.00</h3>
           </div>
         </div>
@@ -228,6 +272,7 @@
             <h3 class="font-bold text-base text-white"><i class="fa-solid fa-users text-red-500 mr-2"></i> Control de Usuarios</h3>
             <button onclick="openUserModal()" class="btn-red text-xs"><i class="fa-solid fa-user-plus mr-1"></i> Nuevo Usuario</button>
           </div>
+          <p class="text-xs text-zinc-400 mb-4">Solo los usuarios con rol <strong class="text-emerald-400">Administrador</strong> pueden acceder a esta sección, configurar el menú y ver reportes.</p>
           <div class="overflow-x-auto"><table class="w-full text-left text-xs">
             <thead class="bg-zinc-900/70 text-zinc-400 uppercase tracking-wider text-[10px]"><tr>
               <th class="p-3 rounded-l-lg">Usuario</th><th class="p-3">Rol</th><th class="p-3 text-right rounded-r-lg">Acciones</th>
@@ -239,19 +284,19 @@
       <section id="tab-stats" class="hide space-y-6">
         <div class="flex gap-2 flex-wrap">
           <button data-range="hoy" onclick="setSalesRange('hoy')" class="tab-btn active text-xs">📅 Hoy</button>
-          <button data-range="semana" onclick="setSalesRange('semana')" class="tab-btn text-xs">7 días</button>
-          <button data-range="mes" onclick="setSalesRange('mes')" class="tab-btn text-xs">Mes</button>
+          <button data-range="semana" onclick="setSalesRange('semana')" class="tab-btn text-xs">Últimos 7 días</button>
+          <button data-range="mes" onclick="setSalesRange('mes')" class="tab-btn text-xs">Este mes</button>
           <button data-range="todo" onclick="setSalesRange('todo')" class="tab-btn text-xs">Histórico</button>
         </div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="card border-emerald-500/20"><p class="text-[10px] text-emerald-400 uppercase font-bold tracking-wider mb-2">Ventas</p><h3 id="statTotalSales" class="text-3xl font-black text-emerald-400">$0.00</h3></div>
-          <div class="card border-amber-500/20"><p class="text-[10px] text-amber-400 uppercase font-bold tracking-wider mb-2">Órdenes</p><h3 id="statTotalOrders" class="text-3xl font-black text-amber-400">0</h3></div>
-          <div class="card border-sky-500/20"><p class="text-[10px] text-sky-400 uppercase font-bold tracking-wider mb-2">Promedio</p><h3 id="statAvgTicket" class="text-3xl font-black text-sky-400">$0.00</h3></div>
-          <div class="card border-fuchsia-500/20"><p class="text-[10px] text-fuchsia-400 uppercase font-bold tracking-wider mb-2">Más Vendido</p><h3 id="statBestSeller" class="text-sm font-bold text-fuchsia-400 truncate">—</h3></div>
+          <div class="card stat-card border-emerald-500/20"><p class="text-[10px] text-emerald-400 uppercase font-bold tracking-wider mb-2">Ventas Totales</p><h3 id="statTotalSales" class="text-3xl font-black text-emerald-400">$0.00</h3></div>
+          <div class="card stat-card border-amber-500/20"><p class="text-[10px] text-amber-400 uppercase font-bold tracking-wider mb-2">Órdenes</p><h3 id="statTotalOrders" class="text-3xl font-black text-amber-400">0</h3></div>
+          <div class="card stat-card border-sky-500/20"><p class="text-[10px] text-sky-400 uppercase font-bold tracking-wider mb-2">Ticket Promedio</p><h3 id="statAvgTicket" class="text-3xl font-black text-sky-400">$0.00</h3></div>
+          <div class="card stat-card border-fuchsia-500/20"><p class="text-[10px] text-fuchsia-400 uppercase font-bold tracking-wider mb-2">Más Vendido</p><h3 id="statBestSeller" class="text-sm font-bold text-fuchsia-400 truncate">—</h3></div>
         </div>
         <div class="card">
           <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-            <h3 class="font-bold text-sm text-white"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial</h3>
+            <h3 class="font-bold text-sm text-white"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial de Transacciones</h3>
             <div class="flex gap-2">
               <button onclick="exportSalesCSV()" class="btn-gray text-xs"><i class="fa-solid fa-file-csv mr-1"></i> CSV</button>
               <button onclick="clearSales()" class="btn-gray text-xs text-red-400"><i class="fa-solid fa-trash mr-1"></i> Borrar</button>
@@ -301,7 +346,7 @@
     </div>
   </div>
 
-  <!-- MODAL AJUSTE RÁPIDO STOCK -->
+  <!-- MODAL AJUSTE STOCK -->
   <div id="stockAdjustModal" class="fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50 hide">
     <div class="glass w-full max-w-sm space-y-4 rounded-3xl p-6 slide-up">
       <h3 id="stockAdjustTitle" class="font-bold text-lg border-b border-zinc-800 pb-3 text-white">Ajustar Stock</h3>
@@ -316,8 +361,20 @@
         </div>
         <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Cantidad</label><input id="adjustStockQty" type="number" step="0.01" min="0" class="inp text-lg text-center font-bold" placeholder="0"></div>
         <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Motivo (opcional)</label><input id="adjustStockNote" type="text" class="inp" placeholder="Ej. Compra a proveedor"></div>
+        <p class="text-[10px] text-zinc-500 text-center pt-1"><i class="fa-solid fa-info-circle"></i> Se registrará a nombre de: <span id="adjustStockUser" class="text-sky-400 font-semibold"></span></p>
       </div>
       <div class="flex justify-end gap-2 pt-2"><button onclick="closeStockAdjustModal()" class="btn-gray text-xs">Cancelar</button><button onclick="confirmStockAdjust()" class="btn-green text-xs">Aplicar</button></div>
+    </div>
+  </div>
+
+  <!-- MODAL HISTORIAL POR INSUMO -->
+  <div id="stockItemHistoryModal" class="fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50 hide">
+    <div class="glass w-full max-w-lg space-y-4 rounded-3xl p-6 slide-up max-h-[90vh] overflow-y-auto">
+      <h3 id="stockItemHistoryTitle" class="font-bold text-lg border-b border-zinc-800 pb-3 text-white flex items-center gap-2">
+        <i class="fa-solid fa-clock-rotate-left text-sky-500"></i> <span>Historial</span>
+      </h3>
+      <div id="stockItemHistoryContent" class="space-y-2 text-xs"></div>
+      <div class="flex justify-end pt-2"><button onclick="closeStockItemHistoryModal()" class="btn-gray text-xs">Cerrar</button></div>
     </div>
   </div>
 
@@ -336,10 +393,10 @@
     </div>
   </div>
 
-  <!-- MODAL DEUDA (Agregar monto que se le debe) -->
+  <!-- MODAL DEUDA -->
   <div id="debtModal" class="fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50 hide">
     <div class="glass w-full max-w-sm space-y-4 rounded-3xl p-6 slide-up">
-      <h3 class="font-bold text-lg border-b border-zinc-800 pb-3 text-white flex items-center gap-2"><i class="fa-solid fa-plus text-red-500"></i> <span>Agregar Deuda</span></h3>
+      <h3 class="font-bold text-lg border-b border-zinc-800 pb-3 text-white flex items-center gap-2"><i class="fa-solid fa-plus text-amber-500"></i> <span>Agregar Deuda</span></h3>
       <input type="hidden" id="debtWorkerKey" value="">
       <p id="debtWorkerInfo" class="text-xs text-zinc-400 text-center"></p>
       <div class="space-y-3 text-xs">
@@ -350,7 +407,7 @@
     </div>
   </div>
 
-  <!-- MODAL PAGO -->
+  <!-- MODAL PAGO AYUDANTE -->
   <div id="payWorkerModal" class="fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50 hide">
     <div class="glass w-full max-w-sm space-y-4 rounded-3xl p-6 slide-up">
       <h3 class="font-bold text-lg border-b border-zinc-800 pb-3 text-white flex items-center gap-2"><i class="fa-solid fa-hand-holding-dollar text-emerald-500"></i> <span>Registrar Pago</span></h3>
@@ -398,7 +455,7 @@
       <h3 class="font-bold text-lg border-b border-zinc-800 pb-3 text-white flex items-center gap-2"><i class="fa-solid fa-money-bill-wave text-red-500"></i> <span>Cobrar Orden</span></h3>
       <div class="text-center py-3 bg-gradient-to-b from-red-500/10 to-transparent rounded-2xl border border-red-500/20">
         <p class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest">Total</p>
-        <p id="payTotal" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-400 mt-1">$0.00</p>
+        <p id="payTotal" class="text-5xl font-black number-gradient mt-1">$0.00</p>
       </div>
       <div><label class="block text-zinc-400 mb-2 text-[10px] uppercase font-bold tracking-widest">Método</label>
         <div class="grid grid-cols-3 gap-2">
@@ -467,27 +524,26 @@ const db = firebase.database();
    MENÚ OFICIAL BROTHER'S PIZZA
    ========================================================= */
 const DEFAULT_MENU = {
-  "m1":  { nombre: "Slice Pepperoni", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
-  "m2":  { nombre: "Slice Jamón", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
-  "m3":  { nombre: "Slice Hawaiana", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
-  "m4":  { nombre: "Slice Margarita", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
-  "m5":  { nombre: "Pizza Pequeña Pepperoni", categoria:"pizza", precio:5.00, desc:"4 porciones (slices)", emoji:"🍕" },
-  "m6":  { nombre: "Pizza Pequeña Jamón", categoria:"pizza", precio:5.00, desc:"4 porciones (slices)", emoji:"🍕" },
-  "m7":  { nombre: "Pizza Pequeña Hawaiana", categoria:"pizza", precio:5.00, desc:"4 porciones (slices)", emoji:"🍕" },
-  "m8":  { nombre: "Pizza Pequeña Margarita", categoria:"pizza", precio:5.00, desc:"4 porciones (slices)", emoji:"🍕" },
-  "m9":  { nombre: "Pizza Mediana Pepperoni", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
-  "m10": { nombre: "Pizza Mediana Jamón", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
-  "m11": { nombre: "Pizza Mediana Hawaiana", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
-  "m12": { nombre: "Pizza Mediana Margarita", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
-  "m13": { nombre: "Pizza Grande Pepperoni", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
-  "m14": { nombre: "Pizza Grande Jamón", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
-  "m15": { nombre: "Pizza Grande Hawaiana", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
-  "m16": { nombre: "Pizza Grande Margarita", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
-  "m17": { nombre: "Cola / Gaseosa", categoria:"bebida", precio:0.50, desc:"Botella personal fría", emoji:"🥤" },
-  "m18": { nombre: "Vaso de Cola Adicional", categoria:"extra", precio:0.25, desc:"Vaso con hielo", emoji:"🧊" }
+  "m1":  { nombre:"Slice Pepperoni", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
+  "m2":  { nombre:"Slice Jamón", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
+  "m3":  { nombre:"Slice Hawaiana", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
+  "m4":  { nombre:"Slice Margarita", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
+  "m5":  { nombre:"Pizza Pequeña Pepperoni", categoria:"pizza", precio:5.00, desc:"4 porciones (slices)", emoji:"🍕" },
+  "m6":  { nombre:"Pizza Pequeña Jamón", categoria:"pizza", precio:5.00, desc:"4 porciones (slices)", emoji:"🍕" },
+  "m7":  { nombre:"Pizza Pequeña Hawaiana", categoria:"pizza", precio:5.00, desc:"4 porciones (slices)", emoji:"🍕" },
+  "m8":  { nombre:"Pizza Pequeña Margarita", categoria:"pizza", precio:5.00, desc:"4 porciones (slices)", emoji:"🍕" },
+  "m9":  { nombre:"Pizza Mediana Pepperoni", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
+  "m10": { nombre:"Pizza Mediana Jamón", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
+  "m11": { nombre:"Pizza Mediana Hawaiana", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
+  "m12": { nombre:"Pizza Mediana Margarita", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
+  "m13": { nombre:"Pizza Grande Pepperoni", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
+  "m14": { nombre:"Pizza Grande Jamón", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
+  "m15": { nombre:"Pizza Grande Hawaiana", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
+  "m16": { nombre:"Pizza Grande Margarita", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
+  "m17": { nombre:"Cola / Gaseosa", categoria:"bebida", precio:0.50, desc:"Botella personal fría", emoji:"🥤" },
+  "m18": { nombre:"Vaso de Cola Adicional", categoria:"extra", precio:0.25, desc:"Vaso con hielo", emoji:"🧊" }
 };
 
-/* STOCK POR DEFECTO — insumos típicos de pizzería */
 const DEFAULT_STOCK = {
   "s1": { nombre:"Queso mozzarella", cantidad:15, unidad:"kg", minimo:5, emoji:"🧀" },
   "s2": { nombre:"Harina", cantidad:25, unidad:"kg", minimo:10, emoji:"🌾" },
@@ -502,7 +558,7 @@ const DEFAULT_USERS = {
   "u1": { user:"admin", pass:"admin123", role:"admin", name:"Administrador General" }
 };
 
-let menuData = {}, usersData = {}, salesData = {}, stockData = {}, workersData = {};
+let menuData = {}, usersData = {}, salesData = {}, stockData = {}, workersData = {}, stockHistoryData = {};
 let session = JSON.parse(localStorage.getItem('bp_session')) || null;
 let cart = JSON.parse(localStorage.getItem('bp_cart')) || [];
 let currentCategoryFilter = 'todos';
@@ -570,7 +626,7 @@ function setupKeyboard() {
     if (e.key === 'F2') { e.preventDefault(); document.getElementById('searchProd')?.focus(); }
     if (e.key === 'F4') { e.preventDefault(); openPaymentModal(); }
     if (e.key === 'Escape') {
-      ['productModal','userModal','paymentModal','customAlertModal','confirmModal','stockModal','stockAdjustModal','workerModal','debtModal','payWorkerModal','historyWorkerModal'].forEach(id => {
+      ['productModal','userModal','paymentModal','customAlertModal','confirmModal','stockModal','stockAdjustModal','stockItemHistoryModal','workerModal','debtModal','payWorkerModal','historyWorkerModal'].forEach(id => {
         const m = document.getElementById(id);
         if (m && !m.classList.contains('hide')) { if (id==='confirmModal') closeConfirm(false); else m.classList.add('hide'); }
       });
@@ -583,6 +639,7 @@ function setupFirebaseListeners() {
   db.ref('users').on('value', s => { const v=s.val(); if(v) usersData=v; else { db.ref('users').set(DEFAULT_USERS); usersData=DEFAULT_USERS; } renderAdminUsers(); });
   db.ref('sales').on('value', s => { salesData = s.val() || {}; renderSales(); });
   db.ref('stock').on('value', s => { const v=s.val(); if(v) stockData=v; else { db.ref('stock').set(DEFAULT_STOCK); stockData=DEFAULT_STOCK; } renderStock(); });
+  db.ref('stockHistory').on('value', s => { stockHistoryData = s.val() || {}; renderStockHistory(); });
   db.ref('workers').on('value', s => { workersData = s.val() || {}; renderWorkers(); });
 }
 
@@ -648,7 +705,7 @@ function renderPosProducts(filter='') {
           <p class="text-[10px] text-zinc-500 line-clamp-1 mt-0.5">${esc(p.desc||'')}</p>
         </div>
         <div class="flex justify-between items-center mt-3 pt-2.5 border-t border-zinc-800/80">
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-red-400 font-black text-base">${money(p.precio)}</span>
+          <span class="number-gradient font-black text-base">${money(p.precio)}</span>
           <span class="w-7 h-7 rounded-lg bg-red-600/15 text-red-500 flex items-center justify-center text-xs"><i class="fa-solid fa-plus"></i></span>
         </div>
       </div>`;
@@ -834,7 +891,6 @@ function renderStock() {
   const search = (document.getElementById('searchStock')?.value || '').toLowerCase();
   const items = Object.entries(stockData).filter(([k,v]) => (v.nombre||'').toLowerCase().includes(search));
 
-  // KPIs
   let lowCount = 0, outCount = 0;
   Object.values(stockData).forEach(s => {
     if (Number(s.cantidad) <= 0) outCount++;
@@ -853,10 +909,10 @@ function renderStock() {
     const qty = Number(s.cantidad) || 0;
     const min = Number(s.minimo) || 0;
     const pct = min > 0 ? Math.min(100, (qty / (min * 3)) * 100) : (qty > 0 ? 100 : 0);
-    let color, barColor, statusText;
-    if (qty <= 0) { color = 'text-red-400'; barColor = 'bg-gradient-to-r from-red-600 to-red-400'; statusText = '⛔ AGOTADO'; }
-    else if (qty <= min) { color = 'text-amber-400'; barColor = 'bg-gradient-to-r from-amber-600 to-amber-400'; statusText = '⚠ BAJO'; }
-    else { color = 'text-emerald-400'; barColor = 'bg-gradient-to-r from-emerald-600 to-emerald-400'; statusText = '✓ OK'; }
+    let color, barColor, statusText, glow;
+    if (qty <= 0) { color = 'text-red-400'; barColor = 'bg-gradient-to-r from-red-600 to-red-400'; statusText = '⛔ AGOTADO'; glow = 'glow-red'; }
+    else if (qty <= min) { color = 'text-amber-400'; barColor = 'bg-gradient-to-r from-amber-600 to-amber-400'; statusText = '⚠ BAJO'; glow = 'glow-amber'; }
+    else { color = 'text-emerald-400'; barColor = 'bg-gradient-to-r from-emerald-600 to-emerald-400'; statusText = '✓ OK'; glow = 'glow-green'; }
     return `
       <div class="card fade-in">
         <div class="flex justify-between items-start mb-3">
@@ -881,8 +937,9 @@ function renderStock() {
         </div>
         <div class="stock-bar mb-3"><div class="stock-bar-fill ${barColor}" style="width:${pct}%"></div></div>
         <div class="flex justify-end gap-2 pt-2 border-t border-zinc-800">
-          <button onclick="openStockModal('${esc(key)}')" class="text-blue-400 hover:text-blue-300 text-xs"><i class="fa-solid fa-pen"></i></button>
-          <button onclick="deleteStock('${esc(key)}')" class="text-red-400 hover:text-red-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+          <button onclick="openStockItemHistoryModal('${esc(key)}')" class="text-sky-400 hover:text-sky-300 text-xs" title="Ver historial"><i class="fa-solid fa-clock-rotate-left"></i></button>
+          <button onclick="openStockModal('${esc(key)}')" class="text-blue-400 hover:text-blue-300 text-xs" title="Editar"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="deleteStock('${esc(key)}')" class="text-red-400 hover:text-red-300 text-xs" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>`;
   }).join('');
@@ -931,6 +988,7 @@ function openStockAdjustModal(key, tipo='entrada') {
   document.getElementById('stockAdjustInfo').textContent = `Stock actual: ${s.cantidad} ${s.unidad||'unid'}`;
   document.getElementById('adjustStockQty').value = '';
   document.getElementById('adjustStockNote').value = '';
+  document.getElementById('adjustStockUser').textContent = session.name + ' (' + session.role + ')';
   setMovementType(tipo);
   setTimeout(() => document.getElementById('adjustStockQty').focus(), 120);
 }
@@ -949,13 +1007,113 @@ function confirmStockAdjust() {
   const newQty = movementType === 'entrada' ? current + qty : current - qty;
   if (newQty < 0) { showAlert('Stock insuficiente', `Solo hay ${current} ${s.unidad||'unid'} disponibles.`, true); return; }
   db.ref('stock/'+key).update({ cantidad: newQty });
-  // Registrar movimiento histórico
   db.ref('stockHistory').push({
     itemId: key, itemNombre: s.nombre, tipo: movementType, cantidad: qty,
-    antes: current, despues: newQty, nota: note, fecha: todayISO(), usuario: session.name
+    antes: current, despues: newQty, nota: note,
+    fecha: todayISO(),
+    timestamp: Date.now(),
+    usuario: session.name,
+    rol: session.role
   });
   closeStockAdjustModal();
-  toast(`${movementType==='entrada'?'Entrada':'Salida'} registrada: ${qty} ${s.unidad||'unid'}`, movementType==='entrada'?'success':'info');
+  toast(`${movementType==='entrada'?'Entrada':'Salida'} registrada: ${qty} ${s.unidad||'unid'} por ${session.name}`, movementType==='entrada'?'success':'info');
+}
+
+/* ==================== STOCK — HISTORIAL POR CAJERO ==================== */
+function getStockHistoryArray() {
+  return Object.entries(stockHistoryData)
+    .map(([k, v]) => ({ ...v, _key: k }))
+    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+}
+
+function renderStockHistory() {
+  const container = document.getElementById('stockHistoryList');
+  if (!container) return;
+
+  const filterCajero = document.getElementById('stockHistFilterCajero')?.value || '';
+  const filterType = document.getElementById('stockHistFilterType')?.value || '';
+
+  let movs = getStockHistoryArray();
+  if (filterCajero) movs = movs.filter(m => (m.usuario || '') === filterCajero);
+  if (filterType) movs = movs.filter(m => m.tipo === filterType);
+
+  const sel = document.getElementById('stockHistFilterCajero');
+  if (sel) {
+    const current = sel.value;
+    const cajeros = [...new Set(getStockHistoryArray().map(m => m.usuario).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="">👤 Todos los cajeros</option>' +
+      cajeros.map(c => `<option value="${esc(c)}"${c === current ? ' selected' : ''}>${esc(c)}</option>`).join('');
+  }
+
+  if (movs.length === 0) {
+    container.innerHTML = '<p class="text-center text-zinc-500 py-8">No hay movimientos registrados</p>';
+    return;
+  }
+
+  container.innerHTML = movs.slice(0, 200).map(m => {
+    const isEntrada = m.tipo === 'entrada';
+    return `
+      <div class="bg-gradient-to-r from-zinc-900/80 to-zinc-900/40 p-3 rounded-xl flex justify-between items-center border border-zinc-800 hover:border-zinc-700 transition fade-in">
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <div class="w-9 h-9 rounded-lg ${isEntrada ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'} flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid ${isEntrada ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <p class="font-bold text-zinc-200">${esc(m.itemNombre || 'Insumo')}</p>
+              <span class="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-full ${isEntrada ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/15 text-red-400 border border-red-500/30'}">${esc(m.tipo)}</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/30">
+                <i class="fa-solid fa-user"></i> ${esc(m.usuario || 'Admin')}
+              </span>
+            </div>
+            <p class="text-zinc-500 text-[11px] mt-0.5">${esc(m.fecha || '')} ${m.nota ? '· ' + esc(m.nota) : ''}</p>
+            <p class="text-zinc-400 text-[10px] mt-0.5">Antes: ${m.antes ?? '?'} → Después: ${m.despues ?? '?'}</p>
+          </div>
+        </div>
+        <p class="font-black ${isEntrada ? 'text-emerald-400' : 'text-red-400'} text-sm shrink-0 ml-3">
+          ${isEntrada ? '+' : '-'}${m.cantidad}
+        </p>
+      </div>`;
+  }).join('');
+}
+
+function openStockItemHistoryModal(itemKey) {
+  const s = stockData[itemKey];
+  if (!s) return;
+  const movs = getStockHistoryArray().filter(m => m.itemId === itemKey);
+  document.getElementById('stockItemHistoryModal').classList.remove('hide');
+  document.getElementById('stockItemHistoryTitle').innerHTML =
+    `<i class="fa-solid fa-clock-rotate-left text-sky-500"></i> <span>${esc(s.emoji || '📦')} ${esc(s.nombre)}</span>`;
+
+  const container = document.getElementById('stockItemHistoryContent');
+  if (movs.length === 0) {
+    container.innerHTML = '<p class="text-center text-zinc-500 py-8">Sin movimientos registrados para este insumo</p>';
+    return;
+  }
+
+  container.innerHTML = movs.map(m => {
+    const isEntrada = m.tipo === 'entrada';
+    return `<div class="bg-zinc-900/60 p-3 rounded-xl flex justify-between items-center border border-zinc-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg ${isEntrada ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'} flex items-center justify-center text-sm">
+          <i class="fa-solid ${isEntrada ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+        </div>
+        <div>
+          <p class="font-semibold text-zinc-200">${isEntrada ? 'Entrada' : 'Salida'} de ${m.cantidad} ${esc(s.unidad || 'unid')}</p>
+          <p class="text-[10px] text-zinc-500 mt-0.5">
+            <i class="fa-solid fa-user text-sky-400"></i> ${esc(m.usuario || 'Admin')} · ${esc(m.fecha || '')}
+          </p>
+          ${m.nota ? `<p class="text-[10px] text-amber-400 mt-0.5"><i class="fa-solid fa-note-sticky"></i> ${esc(m.nota)}</p>` : ''}
+          <p class="text-[10px] text-zinc-600 mt-0.5">${m.antes} → ${m.despues}</p>
+        </div>
+      </div>
+      <p class="font-black ${isEntrada ? 'text-emerald-400' : 'text-red-400'}">${isEntrada ? '+' : '-'}${m.cantidad}</p>
+    </div>`;
+  }).join('');
+}
+
+function closeStockItemHistoryModal() {
+  document.getElementById('stockItemHistoryModal').classList.add('hide');
 }
 
 /* ==================== WORKERS / DEUDAS ==================== */
@@ -974,8 +1132,8 @@ function renderWorkers() {
 
   if (items.length === 0) {
     container.innerHTML = `<div class="col-span-full text-center py-10">
-      <div class="text-5xl mb-3">👨‍🍳</div>
-      <p class="text-zinc-500 text-sm">No hay ayudantes registrados</p>
+      <div class="text-6xl mb-3 pizza-float inline-block">👨‍🍳</div>
+      <p class="text-zinc-500 text-sm font-semibold">No hay ayudantes registrados</p>
       <p class="text-zinc-600 text-xs mt-1">Agrega a tu primer ayudante para llevar el control de deudas</p>
     </div>`;
     return;
@@ -986,34 +1144,34 @@ function renderWorkers() {
     const pagado = Number(w.pagado) || 0;
     const saldo = deuda - pagado;
     const pct = deuda > 0 ? Math.min(100, (pagado/deuda)*100) : 100;
-    let color, badge, barColor;
-    if (saldo <= 0) { color='text-emerald-400'; badge='AL DÍA'; barColor='bg-gradient-to-r from-emerald-600 to-emerald-400'; }
-    else if (pct >= 50) { color='text-sky-400'; badge='PARCIAL'; barColor='bg-gradient-to-r from-sky-600 to-sky-400'; }
-    else { color='text-red-400'; badge='PENDIENTE'; barColor='bg-gradient-to-r from-red-600 to-red-400'; }
+    let color, badge, barColor, badgeBg;
+    if (saldo <= 0) { color='text-emerald-400'; badge='AL DÍA'; barColor='bg-gradient-to-r from-emerald-600 to-emerald-400'; badgeBg='bg-emerald-500/15 border-emerald-500/30'; }
+    else if (pct >= 50) { color='text-sky-400'; badge='PARCIAL'; barColor='bg-gradient-to-r from-sky-600 to-sky-400'; badgeBg='bg-sky-500/15 border-sky-500/30'; }
+    else { color='text-red-400'; badge='PENDIENTE'; barColor='bg-gradient-to-r from-red-600 to-red-400'; badgeBg='bg-red-500/15 border-red-500/30'; }
     return `
       <div class="card fade-in">
         <div class="flex items-start justify-between mb-4">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-red-500/20 flex items-center justify-center text-2xl">${w.emoji || '👨‍🍳'}</div>
+            <div class="worker-avatar w-14 h-14 rounded-2xl flex items-center justify-center text-3xl">${w.emoji || '👨‍🍳'}</div>
             <div>
-              <h4 class="font-bold text-sm text-white">${esc(w.nombre)}</h4>
+              <h4 class="font-bold text-base text-white">${esc(w.nombre)}</h4>
               <p class="text-[10px] text-zinc-500">${esc(w.role || 'Ayudante')}${w.phone ? ' · ' + esc(w.phone) : ''}</p>
             </div>
           </div>
-          <span class="text-[9px] font-bold ${color} bg-zinc-900 px-2 py-1 rounded-lg border border-zinc-800">${badge}</span>
+          <span class="text-[9px] font-bold ${color} ${badgeBg} px-2 py-1 rounded-lg border">${badge}</span>
         </div>
-        <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+        <div class="grid grid-cols-3 gap-2 mb-3 text-center bg-zinc-950/40 rounded-xl p-3 border border-zinc-800/50">
           <div><p class="text-[9px] text-zinc-500 uppercase font-bold tracking-wider mb-1">Total</p><p class="text-sm font-bold text-zinc-300">${money(deuda)}</p></div>
           <div><p class="text-[9px] text-zinc-500 uppercase font-bold tracking-wider mb-1">Pagado</p><p class="text-sm font-bold text-emerald-400">${money(pagado)}</p></div>
-          <div><p class="text-[9px] text-zinc-500 uppercase font-bold tracking-wider mb-1">Saldo</p><p class="text-base font-black ${color}">${money(saldo)}</p></div>
+          <div class="border-l border-zinc-800"><p class="text-[9px] text-zinc-500 uppercase font-bold tracking-wider mb-1">Saldo</p><p class="text-base font-black ${color}">${money(saldo)}</p></div>
         </div>
-        <div class="stock-bar mb-3"><div class="stock-bar-fill ${barColor}" style="width:${pct}%"></div></div>
-        <div class="flex gap-2 pt-2 border-t border-zinc-800">
-          <button onclick="openDebtModal('${esc(key)}')" class="flex-1 text-[11px] py-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-semibold transition"><i class="fa-solid fa-plus mr-1"></i>Deuda</button>
-          <button onclick="openPayWorkerModal('${esc(key)}')" class="flex-1 text-[11px] py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-semibold transition" ${saldo<=0?'disabled style="opacity:.4;cursor:not-allowed"':''}><i class="fa-solid fa-hand-holding-dollar mr-1"></i>Pagar</button>
-          <button onclick="openHistoryWorkerModal('${esc(key)}')" class="text-[11px] px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold transition" title="Historial"><i class="fa-solid fa-clock-rotate-left"></i></button>
-          <button onclick="openWorkerModal('${esc(key)}')" class="text-[11px] px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-blue-400 font-semibold transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
-          <button onclick="deleteWorker('${esc(key)}')" class="text-[11px] px-3 py-2 rounded-lg bg-zinc-800 hover:bg-red-500/20 text-red-400 font-semibold transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+        <div class="stock-bar mb-4"><div class="stock-bar-fill ${barColor}" style="width:${pct}%"></div></div>
+        <div class="grid grid-cols-5 gap-1.5 pt-3 border-t border-zinc-800">
+          <button onclick="openDebtModal('${esc(key)}')" class="text-[10px] py-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold transition" title="Agregar deuda"><i class="fa-solid fa-plus mr-1"></i>Deuda</button>
+          <button onclick="openPayWorkerModal('${esc(key)}')" class="text-[10px] py-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold transition" ${saldo<=0?'disabled style="opacity:.3;cursor:not-allowed"':''} title="Registrar pago"><i class="fa-solid fa-hand-holding-dollar mr-1"></i>Pagar</button>
+          <button onclick="openHistoryWorkerModal('${esc(key)}')" class="text-[10px] py-2.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 font-bold transition" title="Historial"><i class="fa-solid fa-clock-rotate-left"></i></button>
+          <button onclick="openWorkerModal('${esc(key)}')" class="text-[10px] py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-blue-400 font-bold transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="deleteWorker('${esc(key)}')" class="text-[10px] py-2.5 rounded-lg bg-zinc-800 hover:bg-red-500/20 text-red-400 font-bold transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>`;
   }).join('');
