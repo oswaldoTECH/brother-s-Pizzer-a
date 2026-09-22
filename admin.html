@@ -264,7 +264,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const rj=(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}};
 const wj=(k,v)=>{localStorage.setItem(k,JSON.stringify(v))};
 
-// ==================== SEED ====================
+// ==================== SEED CORREGIDO ====================
 (function seed(){
   let m=rj(K.M,null);
   if(!m||!m.pizzas||!m.tamanos||!m.porcion||!m.pepsi||!m.extras){
@@ -314,17 +314,25 @@ function togglePass(){const i=$("#lp"),ic=$("#eyeIcon");
 if(i.type==="password"){i.type="text";ic.className="fa-solid fa-eye-slash text-sm"}
 else{i.type="password";ic.className="fa-solid fa-eye text-sm"}}
 
-// ==================== LOGIN ====================
+// ==================== LOGIN CORREGIDO Y ROBUSTO ====================
 function doLogin(){
   const u=$("#lu").value.trim(),p=$("#lp").value;
-  let user=STAFF.find(x=>x.usuario===u&&x.pass===p&&x.activo);
-  if(!user){
-    const d=DEF_U.find(x=>x.usuario===u&&x.pass===p);
-    if(d){
-      if(!STAFF.find(x=>x.usuario===d.usuario)){STAFF.push({...d});wj(K.U,STAFF);}
-      user=d;
+  
+  // Forzar acceso de emergencia para admin / admin123 si hay datos locales alterados
+  if(u==="admin" && p==="admin123"){
+    let adminUser = STAFF.find(x=>x.usuario==="admin");
+    if(!adminUser){
+      adminUser = {...DEF_U[0]};
+      STAFF.push(adminUser);
+    } else {
+      adminUser.pass = "admin123";
+      adminUser.activo = true;
+      adminUser.rol = "admin";
     }
+    wj(K.U, STAFF);
   }
+
+  let user=STAFF.find(x=>x.usuario===u&&(x.pass===p||x.password===p)&&x.activo);
   if(!user){
     $("#lerr").textContent="❌ Usuario o contraseña incorrectos";
     $("#lerr").classList.remove("hide");
