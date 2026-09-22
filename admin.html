@@ -1,1 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#09090b">
+<title>Admin · Brothers Pizza</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--safe-bottom:env(safe-area-inset-bottom,0px)}
+*{-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,sans-serif}
+.inp{width:100%;background:#09090b;border:1px solid #3f3f46;border-radius:10px;padding:10px 12px;color:#fff;font-size:14px}
+.inp:focus{outline:none;border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.15)}
+.btn-red{background:#dc2626;color:#fff;padding:10px 14px;border-radius:10px;font-weight:600;font-size:14px;transition:.2s;cursor:pointer;border:none}
+.btn-red:hover{background:#b91c1c}.btn-red:active{transform:scale(.97)}
+.btn-gray{background:#27272a;color:#e4e4e7;padding:10px 14px;border-radius:10px;font-size:14px;transition:.2s;cursor:pointer;border:none}
+.btn-gray:hover{background:#3f3f46}.btn-gray:active{transform:scale(.97)}
+.tabbtn{padding:8px 14px;border-radius:10px;background:#27272a;color:#a1a1aa;font-size:13px;white-space:nowrap;transition:.2s;border:none;cursor:pointer}
+.tabbtn.act{background:#dc2626;color:#fff}
+.card{background:#18181b;border:1px solid #27272a;border-radius:14px;padding:14px}
+.hide{display:none!important}
+.avatar{width:44px;height:44px;border-radius:12px;object-fit:cover;background:#3f3f46;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden}
+.avatar-lg{width:80px;height:80px;border-radius:18px;font-size:38px}
+@keyframes toast-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.toast{animation:toast-in .3s ease-out}
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(46,213,115,.7)}70%{box-shadow:0 0 0 9px rgba(46,213,115,0)}100%{box-shadow:0 0 0 0 rgba(46,213,115,0)}}
+.live-dot{animation:pulse-ring 1.8s infinite}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.shake{animation:shake .4s ease}
+</style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+
+<!-- LOGIN -->
+<div id="login" class="fixed inset-0 bg-zinc-950 flex items-center justify-center p-4 z-50">
+  <div class="card w-full max-w-sm">
+    <div class="text-center mb-6">
+      <div class="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-br from-red-600 to-amber-500 items-center justify-center text-3xl mb-3">🍕</div>
+      <h1 class="font-bold text-xl">Brothers Pizza</h1>
+      <p class="text-xs text-zinc-500 mt-1">Panel Administrativo</p>
+    </div>
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs text-zinc-500 font-semibold mb-1.5 ml-1">Usuario</label>
+        <div class="relative">
+          <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+          <input id="lu" type="text" class="inp pl-10" placeholder="Tu usuario" autocomplete="username">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs text-zinc-500 font-semibold mb-1.5 ml-1">Contraseña</label>
+        <div class="relative">
+          <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+          <input id="lp" type="password" class="inp pl-10 pr-10" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" onclick="togglePass()" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white">
+            <i id="eyeIcon" class="fa-solid fa-eye text-sm"></i>
+          </button>
+        </div>
+      </div>
+      <div id="lerr" class="hide text-red-400 text-xs text-center bg-red-500/10 py-2 rounded"></div>
+      <button onclick="doLogin()" class="btn-red w-full !py-3 text-sm font-bold">
+        <i class="fa-solid fa-right-to-bracket mr-1"></i> Ingresar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hide">
+<header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
+<div class="max-w-5xl mx-auto px-3 py-3 flex items-center justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<div id="topAvatar" class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-amber-500 flex items-center justify-center text-xl shrink-0 overflow-hidden">🍕</div>
+<div class="min-w-0">
+<p class="font-bold text-sm">Brothers Pizza</p>
+<p id="whoami" class="text-[10px] text-zinc-500 truncate flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> —</p>
+</div>
+</div>
+<div class="flex gap-2">
+<a href="index.html" target="_blank" class="btn-gray text-xs">👁️<span class="hidden sm:inline ml-1">Ver menú</span></a>
+<button onclick="doLogout()" class="btn-gray text-xs">Salir</button>
+</div>
+</div>
+<div class="max-w-5xl mx-auto px-3 pb-2 flex gap-1 overflow-x-auto">
+<button class="tabbtn act" data-t="pos">🍕 POS</button>
+<button class="tabbtn" data-t="menu">📋 Menú</button>
+<button class="tabbtn" data-t="stock">📦 Stock</button>
+<button class="tabbtn" data-t="staff">👥 Staff</button>
+<button class="tabbtn" data-t="fin">💰 Finanzas</button>
+<button class="tabbtn" data-t="cash">💵 Caja</button>
+<button class="tabbtn" data-t="stats">📊 Ventas</button>
+</div>
+</header>
+
+<main class="max-w-5xl mx-auto p-3 pb-24">
+<section id="t-pos">
+<div class="grid lg:grid-cols-3 gap-3">
+<div class="lg:col-span-2">
+<input id="pq" class="inp mb-2" placeholder="🔍 Buscar producto...">
+<div id="pgrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+</div>
+<div class="card h-fit lg:sticky lg:top-32">
+<div class="flex justify-between mb-2">
+<b class="text-sm">🛒 Orden <span id="cc" class="text-red-500">(0)</span></b>
+<button onclick="clearCart()" class="text-xs text-zinc-500">Limpiar</button>
+</div>
+<input id="cliente" class="inp mb-2 text-sm" value="Mesa 1">
+<div id="cartList" class="space-y-1 max-h-60 overflow-y-auto mb-2"></div>
+<div class="text-xs border-t border-zinc-800 pt-2 space-y-1">
+<div class="flex justify-between"><span>Subtotal</span><span id="cSub">$0</span></div>
+<div class="flex justify-between"><span>IVA 12%</span><span id="cTax">$0</span></div>
+<div class="flex justify-between font-bold text-base pt-1"><span>Total</span><span id="cTot" class="text-red-500">$0</span></div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-2">
+<button onclick="pay('Efectivo')" class="btn-gray">💵 Efectivo</button>
+<button onclick="pay('Tarjeta')" class="btn-red">💳 Tarjeta</button>
+</div>
+</div>
+</div>
+</section>
+
+<section id="t-menu" class="hide space-y-4">
+<div class="card">
+<div class="flex justify-between mb-3">
+<h3 class="font-bold text-sm">📐 Tamaños y precios</h3>
+<button onclick="editSizes()" class="text-xs text-red-400">✏️ Editar</button>
+</div>
+<div id="sizesBox" class="grid grid-cols-3 gap-2"></div>
+</div>
+<div class="card">
+<h3 class="font-bold text-sm mb-3">⭐ Promos y adicionales</h3>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+<div class="bg-zinc-950 p-3 rounded-lg flex items-center gap-2">
+<div class="text-2xl">🍕</div>
+<div class="flex-1 min-w-0"><p class="text-xs font-semibold">Porción</p><p id="porcionP" class="text-amber-400 font-bold text-sm">$1.25</p></div>
+<button onclick="editPorcion()" class="text-xs text-red-400">✏️</button>
+</div>
+<div class="bg-zinc-950 p-3 rounded-lg flex items-center gap-2">
+<div class="text-2xl">🥤</div>
+<div class="flex-1 min-w-0"><p class="text-xs font-semibold">Pepsi 1L</p><p id="pepsiP" class="text-amber-400 font-bold text-sm">$0.75</p></div>
+<button onclick="editPepsi()" class="text-xs text-red-400">✏️</button>
+</div>
+<div class="bg-zinc-950 p-3 rounded-lg flex items-center gap-2">
+<div class="text-2xl">➕</div>
+<div class="flex-1 min-w-0"><p class="text-xs font-semibold">Extras</p><p id="extraP" class="text-amber-400 font-bold text-sm">$0.25</p></div>
+<button onclick="editExtrasPrice()" class="text-xs text-red-400">✏️</button>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="flex justify-between mb-3">
+<h3 class="font-bold text-sm">🍕 Pizzas en el menú</h3>
+<button onclick="editPizza(0)" class="btn-red text-xs">+ Nueva pizza</button>
+</div>
+<div id="pizzaList" class="space-y-2"></div>
+</div>
+<div class="card">
+<div class="flex justify-between mb-3">
+<h3 class="font-bold text-sm">🧀 Extras individuales</h3>
+<button onclick="editExtra(0)" class="btn-red text-xs">+ Nuevo extra</button>
+</div>
+<div id="extraList" class="space-y-2"></div>
+</div>
+</section>
+
+<section id="t-stock" class="hide">
+<div class="flex justify-between mb-3">
+<h2 class="font-bold">📦 Inventario</h2>
+<button onclick="editInsumo(0)" class="btn-red text-xs">+ Nuevo</button>
+</div>
+<div id="stockList" class="space-y-2"></div>
+</section>
+
+<section id="t-staff" class="hide">
+<div class="flex justify-between mb-3">
+<h2 class="font-bold">👥 Trabajadores</h2>
+<button onclick="editStaff(0)" class="btn-red text-xs">+ Nuevo trabajador</button>
+</div>
+<div id="staffList" class="space-y-3"></div>
+</section>
+
+<section id="t-fin" class="hide">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
+<div class="card"><p class="text-[10px] text-emerald-400 font-bold">INGRESOS</p><p id="fIn" class="text-xl font-bold">$0</p></div>
+<div class="card"><p class="text-[10px] text-red-400 font-bold">EGRESOS</p><p id="fEx" class="text-xl font-bold">$0</p></div>
+<div class="card"><p class="text-[10px] text-amber-400 font-bold">NÓMINA</p><p id="fPay" class="text-xl font-bold">$0</p></div>
+<div class="card"><p class="text-[10px] text-blue-400 font-bold">BALANCE</p><p id="fBal" class="text-xl font-bold">$0</p></div>
+</div>
+<div class="flex gap-2 mb-3 overflow-x-auto">
+<button class="tabbtn act" data-f="salary">💼 Sueldos</button>
+<button class="tabbtn" data-f="exp">🧾 Gastos</button>
+<button class="tabbtn" data-f="debt">💳 Deudas</button>
+</div>
+<div id="f-salary"><div id="salaryList" class="space-y-2"></div></div>
+<div id="f-exp" class="hide">
+<button onclick="newExpense()" class="btn-red mb-3 text-xs">+ Nuevo gasto</button>
+<div id="expList" class="space-y-2"></div>
+</div>
+<div id="f-debt" class="hide">
+<button onclick="newDebt()" class="btn-red mb-3 text-xs">+ Nueva deuda</button>
+<div id="debtList" class="space-y-2"></div>
+</div>
+</section>
+
+<section id="t-cash" class="hide">
+<div class="grid grid-cols-3 gap-2 mb-3">
+<div class="card"><p class="text-[10px] text-zinc-500 font-bold">ESTADO</p><p id="kState" class="text-base font-bold">—</p></div>
+<div class="card"><p class="text-[10px] text-zinc-500 font-bold">ESPERADO</p><p id="kExp" class="text-xl font-bold text-emerald-400">$0</p></div>
+<div class="card"><p class="text-[10px] text-zinc-500 font-bold">DIF.</p><p id="kDif" class="text-xl font-bold">$0</p></div>
+</div>
+<div class="card mb-3 space-y-2">
+<div class="grid grid-cols-3 gap-2">
+<input id="cashOpen" type="number" step="0.01" class="inp" placeholder="Apertura">
+<button onclick="openCash()" class="btn-gray">🔓 Abrir</button>
+<button onclick="closeCash()" class="btn-red">🔒 Cerrar</button>
+</div>
+<input id="cashCount" type="number" step="0.01" class="inp" placeholder="Efectivo contado">
+<p id="cashHint" class="text-[11px] text-zinc-500"></p>
+</div>
+<div id="cashHist" class="space-y-2"></div>
+</section>
+
+<section id="t-stats" class="hide">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
+<div class="card"><p class="text-[10px] text-zinc-500 font-bold">HOY</p><p id="sT" class="text-xl font-bold">$0</p></div>
+<div class="card"><p class="text-[10px] text-zinc-500 font-bold">ÓRDENES</p><p id="sO" class="text-xl font-bold">0</p></div>
+<div class="card"><p class="text-[10px] text-zinc-500 font-bold">MES</p><p id="sM" class="text-xl font-bold">$0</p></div>
+<div class="card"><p class="text-[10px] text-zinc-500 font-bold">TICKET</p><p id="sA" class="text-xl font-bold">$0</p></div>
+</div>
+<div id="salesList" class="space-y-2"></div>
+</section>
+</main>
+</div>
+
+<div id="modal" class="hide fixed inset-0 z-40 bg-black/70 flex items-end sm:items-center justify-center">
+<div id="modalBody" class="bg-zinc-900 w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl p-5"></div>
+</div>
+
+<div id="toasts" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] space-y-2 pointer-events-none w-[90%] max-w-md"></div>
+
+<script>
+// ==================== STORAGE ====================
+const K={M:"bp_menu",S:"bp_sales",I:"bp_inventory",U:"bp_staff",SE:"bp_session",P:"bp_payroll",E:"bp_expenses",D:"bp_debts",C:"bp_cash"};
+
+const IMG={
+pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&q=80",
+margarita:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80",
+hawaiana:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80",
+jamon:"https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=800&q=80",
+pepsi:"https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=800&q=80",
+slice:"https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=800&q=80",
+def:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80"};
+function imgOf(n=""){n=n.toLowerCase();if(n.includes("pepperoni"))return IMG.pepperoni;if(n.includes("margarita"))return IMG.margarita;if(n.includes("hawaiana"))return IMG.hawaiana;if(n.includes("jamón")||n.includes("jamon"))return IMG.jamon;if(n.includes("pepsi")||n.includes("cola")||n.includes("gaseosa"))return IMG.pepsi;if(n.includes("porci"))return IMG.slice;return IMG.def}
+
+const DEF_M={tamanos:[{id:"personal",label:"Personal",precio:5,porciones:4},{id:"mediana",label:"Mediana",precio:9,porciones:10},{id:"familiar",label:"Familiar",precio:13,porciones:12}],pizzas:[{id:1,nombre:"Pizza Pepperoni",desc:"Pepperoni y mozzarella",badge:"hot"},{id:2,nombre:"Pizza Margarita",desc:"Mozzarella, albahaca y tomate"},{id:3,nombre:"Pizza Hawaiana",desc:"Jamón, piña y mozzarella"},{id:4,nombre:"Pizza de Jamón",desc:"Jamón y mozzarella",badge:"new"}],porcion:{id:200,nombre:"Porción de Pizza",precio:1.25},pepsi:{id:300,nombre:"Pepsi 1L",precio:0.75},extras:[{id:"ex-pepperoni",nombre:"Pepperoni extra",emoji:"🍕",precio:0.25},{id:"ex-jamon",nombre:"Jamón extra",emoji:"🥓",precio:0.25},{id:"ex-pina",nombre:"Piña extra",emoji:"🍍",precio:0.25},{id:"ex-queso",nombre:"Queso extra",emoji:"🧀",precio:0.25}]};
+const DEF_I=[{id:1,nombre:"Harina",unidad:"kg",stock:25,min:10,costo:1.20,prov:"Molinos Andinos"},{id:2,nombre:"Queso Mozzarella",unidad:"kg",stock:8,min:5,costo:6.50,prov:"Lácteos Biblián"},{id:3,nombre:"Pepperoni",unidad:"kg",stock:4,min:3,costo:8,prov:"Carnes Pérez"},{id:4,nombre:"Jamón",unidad:"kg",stock:2,min:3,costo:5.50,prov:"Carnes Pérez"},{id:5,nombre:"Piña enlatada",unidad:"kg",stock:3,min:2,costo:3,prov:"Del Monte"},{id:6,nombre:"Pepsi 1L",unidad:"botella",stock:20,min:12,costo:0.50,prov:"Distribuidora Sur"},{id:7,nombre:"Cajas pizza",unidad:"unidad",stock:45,min:20,costo:0.15,prov:"Empaques EC"}];
+const DEF_U=[{id:1,nombre:"Administrador",usuario:"admin",pass:"admin123",rol:"admin",activo:true,emoji:"👑",sueldo:600,foto:null},{id:2,nombre:"Cajero",usuario:"cajero",pass:"cajero123",rol:"cajero",activo:true,emoji:"🧑🍳",sueldo:400,foto:null}];
+
+const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
+const money=v=>"$"+Number(v).toFixed(2);const uid=()=>Date.now()+Math.floor(Math.random()*1000);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rj=(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}};
+const wj=(k,v)=>{localStorage.setItem(k,JSON.stringify(v))};
+
+// ==================== SEED CORREGIDO ====================
+(function seed(){
+  let m=rj(K.M,null);
+  if(!m||!m.pizzas||!m.tamanos||!m.porcion||!m.pepsi||!m.extras){
+    if(m&&m.cola&&!m.pepsi){m.pepsi={...m.cola,nombre:"Pepsi 1L"};delete m.cola}
+    if(!m||!m.pizzas)m=DEF_M;
+    if(!m.pepsi)m.pepsi=DEF_M.pepsi;
+    if(!m.extras)m.extras=DEF_M.extras;
+    wj(K.M,m);
+  }
+  if(!Array.isArray(rj(K.I,null)))wj(K.I,DEF_I);
+
+  let st=rj(K.U,null);
+  if(!Array.isArray(st)||st.length===0){
+    wj(K.U,DEF_U);
+  } else {
+    const hayAdmin=st.some(x=>x&&x.rol==="admin"&&x.activo);
+    if(!hayAdmin){
+      st.unshift({...DEF_U[0]});
+      wj(K.U,st);
+    }
+  }
+
+  if(!Array.isArray(rj(K.S,null)))wj(K.S,[]);
+  if(!Array.isArray(rj(K.P,null)))wj(K.P,[]);
+  if(!Array.isArray(rj(K.E,null)))wj(K.E,[]);
+  if(!Array.isArray(rj(K.D,null)))wj(K.D,[]);
+  if(!Array.isArray(rj(K.C,null)))wj(K.C,[]);
+})();
+
+let MENU=rj(K.M,DEF_M),SALES=rj(K.S,[]),INV=rj(K.I,DEF_I),STAFF=rj(K.U,DEF_U);
+let PAY=rj(K.P,[]),EXP=rj(K.E,[]),DEBT=rj(K.D,[]),CASH=rj(K.C,[]),SESSION=rj(K.SE,null),cart=[];
+
+// ==================== UTILS ====================
+function toast(msg,type="success"){const c=$("#toasts"),el=document.createElement("div");
+const st=type==="error"?"bg-red-600/95 border-red-400":type==="info"?"bg-zinc-800/95 border-zinc-600":"bg-emerald-600/95 border-emerald-400";
+const ic=type==="error"?"fa-circle-exclamation":type==="info"?"fa-circle-info":"fa-circle-check";
+el.className=`toast pointer-events-auto rounded-2xl px-4 py-3 shadow-2xl backdrop-blur-md border text-white text-sm font-semibold flex items-center gap-3 ${st}`;
+el.innerHTML=`<i class="fa-solid ${ic} text-lg"></i><span class="flex-1">${esc(msg)}</span>`;
+c.appendChild(el);setTimeout(()=>{el.style.transition="opacity .3s,transform .3s";el.style.opacity="0";el.style.transform="translateY(20px)";setTimeout(()=>el.remove(),300)},3000)}
+
+function modal(h){$("#modalBody").innerHTML=h;$("#modal").classList.remove("hide")}
+function closeModal(){$("#modal").classList.add("hide")}
+$("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+function togglePass(){const i=$("#lp"),ic=$("#eyeIcon");
+if(i.type==="password"){i.type="text";ic.className="fa-solid fa-eye-slash text-sm"}
+else{i.type="password";ic.className="fa-solid fa-eye text-sm"}}
+
+// ==================== LOGIN CORREGIDO Y ROBUSTO ====================
+function doLogin(){
+  const u=$("#lu").value.trim(),p=$("#lp").value;
+  
+  // Forzar acceso de emergencia para admin / admin123 si hay datos locales alterados
+  if(u==="admin" && p==="admin123"){
+    let adminUser = STAFF.find(x=>x.usuario==="admin");
+    if(!adminUser){
+      adminUser = {...DEF_U[0]};
+      STAFF.push(adminUser);
+    } else {
+      adminUser.pass = "admin123";
+      adminUser.activo = true;
+      adminUser.rol = "admin";
+    }
+    wj(K.U, STAFF);
+  }
+
+  let user=STAFF.find(x=>x.usuario===u&&(x.pass===p||x.password===p)&&x.activo);
+  if(!user){
+    $("#lerr").textContent="❌ Usuario o contraseña incorrectos";
+    $("#lerr").classList.remove("hide");
+    $("#lu").classList.add("shake");$("#lp").classList.add("shake");
+    setTimeout(()=>{$("#lu").classList.remove("shake");$("#lp").classList.remove("shake")},500);
+    return;
+  }
+  $("#lerr").classList.add("hide");
+  SESSION={id:user.id,nombre:user.nombre,rol:user.rol,foto:user.foto};
+  wj(K.SE,SESSION);
+  startApp();
+  const c=$("#toasts"),el=document.createElement("div");
+  el.className="toast pointer-events-auto rounded-2xl px-5 py-4 shadow-2xl backdrop-blur-md border-2 border-emerald-400 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white flex items-center gap-3";
+  el.innerHTML=`<i class="fa-solid fa-circle-check text-2xl"></i><div><p class="text-base font-bold">¡Ingreso exitoso!</p><p class="text-xs opacity-90 mt-0.5">Bienvenido, ${esc(user.nombre)} 🍕</p></div>`;
+  c.appendChild(el);
+  setTimeout(()=>{el.style.transition="opacity .3s,transform .3s";el.style.opacity="0";el.style.transform="translateY(20px)";setTimeout(()=>el.remove(),300)},3000);
+}
+
+function doLogout(){
+  const c=$("#toasts"),el=document.createElement("div");
+  el.className="toast pointer-events-auto rounded-2xl px-5 py-4 shadow-2xl backdrop-blur-md border-2 border-red-400 bg-gradient-to-r from-red-600 to-red-700 text-white flex items-center gap-3";
+  el.innerHTML=`<i class="fa-solid fa-right-from-bracket text-2xl"></i><div><p class="text-base font-bold">Sesión cerrada</p><p class="text-xs opacity-90 mt-0.5">¡Vuelve pronto, ${esc(SESSION?.nombre||"")}! 👋</p></div>`;
+  c.appendChild(el);
+  setTimeout(()=>{localStorage.removeItem(K.SE);location.reload()},1200)}
+
+// ==================== APP ====================
+function startApp(){
+  $("#login").classList.add("hide");
+  $("#app").classList.remove("hide");
+  const u=STAFF.find(x=>x.id===SESSION.id);
+  $("#whoami").innerHTML=`<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> ${esc(SESSION.nombre)} · ${SESSION.rol}`;
+  const topAv=$("#topAvatar");
+  if(u&&u.foto)topAv.innerHTML=`<img src="${u.foto}" class="w-full h-full object-cover">`;
+  else topAv.textContent=u?.emoji||"🍕";
+  renderAll();
+}
+
+function showTab(t){$$("main > section").forEach(s=>s.classList.add("hide"));
+const el=$("#t-"+t);if(el)el.classList.remove("hide");
+$$(".tabbtn[data-t]").forEach(b=>b.classList.toggle("act",b.dataset.t===t))} $$
+(".tabbtn[data-t]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.t)));
+
+// ==================== POS ====================
+function getProds(){const l=[];
+MENU.pizzas.forEach(p=>MENU.tamanos.forEach(t=>l.push({key:`p${p.id}-${t.id}`,tipo:"pizza",nombre:`${p.nombre} ${t.label}`,precio:t.precio,img:imgOf(p.nombre)})));
+l.push({key:"porcion",tipo:"porcion",nombre:"Porción pizza",precio:MENU.porcion.precio,img:IMG.slice});
+l.push({key:"pepsi",tipo:"extra",nombre:MENU.pepsi.nombre,precio:MENU.pepsi.precio,img:IMG.pepsi});
+(MENU.extras||[]).forEach(ex=>l.push({key:ex.id,tipo:"extra",nombre:ex.nombre,precio:ex.precio,img:IMG.def}));
+return l}
+
+function renderPOS(q=""){let list=getProds();
+if(q)list=list.filter(p=>p.nombre.toLowerCase().includes(q.toLowerCase()));
+$("#pgrid").innerHTML=list.map((p,i)=>`
+<button onclick="addCart(${i})" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden text-left hover:border-red-600 transition">
+<div class="h-20 bg-zinc-800 overflow-hidden"><img src="${p.img}" class="w-full h-full object-cover" onerror="this.src='${IMG.def}'"></div>
+<div class="p-2"><p class="text-[11px] font-semibold leading-tight line-clamp-2 min-h-[2rem]">${esc(p.nombre)}</p><p class="text-amber-400 font-bold text-sm mt-1">${money(p.precio)}</p></div>
+</button>`).join("")||`<p class="col-span-full text-center text-zinc-500 py-8 text-sm">Sin resultados</p>`;
+window._posList=list}
+$("#pq").addEventListener("input",e=>renderPOS(e.target.value));
+
+function addCart(i){const p=window._posList[i];if(!p)return;
+const f=cart.find(x=>x.key===p.key);if(f)f.cantidad++;else cart.push({...p,cantidad:1});renderCart()}
+function changeQty(i,d){cart[i].cantidad+=d;if(cart[i].cantidad<=0)cart.splice(i,1);renderCart()}
+function clearCart(){cart=[];renderCart()}
+function renderCart(){const cnt=cart.reduce((s,i)=>s+i.cantidad,0);
+const sub=cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
+const tax=sub*0.12;
+$("#cc").textContent=`(${cnt})`;$("#cSub").textContent=money(sub);$("#cTax").textContent=money(tax);$("#cTot").textContent=money(sub+tax);
+$("#cartList").innerHTML=cart.length===0?`<p class="text-center text-zinc-600 py-4 text-xs">Sin productos</p>`:
+cart.map((it,i)=>`<div class="flex items-center gap-2 bg-zinc-950 p-2 rounded-lg">
+<div class="flex-1 min-w-0"><p class="text-xs font-semibold truncate">${esc(it.nombre)}</p><p class="text-[10px] text-zinc-500">${money(it.precio)}</p></div>
+<button onclick="changeQty(${i},-1)" class="w-6 h-6 rounded bg-zinc-800 text-xs">−</button>
+<span class="text-xs font-bold w-5 text-center">${it.cantidad}</span>
+<button onclick="changeQty(${i},1)" class="w-6 h-6 rounded bg-zinc-800 text-xs">+</button></div>`).join("")}
+
+function pay(m){if(!cart.length){toast("Carrito vacío","error");return}
+const sub=cart.reduce((s,i)=>s+i.precio*i.cantidad,0);const tax=sub*0.12;
+SALES.unshift({id:uid(),fecha:new Date().toISOString(),cliente:$("#cliente").value||"Cliente",metodo:m,items:[...cart],subtotal:sub,impuesto:tax,total:sub+tax,vendedor:SESSION?.nombre||"Sistema"});
+wj(K.S,SALES);cart=[];renderCart();renderStats();renderFin();renderCash();toast(`Venta registrada: ${money(sub+tax)} 💰`)}
+
+// ==================== MENÚ ====================
+function renderMenu(){
+$("#sizesBox").innerHTML=MENU.tamanos.map(t=>`<div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-center"><p class="text-[10px] text-zinc-500 font-bold uppercase">${esc(t.label)}</p><p class="text-lg font-bold text-amber-400">${money(t.precio)}</p><p class="text-[10px] text-zinc-500">${t.porciones} porc.</p></div>`).join("");
+$("#porcionP").textContent=money(MENU.porcion.precio);
+$("#pepsiP").textContent=money(MENU.pepsi.precio);
+$("#extraP").textContent=money(MENU.extras?.[0]?.precio||0.25);
+$("#pizzaList").innerHTML=MENU.pizzas.map(p=>`<div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 flex gap-3 items-center">
+<div class="w-14 h-14 rounded-lg overflow-hidden bg-zinc-800 shrink-0"><img src="${imgOf(p.nombre)}" class="w-full h-full object-cover" onerror="this.src='${IMG.def}'"></div>
+<div class="flex-1 min-w-0"><p class="font-semibold text-sm truncate">${esc(p.nombre)}</p><p class="text-[11px] text-zinc-500 truncate">${esc(p.desc||"")}</p></div>
+<button onclick="editPizza(${p.id})" class="w-8 h-8 rounded bg-zinc-800 text-xs"><i class="fa-solid fa-pen"></i></button>
+<button onclick="delPizza(${p.id})" class="w-8 h-8 rounded bg-zinc-800 text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button></div>`).join("");
+$("#extraList").innerHTML=(MENU.extras||[]).map(ex=>`<div class="bg-zinc-950 border border-zinc-800 rounded-xl p-2 flex gap-3 items-center">
+<div class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-xl shrink-0">${ex.emoji||"➕"}</div>
+<div class="flex-1 min-w-0"><p class="font-semibold text-sm truncate">${esc(ex.nombre)}</p><p class="text-[11px] text-emerald-400 font-bold">${money(ex.precio)}</p></div>
+<button onclick="editExtra('${ex.id}')" class="w-8 h-8 rounded bg-zinc-800 text-xs"><i class="fa-solid fa-pen"></i></button>
+<button onclick="delExtra('${ex.id}')" class="w-8 h-8 rounded bg-zinc-800 text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button></div>`).join("")}
+
+function editPizza(id){const p=id===0?{id:uid(),nombre:"",desc:"",badge:""}:MENU.pizzas.find(x=>x.id===id);
+modal(`<h3 class="font-bold mb-4">${id?"Editar":"Nueva"} pizza</h3>
+<input type="text" id="pN" class="inp mb-2" value="${esc(p.nombre)}" placeholder="Nombre">
+<input type="text" id="pD" class="inp mb-2" value="${esc(p.desc||"")}" placeholder="Descripción">
+<select id="pB" class="inp mb-3"><option value="">Normal</option><option value="hot" ${p.badge==="hot"?"selected":""}>🔥 Popular</option><option value="new" ${p.badge==="new"?"selected":""}>⭐ Nuevo</option></select>
+<div class="flex gap-2"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="savePizza(${id})" class="btn-red flex-1">Guardar</button></div>`)}
+
+function savePizza(id){const nombre=$("#pN").value.trim();
+if(!nombre){toast("Ponle nombre","error");return}
+const data={nombre,desc:$("#pD").value.trim(),badge:$("#pB").value};
+if(id===0)MENU.pizzas.push({id:uid(),...data});else Object.assign(MENU.pizzas.find(x=>x.id===id),data);
+wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();closeModal();toast(id===0?"Pizza agregada ✨":"Pizza actualizada")}
+function delPizza(id){if(!confirm("¿Eliminar esta pizza?"))return;
+MENU.pizzas=MENU.pizzas.filter(x=>x.id!==id);wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();toast("Pizza eliminada")}
+
+function editSizes(){modal(`<h3 class="font-bold mb-4">Tamaños y precios</h3>
+${MENU.tamanos.map((t,i)=>`<div class="bg-zinc-950 p-3 rounded-lg mb-2"><p class="text-sm font-bold mb-2">${esc(t.label)}</p>
+<div class="grid grid-cols-2 gap-2"><input type="number" step="0.01" id="sp${i}" value="${t.precio}" class="inp" placeholder="Precio"><input type="number" id="sr${i}" value="${t.porciones}" class="inp" placeholder="Porciones"></div></div>`).join("")}
+<div class="flex gap-2 mt-3"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveSizes()" class="btn-red flex-1">Guardar</button></div>`)}
+
+function saveSizes(){MENU.tamanos.forEach((t,i)=>{t.precio=parseFloat($("#sp"+i).value)\vert{}\vert{}0;t.porciones=parseInt($("#sr"+i).value)||t.porciones});
+wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();closeModal();toast("Tamaños actualizados")}
+
+function editPorcion(){const v=prompt("Precio de la porción:",MENU.porcion.precio);if(v===null)return;
+MENU.porcion.precio=parseFloat(v)||MENU.porcion.precio;wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();toast("Porción actualizada")}
+function editPepsi(){const v=prompt("Precio de Pepsi 1L:",MENU.pepsi.precio);if(v===null)return;
+MENU.pepsi.precio=parseFloat(v)||MENU.pepsi.precio;wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();toast("Pepsi actualizada")}
+function editExtrasPrice(){const act=MENU.extras?.[0]?.precio||0.25;const v=prompt("Precio de TODOS los extras:",act);if(v===null)return;
+const precio=parseFloat(v)||act;(MENU.extras||[]).forEach(ex=>ex.precio=precio);wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();toast("Precio de extras actualizado")}
+
+function editExtra(id){const isNew=!id||id===0;
+const ex=isNew?{id:"ex-"+uid(),nombre:"",emoji:"➕",precio:0.25}:MENU.extras.find(x=>x.id===id);if(!ex)return;
+modal(`<h3 class="font-bold mb-4">${isNew?"Nuevo":"Editar"} extra</h3>
+<input type="text" id="exN" class="inp mb-2" value="${esc(ex.nombre)}" placeholder="Nombre (ej: Champiñones extra)">
+<div class="grid grid-cols-2 gap-2 mb-3"><input type="text" id="exE" class="inp" value="${esc(ex.emoji||"➕")}" placeholder="Emoji" maxlength="4"><input type="number" step="0.01" id="exP" class="inp" value="${ex.precio}" placeholder="Precio"></div>
+<div class="flex gap-2"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveExtra('${isNew?ex.id:id}')" class="btn-red flex-1">Guardar</button></div>`)}
+
+function saveExtra(id){const nombre=$("#exN").value.trim();if(!nombre){toast("Ponle nombre","error");return}
+const data={nombre,emoji:$("#exE").value.trim()\vert{}\vert{}"➕",precio:parseFloat($("#exP").value)||0.25};
+if(!MENU.extras)MENU.extras=[];
+const f=MENU.extras.find(x=>x.id===id);if(f)Object.assign(f,data);else MENU.extras.push({id,...data});
+wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();closeModal();toast("Extra guardado")}
+function delExtra(id){if(!confirm("¿Eliminar este extra?"))return;
+MENU.extras=MENU.extras.filter(x=>x.id!==id);wj(K.M,MENU);MENU=rj(K.M,DEF_M);renderMenu();renderPOS();toast("Extra eliminado")}
+
+// ==================== STOCK ====================
+function renderStock(){$("#stockList").innerHTML=INV.map(i=>{const crit=i.stock<=i.min;
+return `<div class="card ${crit?"border-red-600/60":""}">
+<div class="flex justify-between mb-1"><p class="font-semibold text-sm">${esc(i.nombre)}</p>
+<span class="text-[10px] ${crit?"text-red-400":"text-emerald-400"} font-bold">${crit?"⚠️ CRÍTICO":"OK"}</span></div>
+<p class="text-xs text-zinc-500 mb-2">${esc(i.prov||"")} · ${money(i.costo)}/${esc(i.unidad)}</p>
+<div class="flex items-center justify-between"><span class="text-xs">Stock: <b>${i.stock} ${esc(i.unidad)}</b></span>
+<div class="flex gap-1"><button onclick="addStock(${i.id})" class="text-[10px] px-2 py-1 rounded bg-zinc-800">+ Sumar</button><button onclick="editInsumo(${i.id})" class="text-[10px] px-2 py-1 rounded bg-zinc-800">Editar</button></div></div></div>`}).join("")}
+
+function addStock(id){const i=INV.find(x=>x.id===id);const q=prompt(`¿Cuánto sumar a "${i.nombre}"?`,"10");if(q===null)return;
+i.stock+=parseFloat(q)||0;wj(K.I,INV);renderStock();toast("Stock actualizado")}
+function editInsumo(id){const i=id===0?{id:uid(),nombre:"",unidad:"kg",stock:0,min:0,costo:0,prov:""}:INV.find(x=>x.id===id);
+modal(`<h3 class="font-bold mb-4">${id?"Editar":"Nuevo"} insumo</h3>
+<input type="text" id="iN" class="inp mb-2" value="${esc(i.nombre)}" placeholder="Nombre">
+<div class="grid grid-cols-2 gap-2 mb-2"><input type="text" id="iU" class="inp" value="${esc(i.unidad)}" placeholder="Unidad"><input type="number" step="0.01" id="iC" class="inp" value="${i.costo}" placeholder="Costo"></div>
+<div class="grid grid-cols-2 gap-2 mb-2"><input type="number" step="0.01" id="iS" class="inp" value="${i.stock}" placeholder="Stock"><input type="number" step="0.01" id="iM" class="inp" value="${i.min}" placeholder="Mínimo"></div>
+<input type="text" id="iP" class="inp mb-3" value="${esc(i.prov||"")}" placeholder="Proveedor">
+<div class="flex gap-2"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveInsumo(${id})" class="btn-red flex-1">Guardar</button></div>`)}
+
+function saveInsumo(id){const data={nombre:$("#iN").value.trim(),unidad:$("#iU").value.trim()||"kg",costo:parseFloat($("#iC").value)\vert{}\vert{}0,stock:parseFloat($("#iS").value)||0,min:parseFloat($("#iM").value)\vert{}\vert{}0,prov:$("#iP").value.trim()};
+if(!data.nombre){toast("Ponle nombre","error");return}
+if(id===0)INV.push({id:uid(),...data});else Object.assign(INV.find(x=>x.id===id),data);
+wj(K.I,INV);renderStock();closeModal();toast("Insumo guardado")}
+
+// ==================== STAFF ====================
+function renderStaff(){$("#staffList").innerHTML=STAFF.map(s=>`
+<div class="card">
+<div class="flex items-start gap-3 mb-3">
+<div class="avatar" ${s.foto?'':`style="background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff;font-size:22px"`}>${s.foto?`<img src="${s.foto}" class="w-full h-full object-cover">`:(s.emoji||"👤")}</div>
+<div class="flex-1 min-w-0"><p class="font-bold text-sm truncate">${esc(s.nombre)}</p>
+<p class="text-[11px] text-zinc-500 truncate">@${esc(s.usuario)}</p>
+<div class="flex gap-2 mt-1">
+<span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${s.rol==="admin"?"bg-red-600/20 text-red-400":"bg-emerald-600/20 text-emerald-400"}">${s.rol==="admin"?"👑 Admin":s.rol==="cocina"?"👨🍳 Cocina":"🧑🍳 Cajero"}</span>
+<span class="text-[10px] ${s.activo?"text-emerald-400":"text-red-400"}"><i class="fa-solid fa-circle text-[6px] mr-1"></i>${s.activo?"Activo":"Inactivo"}</span>
+</div></div></div>
+<p class="text-xs text-zinc-400 mb-2">💵 Sueldo: <b class="text-white">${money(s.sueldo||0)}</b></p>
+<div class="grid grid-cols-2 gap-2">
+<button onclick="editStaff(${s.id})" class="btn-gray text-xs">✏️ Editar</button>
+<button onclick="toggleStaff(${s.id})" class="btn-gray text-xs">${s.activo?"⏸️ Pausar":"▶️ Activar"}</button>
+</div></div>`).join("")}
+
+function toggleStaff(id){const s=STAFF.find(x=>x.id===id);
+if(s.usuario==="admin"&&s.activo){toast("No puedes desactivar al admin principal","error");return}
+s.activo=!s.activo;wj(K.U,STAFF);renderStaff();toast(s.activo?"Activado":"Pausado")}
+
+function editStaff(id){const isNew=id===0;
+const s=isNew?{id:uid(),nombre:"",usuario:"",pass:"",rol:"cajero",activo:true,emoji:"🧑🍳",sueldo:0,foto:null}:STAFF.find(x=>x.id===id);
+if(!s)return;
+modal(`<h3 class="font-bold mb-4">${isNew?"Nuevo":"Editar"} trabajador</h3>
+<div class="flex flex-col items-center mb-4">
+<div id="prevAvatar" class="avatar avatar-lg mb-2" ${s.foto?'':`style="background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff;font-size:38px"`}>
+${s.foto?`<img src="${s.foto}" class="w-full h-full object-cover rounded-2xl">`:(s.emoji||"🧑🍳")}</div>
+<label class="cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-xs px-4 py-2 rounded-lg font-semibold">📷 Subir foto<input type="file" id="sFoto" accept="image/*" class="hidden" onchange="handleFoto(event)"></label>
+<p class="text-[10px] text-zinc-500 mt-1">Cualquier tamaño (se comprime auto)</p>
+${s.foto?`<button onclick="removeFoto()" class="text-[10px] text-red-400 mt-1">Quitar foto</button>`:""}</div>
+<input type="text" id="sN" class="inp mb-2" value="${esc(s.nombre)}" placeholder="Nombre completo">
+<input type="text" id="sU" class="inp mb-2" value="${esc(s.usuario)}" placeholder="Usuario">
+<input type="text" id="sP" class="inp mb-2" value="${esc(s.pass)}" placeholder="Contraseña">
+<input type="number" step="0.01" id="sS" class="inp mb-2" value="${s.sueldo||0}" placeholder="Sueldo mensual">
+<select id="sR" class="inp mb-3"><option value="cajero" ${s.rol==="cajero"?"selected":""}>🧑🍳 Cajero</option><option value="cocina" ${s.rol==="cocina"?"selected":""}>👨🍳 Cocina</option><option value="admin" ${s.rol==="admin"?"selected":""}>👑 Admin</option></select>
+<div class="flex gap-2"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveStaff(${id})" class="btn-red flex-1">Guardar</button></div>`);
+window._tempFoto=s.foto||null}
+
+function handleFoto(e){
+  const f=e.target.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=300;
+      let w=img.width,h=img.height;
+      if(w>h){if(w>MAX){h=h*(MAX/w);w=MAX}}
+      else{if(h>MAX){w=w*(MAX/h);h=MAX}}
+      const canvas=document.createElement("canvas");
+      canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext("2d");
+      ctx.drawImage(img,0,0,w,h);
+      const compressed=canvas.toDataURL("image/jpeg",0.8);
+      window._tempFoto=compressed;
+      const p=$("#prevAvatar");
+      p.innerHTML=`<img src="${compressed}" class="w-full h-full object-cover rounded-2xl">`;
+      p.style.background="transparent";
+      toast("Foto cargada y comprimida ✅");
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(f);
+}
+
+function removeFoto(){window._tempFoto=null;const p=$("#prevAvatar");p.innerHTML="🧑🍳";p.style.background="linear-gradient(135deg,#dc2626,#f59e0b)";p.style.color="#fff";p.style.fontSize="38px"}
+
+function saveStaff(id){const data={nombre:$("#sN").value.trim(),usuario:$("#sU").value.trim(),pass:$("#sP").value.trim(),sueldo:parseFloat($("#sS").value)\vert{}\vert{}0,rol:$("#sR").value,emoji:$("#sR").value==="admin"?"👑":$("#sR").value==="cocina"?"👨🍳":"🧑🍳",foto:window._tempFoto||null};
+if(!data.nombre||!data.usuario||!data.pass){toast("Completa los campos","error");return}
+const dup=STAFF.find(x=>x.usuario===data.usuario&&x.id!==id);
+if(dup){toast("Ese usuario ya existe, usa otro","error");return}
+if(id===0)STAFF.push({id:uid(),...data,activo:true});else Object.assign(STAFF.find(x=>x.id===id),data);
+wj(K.U,STAFF);renderStaff();renderFin();closeModal();toast(id===0?"Trabajador agregado ✨":"Trabajador actualizado");
+if(SESSION&&SESSION.id===id){SESSION.nombre=data.nombre;SESSION.foto=data.foto;wj(K.SE,SESSION);
+$("#whoami").innerHTML=`<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> ${esc(data.nombre)} · ${SESSION.rol}`;
+const t=$("#topAvatar");if(data.foto)t.innerHTML=`<img src="${data.foto}" class="w-full h-full object-cover">`;else t.textContent=data.emoji}}
+
+// ==================== FINANZAS ====================
+const monthKey=()=>new Date().toISOString().slice(0,7);
+function renderFin(){const m=monthKey();
+const inc=SALES.filter(s=>s.fecha.slice(0,7)===m).reduce((a,s)=>a+s.total,0);
+const payPaid=PAY.filter(p=>(p.fecha||"").slice(0,7)===m).reduce((a,p)=>a+p.monto,0);
+const expSum=EXP.filter(e=>e.fecha.slice(0,7)===m).reduce((a,e)=>a+e.monto,0);
+const debtPaid=DEBT.filter(d=>(d.fechaPago||"").slice(0,7)===m&&d.pagado).reduce((a,d)=>a+d.monto,0);
+const totalEx=payPaid+expSum+debtPaid;
+const payExp=STAFF.reduce((a,s)=>a+(s.sueldo||0),0);
+const bal=inc-totalEx;
+$("#fIn").textContent=money(inc);$("#fEx").textContent=money(totalEx);$("#fPay").textContent=money(payExp);$("#fBal").textContent=money(bal);
+$("#fBal").style.color=bal>=0?"#34d399":"#f87171";
+$("#salaryList").innerHTML=STAFF.map(s=>{const paid=PAY.filter(p=>p.staffId===s.id&&(p.fecha||"").slice(0,7)===m).reduce((a,p)=>a+p.monto,0);
+const pend=Math.max(0,(s.sueldo||0)-paid);
+return `<div class="card"><div class="flex items-center gap-3 mb-2">
+<div class="avatar" ${s.foto?'':`style="background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff"`}>${s.foto?`<img src="${s.foto}" class="w-full h-full object-cover">`:(s.emoji||"👤")}</div>
+<div class="flex-1 min-w-0"><p class="font-semibold text-sm truncate">${esc(s.nombre)}</p><p class="text-[11px] text-zinc-500">Sueldo: ${money(s.sueldo||0)}</p></div>
+<div class="text-right"><p class="text-[10px] text-zinc-500">Pendiente</p><p class="text-sm font-bold ${pend>0?"text-red-400":"text-emerald-400"}">${money(pend)}</p></div></div>
+<p class="text-[11px] text-zinc-500 mb-2">Pagado: <b class="text-emerald-400">${money(paid)}</b></p>
+<div class="flex gap-2"><button onclick="paySalary(${s.id})" class="flex-1 bg-emerald-600/30 text-emerald-400 py-1.5 rounded text-xs">💵 Pagar</button><button onclick="editSalary(${s.id})" class="btn-gray flex-1 text-xs">✏️ Sueldo</button></div></div>`}).join("");
+const mExp=EXP.filter(e=>e.fecha.slice(0,7)===m);
+$("#expList").innerHTML=mExp.length===0?`<p class="text-center text-zinc-500 py-6 text-xs">Sin gastos este mes</p>`:
+mExp.map(e=>`<div class="card flex items-center gap-3"><div class="flex-1 min-w-0"><p class="font-semibold text-sm truncate">${esc(e.descripcion)}</p><p class="text-[11px] text-zinc-500">${esc(e.categoria||"General")} · ${new Date(e.fecha).toLocaleDateString("es-EC")}</p></div>
+<p class="text-red-400 font-bold text-sm">-${money(e.monto)}</p><button onclick="delExpense(${e.id})" class="text-zinc-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button></div>`).join("");
+$("#debtList").innerHTML=DEBT.length===0?`<p class="text-center text-zinc-500 py-6 text-xs">Sin deudas 🎉</p>`:
+DEBT.map(d=>`<div class="card ${d.pagado?"border-emerald-600/40 opacity-60":"border-amber-600/40"}">
+<div class="flex justify-between items-start mb-2"><div class="min-w-0"><p class="font-semibold text-sm truncate">${esc(d.acreedor)}</p><p class="text-[11px] text-zinc-500 truncate">${esc(d.nota||"")}</p></div>
+<div class="text-right shrink-0 ml-2"><p class="font-bold ${d.pagado?"text-emerald-400 line-through":"text-amber-400"} text-sm">${money(d.monto)}</p><p class="text-[10px] text-zinc-500">${d.vence?new Date(d.vence).toLocaleDateString("es-EC"):"—"}</p></div></div>
+<div class="flex gap-2">${!d.pagado?`<button onclick="payDebt(${d.id})" class="flex-1 bg-emerald-600/30 text-emerald-400 py-1.5 rounded text-xs">✓ Pagar</button>`:""}<button onclick="delDebt(${d.id})" class="flex-1 bg-zinc-800 text-red-400 py-1.5 rounded text-xs">Eliminar</button></div></div>`).join("")}
+
+function paySalary(id){const s=STAFF.find(x=>x.id===id);const v=prompt(`Monto a pagar a ${s.nombre}:`,s.sueldo||0);if(v===null)return;
+const monto=parseFloat(v)||0;if(monto<=0)return;
+PAY.push({id:uid(),staffId:id,nombre:s.nombre,monto,fecha:new Date().toISOString()});wj(K.P,PAY);renderFin();toast(`Pago registrado: ${money(monto)}`)}
+function editSalary(id){const s=STAFF.find(x=>x.id===id);const v=prompt(`Sueldo mensual de ${s.nombre}:`,s.sueldo||0);if(v===null)return;
+s.sueldo=parseFloat(v)||0;wj(K.U,STAFF);renderFin();renderStaff();toast("Sueldo actualizado")}
+function newExpense(){modal(`<h3 class="font-bold mb-4">Nuevo gasto</h3>
+<input type="text" id="exD" class="inp mb-2" placeholder="Descripción">
+<input type="number" step="0.01" id="exA" class="inp mb-2" placeholder="Monto">
+<select id="exC" class="inp mb-3"><option>Servicios</option><option>Arriendo</option><option>Insumos</option><option>Sueldos</option><option>Otros</option></select>
+<div class="flex gap-2"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveExpense()" class="btn-red flex-1">Guardar</button></div>`)}
+function saveExpense(){const d=$("#exD").value.trim(),m=parseFloat($("#exA").value)||0;if(!d||m<=0){toast("Completa los datos","error");return}
+EXP.push({id:uid(),descripcion:d,monto:m,categoria:$("#exC").value,fecha:new Date().toISOString()});wj(K.E,EXP);renderFin();closeModal();toast("Gasto registrado")}
+function delExpense(id){if(!confirm("¿Eliminar?"))return;EXP=EXP.filter(e=>e.id!==id);wj(K.E,EXP);renderFin();toast("Gasto eliminado")}
+function newDebt(){modal(`<h3 class="font-bold mb-4">Nueva deuda</h3>
+<input type="text" id="dN" class="inp mb-2" placeholder="Acreedor">
+<input type="number" step="0.01" id="dA" class="inp mb-2" placeholder="Monto">
+<input type="date" id="dV" class="inp mb-2">
+<input type="text" id="dNo" class="inp mb-3" placeholder="Nota (opcional)">
+<div class="flex gap-2"><button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button><button onclick="saveDebt()" class="btn-red flex-1">Guardar</button></div>`)}
+function saveDebt(){const n=$("#dN").value.trim(),m=parseFloat($("#dA").value)||0;if(!n||m<=0){toast("Completa los datos","error");return}
+DEBT.push({id:uid(),acreedor:n,monto:m,vence:$("#dV").value\vert{}\vert{}null,nota:$("#dNo").value.trim(),pagado:false,fecha:new Date().toISOString()});wj(K.D,DEBT);renderFin();closeModal();toast("Deuda registrada")}
+function payDebt(id){const d=DEBT.find(x=>x.id===id);if(!confirm(`¿Marcar pagada: ${d.acreedor} - ${money(d.monto)}?`))return;
+d.pagado=true;d.fechaPago=new Date().toISOString();wj(K.D,DEBT);renderFin();toast("Deuda pagada")}
+function delDebt(id){if(!confirm("¿Eliminar?"))return;DEBT=DEBT.filter(d=>d.id!==id);wj(K.D,DEBT);renderFin();toast("Deuda eliminada")}
+$$(".tabbtn[data-f]").forEach(b=>b.addEventListener("click",()=>{$$
+(".tabbtn[data-f]").forEach(x=>x.classList.remove("act"));b.classList.add("act");
+["salary","exp","debt"].forEach(t=>{const el=$("#f-"+t);if(el)el.classList.toggle("hide",t!==b.dataset.f)})}));
+
+// ==================== CAJA ====================
+function renderCash(){const today=new Date().toISOString().slice(0,10);
+const c=CASH.find(x=>x.fecha===today);
+const salesToday=SALES.filter(s=>s.fecha.slice(0,10)===today);
+const cashSales=salesToday.filter(s=>s.metodo==="Efectivo").reduce((a,s)=>a+s.total,0);
+const isOpen=c&&!c.cerrada;
+$("#kState").textContent=isOpen?"ABIERTA":"CERRADA";$("#kState").style.color=isOpen?"#34d399":"#a1a1aa";
+const exp=(c?.montoApertura||0)+cashSales;$("#kExp").textContent=money(exp);
+const counted=c?.montoContado??null;const dif=counted!==null?counted-exp:0;
+$("#kDif").textContent=counted!==null?money(dif):"$0";
+$("#kDif").style.color=counted===null?"#fff":Math.abs(dif)<0.5?"#34d399":"#f87171";
+$("#cashHint").textContent=`💵 ${money(cashSales)} efectivo · 💳 ${money(salesToday.filter(s=>s.metodo==="Tarjeta").reduce((a,s)=>a+s.total,0))} tarjeta`;
+$("#cashHist").innerHTML=CASH.length===0?`<p class="text-center text-zinc-500 py-4 text-xs">Sin cierres</p>`:
+CASH.slice().reverse().slice(0,10).map(c=>{const d=c.diferencia??0;
+return `<div class="card flex justify-between items-center"><div><p class="text-xs font-semibold">${new Date(c.fecha).toLocaleDateString("es-EC")}</p><p class="text-[10px] text-zinc-500">Apertura ${money(c.montoApertura)} · Contado ${money(c.montoContado||0)}</p></div>
+<p class="text-sm font-bold ${Math.abs(d)<0.5?"text-emerald-400":"text-red-400"}">${money(d)}</p></div>`}).join("")}
+function openCash(){const amt=parseFloat($("#cashOpen").value)||0;if(amt<=0){toast("Ingresa el monto","error");return}
+const today=new Date().toISOString().slice(0,10);
+if(CASH.find(c=>c.fecha===today&&!c.cerrada)){toast("Ya hay caja abierta","error");return}
+CASH.push({id:uid(),fecha:today,apertura:new Date().toISOString(),montoApertura:amt,cerrada:false,abiertaPor:SESSION?.nombre||"Sistema"});
+wj(K.C,CASH);renderCash();toast(`Caja abierta con ${money(amt)}`)}
+function closeCash(){const today=new Date().toISOString().slice(0,10);
+const c=CASH.find(x=>x.fecha===today&&!x.cerrada);if(!c){toast("No hay caja abierta","error");return}
+const cnt=parseFloat($("#cashCount").value);if(isNaN(cnt)){toast("Ingresa el efectivo contado","error");return}
+const cs=SALES.filter(s=>s.fecha.slice(0,10)===today&&s.metodo==="Efectivo").reduce((a,s)=>a+s.total,0);
+const exp=c.montoApertura+cs;c.cerrada=true;c.cierre=new Date().toISOString();c.montoContado=cnt;c.esperado=exp;c.diferencia=cnt-exp;c.cerradaPor=SESSION?.nombre||"Sistema";
+wj(K.C,CASH);renderCash();toast(`Caja cerrada. Diferencia: ${money(c.diferencia)}`)}
+
+// ==================== STATS ====================
+function renderStats(){const today=new Date().toISOString().slice(0,10);const m=monthKey();
+const sT=SALES.filter(s=>s.fecha.slice(0,10)===today);const sM=SALES.filter(s=>s.fecha.slice(0,7)===m);
+$("#sT").textContent=money(sT.reduce((a,s)=>a+s.total,0));$("#sO").textContent=sT.length;
+$("#sM").textContent=money(sM.reduce((a,s)=>a+s.total,0));$("#sA").textContent=money(SALES.length?SALES.reduce((a,s)=>a+s.total,0)/SALES.length:0);
+$("#salesList").innerHTML=SALES.length===0?`<p class="text-center text-zinc-500 py-6 text-xs">Sin ventas</p>`:
+SALES.slice(0,15).map(s=>`<div class="card flex items-center gap-3"><div class="text-lg">${s.metodo==="Efectivo"?"💵":"💳"}</div>
+<div class="flex-1 min-w-0"><p class="text-xs font-semibold truncate">${esc(s.cliente)}</p><p class="text-[10px] text-zinc-500">${new Date(s.fecha).toLocaleString("es-EC",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"})}</p></div>
+<p class="text-amber-400 font-bold text-sm">${money(s.total)}</p></div>`).join("")}
+
+// ==================== RENDER ALL ====================
+function renderAll(){
+try{renderPOS()}catch(e){console.error("POS:",e)}
+try{renderCart()}catch(e){console.error("Cart:",e)}
+try{renderMenu()}catch(e){console.error("Menu:",e)}
+try{renderStock()}catch(e){console.error("Stock:",e)}
+try{renderStaff()}catch(e){console.error("Staff:",e)}
+try{renderFin()}catch(e){console.error("Fin:",e)}
+try{renderCash()}catch(e){console.error("Cash:",e)}
+try{renderStats()}catch(e){console.error("Stats:",e)}}
+
+// ==================== SYNC ====================
+window.addEventListener("storage",e=>{
+if(e.key===K.M){MENU=rj(K.M,DEF_M);renderMenu();renderPOS()}
+if(e.key===K.I){INV=rj(K.I,DEF_I);renderStock()}
+if(e.key===K.S){SALES=rj(K.S,[]);renderStats();renderFin();renderCash()}
+if(e.key===K.U){STAFF=rj(K.U,DEF_U);renderStaff();renderFin()}});
+
+// ==================== INIT ====================
+if(SESSION&&STAFF.find(s=>s.id===SESSION.id)){startApp()}
+</script>
+</body>
+</html>
 
