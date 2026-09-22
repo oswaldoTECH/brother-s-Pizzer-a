@@ -243,6 +243,18 @@
     </div>
   </div>
 
+  <!-- MODAL DE ALERTA PERSONALIZADO (MÁS CHÉVERE) -->
+  <div id="customAlertModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hide">
+    <div class="card w-full max-w-sm text-center space-y-4 border-zinc-800 shadow-2xl">
+      <div id="alertIcon" class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center text-2xl">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 id="alertTitle" class="font-bold text-lg text-white">¡Éxito!</h3>
+      <p id="alertMessage" class="text-xs text-zinc-400">Venta cobrada con éxito.</p>
+      <button onclick="closeCustomAlert()" class="btn-red w-full text-xs">Aceptar</button>
+    </div>
+  </div>
+
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyAHwQ5eRRImp03oROAP5E0EzFzz7blA7bw",
@@ -258,7 +270,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Menú preconfigurado según requerimientos exactos
 const DEFAULT_MENU = {
   "m1": { nombre: "Slice Pepperoni", categoria: "slice", precio: 1.25, desc: "1 porción individual" },
   "m2": { nombre: "Slice Jamón", categoria: "slice", precio: 1.25, desc: "1 porción individual" },
@@ -292,6 +303,24 @@ function init() {
     showLogin();
   }
   setupFirebaseListeners();
+}
+
+function showAlert(title, message, isError = false) {
+  document.getElementById('alertTitle').textContent = title;
+  document.getElementById('alertMessage').textContent = message;
+  const iconDiv = document.getElementById('alertIcon');
+  if(isError) {
+    iconDiv.className = "w-14 h-14 rounded-2xl bg-red-500/10 text-red-400 mx-auto flex items-center justify-center text-2xl";
+    iconDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+  } else {
+    iconDiv.className = "w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center text-2xl";
+    iconDiv.innerHTML = '<i class="fa-solid fa-check"></i>';
+  }
+  document.getElementById('customAlertModal').classList.remove('hide');
+}
+
+function closeCustomAlert() {
+  document.getElementById('customAlertModal').classList.add('hide');
 }
 
 function setupFirebaseListeners() {
@@ -334,7 +363,6 @@ function showApp() {
   document.getElementById('appScreen').classList.remove('hide');
   document.getElementById('userRoleDisplay').textContent = session.name + ' (' + session.role.toUpperCase() + ')';
   
-  // Restringir permisos si es cajero
   const adminElements = document.querySelectorAll('.admin-only');
   adminElements.forEach(el => {
     if(session.role !== 'admin') {
@@ -485,7 +513,7 @@ function clearCart() {
 
 function checkout() {
   if (cart.length === 0) {
-    alert('Agregue productos al carrito antes de cobrar.');
+    showAlert('Atención', 'Agregue productos al carrito antes de cobrar.', true);
     return;
   }
   const total = cart.reduce((sum, item) => sum + (item.precio * item.qty), 0);
@@ -500,7 +528,7 @@ function checkout() {
   db.ref('sales').push(newSale);
   cart = [];
   renderCart();
-  alert('¡Venta cobrada con éxito!');
+  showAlert('¡Venta Exitosa!', 'La venta se ha cobrado y registrado correctamente.');
 }
 
 function renderAdminMenu() {
@@ -553,7 +581,7 @@ function saveProduct() {
   const desc = document.getElementById('prodDesc').value.trim();
 
   if(!nombre || isNaN(precio)) {
-    alert('Complete el nombre y un precio válido.');
+    showAlert('Campo Requerido', 'Complete el nombre y un precio válido.', true);
     return;
   }
 
@@ -604,7 +632,7 @@ function saveUser() {
   const role = document.getElementById('userRoleInput').value;
 
   if(!user || !pass) {
-    alert('Complete usuario y contraseña.');
+    showAlert('Campo Requerido', 'Complete usuario y contraseña.', true);
     return;
   }
 
