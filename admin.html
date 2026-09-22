@@ -7,9 +7,6 @@
 <title>Admin · Brothers Pizza</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--safe-bottom:env(safe-area-inset-bottom,0px)}
 *{-webkit-tap-highlight-color:transparent}
@@ -39,21 +36,21 @@ body{font-family:system-ui,-apple-system,sans-serif}
     <div class="text-center mb-6">
       <div class="inline-flex w-18 h-18 rounded-3xl bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 items-center justify-center text-4xl mb-3 shadow-lg shadow-red-600/30">🍕</div>
       <h1 class="font-bold text-2xl tracking-tight">Brothers Pizza</h1>
-      <p class="text-xs text-zinc-400 mt-1 font-medium">Panel Administrativo Cloud</p>
+      <p class="text-xs text-zinc-400 mt-1 font-medium">Panel Administrativo Local</p>
     </div>
     <div class="space-y-4">
       <div>
         <label class="block text-xs text-zinc-400 font-bold mb-1.5 ml-1">Usuario</label>
         <div class="relative">
           <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
-          <input id="lu" type="text" class="inp pl-11" placeholder="Tu usuario" autocomplete="username" value="admin">
+          <input id="lu" type="text" class="inp pl-11" value="admin" autocomplete="username">
         </div>
       </div>
       <div>
         <label class="block text-xs text-zinc-400 font-bold mb-1.5 ml-1">Contraseña</label>
         <div class="relative">
           <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
-          <input id="lp" type="password" class="inp pl-11 pr-11" placeholder="••••••••" autocomplete="current-password" value="admin123">
+          <input id="lp" type="password" class="inp pl-11 pr-11" value="admin123" autocomplete="current-password">
           <button type="button" onclick="togglePass()" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white">
             <i id="eyeIcon" class="fa-solid fa-eye text-sm"></i>
           </button>
@@ -75,7 +72,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center text-xl shrink-0 overflow-hidden shadow-md shadow-red-600/20">🍕</div>
 <div class="min-w-0">
 <p class="font-bold text-sm tracking-tight">Brothers Pizza</p>
-<p id="whoami" class="text-[11px] text-zinc-400 truncate flex items-center gap-1.5 font-medium mt-0.5"><span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> Sincronizado</p>
+<p id="whoami" class="text-[11px] text-zinc-400 truncate flex items-center gap-1.5 font-medium mt-0.5"><span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span> Sistema Activo</p>
 </div>
 </div>
 <div class="flex gap-2">
@@ -133,7 +130,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 </div>
 <div class="flex gap-2">
 <button onclick="editProducto(0, 'pizza')" class="btn-red text-xs !py-2.5 flex items-center gap-1.5"><i class="fa-solid fa-plus"></i> Pizza</button>
-<button onclick="editProducto(0, 'insumo')" class="btn-gray text-xs !py-2.5 flex items-center gap-1.5"><i class="fa-solid fa-plus"></i> Insumo/Extra</button>
+<button onclick="editProducto(0, 'extra')" class="btn-gray text-xs !py-2.5 flex items-center gap-1.5"><i class="fa-solid fa-plus"></i> Extra/Bebida</button>
 </div>
 </div>
 <div class="overflow-x-auto">
@@ -180,22 +177,7 @@ body{font-family:system-ui,-apple-system,sans-serif}
 <div id="toasts" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] space-y-2 pointer-events-none w-[92%] max-w-md"></div>
 
 <script>
-// ==================== CONFIGURACIÓN FIREBASE ====================
-const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "brotherspizza-a85a4.firebaseapp.com",
-  projectId: "brotherspizza-a85a4",
-  storageBucket: "brotherspizza-a85a4.appspot.com",
-  messagingSenderId: "TU_SENDER_ID",
-  appId: "TU_APP_ID"
-};
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-
-// ==================== DATOS INICIALES SOLICITADOS ====================
+// ==================== DATOS INICIALES ====================
 const IMG={
 pepperoni:"https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&q=80",
 jamon:"https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=800&q=80",
@@ -220,59 +202,49 @@ const DEF_M={
     {id:104,nombre:"Pizza Margarita",desc:"Mozzarella, tomate y albahaca"}
   ],
   extras:[
-    {id:201,nombre:"Slice de Pizza",precio:1.25,tipo:"extra"},
-    {id:202,nombre:"Cola / Bebida",precio:0.75,tipo:"extra"}
+    {id:201,nombre:"Slice de Pizza",precio:1.25},
+    {id:202,nombre:"Cola / Bebida",precio:0.75}
   ]
 };
-
-const DEF_I=[
-  {id:301,nombre:"Harina",unidad:"kg",stock:25,costo:1.20},
-  {id:302,nombre:"Queso Mozzarella",unidad:"kg",stock:15,costo:5.50}
-];
 
 const DEF_U=[
   {id:1,nombre:"Tec. Oswaldo",usuario:"admin",pass:"admin123",rol:"admin",activo:true,sueldo:600}
 ];
 
-const $=s=>document.querySelector(s);const$$=s=>[...document.querySelectorAll(s)];
-const money=v=>"$"+Number(v||0).toFixed(2);const uid=()=>Date.now()+Math.floor(Math.random()*1000);
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let MENU = JSON.parse(localStorage.getItem("bp_menu")) || DEF_M;
+let SALES = JSON.parse(localStorage.getItem("bp_sales")) || [];
+let STAFF = JSON.parse(localStorage.getItem("bp_staff")) || DEF_U;
+let SESSION = JSON.parse(localStorage.getItem("bp_session")) || null;
+let cart = [];
 
-let MENU=DEF_M,SALES=[],INV=DEF_I,STAFF=DEF_U,SESSION=JSON.parse(localStorage.getItem("bp_session")||"null"),cart=[];
-
-// ==================== FIREBASE SYNC ====================
-function initFirestoreSync(){
-  db.collection("config").doc("menu").onSnapshot(doc=>{
-    if(doc.exists){MENU=doc.data();renderMenuStock();renderPOS();}
-    else{db.collection("config").doc("menu").set(DEF_M);}
-  });
-  db.collection("inventory").onSnapshot(snapshot=>{
-    INV=[];snapshot.forEach(doc=>INV.push(doc.data()));
-    if(INV.length===0){DEF_I.forEach(i=>db.collection("inventory").doc(String(i.id)).set(i));}
-    renderMenuStock();
-  });
-  db.collection("staff").onSnapshot(snapshot=>{
-    STAFF=[];snapshot.forEach(doc=>STAFF.push(doc.data()));
-    if(STAFF.length===0){DEF_U.forEach(u=>db.collection("staff").doc(String(u.id)).set(u));}
-    renderStaff();renderFin();
-  });
-  db.collection("sales").onSnapshot(snapshot=>{
-    SALES=[];snapshot.forEach(doc=>SALES.push(doc.data()));
-    renderFin();
-  });
+function saveData(){
+  localStorage.setItem("bp_menu", JSON.stringify(MENU));
+  localStorage.setItem("bp_sales", JSON.stringify(SALES));
+  localStorage.setItem("bp_staff", JSON.stringify(STAFF));
 }
 
-function toast(msg,type="success"){const c=$("#toasts"),el=document.createElement("div");
-const st=type==="error"?"bg-red-600/95":"bg-emerald-600/95";
-el.className=`toast pointer-events-auto rounded-2xl px-4 py-3.5 shadow-2xl border border-white/10 text-white text-sm font-semibold flex items-center gap-3 ${st}`;
-el.innerHTML=`<span class="flex-1">${esc(msg)}</span>`;
-c.appendChild(el);setTimeout(()=>el.remove(),3000)}
+const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
+const money=v=>"$"+Number(v||0).toFixed(2);
+const uid=()=>Date.now()+Math.floor(Math.random()*1000);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function toast(msg,type="success"){
+  const c=$("#toasts"),el=document.createElement("div");
+  const st=type==="error"?"bg-red-600/95":"bg-emerald-600/95";
+  el.className=`toast pointer-events-auto rounded-2xl px-4 py-3.5 shadow-2xl border border-white/10 text-white text-sm font-semibold flex items-center gap-3 ${st}`;
+  el.innerHTML=`<span class="flex-1">${esc(msg)}</span>`;
+  c.appendChild(el);setTimeout(()=>el.remove(),3000);
+}
 
 function modal(h){$("#modalBody").innerHTML=h;$("#modal").classList.remove("hide")}
 function closeModal(){$("#modal").classList.add("hide")}
 $("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 
-function togglePass(){const i=$("#lp"),ic=$("#eyeIcon");if(i.type==="password"){i.type="text";ic.className="fa-solid fa-eye-slash text-sm"}else{i.type="password";ic.className="fa-solid fa-eye text-sm"}}
+function togglePass(){
+  const i=$("#lp"),ic=$("#eyeIcon");
+  if(i.type==="password"){i.type="text";ic.className="fa-solid fa-eye-slash text-sm"}
+  else{i.type="password";ic.className="fa-solid fa-eye text-sm"}
+}
 
 function doLogin(){
   const u=$("#lu").value.trim(),p=$("#lp").value;
@@ -282,264 +254,261 @@ function doLogin(){
   localStorage.setItem("bp_session",JSON.stringify(SESSION));
   startApp();
 }
-function doLogout(){localStorage.removeItem("bp_session");location.reload()}
+
+function doLogout(){
+  localStorage.removeItem("bp_session");
+  location.reload();
+}
 
 function startApp(){
   $("#login").classList.add("hide");
   $("#app").classList.remove("hide");
   $("#whoami").textContent=`${SESSION?.nombre} · ${SESSION?.rol}`;
-  initFirestoreSync();
   renderAll();
 }
 
-function showTab(t){$$("main > section").forEach(s=>s.classList.add("hide"));
-const el=$("#t-"+t);if(el)el.classList.remove("hide");
-$$(".tabbtn[data-t]").forEach(b=>b.classList.toggle("act",b.dataset.t===t))} $$
+function showTab(t){
+  $$("main > section").forEach(s=>s.classList.add("hide"));
+  const el=$("#t-"+t);if(el)el.classList.remove("hide");
+  $$(".tabbtn[data-t]").forEach(b=>b.classList.toggle("act",b.dataset.t===t)) } $$
 (".tabbtn[data-t]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.t)));
 
 // ==================== POS ====================
-function getProds(){const l=[];
-if(MENU.pizzas && MENU.tamanos){
-  MENU.pizzas.forEach(p=>MENU.tamanos.forEach(t=>l.push({
-    key:`p${p.id}-${t.id}`,
-    nombre:`${p.nombre} (${t.label})`,
-    precio:t.precio,
-    img:imgOf(p.nombre)
-  })));
+function getProds(){
+  const l=[];
+  if(MENU.pizzas && MENU.tamanos){
+    MENU.pizzas.forEach(p=>MENU.tamanos.forEach(t=>l.push({
+      key:`p${p.id}-${t.id}`,
+      nombre:`${p.nombre} (${t.label})`,
+      precio:t.precio,
+      img:imgOf(p.nombre)
+    })));
+  }
+  if(MENU.extras){
+    MENU.extras.forEach(e=>l.push({
+      key:`e${e.id}`,
+      nombre:e.nombre,
+      precio:e.precio,
+      img:imgOf(e.nombre)
+    }));
+  }
+  return l;
 }
-if(MENU.extras){
-  MENU.extras.forEach(e=>l.push({
-    key:`e${e.id}`,
-    nombre:e.nombre,
-    precio:e.precio,
-    img:imgOf(e.nombre)
-  }));
-}
-return l}
 
-function renderPOS(q=""){let list=getProds();
-if(q)list=list.filter(p=>p.nombre.toLowerCase().includes(q.toLowerCase()));
-$("#pgrid").innerHTML=list.map((p,i)=>`
-<button onclick="addCart(${i})" class="bg-zinc-900 border border-zinc-800/80 rounded-2xl overflow-hidden text-left hover:border-red-500 transition group">
-<div class="h-24 bg-zinc-950 overflow-hidden"><img src="${p.img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300"></div>
-<div class="p-3"><p class="text-xs font-bold text-zinc-200">${esc(p.nombre)}</p><p class="text-amber-400 font-extrabold text-sm mt-1">${money(p.precio)}</p></div>
-</button>`).join("");
-window._posList=list}
+function renderPOS(q=""){
+  let list=getProds();
+  if(q)list=list.filter(p=>p.nombre.toLowerCase().includes(q.toLowerCase()));
+  $("#pgrid").innerHTML=list.map((p,i)=>`
+    <button onclick="addCart(${i})" class="bg-zinc-900 border border-zinc-800/80 rounded-2xl overflow-hidden text-left hover:border-red-500 transition group">
+      <div class="h-24 bg-zinc-950 overflow-hidden"><img src="${p.img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300"></div>
+      <div class="p-3"><p class="text-xs font-bold text-zinc-200">${esc(p.nombre)}</p><p class="text-amber-400 font-extrabold text-sm mt-1">${money(p.precio)}</p></div>
+    </button>`).join("");
+  window._posList=list;
+}
 $("#pq").addEventListener("input",e=>renderPOS(e.target.value));
 
-function addCart(i){const p=window._posList[i];if(!p)return;
-const f=cart.find(x=>x.key===p.key);if(f)f.cantidad++;else cart.push({...p,cantidad:1});renderCart()}
-function changeQty(i,d){cart[i].cantidad+=d;if(cart[i].cantidad<=0)cart.splice(i,1);renderCart()}
-function clearCart(){cart=[];renderCart()}
-function renderCart(){const cnt=cart.reduce((s,i)=>s+i.cantidad,0);
-const sub=cart.reduce((s,i)=>s+i.precio*i.cantidad,0);const tax=sub*0.12;
-$("#cc").textContent=`(${cnt})`;$("#cSub").textContent=money(sub);$("#cTax").textContent=money(tax);$("#cTot").textContent=money(sub+tax);
-$("#cartList").innerHTML=cart.length===0?`<p class="text-center text-zinc-600 py-6 text-xs">Carrito vacío</p>`:
-cart.map((it,i)=>`<div class="flex items-center gap-2 bg-zinc-950 p-2 rounded-xl"><div class="flex-1"><p class="text-xs font-bold">${esc(it.nombre)}</p><p class="text-[10px] text-amber-400">${money(it.precio)}</p></div><button onclick="changeQty(${i},-1)" class="w-6 h-6 bg-zinc-900 rounded">-</button><span>${it.cantidad}</span><button onclick="changeQty(${i},1)" class="w-6 h-6 bg-zinc-900 rounded">+</button></div>`).join("")}
+function addCart(i){
+  const p=window._posList[i];if(!p)return;
+  const f=cart.find(x=>x.key===p.key);
+  if(f)f.cantidad++; else cart.push({...p,cantidad:1});
+  renderCart();
+}
 
-function pay(m){if(!cart.length){toast("Carrito vacío","error");return}
-const sub=cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
-const sale={id:uid(),fecha:new Date().toISOString(),cliente:$("#cliente").value||"Cliente",metodo:m,items:[...cart],total:sub*1.12,vendedor:SESSION?.nombre||"Sistema"};
-db.collection("sales").doc(String(sale.id)).set(sale).then(()=>{cart=[];renderCart();toast("Venta registrada con éxito 💰");});}
+function changeQty(i,d){
+  cart[i].cantidad+=d;
+  if(cart[i].cantidad<=0)cart.splice(i,1);
+  renderCart();
+}
+
+function clearCart(){cart=[];renderCart()}
+
+function renderCart(){
+  const cnt=cart.reduce((s,i)=>s+i.cantidad,0);
+  const sub=cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
+  const tax=sub*0.12;
+  $("#cc").textContent=`(${cnt})`;
+  $("#cSub").textContent=money(sub);
+  $("#cTax").textContent=money(tax);
+  $("#cTot").textContent=money(sub+tax);
+  $("#cartList").innerHTML=cart.length===0?`<p class="text-center text-zinc-600 py-6 text-xs">Carrito vacío</p>`:
+  cart.map((it,i)=>`<div class="flex items-center gap-2 bg-zinc-950 p-2 rounded-xl"><div class="flex-1"><p class="text-xs font-bold">${esc(it.nombre)}</p><p class="text-[10px] text-amber-400">${money(it.precio)}</p></div><button onclick="changeQty(${i},-1)" class="w-6 h-6 bg-zinc-900 rounded">-</button><span>${it.cantidad}</span><button onclick="changeQty(${i},1)" class="w-6 h-6 bg-zinc-900 rounded">+</button></div>`).join("");
+}
+
+function pay(m){
+  if(!cart.length){toast("Carrito vacío","error");return;}
+  const sub=cart.reduce((s,i)=>s+i.precio*i.cantidad,0);
+  const sale={id:uid(),fecha:new Date().toISOString(),cliente:$("#cliente").value||"Cliente",metodo:m,items:[...cart],total:sub*1.12,vendedor:SESSION?.nombre||"Sistema"};
+  SALES.push(sale);
+  saveData();
+  cart=[];
+  renderCart();
+  renderFin();
+  toast("¡Venta registrada con éxito! 💰");
+}
 
 // ==================== MENÚ Y STOCK CRUD ====================
 function renderMenuStock(){
-let html="";
-if(MENU.pizzas){
-  MENU.pizzas.forEach(p=>{
-    html+=`<tr class="border-b border-zinc-900"><td class="py-3 px-3 font-bold">${esc(p.nombre)}</td><td class="py-3 px-3 text-zinc-400">Pizza Completa</td><td class="py-3 px-3 text-amber-400 font-bold">Pequeña $5 / Mediana $9 / Grande $13</td><td class="py-3 px-3"><button onclick="editProducto(${p.id}, 'pizza')" class="text-xs text-red-400 hover:underline mr-2">Editar</button><button onclick="delPizza(${p.id})" class="text-xs text-zinc-500 hover:text-red-400">Eliminar</button></td></tr>`;
-  });
-}
-if(MENU.extras){
-  MENU.extras.forEach(e=>{
-    html+=`<tr class="border-b border-zinc-900"><td class="py-3 px-3 font-bold">${esc(e.nombre)}</td><td class="py-3 px-3 text-zinc-400">Extra / Bebida</td><td class="py-3 px-3 text-emerald-400 font-bold">${money(e.precio)}</td><td class="py-3 px-3"><button onclick="editProducto(${e.id}, 'extra')" class="text-xs text-red-400 hover:underline mr-2">Editar</button><button onclick="delExtra(${e.id})" class="text-xs text-zinc-500 hover:text-red-400">Eliminar</button></td></tr>`;
-  });
-}
-if(INV){
-  INV.forEach(i=>{
-    html+=`<tr class="border-b border-zinc-900"><td class="py-3 px-3 font-bold">${esc(i.nombre)}</td><td class="py-3 px-3 text-zinc-400">Insumo Stock</td><td class="py-3 px-3 text-blue-400 font-bold">Costo: ${money(i.costo)} (Stock: ${i.stock} ${i.unidad})</td><td class="py-3 px-3"><button onclick="editProducto(${i.id}, 'insumo')" class="text-xs text-red-400 hover:underline mr-2">Editar</button><button onclick="delInsumo(${i.id})" class="text-xs text-zinc-500 hover:text-red-400">Eliminar</button></td></tr>`;
-  });
-}
-$("#unifiedTable").innerHTML=html||`<tr><td colspan="4" class="text-center py-6 text-zinc-500">Sin elementos</td></tr>`;
+  let html="";
+  if(MENU.pizzas){
+    MENU.pizzas.forEach(p=>{
+      html+=`<tr class="border-b border-zinc-900"><td class="py-3 px-3 font-bold">${esc(p.nombre)}</td><td class="py-3 px-3 text-zinc-400">Pizza Completa</td><td class="py-3 px-3 text-amber-400 font-bold">Peq $5 / Med $9 / Grd $13</td><td class="py-3 px-3"><button onclick="editProducto(${p.id}, 'pizza')" class="text-xs text-red-400 hover:underline mr-2">Editar</button><button onclick="delPizza(${p.id})" class="text-xs text-zinc-500 hover:text-red-400">Eliminar</button></td></tr>`;
+    });
+  }
+  if(MENU.extras){
+    MENU.extras.forEach(e=>{
+      html+=`<tr class="border-b border-zinc-900"><td class="py-3 px-3 font-bold">${esc(e.nombre)}</td><td class="py-3 px-3 text-zinc-400">Extra / Bebida</td><td class="py-3 px-3 text-emerald-400 font-bold">${money(e.precio)}</td><td class="py-3 px-3"><button onclick="editProducto(${e.id}, 'extra')" class="text-xs text-red-400 hover:underline mr-2">Editar</button><button onclick="delExtra(${e.id})" class="text-xs text-zinc-500 hover:text-red-400">Eliminar</button></td></tr>`;
+    });
+  }
+  $("#unifiedTable").innerHTML=html||`<tr><td colspan="4" class="text-center py-6 text-zinc-500">Sin elementos</td></tr>`;
 }
 
 function editProducto(id, tipo){
-const isNew = (id === 0);
-let item = {nombre:"", desc:"", precio:1, costo:1, stock:1, unidad:"kg"};
+  const isNew=(id===0);
+  let item={nombre:"", desc:"", precio:1};
+  if(!isNew){
+    if(tipo==="pizza") item=MENU.pizzas.find(x=>x.id===id)||item;
+    else item=MENU.extras.find(x=>x.id===id)||item;
+  }
 
-if(!isNew){
-  if(tipo==="pizza") item = MENU.pizzas.find(x=>x.id===id) || item;
-  else if(tipo==="extra") item = MENU.extras.find(x=>x.id===id) || item;
-  else item = INV.find(x=>x.id===id) || item;
-}
-
-modal(`
-<h3 class="font-bold text-lg mb-4">${isNew?"Nuevo Elemento":"Editar Elemento"}</h3>
-<div class="space-y-3">
-  <div>
-    <label class="block text-xs text-zinc-400 font-bold mb-1">NOMBRE</label>
-    <input type="text" id="mNombre" class="inp" value="${esc(item.nombre||"")}" placeholder="Ej: Pizza Hawaiana o Cola">
-  </div>
-  <div>
-    <label class="block text-xs text-zinc-400 font-bold mb-1">TIPO</label>
-    <select id="mTipo" class="inp" ${!isNew?"disabled":""} onchange="toggleFormFields(this.value)">
-      <option value="pizza" ${tipo==="pizza"?"selected":""}>Pizza del Menú</option>
-      <option value="extra" ${tipo==="extra"?"selected":""}>Extra o Bebida (Ej. Cola / Slice)</option>
-      <option value="insumo" ${tipo==="insumo"?"selected":""}>Insumo de Inventario</option>
-    </select>
-  </div>
-  
-  <div id="boxPizza" class="${tipo!=="pizza"?"hide":""}">
-    <label class="block text-xs text-zinc-400 font-bold mb-1">DESCRIPCIÓN</label>
-    <input type="text" id="mDesc" class="inp" value="${esc(item.desc||"")}" placeholder="Ingredientes...">
-  </div>
-
-  <div id="boxExtra" class="${tipo!=="extra"?"hide":""}">
-    <label class="block text-xs text-zinc-400 font-bold mb-1">PRECIO ($)</label>
-    <input type="number" step="0.01" id="mPrecio" class="inp" value="${item.precio||1}">
-  </div>
-
-  <div id="boxInsumo" class="${tipo!=="insumo"?"hide":""} grid grid-cols-2 gap-2">
-    <div>
-      <label class="block text-xs text-zinc-400 font-bold mb-1">COSTO ($)</label>
-      <input type="number" step="0.01" id="mCosto" class="inp" value="${item.costo||1}">
+  modal(`
+    <h3 class="font-bold text-lg mb-4">${isNew?"Nuevo Elemento":"Editar Elemento"}</h3>
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs text-zinc-400 font-bold mb-1">NOMBRE</label>
+        <input type="text" id="mNombre" class="inp" value="${esc(item.nombre||"")}" placeholder="Ej: Pizza o Bebida">
+      </div>
+      <div>
+        <label class="block text-xs text-zinc-400 font-bold mb-1">TIPO</label>
+        <select id="mTipo" class="inp" ${!isNew?"disabled":""} onchange="toggleFormFields(this.value)">
+          <option value="pizza" ${tipo==="pizza"?"selected":""}>Pizza del Menú</option>
+          <option value="extra" ${tipo==="extra"?"selected":""}>Extra o Bebida (Ej. Cola / Slice)</option>
+        </select>
+      </div>
+      <div id="boxPizza" class="${tipo!=="pizza"?"hide":""}">
+        <label class="block text-xs text-zinc-400 font-bold mb-1">DESCRIPCIÓN</label>
+        <input type="text" id="mDesc" class="inp" value="${esc(item.desc||"")}" placeholder="Ingredientes...">
+      </div>
+      <div id="boxExtra" class="${tipo!=="extra"?"hide":""}">
+        <label class="block text-xs text-zinc-400 font-bold mb-1">PRECIO ($)</label>
+        <input type="number" step="0.01" id="mPrecio" class="inp" value="${item.precio||1}">
+      </div>
     </div>
-    <div>
-      <label class="block text-xs text-zinc-400 font-bold mb-1">STOCK</label>
-      <input type="number" id="mStock" class="inp" value="${item.stock||10}">
+    <div class="flex gap-3 mt-5">
+      <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
+      <button onclick="saveProducto(${id}, '${tipo}')" class="btn-red flex-1">Guardar</button>
     </div>
-  </div>
-</div>
-<div class="flex gap-3 mt-5">
-  <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
-  <button onclick="saveProducto(${id}, '${tipo}')" class="btn-red flex-1">Guardar</button>
-</div>
-`);
-window._modalTipo = tipo;
+  `);
+  window._modalTipo=tipo;
 }
 
 function toggleFormFields(val){
-  window._modalTipo = val;
+  window._modalTipo=val;
   $("#boxPizza").classList.toggle("hide", val!=="pizza");
   $("#boxExtra").classList.toggle("hide", val!=="extra");
-  $("#boxInsumo").classList.toggle("hide", val!=="insumo");
 }
 
 function saveProducto(id, originalTipo){
-  const nombre = $("#mNombre").value.trim();
-  const tipo = window._modalTipo || originalTipo;
+  const nombre=$("#mNombre").value.trim();
+  const tipo=window._modalTipo||originalTipo;
   if(!nombre){toast("Ingresa un nombre","error");return;}
 
   if(tipo==="pizza"){
-    const desc = $("#mDesc").value.trim();
+    const desc=$("#mDesc").value.trim();
     if(id===0){
       MENU.pizzas.push({id:uid(), nombre, desc});
     }else{
-      let p = MENU.pizzas.find(x=>x.id===id);
+      let p=MENU.pizzas.find(x=>x.id===id);
       if(p){p.nombre=nombre; p.desc=desc;}
     }
-    db.collection("config").doc("menu").set(MENU).then(()=>{
-      closeModal(); renderMenuStock(); renderPOS(); toast("Pizza guardada con éxito ✨");
-    });
-  }else if(tipo==="extra"){
-    const precio = parseFloat($("#mPrecio").value)||0;
+  }else{
+    const precio=parseFloat($("#mPrecio").value)||0;
     if(id===0){
       if(!MENU.extras) MENU.extras=[];
       MENU.extras.push({id:uid(), nombre, precio});
     }else{
-      let e = MENU.extras.find(x=>x.id===id);
+      let e=MENU.extras.find(x=>x.id===id);
       if(e){e.nombre=nombre; e.precio=precio;}
     }
-    db.collection("config").doc("menu").set(MENU).then(()=>{
-      closeModal(); renderMenuStock(); renderPOS(); toast("Extra guardado con éxito ✨");
-    });
-  }else{
-    const costo = parseFloat($("#mCosto").value)||0;
-    const stock = parseFloat($("#mStock").value)||0;
-    const realId = id===0?uid():id;
-    const insumo = {id:realId, nombre, costo, stock, unidad:"kg"};
-
-    if(id===0){
-      INV.push(insumo);
-    }else{
-      let idx = INV.findIndex(x=>x.id===id);
-      if(idx>=0) INV[idx]=insumo;
-    }
-    db.collection("inventory").doc(String(realId)).set(insumo).then(()=>{
-      closeModal(); renderMenuStock(); toast("Insumo guardado con éxito ✨");
-    });
   }
+  saveData();
+  closeModal();
+  renderMenuStock();
+  renderPOS();
+  toast("¡Guardado correctamente! ✨");
 }
 
 function delPizza(id){
-  MENU.pizzas = MENU.pizzas.filter(x=>x.id!==id);
-  db.collection("config").doc("menu").set(MENU).then(()=>{renderMenuStock();renderPOS();toast("Pizza eliminada");});
+  MENU.pizzas=MENU.pizzas.filter(x=>x.id!==id);
+  saveData();
+  renderMenuStock();
+  renderPOS();
+  toast("Pizza eliminada");
 }
+
 function delExtra(id){
-  MENU.extras = MENU.extras.filter(x=>x.id!==id);
-  db.collection("config").doc("menu").set(MENU).then(()=>{renderMenuStock();renderPOS();toast("Extra eliminado");});
-}
-function delInsumo(id){
-  INV = INV.filter(x=>x.id!==id);
-  db.collection("inventory").doc(String(id)).delete().then(()=>{renderMenuStock();toast("Insumo eliminado");});
+  MENU.extras=MENU.extras.filter(x=>x.id!==id);
+  saveData();
+  renderMenuStock();
+  renderPOS();
+  toast("Extra eliminado");
 }
 
 // ==================== PERSONAL Y FINANZAS ====================
 function renderStaff(){
-$("#staffList").innerHTML=STAFF.map(s=>`
-<div class="card flex items-center justify-between">
-<div>
-  <p class="font-bold text-sm text-zinc-200">${esc(s.nombre)}</p>
-  <p class="text-xs text-zinc-400">Usuario: @${esc(s.usuario)} · Sueldo: <b class="text-emerald-400">${money(s.sueldo)}</b></p>
-</div>
-<div class="flex items-center gap-2">
-  <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400">${s.rol}</span>
-  <button onclick="editStaff(${s.id})" class="text-xs text-zinc-400 hover:text-white px-2 py-1 bg-zinc-800 rounded">Editar</button>
-  <button onclick="delStaff(${s.id})" class="text-xs text-zinc-500 hover:text-red-400 px-2 py-1">X</button>
-</div>
-</div>`).join("");
+  $("#staffList").innerHTML=STAFF.map(s=>`
+    <div class="card flex items-center justify-between">
+      <div>
+        <p class="font-bold text-sm text-zinc-200">${esc(s.nombre)}</p>
+        <p class="text-xs text-zinc-400">Usuario: @${esc(s.usuario)} · Sueldo: <b class="text-emerald-400">${money(s.sueldo)}</b></p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400">${s.rol}</span>
+        <button onclick="editStaff(${s.id})" class="text-xs text-zinc-400 hover:text-white px-2 py-1 bg-zinc-800 rounded">Editar</button>
+        <button onclick="delStaff(${s.id})" class="text-xs text-zinc-500 hover:text-red-400 px-2 py-1">X</button>
+      </div>
+    </div>`).join("");
 }
 
 function editStaff(id){
-const isNew=(id===0);
-let st = isNew?{nombre:"", usuario:"", pass:"", rol:"empleado", sueldo:450, activo:true}:STAFF.find(x=>x.id===id);
+  const isNew=(id===0);
+  let st=isNew?{nombre:"", usuario:"", pass:"", rol:"empleado", sueldo:450, activo:true}:STAFF.find(x=>x.id===id);
 
-modal(`
-<h3 class="font-bold text-lg mb-4">${isNew?"Nuevo Empleado":"Editar Empleado"}</h3>
-<div class="space-y-3">
-  <div>
-    <label class="block text-xs text-zinc-400 font-bold mb-1">NOMBRE COMPLETO</label>
-    <input type="text" id="sNombre" class="inp" value="${esc(st.nombre||"")}" placeholder="Ej: Juan Pérez">
-  </div>
-  <div class="grid grid-cols-2 gap-2">
-    <div>
-      <label class="block text-xs text-zinc-400 font-bold mb-1">USUARIO</label>
-      <input type="text" id="sUser" class="inp" value="${esc(st.usuario||"")}" placeholder="usuario">
+  modal(`
+    <h3 class="font-bold text-lg mb-4">${isNew?"Nuevo Empleado":"Editar Empleado"}</h3>
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs text-zinc-400 font-bold mb-1">NOMBRE COMPLETO</label>
+        <input type="text" id="sNombre" class="inp" value="${esc(st.nombre||"")}" placeholder="Ej: Juan Pérez">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs text-zinc-400 font-bold mb-1">USUARIO</label>
+          <input type="text" id="sUser" class="inp" value="${esc(st.usuario||"")}" placeholder="usuario">
+        </div>
+        <div>
+          <label class="block text-xs text-zinc-400 font-bold mb-1">CONTRASEÑA</label>
+          <input type="text" id="sPass" class="inp" value="${esc(st.pass||"")}" placeholder="contraseña">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs text-zinc-400 font-bold mb-1">ROL</label>
+          <select id="sRol" class="inp">
+            <option value="admin" ${st.rol==="admin"?"selected":""}>Administrador</option>
+            <option value="empleado" ${st.rol==="empleado"?"selected":""}>Empleado / Cajero</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-zinc-400 font-bold mb-1">SUELDO ($)</label>
+          <input type="number" id="sSueldo" class="inp" value="${st.sueldo||450}">
+        </div>
+      </div>
     </div>
-    <div>
-      <label class="block text-xs text-zinc-400 font-bold mb-1">CONTRASEÑA</label>
-      <input type="text" id="sPass" class="inp" value="${esc(st.pass||"")}" placeholder="contraseña">
+    <div class="flex gap-3 mt-5">
+      <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
+      <button onclick="saveStaff(${id})" class="btn-red flex-1">Guardar</button>
     </div>
-  </div>
-  <div class="grid grid-cols-2 gap-2">
-    <div>
-      <label class="block text-xs text-zinc-400 font-bold mb-1">ROL</label>
-      <select id="sRol" class="inp">
-        <option value="admin" ${st.rol==="admin"?"selected":""}>Administrador</option>
-        <option value="empleado" ${st.rol==="empleado"?"selected":""}>Empleado / Cajero</option>
-      </select>
-    </div>
-    <div>
-      <label class="block text-xs text-zinc-400 font-bold mb-1">SUELDO ($)</label>
-      <input type="number" id="sSueldo" class="inp" value="${st.sueldo||450}">
-    </div>
-  </div>
-</div>
-<div class="flex gap-3 mt-5">
-  <button onclick="closeModal()" class="btn-gray flex-1">Cancelar</button>
-  <button onclick="saveStaff(${id})" class="btn-red flex-1">Guardar</button>
-</div>
-`);
+  `);
 }
 
 function saveStaff(id){
@@ -559,23 +528,28 @@ function saveStaff(id){
     if(idx>=0) STAFF[idx]=obj;
   }
 
-  db.collection("staff").doc(String(realId)).set(obj).then(()=>{
-    closeModal(); renderStaff(); toast("Personal guardado con éxito 👤");
-  });
+  saveData();
+  closeModal();
+  renderStaff();
+  renderFin();
+  toast("Personal guardado con éxito 👤");
 }
 
 function delStaff(id){
   if(STAFF.length<=1){toast("No puedes eliminar al último usuario","error");return;}
   STAFF=STAFF.filter(x=>x.id!==id);
-  db.collection("staff").doc(String(id)).delete().then(()=>{renderStaff();toast("Personal eliminado");});
+  saveData();
+  renderStaff();
+  renderFin();
+  toast("Personal eliminado");
 }
 
 function renderFin(){
-const inc=SALES.reduce((a,s)=>a+s.total,0);
-const payroll=STAFF.reduce((a,s)=>a+(s.sueldo||0),0);
-$("#fIn").textContent=money(inc);
-$("#fPay").textContent=money(payroll);
-$("#fBal").textContent=money(inc - payroll);
+  const inc=SALES.reduce((a,s)=>a+s.total,0);
+  const payroll=STAFF.reduce((a,s)=>a+(s.sueldo||0),0);
+  $("#fIn").textContent=money(inc);
+  $("#fPay").textContent=money(payroll);
+  $("#fBal").textContent=money(inc - payroll);
 }
 
 function renderAll(){
