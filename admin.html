@@ -85,22 +85,14 @@
   .worker-avatar { background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(239,68,68,0.25)); }
   .modal-backdrop { background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.85), rgba(0,0,0,0.95)); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
   .number-gradient { background: linear-gradient(135deg, #f87171, #fbbf24); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-  /* Navegación horizontal scroll táctil */
   .nav-scroll { scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; }
   .nav-scroll::-webkit-scrollbar { display: none; }
-
-  /* Bottom sheet móvil */
   .bottom-sheet { position: fixed; inset: auto 0 0 0; max-height: 90vh; max-height: 90dvh; border-radius: 24px 24px 0 0; animation: slideFromBottom .35s cubic-bezier(.2,.8,.2,1); overflow-y: auto; }
   @media (min-width: 640px) { .bottom-sheet { position: relative; inset: auto; border-radius: 24px; animation: slideUp .35s; max-height: 90vh; } }
   .drag-handle { width: 44px; height: 4px; background: #3f3f46; border-radius: 2px; margin: 8px auto 4px; }
   @media (min-width: 640px) { .drag-handle { display: none; } }
-
-  /* Cart drawer (móvil) */
   .cart-drawer { position: fixed; inset: 0; z-index: 45; }
   .cart-drawer-panel { position: absolute; bottom: 0; left: 0; right: 0; max-height: 88vh; max-height: 88dvh; border-radius: 24px 24px 0 0; overflow-y: auto; }
-
-  /* Impresión térmica */
   #printArea { display: none; }
   @page { size: 80mm auto; margin: 0; }
   @media print {
@@ -113,12 +105,8 @@
     #printArea * { color: #000 !important; }
     #printArea::after { content: ''; display: block; height: 12mm; }
   }
-
-  /* Safe areas (iPhone notch) */
   .safe-top { padding-top: env(safe-area-inset-top); }
   .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem); }
-
-  /* Inputs con teclado numérico en móvil */
   input[type="number"] { -moz-appearance: textfield; }
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -204,7 +192,7 @@
           <div id="cartItemsList" class="space-y-2.5 max-h-72 overflow-y-auto mb-4 pr-1 text-xs"></div>
           <div class="border-t border-zinc-800 pt-3 space-y-2 text-xs mb-3">
             <div class="flex justify-between items-center text-zinc-400"><span>Descuento (%)</span>
-              <input id="cartDiscount" type="number" inputmode="decimal" min="0" max="100" step="1" value="0" oninput="renderCart()" class="w-16 text-right bg-zinc-900 border border-zinc-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-red-500"></div>
+              <input id="cartDiscount" type="number" inputmode="decimal" min="0" max="100" step="1" value="0" oninput="syncDiscount('desktop')" class="w-16 text-right bg-zinc-900 border border-zinc-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-red-500"></div>
             <div class="flex justify-between text-zinc-400"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
             <div id="cartDiscountRow" class="hide flex justify-between text-amber-400 font-medium"><span>Descuento</span><span id="cartDiscountValue">-$0.00</span></div>
             <div class="flex justify-between font-black text-xl pt-2 border-t border-zinc-800">
@@ -223,9 +211,7 @@
             <h3 class="font-bold text-base text-white"><i class="fa-solid fa-pizza-slice text-red-500 mr-2"></i> Menú</h3>
             <button onclick="openProductModal()" class="btn-red text-xs"><i class="fa-solid fa-plus mr-1"></i> Nuevo</button>
           </div>
-          <!-- Vista móvil: tarjetas -->
           <div id="adminMenuMobile" class="lg:hidden space-y-2"></div>
-          <!-- Vista desktop: tabla -->
           <div class="hidden lg:block overflow-x-auto"><table class="w-full text-left text-xs">
             <thead class="bg-zinc-900/70 text-zinc-400 uppercase tracking-wider text-[10px]"><tr>
               <th class="p-3 rounded-l-lg">Producto</th><th class="p-3">Categoría</th><th class="p-3">Precio</th><th class="p-3">Detalle</th><th class="p-3 text-right rounded-r-lg">Acciones</th>
@@ -738,7 +724,6 @@ function switchTab(tab) {
     if (el) el.classList.toggle('hide', t !== tab);
   });
   document.querySelectorAll('nav .tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
-  // Mostrar FAB solo en POS móvil
   const fab = document.getElementById('cartFab');
   if (fab) fab.classList.toggle('hide', tab !== 'pos');
 }
@@ -781,7 +766,6 @@ function addToCart(firebaseKey) {
   renderCart(); toast('+' + item.nombre, 'info');
 }
 function renderCart() {
-  // Renderizar en ambos contenedores (desktop + mobile)
   const renderList = (containerId) => {
     const list = document.getElementById(containerId); if (!list) return;
     list.innerHTML = cart.length === 0 ? '<p class="text-center text-zinc-500 py-8 text-xs">🛒 Carrito vacío</p>'
@@ -1389,4 +1373,184 @@ function openHistoryWorkerModal(key) {
     </div>`;
   }).join('');
 }
-function closeHistoryWorkerModal() { document
+function closeHistoryWorkerModal() { document.getElementById('historyWorkerModal').classList.add('hide'); }
+
+/* ==================== USERS ==================== */
+function renderAdminUsers() {
+  const items = Object.entries(usersData);
+  const rowHTML = (key, u) => `
+    <tr class="hover:bg-zinc-900/50 transition">
+      <td class="p-3 font-semibold text-zinc-200"><i class="fa-solid fa-user-circle text-zinc-500 mr-2"></i>${esc(u.user)}</td>
+      <td class="p-3"><span class="text-[9px] uppercase font-bold px-2 py-1 rounded-full ${u.role==='admin'?'badge-pizza':'badge-bebida'}">${esc(u.role)}</span></td>
+      <td class="p-3 text-right space-x-2 whitespace-nowrap">
+        <button onclick="openUserModal('${esc(key)}')" class="text-blue-400 p-2"><i class="fa-solid fa-pen"></i></button>
+        <button onclick="deleteUser('${esc(key)}')" class="text-red-400 p-2"><i class="fa-solid fa-trash"></i></button>
+      </td></tr>`;
+  const tbody = document.getElementById('adminUsersTable');
+  if (tbody) tbody.innerHTML = items.map(([k,u]) => rowHTML(k,u)).join('') || '<tr><td colspan="3" class="p-6 text-center text-zinc-500">Sin usuarios</td></tr>';
+  const mob = document.getElementById('adminUsersMobile');
+  if (mob) mob.innerHTML = items.map(([key, u]) => `
+    <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 flex items-center gap-3">
+      <div class="w-11 h-11 rounded-lg bg-zinc-950 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-user text-zinc-400"></i></div>
+      <div class="flex-1 min-w-0">
+        <p class="font-bold text-sm text-zinc-100 truncate">${esc(u.user)}</p>
+        <span class="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full ${u.role==='admin'?'badge-pizza':'badge-bebida'}">${esc(u.role)}</span>
+      </div>
+      <div class="flex gap-1 shrink-0">
+        <button onclick="openUserModal('${esc(key)}')" class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
+        <button onclick="deleteUser('${esc(key)}')" class="w-9 h-9 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center"><i class="fa-solid fa-trash text-xs"></i></button>
+      </div>
+    </div>`).join('') || '<p class="text-center text-zinc-500 py-6 text-sm">Sin usuarios</p>';
+}
+function openUserModal(key='') {
+  document.getElementById('userModal').classList.remove('hide');
+  document.getElementById('editUserKey').value = key;
+  if (key) {
+    const u = usersData[key];
+    document.getElementById('userModalTitle').innerHTML = '<i class="fa-solid fa-user-pen text-red-500"></i> <span>Editar Usuario</span>';
+    document.getElementById('userNameInput').value = u.user;
+    document.getElementById('userPassInput').value = u.pass;
+    document.getElementById('userRoleInput').value = u.role;
+  } else {
+    document.getElementById('userModalTitle').innerHTML = '<i class="fa-solid fa-user-plus text-red-500"></i> <span>Nuevo Usuario</span>';
+    document.getElementById('userNameInput').value='';
+    document.getElementById('userPassInput').value='';
+    document.getElementById('userRoleInput').value='cajero';
+  }
+  setTimeout(() => document.getElementById('userNameInput').focus(), 120);
+}
+function closeUserModal() { document.getElementById('userModal').classList.add('hide'); }
+function saveUser() {
+  const key = document.getElementById('editUserKey').value;
+  const user = document.getElementById('userNameInput').value.trim();
+  const pass = document.getElementById('userPassInput').value;
+  const role = document.getElementById('userRoleInput').value;
+  if (!user || !pass) { showAlert('Datos incompletos','Complete usuario y contraseña.', true); return; }
+  const duplicated = Object.entries(usersData).find(([k,u]) => u.user === user && k !== key);
+  if (duplicated) { showAlert('Usuario duplicado','Ya existe un usuario con ese nombre.', true); return; }
+  const name = user.charAt(0).toUpperCase() + user.slice(1);
+  const data = { user, pass, role, name };
+  if (key) db.ref('users/'+key).set(data); else db.ref('users').push(data);
+  closeUserModal(); toast(key?'Usuario actualizado':'Usuario agregado', 'success');
+}
+async function deleteUser(key) {
+  if (Object.keys(usersData).length <= 1) { showAlert('Acción no permitida','Debe existir al menos un usuario.', true); return; }
+  const u = usersData[key];
+  if (u && u.user === 'admin') { showAlert('Acción no permitida','No puede eliminar el usuario admin principal.', true); return; }
+  const ok = await confirmDialog('Eliminar usuario','Esta acción eliminará el usuario.');
+  if (!ok) return;
+  db.ref('users/'+key).remove(); toast('Usuario eliminado', 'info');
+}
+
+/* ==================== STATS / VENTAS ==================== */
+function getSalesArray() {
+  return Object.entries(salesData).map(([k, v]) => ({ ...v, _key: k }));
+}
+function filterSalesByRange() {
+  const all = getSalesArray();
+  if (salesRange === 'todo') return all;
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const weekAgo = startOfToday - 6 * 24 * 60 * 60 * 1000;
+  const monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  return all.filter(s => {
+    const t = Number(s.id) || 0;
+    if (salesRange === 'hoy') return t >= startOfToday;
+    if (salesRange === 'semana') return t >= weekAgo;
+    if (salesRange === 'mes') return t >= monthAgo;
+    return true;
+  });
+}
+function renderSales() {
+  const list = document.getElementById('salesHistoryList'); if (!list) return;
+  const filtered = filterSalesByRange().sort((a,b) => (Number(b.id)||0) - (Number(a.id)||0));
+  const totalSales = filtered.reduce((s, v) => s + (Number(v.total) || 0), 0);
+  const totalOrders = filtered.length;
+  const avg = totalOrders > 0 ? totalSales / totalOrders : 0;
+  const productCount = {};
+  filtered.forEach(sale => (sale.items || []).forEach(it => {
+    const n = it.nombre || 'Producto';
+    productCount[n] = (productCount[n] || 0) + (Number(it.qty) || 0);
+  }));
+  const best = Object.entries(productCount).sort((a,b) => b[1] - a[1])[0];
+  document.getElementById('statTotalSales').textContent = money(totalSales);
+  document.getElementById('statTotalOrders').textContent = totalOrders;
+  document.getElementById('statAvgTicket').textContent = money(avg);
+  document.getElementById('statBestSeller').textContent = best ? `${best[0]} (${best[1]})` : '—';
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<p class="text-center text-zinc-500 py-8">Sin ventas en este período</p>';
+    return;
+  }
+  list.innerHTML = filtered.slice(0, 100).map(s => `
+    <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 fade-in">
+      <div class="flex justify-between items-start gap-2 mb-1">
+        <div class="min-w-0 flex-1">
+          <p class="font-bold text-zinc-200 text-[12px]">Ticket #${String(s.id).slice(-6)} · ${esc(s.cajero||'')}</p>
+          <p class="text-[10px] text-zinc-500">${esc(s.date||'')}</p>
+          ${s.note ? `<p class="text-[10px] text-amber-400 mt-0.5"><i class="fa-solid fa-note-sticky"></i> ${esc(s.note)}</p>` : ''}
+        </div>
+        <div class="text-right shrink-0">
+          <p class="font-black number-gradient text-base">${money(s.total)}</p>
+          <p class="text-[9px] uppercase text-zinc-500 font-bold">${esc(s.payment||'efectivo')}</p>
+        </div>
+      </div>
+      <div class="text-[10px] text-zinc-400 border-t border-zinc-800/60 pt-1.5 mt-1.5 space-y-0.5">
+        ${(s.items||[]).map(i => `<div class="flex justify-between"><span>${i.qty}x ${esc(i.nombre)}</span><span class="text-zinc-500">${money(i.precio*i.qty)}</span></div>`).join('')}
+      </div>
+      <div class="flex justify-end mt-1.5">
+        <button onclick="reprintSale('${esc(s._key)}')" class="text-[10px] text-sky-400 hover:text-sky-300 font-semibold"><i class="fa-solid fa-print mr-1"></i>Reimprimir</button>
+      </div>
+    </div>`).join('');
+}
+function reprintSale(key) {
+  const s = salesData[key]; if (!s) return;
+  printTicket(s);
+}
+function setSalesRange(range) {
+  salesRange = range;
+  document.querySelectorAll('[data-range]').forEach(b => b.classList.toggle('active', b.dataset.range === range));
+  renderSales();
+}
+function exportSalesCSV() {
+  const filtered = filterSalesByRange();
+  if (filtered.length === 0) { showAlert('Sin datos','No hay ventas para exportar.', true); return; }
+  const rows = [['Ticket','Fecha','Cajero','Producto','Cantidad','Precio Unit','Subtotal','Total Venta','Método','Nota']];
+  filtered.forEach(s => {
+    (s.items || []).forEach(it => {
+      rows.push([
+        '#'+String(s.id).slice(-6),
+        s.date || '',
+        s.cajero || '',
+        it.nombre || '',
+        it.qty || 0,
+        (Number(it.precio)||0).toFixed(2),
+        ((Number(it.precio)||0) * (Number(it.qty)||0)).toFixed(2),
+        (Number(s.total)||0).toFixed(2),
+        s.payment || '',
+        s.note || ''
+      ]);
+    });
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ventas_brotherspizza_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('CSV exportado', 'success');
+}
+async function clearSales() {
+  const ok = await confirmDialog('Borrar historial','Se eliminarán TODAS las ventas registradas. Esta acción no se puede deshacer.');
+  if (!ok) return;
+  db.ref('sales').remove();
+  toast('Historial eliminado', 'info');
+}
+
+/* ==================== INIT ==================== */
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
