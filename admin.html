@@ -11,30 +11,30 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; background-color: #09090b; color: #f4f4f5; }
-  .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 16px; }
-  .inp { width: 100%; background: #09090b; border: 1px solid #3f3f46; border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 14px; }
-  .inp:focus { outline: none; border-color: #ef4444; }
-  .btn-red { background: #dc2626; color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: background 0.2s; }
-  .btn-red:hover { background: #b91c1c; }
-  .btn-gray { background: #27272a; color: #e4e4e7; padding: 10px 16px; border-radius: 8px; cursor: pointer; border: none; transition: background 0.2s; }
+  .card { background: #18181b; border: 1px solid #27272a; border-radius: 14px; padding: 18px; transition: all 0.2s; }
+  .card:hover { border-color: #3f3f46; }
+  .inp { width: 100%; background: #09090b; border: 1px solid #3f3f46; border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 14px; }
+  .inp:focus { outline: none; border-color: #ef4444; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); }
+  .btn-red { background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; padding: 11px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: opacity 0.2s; }
+  .btn-red:hover { opacity: 0.9; }
+  .btn-gray { background: #27272a; color: #e4e4e7; padding: 11px 18px; border-radius: 10px; cursor: pointer; border: none; transition: background 0.2s; }
   .btn-gray:hover { background: #3f3f46; }
-  .tab-btn { padding: 8px 16px; border-radius: 8px; background: #27272a; color: #a1a1aa; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
-  .tab-btn.active { background: #dc2626; color: #fff; }
+  .tab-btn { padding: 9px 18px; border-radius: 10px; background: #18181b; border: 1px solid #27272a; color: #a1a1aa; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .tab-btn.active { background: #dc2626; border-color: #dc2626; color: #fff; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
   .hide { display: none !important; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: #09090b; }
   ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
   <!-- LOGIN SCREEN -->
   <div id="loginScreen" class="fixed inset-0 bg-zinc-950 flex items-center justify-center p-4 z-50">
-    <div class="card w-full max-w-sm text-center shadow-2xl">
-      <div class="inline-flex w-20 h-20 rounded-2xl bg-gradient-to-br from-red-600 to-amber-500 items-center justify-center text-4xl mb-4 shadow-lg shadow-red-900/30">🍕</div>
-      <h1 class="font-bold text-2xl mb-1 tracking-tight">Brother's Pizza</h1>
-      <p class="text-xs text-zinc-400 mb-6">Panel Administrativo y POS</p>
+    <div class="card w-full max-w-sm text-center shadow-2xl border-zinc-800">
+      <div class="inline-flex w-20 h-20 rounded-2xl bg-gradient-to-br from-red-600 to-amber-500 items-center justify-center text-4xl mb-4 shadow-lg shadow-red-900/40">🍕</div>
+      <h1 class="font-bold text-2xl mb-1 tracking-tight text-white">Brother's Pizza</h1>
+      <p class="text-xs text-zinc-400 mb-6">Panel Gráfico & POS Profesional</p>
       
       <div class="space-y-4 text-left">
         <div>
@@ -46,29 +46,29 @@
           <input id="loginPass" type="password" class="inp" placeholder="••••••••" value="admin123">
         </div>
         <div id="loginError" class="hide text-red-400 text-xs bg-red-500/10 border border-red-500/20 p-2.5 rounded-lg text-center"></div>
-        <button onclick="handleLogin()" class="btn-red w-full mt-2 shadow-lg shadow-red-600/20">Ingresar al Sistema</button>
+        <button onclick="handleLogin()" class="btn-red w-full mt-2 shadow-lg shadow-red-600/30">Ingresar al Sistema</button>
       </div>
     </div>
   </div>
 
   <!-- MAIN APP -->
   <div id="appScreen" class="hide flex-1 flex flex-col">
-    <header class="bg-zinc-900/80 backdrop-blur border-b border-zinc-800 sticky top-0 z-30 px-6 py-3 flex justify-between items-center">
+    <header class="bg-zinc-900/90 backdrop-blur border-b border-zinc-800 sticky top-0 z-30 px-6 py-3.5 flex justify-between items-center shadow-md">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-amber-500 flex items-center justify-center text-lg shadow">🍕</div>
         <div>
-          <h2 class="font-bold text-sm tracking-wide">Brother's Pizza</h2>
+          <h2 class="font-bold text-sm tracking-wide text-white">Brother's Pizza</h2>
           <p id="userRoleDisplay" class="text-xs text-emerald-400 font-medium">Administrador</p>
         </div>
       </div>
       <button onclick="handleLogout()" class="btn-gray text-xs flex items-center gap-2"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
     </header>
 
-    <nav id="appNav" class="bg-zinc-900/50 border-b border-zinc-800 px-6 py-2 flex gap-2 overflow-x-auto">
-      <button class="tab-btn active" onclick="switchTab('pos')"><i class="fa-solid fa-cash-register mr-1"></i> POS / Ventas</button>
-      <button class="tab-btn admin-only" onclick="switchTab('menu')"><i class="fa-solid fa-utensils mr-1"></i> Gestión de Menú</button>
-      <button class="tab-btn admin-only" onclick="switchTab('users')"><i class="fa-solid fa-users mr-1"></i> Usuarios</button>
-      <button class="tab-btn admin-only" onclick="switchTab('stats')"><i class="fa-solid fa-chart-line mr-1"></i> Reportes</button>
+    <nav id="appNav" class="bg-zinc-900/40 border-b border-zinc-800 px-6 py-3 flex gap-2 overflow-x-auto">
+      <button class="tab-btn active" onclick="switchTab('pos')"><i class="fa-solid fa-cash-register mr-1.5"></i> POS / Ventas</button>
+      <button class="tab-btn admin-only" onclick="switchTab('menu')"><i class="fa-solid fa-utensils mr-1.5"></i> Gestión de Menú</button>
+      <button class="tab-btn admin-only" onclick="switchTab('users')"><i class="fa-solid fa-users mr-1.5"></i> Usuarios</button>
+      <button class="tab-btn admin-only" onclick="switchTab('stats')"><i class="fa-solid fa-chart-line mr-1.5"></i> Reportes</button>
     </nav>
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
@@ -78,13 +78,13 @@
         <div class="lg:col-span-2 space-y-4">
           <div class="flex flex-col sm:flex-row gap-3">
             <div class="relative flex-1">
-              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-500"><i class="fa-solid fa-search text-xs"></i></span>
-              <input id="searchProd" type="text" class="inp pl-9" placeholder="Buscar producto..." oninput="renderPosProducts(this.value)">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-zinc-500"><i class="fa-solid fa-search text-xs"></i></span>
+              <input id="searchProd" type="text" class="inp pl-10" placeholder="Buscar por nombre..." oninput="renderPosProducts(this.value)">
             </div>
             <div id="posCategories" class="flex gap-2 overflow-x-auto pb-1">
               <button onclick="filterCategory('todos')" class="tab-btn active text-xs whitespace-nowrap">Todos</button>
-              <button onclick="filterCategory('pizza')" class="tab-btn text-xs whitespace-nowrap">Pizzas</button>
               <button onclick="filterCategory('slice')" class="tab-btn text-xs whitespace-nowrap">Slices</button>
+              <button onclick="filterCategory('pizza')" class="tab-btn text-xs whitespace-nowrap">Pizzas</button>
               <button onclick="filterCategory('bebida')" class="tab-btn text-xs whitespace-nowrap">Bebidas</button>
               <button onclick="filterCategory('extra')" class="tab-btn text-xs whitespace-nowrap">Extras</button>
             </div>
@@ -92,18 +92,18 @@
           <div id="posProductsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
         </div>
 
-        <div class="card h-fit flex flex-col shadow-xl">
+        <div class="card h-fit flex flex-col shadow-2xl">
           <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-3">
-            <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-receipt text-red-500"></i> Orden Actual</h3>
+            <h3 class="font-bold text-sm flex items-center gap-2 text-white"><i class="fa-solid fa-receipt text-red-500"></i> Orden Actual</h3>
             <button onclick="clearCart()" class="text-xs text-zinc-500 hover:text-red-400">Vaciar</button>
           </div>
-          <div id="cartItemsList" class="space-y-2 max-h-80 overflow-y-auto mb-4 pr-1 text-xs divide-y divide-zinc-800/50"></div>
+          <div id="cartItemsList" class="space-y-2.5 max-h-80 overflow-y-auto mb-4 pr-1 text-xs divide-y divide-zinc-800/50"></div>
           
           <div class="border-t border-zinc-800 pt-3 space-y-2 text-xs mb-4">
             <div class="flex justify-between text-zinc-400"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
-            <div class="flex justify-between font-bold text-base text-red-500 pt-1 border-t border-zinc-800"><span>Total a Pagar</span><span id="cartTotal">$0.00</span></div>
+            <div class="flex justify-between font-bold text-lg text-red-500 pt-1 border-t border-zinc-800"><span>Total a Pagar</span><span id="cartTotal">$0.00</span></div>
           </div>
-          <button onclick="checkout()" class="btn-red w-full text-sm shadow-lg shadow-red-600/20 flex items-center justify-center gap-2">
+          <button onclick="checkout()" class="btn-red w-full text-sm shadow-lg shadow-red-600/30 flex items-center justify-center gap-2">
             <i class="fa-solid fa-money-bill-wave"></i> Cobrar Efectivo
           </button>
         </div>
@@ -113,7 +113,7 @@
       <section id="tab-menu" class="hide space-y-6">
         <div class="card">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-base"><i class="fa-solid fa-pizza-slice text-red-500 mr-2"></i> Administrar Menú</h3>
+            <h3 class="font-bold text-base text-white"><i class="fa-solid fa-pizza-slice text-red-500 mr-2"></i> Administrar Menú Dinámico</h3>
             <button onclick="openProductModal()" class="btn-red text-xs"><i class="fa-solid fa-plus mr-1"></i> Nuevo Producto</button>
           </div>
           <div class="overflow-x-auto">
@@ -123,7 +123,7 @@
                   <th class="p-3">Producto</th>
                   <th class="p-3">Categoría</th>
                   <th class="p-3">Precio</th>
-                  <th class="p-3">Descripción</th>
+                  <th class="p-3">Detalle / Porciones</th>
                   <th class="p-3 text-right">Acciones</th>
                 </tr>
               </thead>
@@ -137,15 +137,16 @@
       <section id="tab-users" class="hide space-y-6">
         <div class="card">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-base"><i class="fa-solid fa-users text-red-500 mr-2"></i> Gestión de Usuarios y Permisos</h3>
+            <h3 class="font-bold text-base text-white"><i class="fa-solid fa-users text-red-500 mr-2"></i> Control de Usuarios y Permisos</h3>
             <button onclick="openUserModal()" class="btn-red text-xs"><i class="fa-solid fa-user-plus mr-1"></i> Nuevo Usuario</button>
           </div>
+          <p class="text-xs text-zinc-400 mb-4">Nota: Solo los usuarios con rol de Administrador pueden acceder a esta sección, configurar el menú y ver reportes.</p>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead class="bg-zinc-900 text-zinc-400 uppercase tracking-wider">
                 <tr>
                   <th class="p-3">Usuario</th>
-                  <th class="p-3">Rol / Permisos</th>
+                  <th class="p-3">Rol</th>
                   <th class="p-3 text-right">Acciones</th>
                 </tr>
               </thead>
@@ -169,7 +170,7 @@
         </div>
         <div class="card">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-sm"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial de Transacciones</h3>
+            <h3 class="font-bold text-sm text-white"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial de Transacciones</h3>
             <button onclick="clearSales()" class="btn-gray text-xs text-red-400 hover:bg-red-500/10">Borrar Historial</button>
           </div>
           <div id="salesHistoryList" class="space-y-2 text-xs"></div>
@@ -180,20 +181,20 @@
   </div>
 
   <!-- MODAL PRODUCTO -->
-  <div id="productModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hide">
-    <div class="card w-full max-w-md space-y-4">
-      <h3 id="modalTitle" class="font-bold text-base border-b border-zinc-800 pb-2">Agregar Producto</h3>
+  <div id="productModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hide">
+    <div class="card w-full max-w-md space-y-4 border-zinc-800">
+      <h3 id="modalTitle" class="font-bold text-base border-b border-zinc-800 pb-2 text-white">Agregar Producto</h3>
       <input type="hidden" id="editKey" value="">
       <div class="space-y-3 text-xs">
         <div>
           <label class="block text-zinc-400 mb-1">Nombre del Producto</label>
-          <input id="prodName" type="text" class="inp" placeholder="Ej. Pizza Pequeña Pepperoni">
+          <input id="prodName" type="text" class="inp" placeholder="Ej. Pizza Pequeña Hawaiana">
         </div>
         <div>
           <label class="block text-zinc-400 mb-1">Categoría</label>
           <select id="prodCategory" class="inp">
-            <option value="pizza">Pizza</option>
             <option value="slice">Slice</option>
+            <option value="pizza">Pizza</option>
             <option value="bebida">Bebida</option>
             <option value="extra">Extra</option>
           </select>
@@ -203,22 +204,21 @@
           <input id="prodPrice" type="number" step="0.25" class="inp" placeholder="5.00">
         </div>
         <div>
-          <label class="block text-zinc-400 mb-1">Descripción corta (Porciones, etc.)</label>
-          <input id="prodDesc" type="text" class="inp" placeholder="4 porciones">
+          <label class="block text-zinc-400 mb-1">Descripción / Porciones</label>
+          <input id="prodDesc" type="text" class="inp" placeholder="Ej. 4 slices o 9-10 slices">
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeProductModal()" class="btn-gray text-xs">Cancelar</button>
-        <button onclick="saveProduct()" class="btn-red text-xs">Guardar</button>
+        <button onclick="saveProduct()" class="btn-red text-xs">Guardar Producto</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL USUARIO -->
-  <div id="userModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hide">
-    <div class="card w-full max-w-md space-y-4">
-      <h3 class="font-bold text-base border-b border-zinc-800 pb-2">Nuevo Usuario / Cajero</h3>
-      <input type="hidden" id="editUserKey" value="">
+  <div id="userModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hide">
+    <div class="card w-full max-w-md space-y-4 border-zinc-800">
+      <h3 class="font-bold text-base border-b border-zinc-800 pb-2 text-white">Nuevo Usuario o Cajero</h3>
       <div class="space-y-3 text-xs">
         <div>
           <label class="block text-zinc-400 mb-1">Nombre de Usuario</label>
@@ -226,12 +226,12 @@
         </div>
         <div>
           <label class="block text-zinc-400 mb-1">Contraseña</label>
-          <input id="userPassInput" type="text" class="inp" placeholder="123456">
+          <input id="userPassInput" type="text" class="inp" placeholder="••••••••">
         </div>
         <div>
           <label class="block text-zinc-400 mb-1">Rol / Permisos</label>
           <select id="userRoleInput" class="inp">
-            <option value="cajero">Cajero (Solo POS)</option>
+            <option value="cajero">Cajero (Solo POS / Ventas)</option>
             <option value="admin">Administrador (Acceso Total)</option>
           </select>
         </div>
@@ -258,23 +258,24 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// Menú preconfigurado según requerimientos exactos
 const DEFAULT_MENU = {
-  "p1": { nombre: "Slice Pepperoni", categoria: "slice", precio: 1.25, desc: "1 porción de pizza" },
-  "p2": { nombre: "Slice Jamón", categoria: "slice", precio: 1.25, desc: "1 porción de pizza" },
-  "p3": { nombre: "Slice Hawaiana", categoria: "slice", precio: 1.25, desc: "1 porción de pizza" },
-  "p4": { nombre: "Slice Margarita", categoria: "slice", precio: 1.25, desc: "1 porción de pizza" },
-  "p5": { nombre: "Pizza Pequeña Pepperoni", categoria: "pizza", precio: 5.00, desc: "4 porciones" },
-  "p6": { nombre: "Pizza Pequeña Jamón", categoria: "pizza", precio: 5.00, desc: "4 porciones" },
-  "p7": { nombre: "Pizza Pequeña Hawaiana", categoria: "pizza", precio: 5.00, desc: "4 porciones" },
-  "p8": { nombre: "Pizza Pequeña Margarita", categoria: "pizza", precio: 5.00, desc: "4 porciones" },
-  "p9": { nombre: "Pizza Mediana Especial", categoria: "pizza", precio: 9.00, desc: "9-10 porciones" },
-  "p10": { nombre: "Pizza Grande Especial", categoria: "pizza", precio: 12.00, desc: "12-13 porciones" },
-  "p11": { nombre: "Cola / Gaseosa", categoria: "bebida", precio: 0.50, desc: "Botella personal" },
-  "p12": { nombre: "Vaso de Cola Adicional", categoria: "extra", precio: 0.25, desc: "Vaso con hielo" }
+  "m1": { nombre: "Slice Pepperoni", categoria: "slice", precio: 1.25, desc: "1 porción individual" },
+  "m2": { nombre: "Slice Jamón", categoria: "slice", precio: 1.25, desc: "1 porción individual" },
+  "m3": { nombre: "Slice Hawaiana", categoria: "slice", precio: 1.25, desc: "1 porción individual" },
+  "m4": { nombre: "Slice Margarita", categoria: "slice", precio: 1.25, desc: "1 porción individual" },
+  "m5": { nombre: "Pizza Pequeña Pepperoni", categoria: "pizza", precio: 5.00, desc: "4 porciones (slices)" },
+  "m6": { nombre: "Pizza Pequeña Jamón", categoria: "pizza", precio: 5.00, desc: "4 porciones (slices)" },
+  "m7": { nombre: "Pizza Pequeña Hawaiana", categoria: "pizza", precio: 5.00, desc: "4 porciones (slices)" },
+  "m8": { nombre: "Pizza Pequeña Margarita", categoria: "pizza", precio: 5.00, desc: "4 porciones (slices)" },
+  "m9": { nombre: "Pizza Mediana Especial", categoria: "pizza", precio: 9.00, desc: "9 a 10 porciones" },
+  "m10": { nombre: "Pizza Grande Especial", categoria: "pizza", precio: 13.00, desc: "12 a 13 porciones" },
+  "m11": { nombre: "Cola / Gaseosa", categoria: "bebida", precio: 0.50, desc: "Botella personal fría" },
+  "m12": { nombre: "Vaso de Cola Adicional", categoria: "extra", precio: 0.25, desc: "Vaso con hielo" }
 };
 
 const DEFAULT_USERS = {
-  "u1": { user: "admin", pass: "admin123", role: "admin", name: "Administrador" }
+  "u1": { user: "admin", pass: "admin123", role: "admin", name: "Administrador General" }
 };
 
 let menuData = {};
@@ -331,9 +332,9 @@ function showLogin() {
 function showApp() {
   document.getElementById('loginScreen').classList.add('hide');
   document.getElementById('appScreen').classList.remove('hide');
-  document.getElementById('userRoleDisplay').textContent = session.name + ' (' + session.role + ')';
+  document.getElementById('userRoleDisplay').textContent = session.name + ' (' + session.role.toUpperCase() + ')';
   
-  // Ocultar pestañas si es cajero
+  // Restringir permisos si es cajero
   const adminElements = document.querySelectorAll('.admin-only');
   adminElements.forEach(el => {
     if(session.role !== 'admin') {
@@ -407,20 +408,21 @@ function renderPosProducts(filter = '') {
   }
   
   grid.innerHTML = filtered.map(p => `
-    <div onclick="addToCart('${p.firebaseKey}')" class="card cursor-pointer hover:border-red-500 transition group p-3 flex flex-col justify-between">
+    <div onclick="addToCart('${p.firebaseKey}')" class="card cursor-pointer hover:border-red-500/80 transition group p-3.5 flex flex-col justify-between shadow-md">
       <div>
-        <div class="h-20 bg-zinc-900 rounded-lg mb-2 flex items-center justify-center text-3xl group-hover:scale-105 transition">
-          ${p.categoria === 'pizza' ? '🍕' : p.categoria === 'slice' ? ' 삼각형' : p.categoria === 'bebida' ? '🥤' : '🧀'}
+        <div class="h-24 bg-zinc-900/80 rounded-xl mb-3 flex items-center justify-center text-3xl group-hover:scale-105 transition shadow-inner">
+          ${p.categoria === 'slice' ? '🍕' : p.categoria === 'pizza' ? '🍕' : p.categoria === 'bebida' ? '🥤' : '🧀'}
         </div>
-        <h4 class="font-semibold text-xs text-zinc-200 line-clamp-1">${p.nombre}</h4>
-        <p class="text-[11px] text-zinc-400 line-clamp-1 mt-0.5">${p.desc}</p>
+        <span class="text-[9px] uppercase font-bold px-2 py-0.5 rounded ${p.categoria === 'slice' ? 'bg-amber-500/10 text-amber-400' : p.categoria === 'pizza' ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}">${p.categoria}</span>
+        <h4 class="font-semibold text-xs text-zinc-100 line-clamp-1 mt-1.5">${p.nombre}</h4>
+        <p class="text-[11px] text-zinc-400 line-clamp-1 mt-0.5">${p.desc || ''}</p>
       </div>
-      <div class="flex justify-between items-center mt-3 pt-2 border-t border-zinc-800">
-        <span class="text-amber-400 font-bold text-sm">$${p.precio.toFixed(2)}</span>
-        <span class="w-6 h-6 rounded bg-red-500/10 text-red-500 flex items-center justify-center text-xs group-hover:bg-red-500 group-hover:text-white transition"><i class="fa-solid fa-plus"></i></span>
+      <div class="flex justify-between items-center mt-3 pt-2.5 border-t border-zinc-800/80">
+        <span class="text-amber-400 font-extrabold text-sm">$${p.precio.toFixed(2)}</span>
+        <span class="w-6 h-6 rounded-lg bg-red-600/10 text-red-500 flex items-center justify-center text-xs group-hover:bg-red-600 group-hover:text-white transition"><i class="fa-solid fa-plus"></i></span>
       </div>
     </div>
-  `).join('') || '<p class="col-span-full text-center text-zinc-500 text-xs py-8">No se encontraron productos</p>';
+  `).join('') || '<p class="col-span-full text-center text-zinc-500 text-xs py-10">No se encontraron productos</p>';
 }
 
 function addToCart(firebaseKey) {
@@ -439,19 +441,19 @@ function renderCart() {
   const list = document.getElementById('cartItemsList');
   let subtotal = 0;
 
-  list.innerHTML = cart.length === 0 ? '<p class="text-center text-zinc-500 py-6 text-xs">El carrito está vacío</p>' : cart.map((c, i) => {
+  list.innerHTML = cart.length === 0 ? '<p class="text-center text-zinc-500 py-8 text-xs">El carrito está vacío</p>' : cart.map((c, i) => {
     subtotal += c.precio * c.qty;
     return `
-      <div class="py-2 flex justify-between items-center">
+      <div class="py-2.5 flex justify-between items-center">
         <div class="flex-1 pr-2">
           <p class="font-medium text-zinc-200">${c.nombre}</p>
           <p class="text-zinc-400 text-[11px]">$${c.precio.toFixed(2)} c/u</p>
         </div>
         <div class="flex items-center gap-2">
-          <div class="flex items-center bg-zinc-900 rounded border border-zinc-800">
-            <button onclick="changeQty(${i}, -1)" class="px-1.5 py-0.5 text-zinc-400 hover:text-white">-</button>
-            <span class="px-2 text-xs font-medium">${c.qty}</span>
-            <button onclick="changeQty(${i}, 1)" class="px-1.5 py-0.5 text-zinc-400 hover:text-white">+</button>
+          <div class="flex items-center bg-zinc-900 rounded-lg border border-zinc-800">
+            <button onclick="changeQty(${i}, -1)" class="px-2 py-1 text-zinc-400 hover:text-white">-</button>
+            <span class="px-2 text-xs font-semibold">${c.qty}</span>
+            <button onclick="changeQty(${i}, 1)" class="px-2 py-1 text-zinc-400 hover:text-white">+</button>
           </div>
           <button onclick="removeFromCart(${i})" class="text-red-400 hover:text-red-300 px-1"><i class="fa-solid fa-trash text-xs"></i></button>
         </div>
@@ -498,7 +500,7 @@ function checkout() {
   db.ref('sales').push(newSale);
   cart = [];
   renderCart();
-  alert('¡Venta cobrada y guardada con éxito!');
+  alert('¡Venta cobrada con éxito!');
 }
 
 function renderAdminMenu() {
@@ -509,9 +511,9 @@ function renderAdminMenu() {
   tbody.innerHTML = items.map(([key, p]) => `
     <tr class="hover:bg-zinc-900/50">
       <td class="p-3 font-medium text-zinc-200">${p.nombre}</td>
-      <td class="p-3 uppercase text-[10px] text-zinc-400 font-semibold">${p.categoria}</td>
+      <td class="p-3 uppercase text-[10px] text-amber-400 font-semibold">${p.categoria}</td>
       <td class="p-3 text-amber-400 font-bold">$${p.precio.toFixed(2)}</td>
-      <td class="p-3 text-zinc-400 truncate max-w-xs">${p.desc}</td>
+      <td class="p-3 text-zinc-400">${p.desc || ''}</td>
       <td class="p-3 text-right space-x-2">
         <button onclick="openProductModal('${key}')" class="text-blue-400 hover:text-blue-300"><i class="fa-solid fa-pen"></i></button>
         <button onclick="deleteProduct('${key}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
@@ -529,11 +531,11 @@ function openProductModal(key = '') {
     document.getElementById('prodName').value = p.nombre;
     document.getElementById('prodCategory').value = p.categoria;
     document.getElementById('prodPrice').value = p.precio;
-    document.getElementById('prodDesc').value = p.desc;
+    document.getElementById('prodDesc').value = p.desc || '';
   } else {
     document.getElementById('modalTitle').textContent = 'Nuevo Producto';
     document.getElementById('prodName').value = '';
-    document.getElementById('prodCategory').value = 'pizza';
+    document.getElementById('prodCategory').value = 'slice';
     document.getElementById('prodPrice').value = '';
     document.getElementById('prodDesc').value = '';
   }
@@ -551,7 +553,7 @@ function saveProduct() {
   const desc = document.getElementById('prodDesc').value.trim();
 
   if(!nombre || isNaN(precio)) {
-    alert('Por favor complete el nombre y un precio válido.');
+    alert('Complete el nombre y un precio válido.');
     return;
   }
 
@@ -579,10 +581,10 @@ function renderAdminUsers() {
   
   tbody.innerHTML = items.map(([key, u]) => `
     <tr class="hover:bg-zinc-900/50">
-      <td class="p-3 font-medium text-zinc-200">${u.user} <span class="text-zinc-500 font-normal">(${u.name || ''})</span></td>
+      <td class="p-3 font-medium text-zinc-200">${u.user} <span class="text-zinc-500 font-normal text-[11px]">(${u.name || ''})</span></td>
       <td class="p-3 uppercase text-[10px] text-emerald-400 font-semibold">${u.role}</td>
-      <td class="p-3 text-right space-x-2">
-        <button onclick="deleteUser('${key}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+      <td class="p-3 text-right">
+        ${u.user !== 'admin' ? `<button onclick="deleteUser('${key}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>` : '<span class="text-zinc-600 text-[10px]">Protegido</span>'}
       </td>
     </tr>
   `).join('');
@@ -631,8 +633,8 @@ function renderSales() {
   if(totalSalesElem) totalSalesElem.textContent = '$' + totalSum.toFixed(2);
   if(totalOrdersElem) totalOrdersElem.textContent = salesArray.length;
 
-  container.innerHTML = salesArray.length === 0 ? '<p class="text-center text-zinc-500 py-6">No hay ventas registradas</p>' : salesArray.reverse().map(s => `
-    <div class="bg-zinc-900 p-3 rounded-lg flex justify-between items-center border border-zinc-800">
+  container.innerHTML = salesArray.length === 0 ? '<p class="text-center text-zinc-500 py-8">No hay ventas registradas</p>' : salesArray.reverse().map(s => `
+    <div class="bg-zinc-900/60 p-3.5 rounded-xl flex justify-between items-center border border-zinc-800">
       <div>
         <p class="font-bold text-zinc-200">Venta #${s.id.toString().slice(-4)} <span class="text-zinc-500 font-normal text-[11px] ml-2">${s.date} (Cajero: ${s.cajero || 'Admin'})</span></p>
         <p class="text-zinc-400 text-[11px] mt-0.5">${s.items.map(i => i.qty + 'x ' + i.nombre).join(', ')}</p>
