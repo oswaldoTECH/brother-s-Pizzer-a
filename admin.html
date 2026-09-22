@@ -34,22 +34,16 @@
     <div class="card w-full max-w-sm text-center shadow-2xl">
       <div class="inline-flex w-20 h-20 rounded-2xl bg-gradient-to-br from-red-600 to-amber-500 items-center justify-center text-4xl mb-4 shadow-lg shadow-red-900/30">🍕</div>
       <h1 class="font-bold text-2xl mb-1 tracking-tight">Brother's Pizza</h1>
-      <p class="text-xs text-zinc-400 mb-6">Panel en Línea (Firebase)</p>
+      <p class="text-xs text-zinc-400 mb-6">Panel Administrativo y POS</p>
       
       <div class="space-y-4 text-left">
         <div>
           <label class="block text-xs font-medium text-zinc-400 mb-1">Usuario</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-500"><i class="fa-solid fa-user text-xs"></i></span>
-            <input id="loginUser" type="text" class="inp pl-9" placeholder="admin" value="admin">
-          </div>
+          <input id="loginUser" type="text" class="inp" placeholder="admin" value="admin">
         </div>
         <div>
           <label class="block text-xs font-medium text-zinc-400 mb-1">Contraseña</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-500"><i class="fa-solid fa-lock text-xs"></i></span>
-            <input id="loginPass" type="password" class="inp pl-9" placeholder="••••••••" value="admin123">
-          </div>
+          <input id="loginPass" type="password" class="inp" placeholder="••••••••" value="admin123">
         </div>
         <div id="loginError" class="hide text-red-400 text-xs bg-red-500/10 border border-red-500/20 p-2.5 rounded-lg text-center"></div>
         <button onclick="handleLogin()" class="btn-red w-full mt-2 shadow-lg shadow-red-600/20">Ingresar al Sistema</button>
@@ -64,16 +58,17 @@
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-amber-500 flex items-center justify-center text-lg shadow">🍕</div>
         <div>
           <h2 class="font-bold text-sm tracking-wide">Brother's Pizza</h2>
-          <p id="userRoleDisplay" class="text-xs text-emerald-400 font-medium">Conectado a Firebase ☁️</p>
+          <p id="userRoleDisplay" class="text-xs text-emerald-400 font-medium">Administrador</p>
         </div>
       </div>
       <button onclick="handleLogout()" class="btn-gray text-xs flex items-center gap-2"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
     </header>
 
-    <nav class="bg-zinc-900/50 border-b border-zinc-800 px-6 py-2 flex gap-2 overflow-x-auto">
+    <nav id="appNav" class="bg-zinc-900/50 border-b border-zinc-800 px-6 py-2 flex gap-2 overflow-x-auto">
       <button class="tab-btn active" onclick="switchTab('pos')"><i class="fa-solid fa-cash-register mr-1"></i> POS / Ventas</button>
-      <button class="tab-btn" onclick="switchTab('menu')"><i class="fa-solid fa-utensils mr-1"></i> Gestión de Menú</button>
-      <button class="tab-btn" onclick="switchTab('stats')"><i class="fa-solid fa-chart-line mr-1"></i> Reportes y Ventas</button>
+      <button class="tab-btn admin-only" onclick="switchTab('menu')"><i class="fa-solid fa-utensils mr-1"></i> Gestión de Menú</button>
+      <button class="tab-btn admin-only" onclick="switchTab('users')"><i class="fa-solid fa-users mr-1"></i> Usuarios</button>
+      <button class="tab-btn admin-only" onclick="switchTab('stats')"><i class="fa-solid fa-chart-line mr-1"></i> Reportes</button>
     </nav>
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
@@ -89,6 +84,7 @@
             <div id="posCategories" class="flex gap-2 overflow-x-auto pb-1">
               <button onclick="filterCategory('todos')" class="tab-btn active text-xs whitespace-nowrap">Todos</button>
               <button onclick="filterCategory('pizza')" class="tab-btn text-xs whitespace-nowrap">Pizzas</button>
+              <button onclick="filterCategory('slice')" class="tab-btn text-xs whitespace-nowrap">Slices</button>
               <button onclick="filterCategory('bebida')" class="tab-btn text-xs whitespace-nowrap">Bebidas</button>
               <button onclick="filterCategory('extra')" class="tab-btn text-xs whitespace-nowrap">Extras</button>
             </div>
@@ -105,7 +101,6 @@
           
           <div class="border-t border-zinc-800 pt-3 space-y-2 text-xs mb-4">
             <div class="flex justify-between text-zinc-400"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
-            <div class="flex justify-between text-zinc-400"><span>IVA (0%)</span><span>$0.00</span></div>
             <div class="flex justify-between font-bold text-base text-red-500 pt-1 border-t border-zinc-800"><span>Total a Pagar</span><span id="cartTotal">$0.00</span></div>
           </div>
           <button onclick="checkout()" class="btn-red w-full text-sm shadow-lg shadow-red-600/20 flex items-center justify-center gap-2">
@@ -118,7 +113,7 @@
       <section id="tab-menu" class="hide space-y-6">
         <div class="card">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-base"><i class="fa-solid fa-pizza-slice text-red-500 mr-2"></i> Administrar Productos del Menú</h3>
+            <h3 class="font-bold text-base"><i class="fa-solid fa-pizza-slice text-red-500 mr-2"></i> Administrar Menú</h3>
             <button onclick="openProductModal()" class="btn-red text-xs"><i class="fa-solid fa-plus mr-1"></i> Nuevo Producto</button>
           </div>
           <div class="overflow-x-auto">
@@ -138,11 +133,33 @@
         </div>
       </section>
 
+      <!-- TAB USERS MANAGEMENT -->
+      <section id="tab-users" class="hide space-y-6">
+        <div class="card">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-base"><i class="fa-solid fa-users text-red-500 mr-2"></i> Gestión de Usuarios y Permisos</h3>
+            <button onclick="openUserModal()" class="btn-red text-xs"><i class="fa-solid fa-user-plus mr-1"></i> Nuevo Usuario</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-zinc-900 text-zinc-400 uppercase tracking-wider">
+                <tr>
+                  <th class="p-3">Usuario</th>
+                  <th class="p-3">Rol / Permisos</th>
+                  <th class="p-3 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTable" class="divide-y divide-zinc-800"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <!-- TAB STATS -->
       <section id="tab-stats" class="hide space-y-6">
         <div class="grid sm:grid-cols-2 gap-4">
           <div class="card">
-            <p class="text-xs text-zinc-400 mb-1">Ventas Totales Registradas</p>
+            <p class="text-xs text-zinc-400 mb-1">Ventas Totales</p>
             <h3 id="statTotalSales" class="text-2xl font-bold text-emerald-400">$0.00</h3>
           </div>
           <div class="card">
@@ -152,7 +169,7 @@
         </div>
         <div class="card">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-sm"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial de Transacciones (Nube)</h3>
+            <h3 class="font-bold text-sm"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial de Transacciones</h3>
             <button onclick="clearSales()" class="btn-gray text-xs text-red-400 hover:bg-red-500/10">Borrar Historial</button>
           </div>
           <div id="salesHistoryList" class="space-y-2 text-xs"></div>
@@ -170,34 +187,63 @@
       <div class="space-y-3 text-xs">
         <div>
           <label class="block text-zinc-400 mb-1">Nombre del Producto</label>
-          <input id="prodName" type="text" class="inp" placeholder="Ej. Pizza Pepperoni Familiar">
+          <input id="prodName" type="text" class="inp" placeholder="Ej. Pizza Pequeña Pepperoni">
         </div>
         <div>
           <label class="block text-zinc-400 mb-1">Categoría</label>
           <select id="prodCategory" class="inp">
             <option value="pizza">Pizza</option>
+            <option value="slice">Slice</option>
             <option value="bebida">Bebida</option>
             <option value="extra">Extra</option>
           </select>
         </div>
         <div>
           <label class="block text-zinc-400 mb-1">Precio ($)</label>
-          <input id="prodPrice" type="number" step="0.50" class="inp" placeholder="9.00">
+          <input id="prodPrice" type="number" step="0.25" class="inp" placeholder="5.00">
         </div>
         <div>
-          <label class="block text-zinc-400 mb-1">Descripción corta</label>
-          <input id="prodDesc" type="text" class="inp" placeholder="Mozzarella, pepperoni fresco...">
+          <label class="block text-zinc-400 mb-1">Descripción corta (Porciones, etc.)</label>
+          <input id="prodDesc" type="text" class="inp" placeholder="4 porciones">
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeProductModal()" class="btn-gray text-xs">Cancelar</button>
-        <button onclick="saveProduct()" class="btn-red text-xs">Guardar Producto</button>
+        <button onclick="saveProduct()" class="btn-red text-xs">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL USUARIO -->
+  <div id="userModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hide">
+    <div class="card w-full max-w-md space-y-4">
+      <h3 class="font-bold text-base border-b border-zinc-800 pb-2">Nuevo Usuario / Cajero</h3>
+      <input type="hidden" id="editUserKey" value="">
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-zinc-400 mb-1">Nombre de Usuario</label>
+          <input id="userNameInput" type="text" class="inp" placeholder="cajero1">
+        </div>
+        <div>
+          <label class="block text-zinc-400 mb-1">Contraseña</label>
+          <input id="userPassInput" type="text" class="inp" placeholder="123456">
+        </div>
+        <div>
+          <label class="block text-zinc-400 mb-1">Rol / Permisos</label>
+          <select id="userRoleInput" class="inp">
+            <option value="cajero">Cajero (Solo POS)</option>
+            <option value="admin">Administrador (Acceso Total)</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeUserModal()" class="btn-gray text-xs">Cancelar</button>
+        <button onclick="saveUser()" class="btn-red text-xs">Guardar Usuario</button>
       </div>
     </div>
   </div>
 
 <script>
-// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAHwQ5eRRImp03oROAP5E0EzFzz7blA7bw",
   authDomain: "brotherspizza-a85a4.firebaseapp.com",
@@ -213,16 +259,26 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 const DEFAULT_MENU = {
-  "-1": { id: 1, nombre: "Pizza Pepperoni", categoria: "pizza", precio: 9.00, desc: "Salsa de tomate, doble pepperoni y mozzarella" },
-  "-2": { id: 2, nombre: "Pizza Margarita", categoria: "pizza", precio: 8.00, desc: "Tomate fresco, albahaca y mozzarella fundida" },
-  "-3": { id: 3, nombre: "Pizza Hawaiana", categoria: "pizza", precio: 8.50, desc: "Jamón ahumado, trozos de piña dulce y mozzarella" },
-  "-4": { id: 4, nombre: "Pizza Suprema", categoria: "pizza", precio: 11.00, desc: "Pepperoni, champiñones, pimientos, cebolla y carne" },
-  "-5": { id: 5, nombre: "Coca-Cola 1.5L", categoria: "bebida", precio: 2.50, desc: "Bebida gaseosa fría" },
-  "-6": { id: 6, nombre: "Te Frío Hatsu", categoria: "bebida", precio: 2.00, desc: "Té de durazno o limón" },
-  "-7": { id: 7, nombre: "Porción Pan de Ajo", categoria: "extra", precio: 3.50, desc: "Pan horneado con mantequilla de ajo y queso" }
+  "p1": { nombre: "Slice Pepperoni", categoria: "slice", precio: 1.25, desc: "1 porción de pizza" },
+  "p2": { nombre: "Slice Jamón", categoria: "slice", precio: 1.25, desc: "1 porción de pizza" },
+  "p3": { nombre: "Slice Hawaiana", categoria: "slice", precio: 1.25, desc: "1 porción de pizza" },
+  "p4": { nombre: "Slice Margarita", categoria: "slice", precio: 1.25, desc: "1 porción de pizza" },
+  "p5": { nombre: "Pizza Pequeña Pepperoni", categoria: "pizza", precio: 5.00, desc: "4 porciones" },
+  "p6": { nombre: "Pizza Pequeña Jamón", categoria: "pizza", precio: 5.00, desc: "4 porciones" },
+  "p7": { nombre: "Pizza Pequeña Hawaiana", categoria: "pizza", precio: 5.00, desc: "4 porciones" },
+  "p8": { nombre: "Pizza Pequeña Margarita", categoria: "pizza", precio: 5.00, desc: "4 porciones" },
+  "p9": { nombre: "Pizza Mediana Especial", categoria: "pizza", precio: 9.00, desc: "9-10 porciones" },
+  "p10": { nombre: "Pizza Grande Especial", categoria: "pizza", precio: 12.00, desc: "12-13 porciones" },
+  "p11": { nombre: "Cola / Gaseosa", categoria: "bebida", precio: 0.50, desc: "Botella personal" },
+  "p12": { nombre: "Vaso de Cola Adicional", categoria: "extra", precio: 0.25, desc: "Vaso con hielo" }
+};
+
+const DEFAULT_USERS = {
+  "u1": { user: "admin", pass: "admin123", role: "admin", name: "Administrador" }
 };
 
 let menuData = {};
+let usersData = {};
 let salesData = {};
 let session = JSON.parse(localStorage.getItem('bp_session')) || null;
 let cart = [];
@@ -238,7 +294,6 @@ function init() {
 }
 
 function setupFirebaseListeners() {
-  // Sincronizar Menú en tiempo real
   db.ref('menu').on('value', snapshot => {
     const val = snapshot.val();
     if (val) {
@@ -251,7 +306,17 @@ function setupFirebaseListeners() {
     renderAdminMenu();
   });
 
-  // Sincronizar Ventas en tiempo real
+  db.ref('users').on('value', snapshot => {
+    const val = snapshot.val();
+    if (val) {
+      usersData = val;
+    } else {
+      db.ref('users').set(DEFAULT_USERS);
+      usersData = DEFAULT_USERS;
+    }
+    renderAdminUsers();
+  });
+
   db.ref('sales').on('value', snapshot => {
     salesData = snapshot.val() || {};
     renderSales();
@@ -266,7 +331,17 @@ function showLogin() {
 function showApp() {
   document.getElementById('loginScreen').classList.add('hide');
   document.getElementById('appScreen').classList.remove('hide');
-  document.getElementById('userRoleDisplay').textContent = session.nombre + ' (' + session.rol + ')';
+  document.getElementById('userRoleDisplay').textContent = session.name + ' (' + session.role + ')';
+  
+  // Ocultar pestañas si es cajero
+  const adminElements = document.querySelectorAll('.admin-only');
+  adminElements.forEach(el => {
+    if(session.role !== 'admin') {
+      el.classList.add('hide');
+    } else {
+      el.classList.remove('hide');
+    }
+  });
 }
 
 function handleLogin() {
@@ -274,13 +349,21 @@ function handleLogin() {
   const p = document.getElementById('loginPass').value;
   const err = document.getElementById('loginError');
 
-  if (u === 'admin' && p === 'admin123') {
-    session = { nombre: 'Administrador', rol: 'admin' };
+  let foundUser = null;
+  Object.values(usersData).forEach(usr => {
+    if(usr.user === u && usr.pass === p) {
+      foundUser = usr;
+    }
+  });
+
+  if (foundUser) {
+    session = { name: foundUser.name || foundUser.user, role: foundUser.role };
     localStorage.setItem('bp_session', JSON.stringify(session));
     err.classList.add('hide');
     showApp();
+    switchTab('pos');
   } else {
-    err.textContent = 'Credenciales incorrectas (Usa: admin / admin123)';
+    err.textContent = 'Usuario o contraseña incorrectos';
     err.classList.remove('hide');
   }
 }
@@ -292,12 +375,17 @@ function handleLogout() {
 }
 
 function switchTab(tab) {
-  ['pos', 'menu', 'stats'].forEach(t => {
-    document.getElementById('tab-' + t).classList.toggle('hide', t !== tab);
+  if(session.role !== 'admin' && tab !== 'pos') return;
+  ['pos', 'menu', 'users', 'stats'].forEach(t => {
+    const el = document.getElementById('tab-' + t);
+    if(el) el.classList.toggle('hide', t !== tab);
   });
-  document.querySelectorAll('nav .tab-btn').forEach((btn, idx) => {
-    const tabs = ['pos', 'menu', 'stats'];
-    btn.classList.toggle('active', tabs[idx] === tab);
+  document.querySelectorAll('nav .tab-btn').forEach((btn) => {
+    if(btn.getAttribute('onclick')?.includes(tab)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
   });
 }
 
@@ -321,8 +409,8 @@ function renderPosProducts(filter = '') {
   grid.innerHTML = filtered.map(p => `
     <div onclick="addToCart('${p.firebaseKey}')" class="card cursor-pointer hover:border-red-500 transition group p-3 flex flex-col justify-between">
       <div>
-        <div class="h-24 bg-zinc-900 rounded-lg mb-3 flex items-center justify-center text-4xl group-hover:scale-105 transition">
-          ${p.categoria === 'pizza' ? '🍕' : p.categoria === 'bebida' ? '🥤' : '🧀'}
+        <div class="h-20 bg-zinc-900 rounded-lg mb-2 flex items-center justify-center text-3xl group-hover:scale-105 transition">
+          ${p.categoria === 'pizza' ? '🍕' : p.categoria === 'slice' ? ' 삼각형' : p.categoria === 'bebida' ? '🥤' : '🧀'}
         </div>
         <h4 class="font-semibold text-xs text-zinc-200 line-clamp-1">${p.nombre}</h4>
         <p class="text-[11px] text-zinc-400 line-clamp-1 mt-0.5">${p.desc}</p>
@@ -403,18 +491,19 @@ function checkout() {
     id: Date.now(),
     date: new Date().toLocaleString(),
     items: [...cart],
-    total: total
+    total: total,
+    cajero: session.name
   };
   
-  // Guardar en Firebase Realtime Database
   db.ref('sales').push(newSale);
   cart = [];
   renderCart();
-  alert('¡Venta cobrada y guardada en la nube con éxito!');
+  alert('¡Venta cobrada y guardada con éxito!');
 }
 
 function renderAdminMenu() {
   const tbody = document.getElementById('adminMenuTable');
+  if(!tbody) return;
   const items = Object.entries(menuData);
   
   tbody.innerHTML = items.map(([key, p]) => `
@@ -466,7 +555,7 @@ function saveProduct() {
     return;
   }
 
-  const prodData = { id: key ? menuData[key].id : Date.now(), nombre, categoria, precio, desc };
+  const prodData = { nombre, categoria, precio, desc };
 
   if(key) {
     db.ref('menu/' + key).set(prodData);
@@ -478,8 +567,55 @@ function saveProduct() {
 }
 
 function deleteProduct(key) {
-  if(confirm('¿Está seguro de eliminar este producto de la nube?')) {
+  if(confirm('¿Está seguro de eliminar este producto?')) {
     db.ref('menu/' + key).remove();
+  }
+}
+
+function renderAdminUsers() {
+  const tbody = document.getElementById('adminUsersTable');
+  if(!tbody) return;
+  const items = Object.entries(usersData);
+  
+  tbody.innerHTML = items.map(([key, u]) => `
+    <tr class="hover:bg-zinc-900/50">
+      <td class="p-3 font-medium text-zinc-200">${u.user} <span class="text-zinc-500 font-normal">(${u.name || ''})</span></td>
+      <td class="p-3 uppercase text-[10px] text-emerald-400 font-semibold">${u.role}</td>
+      <td class="p-3 text-right space-x-2">
+        <button onclick="deleteUser('${key}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openUserModal() {
+  document.getElementById('userModal').classList.remove('hide');
+}
+
+function closeUserModal() {
+  document.getElementById('userModal').classList.add('hide');
+}
+
+function saveUser() {
+  const user = document.getElementById('userNameInput').value.trim();
+  const pass = document.getElementById('userPassInput').value.trim();
+  const role = document.getElementById('userRoleInput').value;
+
+  if(!user || !pass) {
+    alert('Complete usuario y contraseña.');
+    return;
+  }
+
+  const userData = { user, pass, role, name: user };
+  db.ref('users').push(userData);
+  closeUserModal();
+  document.getElementById('userNameInput').value = '';
+  document.getElementById('userPassInput').value = '';
+}
+
+function deleteUser(key) {
+  if(confirm('¿Eliminar este usuario?')) {
+    db.ref('users/' + key).remove();
   }
 }
 
@@ -487,17 +623,18 @@ function renderSales() {
   const container = document.getElementById('salesHistoryList');
   const totalSalesElem = document.getElementById('statTotalSales');
   const totalOrdersElem = document.getElementById('statTotalOrders');
+  if(!container) return;
 
   const salesArray = Object.values(salesData);
   let totalSum = salesArray.reduce((acc, s) => acc + s.total, 0);
   
-  totalSalesElem.textContent = '$' + totalSum.toFixed(2);
-  totalOrdersElem.textContent = salesArray.length;
+  if(totalSalesElem) totalSalesElem.textContent = '$' + totalSum.toFixed(2);
+  if(totalOrdersElem) totalOrdersElem.textContent = salesArray.length;
 
-  container.innerHTML = salesArray.length === 0 ? '<p class="text-center text-zinc-500 py-6">No hay ventas registradas en la nube</p>' : salesArray.reverse().map(s => `
+  container.innerHTML = salesArray.length === 0 ? '<p class="text-center text-zinc-500 py-6">No hay ventas registradas</p>' : salesArray.reverse().map(s => `
     <div class="bg-zinc-900 p-3 rounded-lg flex justify-between items-center border border-zinc-800">
       <div>
-        <p class="font-bold text-zinc-200">Venta #${s.id.toString().slice(-4)} <span class="text-zinc-500 font-normal text-[11px] ml-2">${s.date}</span></p>
+        <p class="font-bold text-zinc-200">Venta #${s.id.toString().slice(-4)} <span class="text-zinc-500 font-normal text-[11px] ml-2">${s.date} (Cajero: ${s.cajero || 'Admin'})</span></p>
         <p class="text-zinc-400 text-[11px] mt-0.5">${s.items.map(i => i.qty + 'x ' + i.nombre).join(', ')}</p>
       </div>
       <p class="text-emerald-400 font-bold text-sm">$${s.total.toFixed(2)}</p>
@@ -506,7 +643,7 @@ function renderSales() {
 }
 
 function clearSales() {
-  if(confirm('¿Desea borrar todo el historial de ventas de Firebase?')) {
+  if(confirm('¿Desea borrar todo el historial de ventas?')) {
     db.ref('sales').remove();
   }
 }
