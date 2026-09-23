@@ -6,9 +6,7 @@
 <meta name="theme-color" content="#09090b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
+<meta name="format-detection" content="telephone=no">
 <title>Admin · Brother's Pizza</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,7 +15,14 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <style>
   * { font-family: 'Outfit', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   html, body { overscroll-behavior-y: contain; }
+
+  /* iOS: 100vh incluye barra. Usamos dvh con fallback */
+  .full-h { height: 100vh; height: 100dvh; }
+  .min-full-h { min-height: 100vh; min-height: 100dvh; }
+
   body {
     background: #09090b; color: #f4f4f5;
     background-image:
@@ -26,6 +31,7 @@
     background-attachment: fixed;
     min-height: 100vh;
     min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
   }
   body::before {
     content: ''; position: fixed; inset: 0;
@@ -34,200 +40,148 @@
       linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
     background-size: 42px 42px; pointer-events: none; z-index: 0;
   }
-  .glass { background: linear-gradient(135deg, rgba(24,24,27,0.9), rgba(24,24,27,0.75)); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.06); }
-  .card { background: linear-gradient(145deg, rgba(24,24,27,0.95), rgba(15,15,18,0.9)); border: 1px solid #27272a; border-radius: 16px; padding: 14px; transition: all .3s cubic-bezier(.2,.8,.2,1); position: relative; }
+
+  /* Glass con fallback para iOS <15 */
+  .glass {
+    background: rgba(24,24,27,0.92);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  @supports (backdrop-filter: blur(14px)) or (-webkit-backdrop-filter: blur(14px)) {
+    .glass { background: linear-gradient(135deg, rgba(24,24,27,0.85), rgba(24,24,27,0.65)); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  }
+
+  .card { background: linear-gradient(145deg, rgba(24,24,27,0.95), rgba(15,15,18,0.9)); border: 1px solid #27272a; border-radius: 16px; padding: 14px; transition: all .3s; position: relative; }
   @media (min-width: 640px) { .card { border-radius: 18px; padding: 18px; } }
   .card:hover { border-color: #3f3f46; }
-  .inp { width: 100%; background: rgba(9,9,11,0.8); border: 1px solid #3f3f46; border-radius: 12px; padding: 12px 14px; color: #fff; font-size: 16px; transition: all .2s; min-height: 44px; }
-  @media (min-width: 640px) { .inp { font-size: 14px; } }
+
+  /* iOS: input mínimo 16px para NO hacer zoom automático */
+  .inp { width: 100%; background: rgba(9,9,11,0.8); border: 1px solid #3f3f46; border-radius: 12px; padding: 12px 14px; color: #fff; font-size: 16px; transition: all .2s; min-height: 44px; -webkit-appearance: none; appearance: none; }
   .inp:focus { outline: none; border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.18); }
   select.inp { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 38px; }
+  input[type="number"] { -moz-appearance: textfield; -webkit-appearance: none; }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  /* iOS: botones sin outline azul */
+  button { -webkit-appearance: none; appearance: none; outline: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+
   .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626 50%, #b91c1c); color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: all .25s; box-shadow: 0 6px 20px rgba(220,38,38,0.35); min-height: 44px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
-  .btn-red:hover:not(:disabled) { transform: translateY(-2px); }
+  .btn-red:active { transform: scale(.97); }
   .btn-red:disabled { opacity: .5; cursor: not-allowed; }
   .btn-gray { background: linear-gradient(135deg, #27272a, #1f1f23); color: #e4e4e7; padding: 12px 18px; border-radius: 12px; cursor: pointer; border: 1px solid #3f3f46; transition: all .2s; font-weight: 500; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+  .btn-gray:active { transform: scale(.97); }
   .btn-green { background: linear-gradient(135deg, #10b981, #059669 50%, #047857); color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+  .btn-green:active { transform: scale(.97); }
   .btn-amber { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
-  .tab-btn { padding: 10px 14px; border-radius: 12px; background: rgba(24,24,27,0.7); border: 1px solid #27272a; color: #a1a1aa; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .25s; white-space: nowrap; min-height: 40px; display: inline-flex; align-items: center; }
-  @media (min-width: 640px) { .tab-btn { padding: 10px 18px; } }
+  .btn-amber:active { transform: scale(.97); }
+  .tab-btn { padding: 10px 14px; border-radius: 12px; background: rgba(24,24,27,0.7); border: 1px solid #27272a; color: #a1a1aa; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; white-space: nowrap; min-height: 40px; display: inline-flex; align-items: center; }
   .tab-btn.active { background: linear-gradient(135deg, #ef4444, #dc2626); border-color: transparent; color: #fff; box-shadow: 0 6px 20px rgba(220,38,38,0.45); }
   .hide { display: none !important; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-  .fade-in { animation: fadeIn .3s cubic-bezier(.2,.8,.2,1); }
+
+  .fade-in { animation: fadeIn .3s; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to {opacity:1; transform:none;} }
-  .slide-up { animation: slideUp .35s cubic-bezier(.2,.8,.2,1); }
+  .slide-up { animation: slideUp .35s; }
   @keyframes slideUp { from { opacity:0; transform: translateY(20px);} to {opacity:1; transform:none;} }
-  .slide-down { animation: slideDown .3s cubic-bezier(.2,.8,.2,1); }
-  @keyframes slideDown { from { opacity:0; transform: translateY(-20px);} to {opacity:1; transform:none;} }
-  .slide-from-bottom { animation: slideFromBottom .35s cubic-bezier(.2,.8,.2,1); }
+  .slide-from-bottom { animation: slideFromBottom .35s; }
   @keyframes slideFromBottom { from { transform: translateY(100%);} to { transform: translateY(0);} }
   .toast-anim { animation: slideIn .3s; }
   @keyframes slideIn { from { opacity: 0; transform: translateX(30px);} to {opacity:1; transform:none;} }
-  .prod-card { cursor: pointer; transition: all .25s; }
-  .prod-card:active { transform: scale(.97); }
-  @media (min-width: 1024px) { .prod-card:hover { transform: translateY(-4px); border-color: rgba(239,68,68,0.6) !important; box-shadow: 0 20px 40px -12px rgba(220,38,38,0.35); } }
-  .prod-emoji-box { background: linear-gradient(135deg, #1a1a20, #0e0e11); transition: all .35s; }
+
+  .prod-card { cursor: pointer; transition: transform .2s; }
+  .prod-card:active { transform: scale(.96); }
+  @media (min-width: 1024px) { .prod-card:hover { transform: translateY(-4px); border-color: rgba(239,68,68,0.6) !important; } }
+  .prod-emoji-box { background: linear-gradient(135deg, #1a1a20, #0e0e11); }
+
   .glow-red { box-shadow: 0 0 30px rgba(220,38,38,0.4); }
   .glow-green { box-shadow: 0 0 30px rgba(16,185,129,0.4); }
   .pizza-float { animation: float 4s ease-in-out infinite; }
   @keyframes float { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-10px) rotate(3deg); } }
-  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 0 0 rgba(16,185,129,0.7); animation: pulseDot 2s infinite; flex-shrink: 0; }
+  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulseDot 2s infinite; flex-shrink: 0; }
   @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7);} 70% { box-shadow: 0 0 0 10px rgba(16,185,129,0);} 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0);} }
+
   .badge-slice { background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.08)); color:#fbbf24; border: 1px solid rgba(245,158,11,0.35); }
   .badge-pizza { background: linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.08)); color:#f87171; border: 1px solid rgba(239,68,68,0.35); }
   .badge-bebida { background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(59,130,246,0.08)); color:#60a5fa; border: 1px solid rgba(59,130,246,0.35); }
   .badge-extra { background: linear-gradient(135deg, rgba(217,70,239,0.18), rgba(217,70,239,0.08)); color:#e879f9; border: 1px solid rgba(217,70,239,0.35); }
-  .brand-gradient { background: linear-gradient(135deg, #ef4444, #f59e0b 50%, #ef4444); background-size: 200% 200%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 4s ease-in-out infinite; }
+
+  .brand-gradient { background: linear-gradient(135deg, #ef4444, #f59e0b 50%, #ef4444); background-size: 200% 200%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 4s infinite; }
   @keyframes shimmer { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
   .stock-bar { height: 6px; border-radius: 3px; background: #27272a; overflow: hidden; }
   .stock-bar-fill { height: 100%; border-radius: 3px; transition: width .5s; }
-  .stat-card::before { content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.05), transparent 30%); animation: rotate 8s linear infinite; pointer-events: none; }
-  @keyframes rotate { to { transform: rotate(360deg); } }
-  .worker-avatar { background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(239,68,68,0.25)); }
-  .modal-backdrop { background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.85), rgba(0,0,0,0.95)); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
   .number-gradient { background: linear-gradient(135deg, #f87171, #fbbf24); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .worker-avatar { background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(239,68,68,0.25)); }
+
+  /* Navegación táctil iOS */
   .nav-scroll { scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; }
   .nav-scroll::-webkit-scrollbar { display: none; }
-  .bottom-sheet { position: fixed; inset: auto 0 0 0; max-height: 90vh; max-height: 90dvh; border-radius: 24px 24px 0 0; animation: slideFromBottom .35s cubic-bezier(.2,.8,.2,1); overflow-y: auto; }
-  @media (min-width: 640px) { .bottom-sheet { position: relative; inset: auto; border-radius: 24px; animation: slideUp .35s; max-height: 90vh; } }
-  .drag-handle { width: 44px; height: 4px; background: #3f3f46; border-radius: 2px; margin: 8px auto 4px; }
+
+  /* MODALES iOS */
+  .modal-backdrop { background: rgba(0,0,0,0.9); }
+  @supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+    .modal-backdrop { background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.85), rgba(0,0,0,0.95)); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  }
+
+  /* iOS: bottom sheet con altura real */
+  .sheet {
+    width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    border-radius: 24px 24px 0 0;
+    animation: slideFromBottom .35s cubic-bezier(.2,.8,.2,1);
+  }
+  @media (min-width: 640px) {
+    .sheet { max-width: 28rem; border-radius: 24px; animation: slideUp .35s; }
+  }
+  .sheet-lg { max-width: 32rem; }
+  .drag-handle { width: 44px; height: 4px; background: #3f3f46; border-radius: 2px; margin: 8px auto 6px; }
   @media (min-width: 640px) { .drag-handle { display: none; } }
-  .cart-drawer { position: fixed; inset: 0; z-index: 45; }
-  .cart-drawer-panel { position: absolute; bottom: 0; left: 0; right: 0; max-height: 88vh; max-height: 88dvh; border-radius: 24px 24px 0 0; overflow-y: auto; }
+
+  /* Cart drawer iOS */
+  .cart-drawer-panel { max-height: 88vh; max-height: 88dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+
+  /* iOS Safe areas */
+  .safe-top { padding-top: env(safe-area-inset-top, 0); }
+  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem); }
+
+  /* Bloqueo de scroll iOS-friendly */
+  body.locked { overflow: hidden; position: fixed; width: 100%; }
+
+  /* IMPRESIÓN TÉRMICA (se usa iframe en iOS) */
   #printArea { display: none; }
   @page { size: 80mm auto; margin: 0; }
   @media print {
-    html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; color: #000 !important; }
     body * { visibility: hidden !important; }
     #printArea, #printArea * { visibility: visible !important; }
-    #printArea { display: block !important; position: absolute; left: 0; top: 0; width: 76mm; padding: 2mm; color: #000 !important; background: #fff !important; font-family: 'Courier New', monospace !important; font-size: 11px; line-height: 1.28; box-sizing: border-box; }
-    #printArea table { width: 100%; border-collapse: collapse; }
-    #printArea td { vertical-align: top; }
+    #printArea { display: block !important; position: absolute; left: 0; top: 0; width: 76mm; padding: 2mm; color: #000 !important; background: #fff !important; font-family: 'Courier New', monospace !important; font-size: 11px; line-height: 1.28; }
     #printArea * { color: #000 !important; }
-    #printArea::after { content: ''; display: block; height: 12mm; }
-  }
-  .safe-top { padding-top: env(safe-area-inset-top); }
-  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem); }
-  input[type="number"] { -moz-appearance: textfield; }
-  input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-  /* === PIN SCREEN === */
-  .pin-dot {
-    width: 16px; height: 16px; border-radius: 50%;
-    background: #27272a; border: 2px solid #3f3f46;
-    transition: all .2s ease;
-  }
-  .pin-dot.filled {
-    background: linear-gradient(135deg, #ef4444, #f59e0b);
-    border-color: transparent;
-    box-shadow: 0 0 12px rgba(239,68,68,0.7);
-    transform: scale(1.1);
-  }
-  .pin-dot.error { animation: pinShake .4s; border-color: #ef4444; }
-  @keyframes pinShake {
-    0%,100% { transform: translateX(0); }
-    20% { transform: translateX(-9px); }
-    40% { transform: translateX(9px); }
-    60% { transform: translateX(-6px); }
-    80% { transform: translateX(6px); }
-  }
-  .pin-btn {
-    background: linear-gradient(145deg, rgba(39,39,42,0.95), rgba(24,24,27,0.95));
-    border: 1px solid #3f3f46; color: #fff;
-    border-radius: 16px; padding: 16px 0;
-    font-size: 22px; font-weight: 700; cursor: pointer;
-    transition: all .15s; min-height: 58px;
-    user-select: none; -webkit-user-select: none;
-  }
-  .pin-btn:active {
-    transform: scale(.93);
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    border-color: transparent;
-    box-shadow: 0 0 20px rgba(239,68,68,0.5);
-  }
-  .pin-btn-empty {
-    background: transparent; border: none;
-    pointer-events: none; cursor: default;
   }
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
   <!-- LOGIN -->
-  <div id="loginScreen" class="hide fixed inset-0 flex items-center justify-center p-4 z-50">
+  <div id="loginScreen" class="fixed inset-0 flex items-center justify-center p-4 z-50" style="height:100dvh;">
     <div class="absolute inset-0" style="background: radial-gradient(circle at 20% 20%, rgba(220,38,38,0.2), transparent 50%), radial-gradient(circle at 80% 80%, rgba(245,158,11,0.18), transparent 50%);"></div>
-    <div class="glass w-full max-w-md text-center shadow-2xl rounded-3xl p-6 sm:p-8 slide-up relative z-10">
+    <div class="glass w-full max-w-md text-center shadow-2xl rounded-3xl p-6 sm:p-8 slide-up relative z-10 safe-top safe-bottom">
       <div class="inline-flex w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-red-500 via-red-600 to-amber-500 items-center justify-center text-4xl sm:text-5xl mb-5 shadow-2xl glow-red pizza-float">🍕</div>
       <h1 class="font-black text-2xl sm:text-3xl mb-1 tracking-tight brand-gradient">Brother's Pizza</h1>
       <p class="text-xs text-zinc-400 mb-6 font-medium tracking-wide uppercase">Panel Gráfico & POS</p>
       <div class="space-y-4 text-left">
         <div><label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Usuario</label>
           <div class="relative"><i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
-            <input id="loginUser" type="text" class="inp pl-11" placeholder="admin" autocomplete="username"></div></div>
+            <input id="loginUser" type="text" class="inp pl-11" placeholder="admin" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false"></div></div>
         <div><label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wider">Contraseña</label>
           <div class="relative"><i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
             <input id="loginPass" type="password" class="inp pl-11" placeholder="••••••••" autocomplete="current-password"></div></div>
         <div id="loginError" class="hide text-red-400 text-xs bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-center font-medium"></div>
-        <button onclick="handleLogin()" class="btn-red w-full mt-2"><i class="fa-solid fa-right-to-bracket mr-2"></i> Ingresar</button>
+        <button type="button" onclick="handleLogin()" class="btn-red w-full mt-2"><i class="fa-solid fa-right-to-bracket mr-2"></i> Ingresar</button>
       </div>
-    </div>
-  </div>
-
-  <!-- PIN SCREEN -->
-  <div id="pinScreen" class="hide fixed inset-0 flex items-center justify-center p-4 z-50">
-    <div class="absolute inset-0" style="background: radial-gradient(circle at 20% 20%, rgba(220,38,38,0.2), transparent 50%), radial-gradient(circle at 80% 80%, rgba(245,158,11,0.18), transparent 50%);"></div>
-    <div class="glass w-full max-w-sm text-center shadow-2xl rounded-3xl p-6 slide-up relative z-10">
-      <div class="inline-flex w-20 h-20 rounded-3xl bg-gradient-to-br from-red-500 via-red-600 to-amber-500 items-center justify-center text-4xl mb-5 shadow-2xl glow-red pizza-float">🔐</div>
-      <h1 class="font-black text-2xl mb-1 brand-gradient">Brother's Pizza</h1>
-      <p class="text-xs text-zinc-400 mb-5 font-medium tracking-wide uppercase">Ingresa tu PIN de acceso</p>
-
-      <div id="pinDots" class="flex justify-center gap-4 mb-3">
-        <span class="pin-dot"></span><span class="pin-dot"></span>
-        <span class="pin-dot"></span><span class="pin-dot"></span>
-      </div>
-      <div id="pinError" class="hide text-red-400 text-xs mb-2 font-semibold">PIN incorrecto</div>
-
-      <div class="grid grid-cols-3 gap-3 mt-4">
-        <button class="pin-btn" onclick="pinDigit('1')">1</button>
-        <button class="pin-btn" onclick="pinDigit('2')">2</button>
-        <button class="pin-btn" onclick="pinDigit('3')">3</button>
-        <button class="pin-btn" onclick="pinDigit('4')">4</button>
-        <button class="pin-btn" onclick="pinDigit('5')">5</button>
-        <button class="pin-btn" onclick="pinDigit('6')">6</button>
-        <button class="pin-btn" onclick="pinDigit('7')">7</button>
-        <button class="pin-btn" onclick="pinDigit('8')">8</button>
-        <button class="pin-btn" onclick="pinDigit('9')">9</button>
-        <button class="pin-btn pin-btn-empty"></button>
-        <button class="pin-btn" onclick="pinDigit('0')">0</button>
-        <button class="pin-btn" onclick="pinDelete()"><i class="fa-solid fa-delete-left"></i></button>
-      </div>
-
-      <button onclick="switchToLogin()" class="btn-gray w-full mt-4 text-xs">
-        <i class="fa-solid fa-user-lock mr-2"></i> Usar usuario y contraseña
-      </button>
-    </div>
-  </div>
-
-  <!-- MODAL: PIN GENERADO -->
-  <div id="pinSetupModal" class="hide fixed inset-0 z-[60] flex items-center justify-center p-4 modal-backdrop">
-    <div class="glass w-full max-w-sm text-center rounded-3xl p-6 slide-up">
-      <div class="text-5xl mb-3">🎉</div>
-      <h3 class="font-black text-xl mb-1 text-white">¡Bienvenido!</h3>
-      <p class="text-xs text-zinc-400 mb-5">Este es tu PIN de acceso rápido. Guárdalo bien, lo necesitarás la próxima vez que entres.</p>
-
-      <div class="bg-zinc-950/80 border-2 border-dashed border-red-500/40 rounded-2xl py-6 mb-5">
-        <div id="newPinDisplay" class="text-4xl font-black tracking-[0.45em] number-gradient pl-[0.45em]">----</div>
-      </div>
-
-      <button onclick="copyPin()" class="btn-gray w-full mb-2 text-xs">
-        <i class="fa-solid fa-copy mr-2"></i> Copiar PIN
-      </button>
-      <button onclick="closePinSetup()" class="btn-red w-full text-xs">
-        <i class="fa-solid fa-check mr-2"></i> Entendido, continuar
-      </button>
     </div>
   </div>
 
@@ -241,399 +195,33 @@
             <h2 class="font-bold text-xs sm:text-sm tracking-wide text-white truncate">Brother's Pizza</h2>
             <div class="flex items-center gap-1.5 min-w-0">
               <span class="pulse-dot"></span>
-              <p id="userRoleDisplay" class="text-[10px] sm:text-xs text-emerald-400 font-semibold truncate">Administrador</p>
+              <p id="userRoleDisplay" class="text-[10px] sm:text-xs text-emerald-400 font-semibold truncate">Admin</p>
             </div>
           </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <div id="clockDisplay" class="hidden md:flex text-[11px] text-zinc-400 font-mono bg-zinc-950/70 px-3 py-2 rounded-xl border border-zinc-800"></div>
-          <button onclick="handleLogout()" class="btn-gray text-xs py-2.5 px-3"><i class="fa-solid fa-right-from-bracket"></i><span class="hidden sm:inline ml-2">Salir</span></button>
+          <button type="button" onclick="handleLogout()" class="btn-gray text-xs py-2.5 px-3"><i class="fa-solid fa-right-from-bracket"></i><span class="hidden sm:inline ml-2">Salir</span></button>
         </div>
       </div>
       <nav id="appNav" class="bg-zinc-900/40 border-t border-zinc-800/60 px-3 sm:px-6 py-2 flex gap-2 overflow-x-auto nav-scroll">
-        <button class="tab-btn active text-xs" data-tab="pos" onclick="switchTab('pos')"><i class="fa-solid fa-cash-register mr-1.5"></i> POS</button>
-        <button class="tab-btn admin-only text-xs" data-tab="menu" onclick="switchTab('menu')"><i class="fa-solid fa-utensils mr-1.5"></i> Menú</button>
-        <button class="tab-btn admin-only text-xs" data-tab="stock" onclick="switchTab('stock')"><i class="fa-solid fa-boxes-stacked mr-1.5"></i> Stock</button>
-        <button class="tab-btn admin-only text-xs" data-tab="workers" onclick="switchTab('workers')"><i class="fa-solid fa-hand-holding-dollar mr-1.5"></i> Ayudantes</button>
-        <button class="tab-btn admin-only text-xs" data-tab="users" onclick="switchTab('users')"><i class="fa-solid fa-users mr-1.5"></i> Usuarios</button>
-        <button class="tab-btn admin-only text-xs" data-tab="stats" onclick="switchTab('stats')"><i class="fa-solid fa-chart-line mr-1.5"></i> Reportes</button>
+        <button type="button" class="tab-btn active text-xs" data-tab="pos" onclick="switchTab('pos')"><i class="fa-solid fa-cash-register mr-1.5"></i> POS</button>
+        <button type="button" class="tab-btn admin-only text-xs" data-tab="menu" onclick="switchTab('menu')"><i class="fa-solid fa-utensils mr-1.5"></i> Menú</button>
+        <button type="button" class="tab-btn admin-only text-xs" data-tab="stock" onclick="switchTab('stock')"><i class="fa-solid fa-boxes-stacked mr-1.5"></i> Stock</button>
+        <button type="button" class="tab-btn admin-only text-xs" data-tab="workers" onclick="switchTab('workers')"><i class="fa-solid fa-hand-holding-dollar mr-1.5"></i> Ayudantes</button>
+        <button type="button" class="tab-btn admin-only text-xs" data-tab="users" onclick="switchTab('users')"><i class="fa-solid fa-users mr-1.5"></i> Usuarios</button>
+        <button type="button" class="tab-btn admin-only text-xs" data-tab="stats" onclick="switchTab('stats')"><i class="fa-solid fa-chart-line mr-1.5"></i> Reportes</button>
       </nav>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 pb-24 lg:pb-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 pb-28 lg:pb-6">
 
       <!-- POS -->
       <section id="tab-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <div class="lg:col-span-2 space-y-3 sm:space-y-4">
           <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <div class="relative flex-1"><span class="absolute inset-y-0 left-0 pl-4 flex items-center text-zinc-500"><i class="fa-solid fa-search text-xs"></i></span>
-              <input id="searchProd" type="text" class="inp pl-11" placeholder="Buscar producto..." oninput="onSearchInput(this.value)"></div>
+              <input id="searchProd" type="text" class="inp pl-11" placeholder="Buscar producto..." oninput="onSearchInput(this.value)" autocapitalize="none" autocorrect="off"></div>
             <div id="posCategories" class="flex gap-2 overflow-x-auto pb-1 nav-scroll">
-              <button data-cat="todos" onclick="filterCategory('todos')" class="tab-btn active text-xs">Todos</button>
-              <button data-cat="slice" onclick="filterCategory('slice')" class="tab-btn text-xs">🍕 Slices</button>
-              <button data-cat="pizza" onclick="filterCategory('pizza')" class="tab-btn text-xs">🍕 Pizzas</button>
-              <button data-cat="bebida" onclick="filterCategory('bebida')" class="tab-btn text-xs">🥤 Bebidas</button>
-              <button data-cat="extra" onclick="filterCategory('extra')" class="tab-btn text-xs">✨ Extras</button>
-            </div>
-          </div>
-          <div id="posProductsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4"></div>
-        </div>
-
-        <!-- CARRITO DESKTOP -->
-        <div id="cartDesktop" class="hidden lg:flex card h-fit flex-col shadow-2xl sticky top-32">
-          <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-3">
-            <h3 class="font-bold text-sm flex items-center gap-2 text-white"><i class="fa-solid fa-receipt text-red-500"></i> Orden
-              <span id="cartCount" class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-bold">0</span></h3>
-            <button onclick="clearCart()" class="text-xs text-zinc-500 hover:text-red-400"><i class="fa-solid fa-trash mr-1"></i>Vaciar</button>
-          </div>
-          <div id="cartItemsList" class="space-y-2.5 max-h-72 overflow-y-auto mb-4 pr-1 text-xs"></div>
-          <div class="border-t border-zinc-800 pt-3 space-y-2 text-xs mb-3">
-            <div class="flex justify-between items-center text-zinc-400"><span>Descuento (%)</span>
-              <input id="cartDiscount" type="number" inputmode="decimal" min="0" max="100" step="1" value="0" oninput="syncDiscount('desktop')" class="w-16 text-right bg-zinc-900 border border-zinc-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-red-500"></div>
-            <div class="flex justify-between text-zinc-400"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
-            <div id="cartDiscountRow" class="hide flex justify-between text-amber-400 font-medium"><span>Descuento</span><span id="cartDiscountValue">-$0.00</span></div>
-            <div class="flex justify-between font-black text-xl pt-2 border-t border-zinc-800">
-              <span class="text-white">Total</span>
-              <span id="cartTotal" class="number-gradient">$0.00</span></div>
-          </div>
-          <div class="mb-3"><input id="orderNote" type="text" class="inp text-xs py-2.5" placeholder="📝 Nota / cliente (opcional)"></div>
-          <button onclick="openPaymentModal()" class="btn-red w-full"><i class="fa-solid fa-money-bill-wave mr-2"></i> Cobrar</button>
-        </div>
-      </section>
-
-      <!-- MENU -->
-      <section id="tab-menu" class="hide space-y-4 sm:space-y-6">
-        <div class="card">
-          <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-            <h3 class="font-bold text-base text-white"><i class="fa-solid fa-pizza-slice text-red-500 mr-2"></i> Menú</h3>
-            <button onclick="openProductModal()" class="btn-red text-xs"><i class="fa-solid fa-plus mr-1"></i> Nuevo</button>
-          </div>
-          <div id="adminMenuMobile" class="lg:hidden space-y-2"></div>
-          <div class="hidden lg:block overflow-x-auto"><table class="w-full text-left text-xs">
-            <thead class="bg-zinc-900/70 text-zinc-400 uppercase tracking-wider text-[10px]"><tr>
-              <th class="p-3 rounded-l-lg">Producto</th><th class="p-3">Categoría</th><th class="p-3">Precio</th><th class="p-3">Detalle</th><th class="p-3 text-right rounded-r-lg">Acciones</th>
-            </tr></thead><tbody id="adminMenuTable" class="divide-y divide-zinc-800"></tbody></table></div>
-        </div>
-      </section>
-
-      <!-- STOCK -->
-      <section id="tab-stock" class="hide space-y-4 sm:space-y-6">
-        <div class="card">
-          <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-            <h3 class="font-bold text-base text-white"><i class="fa-solid fa-boxes-stacked text-amber-500 mr-2"></i> Control de Stock</h3>
-            <button onclick="openStockModal()" class="btn-red text-xs"><i class="fa-solid fa-plus mr-1"></i> Agregar Item</button>
-          </div>
-          <div id="stockGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-        </div>
-      </section>
-
-      <!-- WORKERS -->
-      <section id="tab-workers" class="hide space-y-4 sm:space-y-6">
-        <div class="card">
-          <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-            <h3 class="font-bold text-base text-white"><i class="fa-solid fa-hand-holding-dollar text-emerald-500 mr-2"></i> Ayudantes</h3>
-            <button onclick="openWorkerModal()" class="btn-red text-xs"><i class="fa-solid fa-user-plus mr-1"></i> Nuevo Ayudante</button>
-          </div>
-          <div id="workersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-        </div>
-      </section>
-
-      <!-- USERS -->
-      <section id="tab-users" class="hide space-y-4 sm:space-y-6">
-        <div class="card">
-          <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-            <h3 class="font-bold text-base text-white"><i class="fa-solid fa-users text-blue-500 mr-2"></i> Usuarios</h3>
-            <button onclick="openUserModal()" class="btn-red text-xs"><i class="fa-solid fa-user-plus mr-1"></i> Nuevo Usuario</button>
-          </div>
-          <div id="usersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-        </div>
-
-        <!-- PIN MANAGEMENT -->
-        <div class="card mt-4">
-          <h3 class="font-bold text-sm text-white mb-3">
-            <i class="fa-solid fa-key text-amber-400 mr-2"></i> PIN de acceso rápido
-          </h3>
-          <div class="flex flex-wrap gap-2 items-center">
-            <div class="flex-1 min-w-[140px] bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-center">
-              <div id="currentPinDisplay" class="text-2xl font-black tracking-[0.35em] number-gradient pl-[0.35em]">----</div>
-            </div>
-            <button onclick="regeneratePin()" class="btn-amber text-xs">
-              <i class="fa-solid fa-rotate mr-1"></i> Regenerar
-            </button>
-            <button onclick="showCurrentPin()" class="btn-gray text-xs">
-              <i class="fa-solid fa-eye mr-1"></i> Ver
-            </button>
-          </div>
-          <p class="text-[11px] text-zinc-500 mt-2">Si regeneras el PIN, el anterior dejará de funcionar.</p>
-        </div>
-      </section>
-
-      <!-- STATS -->
-      <section id="tab-stats" class="hide space-y-4 sm:space-y-6">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div class="card stat-card overflow-hidden"><p class="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold mb-1">Ventas Hoy</p><p id="statSalesToday" class="text-2xl sm:text-3xl font-black number-gradient">$0.00</p></div>
-          <div class="card stat-card overflow-hidden"><p class="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold mb-1">Órdenes Hoy</p><p id="statOrdersToday" class="text-2xl sm:text-3xl font-black number-gradient">0</p></div>
-          <div class="card stat-card overflow-hidden"><p class="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold mb-1">Ticket Promedio</p><p id="statAvgTicket" class="text-2xl sm:text-3xl font-black number-gradient">$0.00</p></div>
-          <div class="card stat-card overflow-hidden"><p class="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold mb-1">Total Mes</p><p id="statSalesMonth" class="text-2xl sm:text-3xl font-black number-gradient">$0.00</p></div>
-        </div>
-        <div class="card">
-          <h3 class="font-bold text-base text-white mb-4"><i class="fa-solid fa-clock-rotate-left text-red-500 mr-2"></i> Historial de Ventas</h3>
-          <div id="salesHistoryList" class="space-y-2 max-h-96 overflow-y-auto"></div>
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <!-- Contenedor de modales y elementos dinámicos irá aquí -->
-
-<script>
-/* ============================================================
-   AUTENTICACIÓN PERSISTENTE + PIN + LOGOUT iOS-SAFE
-   ============================================================ */
-
-const AUTH = {
-  SESSION_KEY: 'bp_session_v1',
-  PIN_KEY:     'bp_pin_v1',
-
-  getSession() {
-    try { return JSON.parse(localStorage.getItem(this.SESSION_KEY) || 'null'); }
-    catch (e) { return null; }
-  },
-  setSession(data) {
-    try { localStorage.setItem(this.SESSION_KEY, JSON.stringify(data)); } catch (e) {}
-  },
-  clearSession() {
-    try { localStorage.removeItem(this.SESSION_KEY); } catch (e) {}
-  },
-  getPin() {
-    try { return localStorage.getItem(this.PIN_KEY); } catch (e) { return null; }
-  },
-  setPin(pin) {
-    try { localStorage.setItem(this.PIN_KEY, pin); } catch (e) {}
-  },
-  clearPin() {
-    try { localStorage.removeItem(this.PIN_KEY); } catch (e) {}
-  },
-  generatePin() {
-    return String(Math.floor(1000 + Math.random() * 9000));
-  }
-};
-
-/* ---------- VALIDACIÓN DE CREDENCIALES ---------- */
-/* 👇 REEMPLAZA con tu lógica real (Firebase, lista de usuarios, etc.) */
-function validateCredentials(user, pass) {
-  // Ejemplo básico. Cambia esto por tu validación real:
-  return user === 'admin' && pass === 'admin123';
-}
-
-/* ---------- MOSTRAR PANTALLAS ---------- */
-function showLoginScreen() {
-  document.getElementById('loginScreen').classList.remove('hide');
-  document.getElementById('pinScreen').classList.add('hide');
-  document.getElementById('appScreen').classList.add('hide');
-}
-function showPinScreen() {
-  document.getElementById('loginScreen').classList.add('hide');
-  document.getElementById('pinScreen').classList.remove('hide');
-  document.getElementById('appScreen').classList.add('hide');
-  enteredPin = '';
-  updatePinDots();
-  document.getElementById('pinError').classList.add('hide');
-}
-function showAppScreen() {
-  document.getElementById('loginScreen').classList.add('hide');
-  document.getElementById('pinScreen').classList.add('hide');
-  document.getElementById('appScreen').classList.remove('hide');
-}
-function enterApp(user) {
-  showAppScreen();
-  if (typeof initApp === 'function') initApp();
-}
-
-/* ---------- LOGIN (usuario + contraseña) ---------- */
-function handleLogin() {
-  const user = (document.getElementById('loginUser').value || '').trim();
-  const pass = (document.getElementById('loginPass').value || '').trim();
-  const errEl = document.getElementById('loginError');
-
-  if (!user || !pass) {
-    errEl.textContent = 'Completa usuario y contraseña';
-    errEl.classList.remove('hide');
-    return;
-  }
-  if (!validateCredentials(user, pass)) {
-    errEl.textContent = 'Credenciales incorrectas';
-    errEl.classList.remove('hide');
-    return;
-  }
-  errEl.classList.add('hide');
-
-  AUTH.setSession({ user, ts: Date.now() });
-
-  let pin = AUTH.getPin();
-  if (!pin) {
-    pin = AUTH.generatePin();
-    AUTH.setPin(pin);
-    document.getElementById('newPinDisplay').textContent = pin;
-    document.getElementById('pinSetupModal').classList.remove('hide');
-  } else {
-    enterApp(user);
-  }
-}
-
-/* ---------- MODAL DEL PIN NUEVO ---------- */
-function closePinSetup() {
-  document.getElementById('pinSetupModal').classList.add('hide');
-  enterApp((AUTH.getSession() || {}).user || 'admin');
-}
-function copyPin() {
-  const pin = AUTH.getPin();
-  if (!pin) return;
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(pin).catch(() => {});
-  } else {
-    const t = document.createElement('textarea');
-    t.value = pin; document.body.appendChild(t);
-    t.select(); try { document.execCommand('copy'); } catch (e) {}
-    document.body.removeChild(t);
-  }
-}
-
-/* ---------- TECLADO PIN ---------- */
-let enteredPin = '';
-
-function pinDigit(d) {
-  if (enteredPin.length >= 4) return;
-  enteredPin += d;
-  updatePinDots();
-  if (enteredPin.length === 4) setTimeout(checkPin, 180);
-}
-function pinDelete() {
-  enteredPin = enteredPin.slice(0, -1);
-  updatePinDots();
-}
-function updatePinDots() {
-  document.querySelectorAll('#pinDots .pin-dot').forEach((dot, i) => {
-    dot.classList.toggle('filled', i < enteredPin.length);
-  });
-}
-function checkPin() {
-  const stored = AUTH.getPin();
-  if (enteredPin === stored) {
-    enterApp((AUTH.getSession() || {}).user || 'admin');
-  } else {
-    document.getElementById('pinError').classList.remove('hide');
-    const dots = document.querySelectorAll('#pinDots .pin-dot');
-    dots.forEach(d => d.classList.add('error'));
-    setTimeout(() => {
-      enteredPin = '';
-      updatePinDots();
-      dots.forEach(d => d.classList.remove('error'));
-    }, 550);
-  }
-}
-function switchToLogin() {
-  showLoginScreen();
-}
-
-/* ---------- LOGOUT iOS-SAFE ---------- */
-function handleLogout() {
-  if (!confirm('¿Cerrar sesión?')) return;
-
-  AUTH.clearSession();
-  AUTH.clearPin();
-  enteredPin = '';
-
-  try {
-    ['loginUser','loginPass'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = '';
-    });
-  } catch (e) {}
-
-  const cleanPath = window.location.pathname;
-  const bust = cleanPath + '?logout=' + Date.now();
-
-  try {
-    window.location.replace(bust);
-  } catch (e) {
-    window.location.href = bust;
-  }
-
-  setTimeout(() => { window.location.reload(); }, 300);
-}
-
-/* ---------- PIN MANAGEMENT (en sección Usuarios) ---------- */
-function showCurrentPin() {
-  const pin = AUTH.getPin() || '----';
-  document.getElementById('currentPinDisplay').textContent = pin;
-}
-function regeneratePin() {
-  if (!confirm('¿Regenerar PIN? El anterior ya no funcionará.')) return;
-  const newPin = AUTH.generatePin();
-  AUTH.setPin(newPin);
-  document.getElementById('currentPinDisplay').textContent = newPin;
-  document.getElementById('newPinDisplay').textContent = newPin;
-  document.getElementById('pinSetupModal').classList.remove('hide');
-}
-
-/* ---------- INICIALIZACIÓN AL CARGAR ---------- */
-(function initAuth() {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('logout')) {
-      params.delete('logout');
-      const q = params.toString();
-      history.replaceState(null, '', window.location.pathname + (q ? '?' + q : ''));
-    }
-  } catch (e) {}
-
-  const session = AUTH.getSession();
-  const pin = AUTH.getPin();
-
-  if (session && pin) {
-    showPinScreen();
-  } else {
-    showLoginScreen();
-  }
-})();
-
-/* ============================================================
-   APP PRINCIPAL (integrado con tu sistema existente)
-   ============================================================ */
-function initApp() {
-  // Aquí va tu lógica de inicialización del panel
-  console.log('✅ App iniciada para:', (AUTH.getSession() || {}).user);
-  if (typeof startClock === 'function') startClock();
-}
-
-function startClock() {
-  const el = document.getElementById('clockDisplay');
-  if (!el) return;
-  setInterval(() => {
-    const now = new Date();
-    el.textContent = now.toLocaleString('es-EC', { hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short' });
-  }, 1000);
-}
-
-/* Placeholders de las funciones de UI (reemplaza con tu lógica real) */
-function switchTab(tab) {
-  document.querySelectorAll('main > section').forEach(s => s.classList.add('hide'));
-  const el = document.getElementById('tab-' + tab);
-  if (el) el.classList.remove('hide');
-  document.querySelectorAll('#appNav .tab-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.tab === tab);
-  });
-}
-function onSearchInput() {}
-function filterCategory() {}
-function clearCart() {}
-function syncDiscount() {}
-function openPaymentModal() {}
-function openProductModal() {}
-function openStockModal() {}
-function openWorkerModal() {}
-function openUserModal() {}
-</script>
-</body>
-</html>
+              <button type="button" data-cat="todos" onclick="filterCategory('todos')" class="tab-btn active text-xs">Todos</button>
+              <button type="button" data-cat="slice" onclick="filterCategory('slice')" class
