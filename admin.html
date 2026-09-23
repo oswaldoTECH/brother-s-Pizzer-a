@@ -114,6 +114,32 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .caja-status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 .caja-open { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.35); }
 .caja-closed { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
+.cat-card { display: flex; flex-direction: column; align-items: flex-start; padding: 12px 14px; border-radius: 14px; border: 1px solid #27272a; background: rgba(24,24,27,0.6); cursor: pointer; transition: all .25s; min-height: 72px; text-align: left; }
+.cat-card:hover { border-color: #52525b; transform: translateY(-2px); }
+.cat-card.active { background: linear-gradient(135deg, #ef4444, #dc2626); border-color: transparent; box-shadow: 0 6px 20px rgba(220,38,38,0.45); }
+.cat-card.active .cat-title, .cat-card.active .cat-count, .cat-card.active .cat-emoji { color: #fff !important; }
+.cat-card.sky { border-color: rgba(14,165,233,0.3); }
+.cat-card.sky .cat-title { color: #38bdf8; }
+.cat-card.sky .cat-count { color: #7dd3fc; }
+.cat-card.blue { border-color: rgba(59,130,246,0.3); }
+.cat-card.blue .cat-title { color: #60a5fa; }
+.cat-card.blue .cat-count { color: #93c5fd; }
+.cat-card.amber { border-color: rgba(245,158,11,0.3); }
+.cat-card.amber .cat-title { color: #fbbf24; }
+.cat-card.amber .cat-count { color: #fcd34d; }
+.cat-card.red { border-color: rgba(239,68,68,0.3); }
+.cat-card.red .cat-title { color: #f87171; }
+.cat-card.red .cat-count { color: #fca5a5; }
+.cat-card.fuchsia { border-color: rgba(217,70,239,0.3); }
+.cat-card.fuchsia .cat-title { color: #e879f9; }
+.cat-card.fuchsia .cat-count { color: #f0abfc; }
+.stock-filter-card { display: flex; flex-direction: column; align-items: flex-start; padding: 12px 14px; border-radius: 14px; border: 1px solid #27272a; background: rgba(24,24,27,0.6); cursor: pointer; transition: all .25s; text-align: left; }
+.stock-filter-card:hover { transform: translateY(-2px); }
+.stock-filter-card.active { box-shadow: 0 0 0 2px rgba(239,68,68,0.5); }
+.cat-section-header { display: flex; align-items: center; gap: 10px; margin-top: 16px; margin-bottom: 10px; }
+.cat-section-header:first-child { margin-top: 0; }
+.cat-section-header h3 { font-weight: 800; font-size: 14px; }
+.cat-section-header .line { flex: 1; height: 1px; background: #27272a; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -172,17 +198,11 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 <!-- POS -->
 <section id="tab-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 <div class="lg:col-span-2 space-y-3 sm:space-y-4">
-<div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-<div class="relative flex-1"><span class="absolute inset-y-0 left-0 pl-4 flex items-center text-zinc-500"><i class="fa-solid fa-search text-xs"></i></span>
-<input id="searchProd" type="text" class="inp pl-11" placeholder="Buscar producto..." oninput="onSearchInput(this.value)"></div>
-<div id="posCategories" class="flex gap-2 overflow-x-auto pb-1 nav-scroll">
-<button data-cat="todos" onclick="filterCategory('todos')" class="tab-btn active text-xs">Todos</button>
-<button data-cat="slice" onclick="filterCategory('slice')" class="tab-btn text-xs">🍕 Slices</button>
-<button data-cat="pizza" onclick="filterCategory('pizza')" class="tab-btn text-xs">🍕 Pizzas</button>
-<button data-cat="bebida" onclick="filterCategory('bebida')" class="tab-btn text-xs">🥤 Bebidas</button>
-<button data-cat="extra" onclick="filterCategory('extra')" class="tab-btn text-xs">✨ Extras</button>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-4 flex items-center text-zinc-500"><i class="fa-solid fa-search text-xs"></i></span>
+<input id="searchProd" type="text" class="inp pl-11" placeholder="Buscar producto..." oninput="onSearchInput(this.value)">
 </div>
-</div>
+<div id="posCategories" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2"></div>
 <div id="posProductsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4"></div>
 </div>
 <div id="cartDesktop" class="hidden lg:flex card h-fit flex-col shadow-2xl sticky top-32">
@@ -236,14 +256,28 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
 <!-- STOCK -->
 <section id="tab-stock" class="hide space-y-4 sm:space-y-6">
-<div class="grid grid-cols-3 gap-2 sm:gap-4">
-<div class="card stat-card border-sky-500/20 !p-3 sm:!p-4"><p class="text-[9px] sm:text-[10px] text-sky-400 uppercase font-bold tracking-wider mb-1"><i class="fa-solid fa-boxes-stacked mr-1"></i>Insumos</p><h3 id="stockTotalItems" class="text-2xl sm:text-3xl font-black text-sky-400">0</h3></div>
-<div class="card stat-card border-amber-500/20 !p-3 sm:!p-4"><p class="text-[9px] sm:text-[10px] text-amber-400 uppercase font-bold tracking-wider mb-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Bajo</p><h3 id="stockLowCount" class="text-2xl sm:text-3xl font-black text-amber-400">0</h3></div>
-<div class="card stat-card border-red-500/20 !p-3 sm:!p-4"><p class="text-[9px] sm:text-[10px] text-red-400 uppercase font-bold tracking-wider mb-1"><i class="fa-solid fa-circle-xmark mr-1"></i>Agotado</p><h3 id="stockOutCount" class="text-2xl sm:text-3xl font-black text-red-400">0</h3></div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+<button onclick="setStockFilter('todos')" data-stockfilter="todos" class="stock-filter-card active">
+<div class="flex items-center gap-2 mb-1"><i class="fa-solid fa-boxes-stacked text-sky-400 text-sm"></i><span class="text-[10px] text-sky-400 uppercase font-bold tracking-wider">Total</span></div>
+<h3 id="stockTotalItems" class="text-2xl sm:text-3xl font-black text-sky-400">0</h3>
+</button>
+<button onclick="setStockFilter('ok')" data-stockfilter="ok" class="stock-filter-card">
+<div class="flex items-center gap-2 mb-1"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i><span class="text-[10px] text-emerald-400 uppercase font-bold tracking-wider">OK</span></div>
+<h3 id="stockOkCount" class="text-2xl sm:text-3xl font-black text-emerald-400">0</h3>
+</button>
+<button onclick="setStockFilter('bajo')" data-stockfilter="bajo" class="stock-filter-card">
+<div class="flex items-center gap-2 mb-1"><i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm"></i><span class="text-[10px] text-amber-400 uppercase font-bold tracking-wider">Bajo</span></div>
+<h3 id="stockLowCount" class="text-2xl sm:text-3xl font-black text-amber-400">0</h3>
+</button>
+<button onclick="setStockFilter('agotado')" data-stockfilter="agotado" class="stock-filter-card">
+<div class="flex items-center gap-2 mb-1"><i class="fa-solid fa-circle-xmark text-red-400 text-sm"></i><span class="text-[10px] text-red-400 uppercase font-bold tracking-wider">Agotado</span></div>
+<h3 id="stockOutCount" class="text-2xl sm:text-3xl font-black text-red-400">0</h3>
+</button>
 </div>
+
 <div class="card">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-<h3 class="font-bold text-base text-white"><i class="fa-solid fa-warehouse text-red-500 mr-2"></i> Inventario</h3>
+<h3 class="font-bold text-base text-white"><i class="fa-solid fa-warehouse text-red-500 mr-2"></i> Inventario <span id="stockFilterLabel" class="text-xs text-zinc-500 font-normal ml-2"></span></h3>
 <div class="flex gap-2 flex-wrap flex-1 sm:flex-none">
 <input id="searchStock" type="text" class="inp text-xs py-2 flex-1 sm:max-w-[200px]" placeholder="Buscar..." oninput="renderStock()">
 <button onclick="openStockModal()" class="btn-red text-xs"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline ml-1">Nuevo</span></button>
@@ -251,9 +285,10 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 <div id="stockGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"></div>
 </div>
+
 <div class="card">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-3">
-<h3 class="font-bold text-base text-white"><i class="fa-solid fa-clock-rotate-left text-red-500 mr-2"></i> Historial Stock</h3>
+<h3 class="font-bold text-base text-white"><i class="fa-solid fa-clock-rotate-left text-red-500 mr-2"></i> Historial</h3>
 <div class="flex gap-2 flex-wrap flex-1 sm:flex-none">
 <select id="stockHistFilterCajero" onchange="renderStockHistory()" class="inp text-xs py-2 flex-1 sm:max-w-[180px]"><option value="">👤 Todos</option></select>
 <select id="stockHistFilterType" onchange="renderStockHistory()" class="inp text-xs py-2 flex-1 sm:max-w-[150px]"><option value="">📋 Todos</option><option value="entrada">⬇ Entradas</option><option value="salida">⬆ Salidas</option></select>
@@ -310,7 +345,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 <div class="card">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-<h3 class="font-bold text-sm text-white"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial Ventas</h3>
+<h3 class="font-bold text-sm text-white"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial</h3>
 <div class="flex gap-2">
 <button onclick="exportSalesCSV()" class="btn-gray text-xs"><i class="fa-solid fa-file-csv mr-1"></i><span class="hidden sm:inline">CSV</span></button>
 <button onclick="clearSales()" class="btn-gray text-xs text-red-400"><i class="fa-solid fa-trash mr-1"></i><span class="hidden sm:inline">Borrar</span></button>
@@ -359,7 +394,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </div>
 
-<!-- MODAL PRODUCTO (con imagen) -->
 <div id="productModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
 <div class="glass w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up max-h-[92dvh] overflow-y-auto">
 <div class="drag-handle"></div>
@@ -369,7 +403,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Nombre</label><input id="prodName" type="text" class="inp" placeholder="Ej. Pizza Mediana"></div>
 <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Imagen (URL externa)</label>
 <input id="prodImagen" type="url" class="inp" placeholder="https://ejemplo.com/pizza.jpg" oninput="previewProdImage(this.value)">
-<p class="text-[10px] text-zinc-500 mt-1">Pega una URL de imagen (Imgur, Cloudinary, Google Drive, etc.). Si está vacío se usará el emoji.</p>
+<p class="text-[10px] text-zinc-500 mt-1">Pega una URL de imagen (Imgur, Cloudinary, etc.). Si está vacío se usará el emoji.</p>
 <div id="prodImagePreview" class="hide mt-2 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950" style="max-height:150px;"><img id="prodImagePreviewImg" src="" alt="preview" style="width:100%;height:150px;object-fit:cover;"></div>
 </div>
 <div class="grid grid-cols-2 gap-3">
@@ -384,7 +418,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </div>
 
-<!-- MODAL ABRIR CAJA -->
 <div id="cajaOpenModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
 <div class="glass w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up">
 <div class="drag-handle"></div>
@@ -409,7 +442,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </div>
 
-<!-- MODAL MOVIMIENTO CAJA -->
 <div id="cajaMovementModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
 <div class="glass w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up">
 <div class="drag-handle"></div>
@@ -430,7 +462,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </div>
 
-<!-- MODAL CERRAR CAJA -->
 <div id="cajaCloseModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
 <div class="glass w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up max-h-[92dvh] overflow-y-auto">
 <div class="drag-handle"></div>
@@ -447,7 +478,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </div>
 
-<!-- MODAL STOCK -->
 <div id="stockModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
 <div class="glass w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up max-h-[92dvh] overflow-y-auto">
 <div class="drag-handle"></div>
@@ -701,6 +731,7 @@ let salesRange = 'hoy';
 let payMethod = 'efectivo';
 let movementType = 'entrada';
 let cajaMovementType = 'ingreso';
+let stockFilter = 'todos';
 let searchTimer = null;
 let confirmResolver = null;
 
@@ -744,6 +775,7 @@ function closeCustomAlert() { document.getElementById('customAlertModal').classL
 function init() {
 if (session) showApp(); else showLogin();
 setupFirebaseListeners();
+renderPosCategories();
 renderCart();
 startClock();
 setupKeyboard();
@@ -806,7 +838,7 @@ window.addEventListener('appinstalled', () => { installBanner.classList.add('hid
 }
 
 function setupFirebaseListeners() {
-db.ref('menu').on('value', s => { const v=s.val(); if(v) menuData=v; else { db.ref('menu').set(DEFAULT_MENU); menuData=DEFAULT_MENU; } renderPosProducts(); renderAdminMenu(); });
+db.ref('menu').on('value', s => { const v=s.val(); if(v) menuData=v; else { db.ref('menu').set(DEFAULT_MENU); menuData=DEFAULT_MENU; } renderPosCategories(); renderPosProducts(); renderAdminMenu(); });
 db.ref('users').on('value', s => { const v=s.val(); if(v) usersData=v; else { db.ref('users').set(DEFAULT_USERS); usersData=DEFAULT_USERS; } renderAdminUsers(); });
 db.ref('sales').on('value', s => { salesData = s.val() || {}; renderSales(); });
 db.ref('stock').on('value', s => { const v=s.val(); if(v) stockData=v; else { db.ref('stock').set(DEFAULT_STOCK); stockData=DEFAULT_STOCK; } renderStock(); });
@@ -856,21 +888,44 @@ if (fab) fab.classList.toggle('hide', tab !== 'pos');
 }
 
 /* ==================== POS ==================== */
+function renderPosCategories() {
+const grid = document.getElementById('posCategories');
+if (!grid) return;
+const cats = [
+{ key: 'todos', label: 'Todos', emoji: '📋', cls: 'sky' },
+{ key: 'bebida', label: 'Bebidas', emoji: '🥤', cls: 'blue' },
+{ key: 'slice', label: 'Slices', emoji: '🍕', cls: 'amber' },
+{ key: 'pizza', label: 'Pizzas', emoji: '🍕', cls: 'red' },
+{ key: 'extra', label: 'Extras', emoji: '✨', cls: 'fuchsia' }
+];
+const counts = { todos: 0, slice: 0, pizza: 0, bebida: 0, extra: 0 };
+Object.values(menuData).forEach(p => {
+counts.todos++;
+if (counts[p.categoria] !== undefined) counts[p.categoria]++;
+});
+grid.innerHTML = cats.map(c => {
+const active = currentCategoryFilter === c.key;
+return `<button onclick="filterCategory('${c.key}')" class="cat-card ${active ? 'active' : c.cls}">
+<div class="flex items-center gap-1.5 w-full">
+<span class="cat-emoji text-lg">${c.emoji}</span>
+<span class="cat-title font-bold text-xs">${c.label}</span>
+</div>
+<div class="cat-count text-2xl font-black mt-0.5 w-full text-left">${counts[c.key] || 0}</div>
+</button>`;
+}).join('');
+}
 function filterCategory(cat) {
 currentCategoryFilter = cat;
-document.querySelectorAll('#posCategories .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+renderPosCategories();
 renderPosProducts(document.getElementById('searchProd').value);
 }
 function onSearchInput(value) { clearTimeout(searchTimer); searchTimer = setTimeout(() => renderPosProducts(value), 120); }
-function renderPosProducts(filter='') {
-const grid = document.getElementById('posProductsGrid'); if (!grid) return;
-const f = filter.toLowerCase().trim();
-let items = Object.entries(menuData).map(([key, item]) => ({ ...item, firebaseKey: key }));
-let filtered = items.filter(p => (p.nombre||'').toLowerCase().includes(f));
-if (currentCategoryFilter !== 'todos') filtered = filtered.filter(p => p.categoria === currentCategoryFilter);
-grid.innerHTML = filtered.map(p => {
+
+function productCardHTML(p) {
 const emoji = p.emoji || (p.categoria==='bebida'?'🥤':p.categoria==='extra'?'🧀':'🍕');
-const media = p.imagen ? `<img src="${esc(p.imagen)}" alt="${esc(p.nombre)}" loading="lazy" onerror="this.parentElement.innerHTML='<span style=&quot;font-size:2rem;&quot;>${emoji}</span>'">` : `<span class="text-3xl sm:text-4xl">${emoji}</span>`;
+const media = p.imagen
+? `<img src="${esc(p.imagen)}" alt="${esc(p.nombre)}" loading="lazy" onerror="this.parentElement.innerHTML='<span style=&quot;font-size:2rem;&quot;>${emoji}</span>'">`
+: `<span class="text-3xl sm:text-4xl">${emoji}</span>`;
 return `
 <div onclick="addToCart('${esc(p.firebaseKey)}')" class="card prod-card p-2.5 sm:p-3.5 flex flex-col justify-between">
 <div>
@@ -884,8 +939,53 @@ return `
 <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-red-600/15 text-red-500 flex items-center justify-center text-xs"><i class="fa-solid fa-plus"></i></span>
 </div>
 </div>`;
-}).join('') || '<p class="col-span-full text-center text-zinc-500 text-xs py-10">No se encontraron productos</p>';
 }
+
+function renderPosProducts(filter='') {
+const grid = document.getElementById('posProductsGrid'); if (!grid) return;
+const f = filter.toLowerCase().trim();
+let items = Object.entries(menuData).map(([key, item]) => ({ ...item, firebaseKey: key }));
+let filtered = items.filter(p => (p.nombre||'').toLowerCase().includes(f));
+if (currentCategoryFilter !== 'todos') filtered = filtered.filter(p => p.categoria === currentCategoryFilter);
+
+const order = { bebida: 0, slice: 1, pizza: 2, extra: 3 };
+filtered.sort((a, b) => {
+const oa = order[a.categoria] ?? 9;
+const ob = order[b.categoria] ?? 9;
+if (oa !== ob) return oa - ob;
+return (a.nombre||'').localeCompare(b.nombre||'');
+});
+
+if (filtered.length === 0) {
+grid.innerHTML = '<p class="col-span-full text-center text-zinc-500 text-xs py-10">No se encontraron productos</p>';
+return;
+}
+
+let html = '';
+if (currentCategoryFilter === 'todos' && !f) {
+const grouped = { bebida: [], slice: [], pizza: [], extra: [] };
+filtered.forEach(p => { if (grouped[p.categoria]) grouped[p.categoria].push(p); });
+const sections = [
+{ key: 'bebida', label: 'Bebidas', emoji: '🥤', color: 'text-blue-400' },
+{ key: 'slice', label: 'Slices', emoji: '🍕', color: 'text-amber-400' },
+{ key: 'pizza', label: 'Pizzas Enteras', emoji: '🍕', color: 'text-red-400' },
+{ key: 'extra', label: 'Extras', emoji: '✨', color: 'text-fuchsia-400' }
+];
+sections.forEach(sec => {
+if (grouped[sec.key].length === 0) return;
+html += `<div class="col-span-full cat-section-header">
+<h3 class="${sec.color}">${sec.emoji} ${sec.label}</h3>
+<span class="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full font-bold">${grouped[sec.key].length}</span>
+<div class="line"></div>
+</div>`;
+html += grouped[sec.key].map(p => productCardHTML(p)).join('');
+});
+} else {
+html = filtered.map(p => productCardHTML(p)).join('');
+}
+grid.innerHTML = html;
+}
+
 function persistCart() { localStorage.setItem('bp_cart', JSON.stringify(cart)); }
 function addToCart(firebaseKey) {
 const item = menuData[firebaseKey]; if (!item) return;
@@ -991,7 +1091,6 @@ items: cart.map(c => ({ nombre:c.nombre, precio:c.precio, qty:c.qty, categoria:c
 subtotal, discountPct:dPct, discount:discountVal, total, payment:payMethod, received, change,
 note, cajero: session.name, cajaId: cajaData.id || null };
 db.ref('sales').push(newSale);
-// Actualizar total de caja
 if (payMethod === 'efectivo') {
 const key = cajaData._key;
 if (key) {
@@ -1253,7 +1352,7 @@ db.ref('caja').remove();
 closeCajaCloseModal();
 toast('Caja cerrada correctamente', 'success');
 setTimeout(() => {
-const difTxt = Math.abs(diferencia) < 0.01 ? '✓ Cuadra perfecto' : (diferencia > 0 ? `Sobran ${money(diferencia)}` : `Faltan ${money(Math.abs(diferencia))}`);
+const difTxt = Math.abs(diferencia) < 0.01 ? '✓ Cuadra perfecto' : (diferencia > 0 ? `Sobran ${money(diferencia)}` : `Faltan ${Math.abs(diferencia)}`);
 showAlert('Caja Cerrada', `Esperado: ${money(esperado)} · Contado: ${money(contado)} · ${difTxt}`, false);
 }, 300);
 }
@@ -1352,7 +1451,7 @@ img.onload = () => { wrap.classList.remove('hide'); };
 }
 function renderAdminMenu() {
 const items = Object.entries(menuData).sort((a,b)=>(a[1].categoria||'').localeCompare(b[1].categoria||''));
-const mediaHTML = (p) => p.imagen ? `<img src="${esc(p.imagen)}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:8px;" onerror="this.outerHTML='<span style=\\'font-size:24px;\\'>${p.emoji||'🍕'}</span>'">` : `<span style="font-size:24px;">${p.emoji || '🍕'}</span>`;
+const mediaHTML = (p) => p.imagen ? `<img src="${esc(p.imagen)}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='<span style=\\'font-size:24px;\\'>${p.emoji||'🍕'}</span>'">` : `<span style="font-size:24px;">${p.emoji || '🍕'}</span>`;
 const rowHTML = (key, p) => `
 <tr class="hover:bg-zinc-900/50 transition">
 <td class="p-3"><div class="w-10 h-10 rounded-lg bg-zinc-950 flex items-center justify-center overflow-hidden">${mediaHTML(p)}</div></td>
@@ -1426,19 +1525,66 @@ db.ref('menu/'+key).remove(); toast('Producto eliminado', 'info');
 }
 
 /* ==================== STOCK ==================== */
+function setStockFilter(f) {
+stockFilter = f;
+document.querySelectorAll('[data-stockfilter]').forEach(b => {
+const isActive = b.dataset.stockfilter === f;
+b.classList.toggle('active', isActive);
+});
+const labels = { todos: '', ok: '· Mostrando: OK', bajo: '· Mostrando: BAJO', agotado: '· Mostrando: AGOTADOS' };
+const lbl = document.getElementById('stockFilterLabel');
+if (lbl) lbl.textContent = labels[f] || '';
+renderStock();
+}
 function renderStock() {
 const grid = document.getElementById('stockGrid'); if (!grid) return;
 const search = (document.getElementById('searchStock')?.value || '').toLowerCase();
-const items = Object.entries(stockData).filter(([k,v]) => (v.nombre||'').toLowerCase().includes(search));
-let lowCount = 0, outCount = 0;
+
+let totalCount = 0, lowCount = 0, outCount = 0, okCount = 0;
 Object.values(stockData).forEach(s => {
-if (Number(s.cantidad) <= 0) outCount++;
-else if (Number(s.cantidad) <= Number(s.minimo||0)) lowCount++;
+const qty = Number(s.cantidad) || 0;
+const min = Number(s.minimo) || 0;
+totalCount++;
+if (qty <= 0) outCount++;
+else if (qty <= min) lowCount++;
+else okCount++;
 });
-document.getElementById('stockTotalItems').textContent = Object.keys(stockData).length;
+document.getElementById('stockTotalItems').textContent = totalCount;
 document.getElementById('stockLowCount').textContent = lowCount;
 document.getElementById('stockOutCount').textContent = outCount;
-if (items.length === 0) { grid.innerHTML = '<p class="col-span-full text-center text-zinc-500 text-xs py-10">Sin insumos</p>'; return; }
+const okEl = document.getElementById('stockOkCount');
+if (okEl) okEl.textContent = okCount;
+
+let items = Object.entries(stockData).filter(([k, v]) => (v.nombre||'').toLowerCase().includes(search));
+if (stockFilter === 'ok') items = items.filter(([k, s]) => (Number(s.cantidad)||0) > (Number(s.minimo)||0));
+else if (stockFilter === 'bajo') {
+items = items.filter(([k, s]) => {
+const q = Number(s.cantidad)||0;
+const m = Number(s.minimo)||0;
+return q > 0 && q <= m;
+});
+} else if (stockFilter === 'agotado') {
+items = items.filter(([k, s]) => (Number(s.cantidad)||0) <= 0);
+}
+
+items.sort((a, b) => {
+const qa = Number(a[1].cantidad)||0; const ma = Number(a[1].minimo)||0;
+const qb = Number(b[1].cantidad)||0; const mb = Number(b[1].minimo)||0;
+const sa = qa <= 0 ? 0 : (qa <= ma ? 1 : 2);
+const sb = qb <= 0 ? 0 : (qb <= mb ? 1 : 2);
+if (sa !== sb) return sa - sb;
+return (a[1].nombre||'').localeCompare(b[1].nombre||'');
+});
+
+if (items.length === 0) {
+const msg = stockFilter === 'todos' ? 'Sin insumos' :
+stockFilter === 'ok' ? '✅ Todo en buen estado' :
+stockFilter === 'bajo' ? '✅ Sin insumos bajos' :
+'✅ Sin insumos agotados';
+grid.innerHTML = `<p class="col-span-full text-center text-zinc-500 text-xs py-10">${msg}</p>`;
+return;
+}
+
 grid.innerHTML = items.map(([key, s]) => {
 const qty = Number(s.cantidad) || 0;
 const min = Number(s.minimo) || 0;
@@ -1925,7 +2071,6 @@ db.ref('sales').remove();
 toast('Historial eliminado', 'info');
 }
 
-/* ==================== INIT ==================== */
 window.addEventListener('load', init);
 </script>
 <script>
