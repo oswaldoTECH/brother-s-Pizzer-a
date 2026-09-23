@@ -54,7 +54,8 @@ select.inp { appearance: none; -webkit-appearance: none; background-image: url("
 .prod-card { cursor: pointer; transition: all .25s; }
 .prod-card:active { transform: scale(.97); }
 @media (min-width: 1024px) { .prod-card:hover { transform: translateY(-4px); border-color: rgba(239,68,68,0.6) !important; box-shadow: 0 20px 40px -12px rgba(220,38,38,0.35); } }
-.prod-emoji-box { background: linear-gradient(135deg, #1a1a20, #0e0e11); transition: all .35s; }
+.prod-emoji-box { background: linear-gradient(135deg, #1a1a20, #0e0e11); transition: all .35s; overflow: hidden; }
+.prod-emoji-box img { width: 100%; height: 100%; object-fit: cover; }
 .glow-red { box-shadow: 0 0 30px rgba(220,38,38,0.4); }
 .glow-green { box-shadow: 0 0 30px rgba(16,185,129,0.4); }
 .pizza-float { animation: float 4s ease-in-out infinite; }
@@ -110,6 +111,9 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .ios-instructions-content h3 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 16px; }
 .ios-instructions-content ol { text-align: left; color: #d4d4d8; font-size: 13px; line-height: 1.8; padding-left: 20px; margin-bottom: 16px; }
 .ios-instructions-content ol strong { color: #fbbf24; }
+.caja-status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.caja-open { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.35); }
+.caja-closed { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -147,12 +151,14 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </div>
 <div class="flex items-center gap-2 shrink-0">
+<div id="cajaHeaderBadge" class="hidden sm:flex"></div>
 <div id="clockDisplay" class="hidden md:flex text-[11px] text-zinc-400 font-mono bg-zinc-950/70 px-3 py-2 rounded-xl border border-zinc-800"></div>
 <button onclick="handleLogout()" class="btn-gray text-xs py-2.5 px-3"><i class="fa-solid fa-right-from-bracket"></i><span class="hidden sm:inline ml-2">Salir</span></button>
 </div>
 </div>
 <nav id="appNav" class="bg-zinc-900/40 border-t border-zinc-800/60 px-3 sm:px-6 py-2 flex gap-2 overflow-x-auto nav-scroll">
 <button class="tab-btn active text-xs" data-tab="pos" onclick="switchTab('pos')"><i class="fa-solid fa-cash-register mr-1.5"></i> POS</button>
+<button class="tab-btn text-xs" data-tab="caja" onclick="switchTab('caja')"><i class="fa-solid fa-vault mr-1.5"></i> Caja</button>
 <button class="tab-btn admin-only text-xs" data-tab="menu" onclick="switchTab('menu')"><i class="fa-solid fa-utensils mr-1.5"></i> Menú</button>
 <button class="tab-btn admin-only text-xs" data-tab="stock" onclick="switchTab('stock')"><i class="fa-solid fa-boxes-stacked mr-1.5"></i> Stock</button>
 <button class="tab-btn admin-only text-xs" data-tab="workers" onclick="switchTab('workers')"><i class="fa-solid fa-hand-holding-dollar mr-1.5"></i> Ayudantes</button>
@@ -162,6 +168,8 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </header>
 
 <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 pb-24 lg:pb-6">
+
+<!-- POS -->
 <section id="tab-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 <div class="lg:col-span-2 space-y-3 sm:space-y-4">
 <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -198,6 +206,20 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
+<!-- CAJA -->
+<section id="tab-caja" class="hide space-y-4 sm:space-y-6">
+<div id="cajaStatusCard"></div>
+<div id="cajaContent"></div>
+<div class="card">
+<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+<h3 class="font-bold text-base text-white"><i class="fa-solid fa-clock-rotate-left text-red-500 mr-2"></i> Historial de Cierres</h3>
+<button onclick="renderCajaHistory()" class="btn-gray text-xs"><i class="fa-solid fa-rotate mr-1"></i>Actualizar</button>
+</div>
+<div id="cajaHistoryList" class="space-y-2 text-xs max-h-[500px] overflow-y-auto pr-1"></div>
+</div>
+</section>
+
+<!-- MENÚ -->
 <section id="tab-menu" class="hide space-y-4 sm:space-y-6">
 <div class="card">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
@@ -207,11 +229,12 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 <div id="adminMenuMobile" class="lg:hidden space-y-2"></div>
 <div class="hidden lg:block overflow-x-auto"><table class="w-full text-left text-xs">
 <thead class="bg-zinc-900/70 text-zinc-400 uppercase tracking-wider text-[10px]"><tr>
-<th class="p-3 rounded-l-lg">Producto</th><th class="p-3">Categoría</th><th class="p-3">Precio</th><th class="p-3">Detalle</th><th class="p-3 text-right rounded-r-lg">Acciones</th>
+<th class="p-3 rounded-l-lg">Imagen</th><th class="p-3">Producto</th><th class="p-3">Categoría</th><th class="p-3">Precio</th><th class="p-3">Detalle</th><th class="p-3 text-right rounded-r-lg">Acciones</th>
 </tr></thead><tbody id="adminMenuTable" class="divide-y divide-zinc-800"></tbody></table></div>
 </div>
 </section>
 
+<!-- STOCK -->
 <section id="tab-stock" class="hide space-y-4 sm:space-y-6">
 <div class="grid grid-cols-3 gap-2 sm:gap-4">
 <div class="card stat-card border-sky-500/20 !p-3 sm:!p-4"><p class="text-[9px] sm:text-[10px] text-sky-400 uppercase font-bold tracking-wider mb-1"><i class="fa-solid fa-boxes-stacked mr-1"></i>Insumos</p><h3 id="stockTotalItems" class="text-2xl sm:text-3xl font-black text-sky-400">0</h3></div>
@@ -230,7 +253,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 <div class="card">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-3">
-<h3 class="font-bold text-base text-white"><i class="fa-solid fa-clock-rotate-left text-red-500 mr-2"></i> Historial</h3>
+<h3 class="font-bold text-base text-white"><i class="fa-solid fa-clock-rotate-left text-red-500 mr-2"></i> Historial Stock</h3>
 <div class="flex gap-2 flex-wrap flex-1 sm:flex-none">
 <select id="stockHistFilterCajero" onchange="renderStockHistory()" class="inp text-xs py-2 flex-1 sm:max-w-[180px]"><option value="">👤 Todos</option></select>
 <select id="stockHistFilterType" onchange="renderStockHistory()" class="inp text-xs py-2 flex-1 sm:max-w-[150px]"><option value="">📋 Todos</option><option value="entrada">⬇ Entradas</option><option value="salida">⬆ Salidas</option></select>
@@ -240,6 +263,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
+<!-- WORKERS -->
 <section id="tab-workers" class="hide space-y-4 sm:space-y-6">
 <div class="grid grid-cols-3 gap-2 sm:gap-4">
 <div class="card stat-card border-red-500/20 !p-3 sm:!p-4"><p class="text-[9px] sm:text-[10px] text-red-400 uppercase font-bold tracking-wider mb-1">Deuda</p><h3 id="workersTotalDebt" class="text-lg sm:text-3xl font-black text-red-400">$0</h3></div>
@@ -255,6 +279,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
+<!-- USERS -->
 <section id="tab-users" class="hide space-y-4 sm:space-y-6">
 <div class="card">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
@@ -269,6 +294,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
+<!-- STATS -->
 <section id="tab-stats" class="hide space-y-4 sm:space-y-6">
 <div class="flex gap-2 flex-wrap nav-scroll overflow-x-auto pb-1">
 <button data-range="hoy" onclick="setSalesRange('hoy')" class="tab-btn active text-xs">📅 Hoy</button>
@@ -284,7 +310,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 <div class="card">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-<h3 class="font-bold text-sm text-white"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial</h3>
+<h3 class="font-bold text-sm text-white"><i class="fa-solid fa-history text-red-500 mr-2"></i> Historial Ventas</h3>
 <div class="flex gap-2">
 <button onclick="exportSalesCSV()" class="btn-gray text-xs"><i class="fa-solid fa-file-csv mr-1"></i><span class="hidden sm:inline">CSV</span></button>
 <button onclick="clearSales()" class="btn-gray text-xs text-red-400"><i class="fa-solid fa-trash mr-1"></i><span class="hidden sm:inline">Borrar</span></button>
@@ -333,6 +359,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </div>
 
+<!-- MODAL PRODUCTO (con imagen) -->
 <div id="productModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
 <div class="glass w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up max-h-[92dvh] overflow-y-auto">
 <div class="drag-handle"></div>
@@ -340,10 +367,15 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 <input type="hidden" id="editKey" value="">
 <div class="space-y-3 text-xs">
 <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Nombre</label><input id="prodName" type="text" class="inp" placeholder="Ej. Pizza Mediana"></div>
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Imagen (URL externa)</label>
+<input id="prodImagen" type="url" class="inp" placeholder="https://ejemplo.com/pizza.jpg" oninput="previewProdImage(this.value)">
+<p class="text-[10px] text-zinc-500 mt-1">Pega una URL de imagen (Imgur, Cloudinary, Google Drive, etc.). Si está vacío se usará el emoji.</p>
+<div id="prodImagePreview" class="hide mt-2 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950" style="max-height:150px;"><img id="prodImagePreviewImg" src="" alt="preview" style="width:100%;height:150px;object-fit:cover;"></div>
+</div>
 <div class="grid grid-cols-2 gap-3">
 <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Categoría</label>
 <select id="prodCategory" class="inp"><option value="slice">Slice</option><option value="pizza">Pizza</option><option value="bebida">Bebida</option><option value="extra">Extra</option></select></div>
-<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Emoji</label><input id="prodEmoji" type="text" maxlength="4" class="inp text-center text-lg" placeholder="🍕"></div>
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Emoji (si no hay imagen)</label><input id="prodEmoji" type="text" maxlength="4" class="inp text-center text-lg" placeholder="🍕"></div>
 </div>
 <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Precio ($)</label><input id="prodPrice" type="number" inputmode="decimal" step="0.01" min="0" class="inp" placeholder="5.00"></div>
 <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Descripción</label><input id="prodDesc" type="text" class="inp" placeholder="Ej. 9 a 10 porciones"></div>
@@ -352,6 +384,70 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </div>
 
+<!-- MODAL ABRIR CAJA -->
+<div id="cajaOpenModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
+<div class="glass w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up">
+<div class="drag-handle"></div>
+<h3 class="font-bold text-lg border-b border-zinc-800 pb-3 text-white flex items-center gap-2"><i class="fa-solid fa-vault text-emerald-500"></i> <span>Abrir Caja</span></h3>
+<div class="text-center py-3 bg-gradient-to-b from-emerald-500/10 to-transparent rounded-2xl border border-emerald-500/20">
+<p class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest">Monto Inicial</p>
+<p class="text-4xl font-black text-emerald-400 mt-1" id="cajaOpenPreview">$0.00</p>
+</div>
+<div class="space-y-3 text-xs">
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Monto inicial en caja ($)</label>
+<input id="cajaOpenAmount" type="number" inputmode="decimal" step="0.01" min="0" class="inp text-2xl font-black text-center" placeholder="0.00" oninput="document.getElementById('cajaOpenPreview').textContent = '$' + (parseFloat(this.value)||0).toFixed(2)"></div>
+<div class="flex gap-1.5 flex-wrap">
+<button onclick="setCajaOpenQuick(20)" class="btn-gray text-xs flex-1 py-2">$20</button>
+<button onclick="setCajaOpenQuick(50)" class="btn-gray text-xs flex-1 py-2">$50</button>
+<button onclick="setCajaOpenQuick(100)" class="btn-gray text-xs flex-1 py-2">$100</button>
+</div>
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Nota (opcional)</label>
+<input id="cajaOpenNote" type="text" class="inp" placeholder="Ej. Turno mañana"></div>
+<p class="text-[10px] text-zinc-500 text-center"><i class="fa-solid fa-info-circle"></i> Se registrará a: <span id="cajaOpenUser" class="text-sky-400 font-semibold"></span></p>
+</div>
+<div class="flex gap-2 pt-2 safe-bottom"><button onclick="closeCajaOpenModal()" class="btn-gray flex-1">Cancelar</button><button onclick="confirmOpenCaja()" class="btn-green flex-1"><i class="fa-solid fa-lock-open mr-1"></i>Abrir</button></div>
+</div>
+</div>
+
+<!-- MODAL MOVIMIENTO CAJA -->
+<div id="cajaMovementModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
+<div class="glass w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up">
+<div class="drag-handle"></div>
+<h3 id="cajaMovementTitle" class="font-bold text-lg border-b border-zinc-800 pb-3 text-white flex items-center gap-2"><i class="fa-solid fa-arrow-right-arrow-left text-amber-500"></i> <span>Movimiento</span></h3>
+<div class="space-y-3 text-xs">
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Tipo</label>
+<div class="grid grid-cols-2 gap-2">
+<button type="button" data-cajamov="ingreso" onclick="setCajaMovementType('ingreso')" class="tab-btn active justify-center"><i class="fa-solid fa-arrow-down mr-1"></i>Ingreso</button>
+<button type="button" data-cajamov="retiro" onclick="setCajaMovementType('retiro')" class="tab-btn justify-center"><i class="fa-solid fa-arrow-up mr-1"></i>Retiro</button>
+</div>
+</div>
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Monto ($)</label>
+<input id="cajaMovementAmount" type="number" inputmode="decimal" step="0.01" min="0" class="inp text-2xl font-black text-center" placeholder="0.00"></div>
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Concepto</label>
+<input id="cajaMovementConcept" type="text" class="inp" placeholder="Ej. Pago proveedor"></div>
+</div>
+<div class="flex gap-2 pt-2 safe-bottom"><button onclick="closeCajaMovementModal()" class="btn-gray flex-1">Cancelar</button><button onclick="confirmCajaMovement()" class="btn-amber flex-1">Aplicar</button></div>
+</div>
+</div>
+
+<!-- MODAL CERRAR CAJA -->
+<div id="cajaCloseModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
+<div class="glass w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up max-h-[92dvh] overflow-y-auto">
+<div class="drag-handle"></div>
+<h3 class="font-bold text-lg border-b border-zinc-800 pb-3 text-white flex items-center gap-2"><i class="fa-solid fa-vault text-red-500"></i> <span>Cerrar Caja</span></h3>
+<div id="cajaCloseSummary" class="space-y-2 text-xs bg-zinc-950/60 rounded-xl p-3 border border-zinc-800"></div>
+<div class="space-y-3 text-xs">
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Monto contado en caja ($)</label>
+<input id="cajaCloseAmount" type="number" inputmode="decimal" step="0.01" min="0" class="inp text-2xl font-black text-center" placeholder="0.00" oninput="updateCajaCloseDiff()"></div>
+<div id="cajaCloseDiff" class="rounded-xl p-3 border text-center"></div>
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Nota de cierre</label>
+<input id="cajaCloseNote" type="text" class="inp" placeholder="Ej. Turno cerrado sin novedad"></div>
+</div>
+<div class="flex gap-2 pt-2 safe-bottom"><button onclick="closeCajaCloseModal()" class="btn-gray flex-1">Cancelar</button><button onclick="confirmCloseCaja()" class="btn-red flex-1"><i class="fa-solid fa-lock mr-1"></i>Cerrar Caja</button></div>
+</div>
+</div>
+
+<!-- MODAL STOCK -->
 <div id="stockModal" class="fixed inset-0 modal-backdrop flex items-end sm:items-center justify-center z-50 hide">
 <div class="glass w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up max-h-[92dvh] overflow-y-auto">
 <div class="drag-handle"></div>
@@ -523,9 +619,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
 <div id="install-banner" class="install-banner hide">
 <div class="install-banner-content">
-<div class="install-banner-icon">
-<img src="icon-192.png" alt="Brother's Pizza">
-</div>
+<div class="install-banner-icon"><img src="icon-192.png" alt="Brother's Pizza"></div>
 <div class="install-banner-text">
 <strong>📱 Instala Brother's Pizza</strong>
 <span id="install-banner-desc">Acceso rápido desde tu pantalla de inicio</span>
@@ -566,24 +660,24 @@ const db = firebase.database();
 const PAPER_WIDTH = 80;
 
 const DEFAULT_MENU = {
-"m1": { nombre:"Slice Pepperoni", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
-"m2": { nombre:"Slice Jamón", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
-"m3": { nombre:"Slice Hawaiana", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
-"m4": { nombre:"Slice Margarita", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕" },
-"m5": { nombre:"Pizza Pequeña Pepperoni", categoria:"pizza", precio:5.00, desc:"4 porciones", emoji:"🍕" },
-"m6": { nombre:"Pizza Pequeña Jamón", categoria:"pizza", precio:5.00, desc:"4 porciones", emoji:"🍕" },
-"m7": { nombre:"Pizza Pequeña Hawaiana", categoria:"pizza", precio:5.00, desc:"4 porciones", emoji:"🍕" },
-"m8": { nombre:"Pizza Pequeña Margarita", categoria:"pizza", precio:5.00, desc:"4 porciones", emoji:"🍕" },
-"m9": { nombre:"Pizza Mediana Pepperoni", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
-"m10": { nombre:"Pizza Mediana Jamón", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
-"m11": { nombre:"Pizza Mediana Hawaiana", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
-"m12": { nombre:"Pizza Mediana Margarita", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕" },
-"m13": { nombre:"Pizza Grande Pepperoni", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
-"m14": { nombre:"Pizza Grande Jamón", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
-"m15": { nombre:"Pizza Grande Hawaiana", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
-"m16": { nombre:"Pizza Grande Margarita", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕" },
-"m17": { nombre:"Cola / Gaseosa", categoria:"bebida", precio:0.50, desc:"Botella personal", emoji:"🥤" },
-"m18": { nombre:"Vaso de Cola", categoria:"extra", precio:0.25, desc:"Vaso con hielo", emoji:"🧊" }
+"m1": { nombre:"Slice Pepperoni", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕", imagen:"" },
+"m2": { nombre:"Slice Jamón", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕", imagen:"" },
+"m3": { nombre:"Slice Hawaiana", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕", imagen:"" },
+"m4": { nombre:"Slice Margarita", categoria:"slice", precio:1.25, desc:"1 porción individual", emoji:"🍕", imagen:"" },
+"m5": { nombre:"Pizza Pequeña Pepperoni", categoria:"pizza", precio:5.00, desc:"4 porciones", emoji:"🍕", imagen:"" },
+"m6": { nombre:"Pizza Pequeña Jamón", categoria:"pizza", precio:5.00, desc:"4 porciones", emoji:"🍕", imagen:"" },
+"m7": { nombre:"Pizza Pequeña Hawaiana", categoria:"pizza", precio:5.00, desc:"4 porciones", emoji:"🍕", imagen:"" },
+"m8": { nombre:"Pizza Pequeña Margarita", categoria:"pizza", precio:5.00, desc:"4 porciones", emoji:"🍕", imagen:"" },
+"m9": { nombre:"Pizza Mediana Pepperoni", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕", imagen:"" },
+"m10": { nombre:"Pizza Mediana Jamón", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕", imagen:"" },
+"m11": { nombre:"Pizza Mediana Hawaiana", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕", imagen:"" },
+"m12": { nombre:"Pizza Mediana Margarita", categoria:"pizza", precio:9.00, desc:"9 a 10 porciones", emoji:"🍕", imagen:"" },
+"m13": { nombre:"Pizza Grande Pepperoni", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕", imagen:"" },
+"m14": { nombre:"Pizza Grande Jamón", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕", imagen:"" },
+"m15": { nombre:"Pizza Grande Hawaiana", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕", imagen:"" },
+"m16": { nombre:"Pizza Grande Margarita", categoria:"pizza", precio:13.00, desc:"12 a 13 porciones", emoji:"🍕", imagen:"" },
+"m17": { nombre:"Cola / Gaseosa", categoria:"bebida", precio:0.50, desc:"Botella personal", emoji:"🥤", imagen:"" },
+"m18": { nombre:"Vaso de Cola", categoria:"extra", precio:0.25, desc:"Vaso con hielo", emoji:"🧊", imagen:"" }
 };
 
 const DEFAULT_STOCK = {
@@ -599,12 +693,14 @@ const DEFAULT_STOCK = {
 const DEFAULT_USERS = { "u1": { user:"admin", pass:"admin123", role:"admin", name:"Administrador" } };
 
 let menuData = {}, usersData = {}, salesData = {}, stockData = {}, workersData = {}, stockHistoryData = {};
+let cajaData = {}, cajaHistoryData = {};
 let session = JSON.parse(localStorage.getItem('bp_session')) || null;
 let cart = JSON.parse(localStorage.getItem('bp_cart')) || [];
 let currentCategoryFilter = 'todos';
 let salesRange = 'hoy';
 let payMethod = 'efectivo';
 let movementType = 'entrada';
+let cajaMovementType = 'ingreso';
 let searchTimer = null;
 let confirmResolver = null;
 
@@ -634,7 +730,6 @@ function closeConfirm(result) {
 document.getElementById('confirmModal').classList.add('hide');
 if (confirmResolver) { confirmResolver(result); confirmResolver = null; }
 }
-
 function showAlert(title, message, isError=false, actions=null) {
 document.getElementById('alertTitle').textContent = title;
 document.getElementById('alertMessage').textContent = message;
@@ -666,7 +761,7 @@ document.getElementById('loginPass').addEventListener('keydown', e => { if (e.ke
 document.addEventListener('keydown', e => {
 if (!session) return;
 if (e.key === 'Escape') {
-['productModal','userModal','paymentModal','customAlertModal','confirmModal','stockModal','stockAdjustModal','stockItemHistoryModal','workerModal','debtModal','payWorkerModal','historyWorkerModal','cartDrawer','ios-instructions-modal'].forEach(id => {
+['productModal','userModal','paymentModal','customAlertModal','confirmModal','stockModal','stockAdjustModal','stockItemHistoryModal','workerModal','debtModal','payWorkerModal','historyWorkerModal','cartDrawer','ios-instructions-modal','cajaOpenModal','cajaMovementModal','cajaCloseModal'].forEach(id => {
 const m = document.getElementById(id);
 if (m && !m.classList.contains('hide')) { if (id==='confirmModal') closeConfirm(false); else m.classList.add('hide'); }
 });
@@ -717,6 +812,8 @@ db.ref('sales').on('value', s => { salesData = s.val() || {}; renderSales(); });
 db.ref('stock').on('value', s => { const v=s.val(); if(v) stockData=v; else { db.ref('stock').set(DEFAULT_STOCK); stockData=DEFAULT_STOCK; } renderStock(); });
 db.ref('stockHistory').on('value', s => { stockHistoryData = s.val() || {}; renderStockHistory(); });
 db.ref('workers').on('value', s => { workersData = s.val() || {}; renderWorkers(); });
+db.ref('caja').on('value', s => { cajaData = s.val() || {}; renderCaja(); updateCajaBadge(); });
+db.ref('cajaHistory').on('value', s => { cajaHistoryData = s.val() || {}; renderCajaHistory(); });
 }
 
 function showLogin() { document.getElementById('loginScreen').classList.remove('hide'); document.getElementById('appScreen').classList.add('hide'); }
@@ -748,8 +845,8 @@ if (!ok) return;
 localStorage.removeItem('bp_session'); session = null; showLogin();
 }
 function switchTab(tab) {
-if (session.role !== 'admin' && tab !== 'pos') return;
-['pos','menu','stock','workers','users','stats'].forEach(t => {
+if (session.role !== 'admin' && tab !== 'pos' && tab !== 'caja') return;
+['pos','caja','menu','stock','workers','users','stats'].forEach(t => {
 const el = document.getElementById('tab-' + t);
 if (el) el.classList.toggle('hide', t !== tab);
 });
@@ -758,6 +855,7 @@ const fab = document.getElementById('cartFab');
 if (fab) fab.classList.toggle('hide', tab !== 'pos');
 }
 
+/* ==================== POS ==================== */
 function filterCategory(cat) {
 currentCategoryFilter = cat;
 document.querySelectorAll('#posCategories .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
@@ -772,10 +870,11 @@ let filtered = items.filter(p => (p.nombre||'').toLowerCase().includes(f));
 if (currentCategoryFilter !== 'todos') filtered = filtered.filter(p => p.categoria === currentCategoryFilter);
 grid.innerHTML = filtered.map(p => {
 const emoji = p.emoji || (p.categoria==='bebida'?'🥤':p.categoria==='extra'?'🧀':'🍕');
+const media = p.imagen ? `<img src="${esc(p.imagen)}" alt="${esc(p.nombre)}" loading="lazy" onerror="this.parentElement.innerHTML='<span style=&quot;font-size:2rem;&quot;>${emoji}</span>'">` : `<span class="text-3xl sm:text-4xl">${emoji}</span>`;
 return `
 <div onclick="addToCart('${esc(p.firebaseKey)}')" class="card prod-card p-2.5 sm:p-3.5 flex flex-col justify-between">
 <div>
-<div class="prod-emoji-box h-16 sm:h-24 rounded-xl mb-2 sm:mb-3 flex items-center justify-center text-3xl sm:text-4xl">${emoji}</div>
+<div class="prod-emoji-box h-20 sm:h-28 rounded-xl mb-2 sm:mb-3 flex items-center justify-center">${media}</div>
 <span class="text-[8px] sm:text-[9px] uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded-full badge-${p.categoria}">${esc(p.categoria)}</span>
 <h4 class="font-bold text-[11px] sm:text-xs text-zinc-100 line-clamp-2 mt-1 sm:mt-2 leading-tight">${esc(p.nombre)}</h4>
 <p class="text-[9px] sm:text-[10px] text-zinc-500 line-clamp-1 mt-0.5">${esc(p.desc||'')}</p>
@@ -841,6 +940,10 @@ function openCartDrawer() { document.getElementById('cartDrawer').classList.remo
 function closeCartDrawer() { document.getElementById('cartDrawer').classList.add('hide'); document.body.style.overflow = ''; }
 function openPaymentModal() {
 if (cart.length === 0) { showAlert('Atención','Agregue productos antes de cobrar.', true); return; }
+if (!cajaData.abierto) {
+showAlert('Caja cerrada','Debes abrir la caja antes de cobrar. Ve a la pestaña "Caja".', true, `<button onclick="closeCustomAlert(); switchTab('caja')" class="btn-red w-full">Abrir Caja</button>`);
+return;
+}
 document.getElementById('payTotal').textContent = money(getCartTotal().total);
 document.getElementById('payReceived').value = '';
 document.getElementById('payChange').textContent = money(0);
@@ -872,6 +975,7 @@ function quickCash(a) { const i=document.getElementById('payReceived'); i.value=
 function exactCash() { document.getElementById('payReceived').value = getCartTotal().total.toFixed(2); calcChange(); }
 function confirmCheckout() {
 if (cart.length===0) return;
+if (!cajaData.abierto) { showAlert('Caja cerrada','Debes abrir la caja antes de cobrar.', true); return; }
 const { subtotal, dPct, discountVal, total } = getCartTotal();
 let received=0, change=0;
 if (payMethod === 'efectivo') {
@@ -885,8 +989,16 @@ const note = (noteEl?.value || noteDesktop?.value || '').trim();
 const newSale = { id:Date.now(), date:todayISO(),
 items: cart.map(c => ({ nombre:c.nombre, precio:c.precio, qty:c.qty, categoria:c.categoria||'', firebaseKey:c.firebaseKey })),
 subtotal, discountPct:dPct, discount:discountVal, total, payment:payMethod, received, change,
-note, cajero: session.name };
+note, cajero: session.name, cajaId: cajaData.id || null };
 db.ref('sales').push(newSale);
+// Actualizar total de caja
+if (payMethod === 'efectivo') {
+const key = cajaData._key;
+if (key) {
+const ventasEfectivo = (Number(cajaData.ventasEfectivo)||0) + total;
+db.ref('caja/' + key).update({ ventasEfectivo });
+}
+}
 cart=[];
 if (document.getElementById('cartDiscount')) document.getElementById('cartDiscount').value = 0;
 if (document.getElementById('cartDiscountMobile')) document.getElementById('cartDiscountMobile').value = 0;
@@ -912,6 +1024,271 @@ if (navigator.share) navigator.share({ title: 'Ticket Brother\'s Pizza', text: t
 else navigator.clipboard?.writeText(txt).then(() => toast('Ticket copiado al portapapeles', 'success'));
 }
 
+/* ==================== CAJA ==================== */
+function updateCajaBadge() {
+const el = document.getElementById('cajaHeaderBadge');
+if (!el) return;
+if (cajaData.abierto) {
+el.innerHTML = `<span class="caja-status-badge caja-open"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Caja Abierta</span>`;
+} else {
+el.innerHTML = `<span class="caja-status-badge caja-closed"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Caja Cerrada</span>`;
+}
+}
+function renderCaja() {
+const statusCard = document.getElementById('cajaStatusCard');
+const content = document.getElementById('cajaContent');
+if (!statusCard || !content) return;
+if (!cajaData.abierto) {
+statusCard.innerHTML = `
+<div class="card border-2 border-dashed border-zinc-700">
+<div class="text-center py-6">
+<div class="text-6xl mb-3">🔒</div>
+<h3 class="font-bold text-lg text-white mb-2">Caja Cerrada</h3>
+<p class="text-xs text-zinc-400 mb-4">Abre la caja para comenzar a registrar ventas en efectivo</p>
+<button onclick="openCajaOpenModal()" class="btn-green !px-6"><i class="fa-solid fa-lock-open mr-2"></i>Abrir Caja</button>
+</div>
+</div>`;
+content.innerHTML = '';
+return;
+}
+const montoInicial = Number(cajaData.montoInicial) || 0;
+const ventasEfectivo = Number(cajaData.ventasEfectivo) || 0;
+const ingresos = Number(cajaData.ingresos) || 0;
+const retiros = Number(cajaData.retiros) || 0;
+const movimientos = cajaData.movimientos ? Object.entries(cajaData.movimientos).map(([k,v]) => ({...v, _key:k})).sort((a,b) => (b.timestamp||0) - (a.timestamp||0)) : [];
+const esperado = montoInicial + ventasEfectivo + ingresos - retiros;
+statusCard.innerHTML = `
+<div class="card border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 to-transparent">
+<div class="flex justify-between items-start flex-wrap gap-3 mb-4">
+<div>
+<h3 class="font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-vault text-emerald-400"></i> Caja Abierta</h3>
+<p class="text-xs text-zinc-400 mt-1">Abierta: ${esc(cajaData.fechaApertura||'')} · por ${esc(cajaData.cajeroApertura||'')}</p>
+${cajaData.notaApertura ? `<p class="text-[11px] text-amber-400 mt-0.5"><i class="fa-solid fa-note-sticky"></i> ${esc(cajaData.notaApertura)}</p>` : ''}
+</div>
+<span class="caja-status-badge caja-open">● ACTIVA</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+<div class="bg-zinc-950/60 rounded-xl p-3 border border-zinc-800 text-center">
+<p class="text-[9px] text-zinc-500 uppercase font-bold mb-1">Inicial</p>
+<p class="text-sm font-black text-white">${money(montoInicial)}</p>
+</div>
+<div class="bg-zinc-950/60 rounded-xl p-3 border border-emerald-500/30 text-center">
+<p class="text-[9px] text-emerald-400 uppercase font-bold mb-1">+ Ventas</p>
+<p class="text-sm font-black text-emerald-400">${money(ventasEfectivo)}</p>
+</div>
+<div class="bg-zinc-950/60 rounded-xl p-3 border border-amber-500/30 text-center">
+<p class="text-[9px] text-amber-400 uppercase font-bold mb-1">+ Ing / - Ret</p>
+<p class="text-sm font-black text-amber-400">${money(ingresos)} / ${money(retiros)}</p>
+</div>
+<div class="bg-zinc-950/60 rounded-xl p-3 border border-sky-500/30 text-center">
+<p class="text-[9px] text-sky-400 uppercase font-bold mb-1">Esperado</p>
+<p class="text-sm font-black text-sky-400">${money(esperado)}</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button onclick="openCajaMovementModal('ingreso')" class="btn-green text-xs"><i class="fa-solid fa-arrow-down mr-1"></i>Ingreso</button>
+<button onclick="openCajaMovementModal('retiro')" class="btn-amber text-xs"><i class="fa-solid fa-arrow-up mr-1"></i>Retiro</button>
+<button onclick="openCajaCloseModal()" class="btn-red text-xs"><i class="fa-solid fa-lock mr-1"></i>Cerrar</button>
+</div>
+</div>`;
+content.innerHTML = `
+<div class="card">
+<h3 class="font-bold text-base text-white mb-4"><i class="fa-solid fa-list text-red-500 mr-2"></i> Movimientos (${movimientos.length})</h3>
+<div class="space-y-2 text-xs max-h-[400px] overflow-y-auto pr-1">
+${movimientos.length === 0 ? '<p class="text-center text-zinc-500 py-6">Sin movimientos manuales</p>' :
+movimientos.map(m => {
+const isIngreso = m.tipo === 'ingreso';
+return `<div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 flex justify-between items-center gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<div class="w-9 h-9 rounded-lg ${isIngreso?'bg-emerald-500/15 text-emerald-400':'bg-amber-500/15 text-amber-400'} flex items-center justify-center text-sm shrink-0">
+<i class="fa-solid ${isIngreso?'fa-arrow-down':'fa-arrow-up'}"></i>
+</div>
+<div class="min-w-0">
+<p class="font-semibold text-zinc-200 text-[11px]">${esc(m.concepto||m.tipo)}</p>
+<p class="text-[10px] text-zinc-500">${esc(m.fecha||'')} · ${esc(m.usuario||'')}</p>
+</div>
+</div>
+<p class="font-black ${isIngreso?'text-emerald-400':'text-amber-400'} text-sm shrink-0">${isIngreso?'+':'-'}${money(m.monto)}</p>
+</div>`;
+}).join('')}
+</div>
+</div>`;
+}
+function openCajaOpenModal() {
+document.getElementById('cajaOpenModal').classList.remove('hide');
+document.getElementById('cajaOpenAmount').value = '';
+document.getElementById('cajaOpenNote').value = '';
+document.getElementById('cajaOpenPreview').textContent = '$0.00';
+document.getElementById('cajaOpenUser').textContent = session.name + ' (' + session.role + ')';
+setTimeout(() => document.getElementById('cajaOpenAmount').focus(), 120);
+}
+function closeCajaOpenModal() { document.getElementById('cajaOpenModal').classList.add('hide'); }
+function setCajaOpenQuick(v) {
+const i = document.getElementById('cajaOpenAmount');
+i.value = ((parseFloat(i.value)||0) + v).toFixed(2);
+document.getElementById('cajaOpenPreview').textContent = '$' + (parseFloat(i.value)||0).toFixed(2);
+}
+function confirmOpenCaja() {
+const monto = parseFloat(document.getElementById('cajaOpenAmount').value);
+const nota = document.getElementById('cajaOpenNote').value.trim();
+if (isNaN(monto) || monto < 0) { showAlert('Monto inválido','Ingresa un monto válido (puede ser 0).', true); return; }
+const nuevaCaja = {
+abierto: true,
+id: Date.now(),
+montoInicial: monto,
+ventasEfectivo: 0,
+ingresos: 0,
+retiros: 0,
+fechaApertura: todayISO(),
+cajeroApertura: session.name,
+notaApertura: nota
+};
+db.ref('caja').set(nuevaCaja);
+closeCajaOpenModal();
+toast('Caja abierta correctamente', 'success');
+}
+function openCajaMovementModal(tipo='ingreso') {
+if (!cajaData.abierto) { showAlert('Caja cerrada','Abre la caja primero.', true); return; }
+document.getElementById('cajaMovementModal').classList.remove('hide');
+document.getElementById('cajaMovementTitle').innerHTML = `<i class="fa-solid fa-arrow-right-arrow-left text-amber-500"></i> <span>${tipo==='ingreso'?'Ingreso':'Retiro'}</span>`;
+document.getElementById('cajaMovementAmount').value = '';
+document.getElementById('cajaMovementConcept').value = '';
+setCajaMovementType(tipo);
+setTimeout(() => document.getElementById('cajaMovementAmount').focus(), 120);
+}
+function closeCajaMovementModal() { document.getElementById('cajaMovementModal').classList.add('hide'); }
+function setCajaMovementType(t) {
+cajaMovementType = t;
+document.querySelectorAll('[data-cajamov]').forEach(b => b.classList.toggle('active', b.dataset.cajamov === t));
+}
+function confirmCajaMovement() {
+const monto = parseFloat(document.getElementById('cajaMovementAmount').value);
+const concepto = document.getElementById('cajaMovementConcept').value.trim() || (cajaMovementType === 'ingreso' ? 'Ingreso' : 'Retiro');
+if (isNaN(monto) || monto <= 0) { showAlert('Monto inválido','Ingresa un monto mayor a 0.', true); return; }
+const key = cajaData._key;
+if (!key) return;
+if (cajaMovementType === 'ingreso') {
+db.ref('caja/'+key).update({ ingresos: (Number(cajaData.ingresos)||0) + monto });
+} else {
+db.ref('caja/'+key).update({ retiros: (Number(cajaData.retiros)||0) + monto });
+}
+db.ref('caja/'+key+'/movimientos').push({
+tipo: cajaMovementType,
+monto,
+concepto,
+fecha: todayISO(),
+timestamp: Date.now(),
+usuario: session.name
+});
+closeCajaMovementModal();
+toast(`${cajaMovementType === 'ingreso' ? 'Ingreso' : 'Retiro'}: ${money(monto)}`, 'success');
+}
+function openCajaCloseModal() {
+if (!cajaData.abierto) { showAlert('Caja cerrada','No hay caja abierta.', true); return; }
+const montoInicial = Number(cajaData.montoInicial) || 0;
+const ventasEfectivo = Number(cajaData.ventasEfectivo) || 0;
+const ingresos = Number(cajaData.ingresos) || 0;
+const retiros = Number(cajaData.retiros) || 0;
+const esperado = montoInicial + ventasEfectivo + ingresos - retiros;
+document.getElementById('cajaCloseSummary').innerHTML = `
+<div class="flex justify-between"><span class="text-zinc-400">Monto inicial:</span><span class="font-bold text-white">${money(montoInicial)}</span></div>
+<div class="flex justify-between"><span class="text-zinc-400">Ventas efectivo:</span><span class="font-bold text-emerald-400">+${money(ventasEfectivo)}</span></div>
+<div class="flex justify-between"><span class="text-zinc-400">Ingresos:</span><span class="font-bold text-emerald-400">+${money(ingresos)}</span></div>
+<div class="flex justify-between"><span class="text-zinc-400">Retiros:</span><span class="font-bold text-amber-400">-${money(retiros)}</span></div>
+<div class="flex justify-between pt-2 border-t border-zinc-700 mt-2"><span class="text-white font-bold">ESPERADO:</span><span class="font-black text-sky-400 text-lg">${money(esperado)}</span></div>`;
+document.getElementById('cajaCloseAmount').value = '';
+document.getElementById('cajaCloseNote').value = '';
+document.getElementById('cajaCloseDiff').innerHTML = '<p class="text-xs text-zinc-500">Ingresa el monto contado para ver la diferencia</p>';
+document.getElementById('cajaCloseModal').classList.remove('hide');
+window._cajaEsperado = esperado;
+setTimeout(() => document.getElementById('cajaCloseAmount').focus(), 120);
+}
+function closeCajaCloseModal() { document.getElementById('cajaCloseModal').classList.add('hide'); }
+function updateCajaCloseDiff() {
+const esperado = window._cajaEsperado || 0;
+const contado = parseFloat(document.getElementById('cajaCloseAmount').value) || 0;
+const diff = contado - esperado;
+const el = document.getElementById('cajaCloseDiff');
+if (document.getElementById('cajaCloseAmount').value === '') {
+el.innerHTML = '<p class="text-xs text-zinc-500">Ingresa el monto contado para ver la diferencia</p>';
+el.className = 'rounded-xl p-3 border text-center';
+return;
+}
+if (Math.abs(diff) < 0.01) {
+el.innerHTML = `<p class="text-emerald-400 font-bold">✓ Cuadra perfecto</p>`;
+el.className = 'rounded-xl p-3 border text-center bg-emerald-500/10 border-emerald-500/30';
+} else if (diff > 0) {
+el.innerHTML = `<p class="text-emerald-400 font-bold">Sobran: ${money(diff)}</p>`;
+el.className = 'rounded-xl p-3 border text-center bg-emerald-500/10 border-emerald-500/30';
+} else {
+el.innerHTML = `<p class="text-red-400 font-bold">Faltan: ${money(Math.abs(diff))}</p>`;
+el.className = 'rounded-xl p-3 border text-center bg-red-500/10 border-red-500/30';
+}
+}
+function confirmCloseCaja() {
+const contado = parseFloat(document.getElementById('cajaCloseAmount').value);
+const nota = document.getElementById('cajaCloseNote').value.trim();
+if (isNaN(contado) || contado < 0) { showAlert('Monto inválido','Ingresa el monto contado.', true); return; }
+const montoInicial = Number(cajaData.montoInicial) || 0;
+const ventasEfectivo = Number(cajaData.ventasEfectivo) || 0;
+const ingresos = Number(cajaData.ingresos) || 0;
+const retiros = Number(cajaData.retiros) || 0;
+const esperado = montoInicial + ventasEfectivo + ingresos - retiros;
+const diferencia = contado - esperado;
+const cierre = {
+id: cajaData.id,
+fechaApertura: cajaData.fechaApertura,
+fechaCierre: todayISO(),
+cajeroApertura: cajaData.cajeroApertura,
+cajeroCierre: session.name,
+montoInicial, ventasEfectivo, ingresos, retiros, esperado,
+montoContado: contado,
+diferencia,
+notaApertura: cajaData.notaApertura || '',
+notaCierre: nota,
+movimientos: cajaData.movimientos || {}
+};
+db.ref('cajaHistory').push(cierre);
+db.ref('caja').remove();
+closeCajaCloseModal();
+toast('Caja cerrada correctamente', 'success');
+setTimeout(() => {
+const difTxt = Math.abs(diferencia) < 0.01 ? '✓ Cuadra perfecto' : (diferencia > 0 ? `Sobran ${money(diferencia)}` : `Faltan ${money(Math.abs(diferencia))}`);
+showAlert('Caja Cerrada', `Esperado: ${money(esperado)} · Contado: ${money(contado)} · ${difTxt}`, false);
+}, 300);
+}
+function renderCajaHistory() {
+const list = document.getElementById('cajaHistoryList'); if (!list) return;
+const items = Object.entries(cajaHistoryData).map(([k,v]) => ({...v, _key:k})).sort((a,b) => (b.id||0) - (a.id||0));
+if (items.length === 0) { list.innerHTML = '<p class="text-center text-zinc-500 py-8">Sin cierres registrados</p>'; return; }
+list.innerHTML = items.slice(0, 50).map(c => {
+const dif = Number(c.diferencia) || 0;
+const color = Math.abs(dif) < 0.01 ? 'text-emerald-400' : (dif > 0 ? 'text-sky-400' : 'text-red-400');
+const icono = Math.abs(dif) < 0.01 ? 'fa-check-circle' : (dif > 0 ? 'fa-arrow-up' : 'fa-arrow-down');
+return `<div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 fade-in">
+<div class="flex justify-between items-start gap-2 mb-2">
+<div class="min-w-0 flex-1">
+<p class="font-bold text-zinc-200 text-[12px]"><i class="fa-solid fa-vault text-red-500 mr-1"></i>Cierre #${String(c.id).slice(-6)}</p>
+<p class="text-[10px] text-zinc-500">Apertura: ${esc(c.fechaApertura||'')}</p>
+<p class="text-[10px] text-zinc-500">Cierre: ${esc(c.fechaCierre||'')}</p>
+<p class="text-[10px] text-sky-400 mt-0.5"><i class="fa-solid fa-user"></i> ${esc(c.cajeroCierre||c.cajeroApertura||'')}</p>
+</div>
+<div class="text-right shrink-0">
+<p class="font-black text-base ${color}">${dif >= 0 ? '+' : ''}${money(dif)}</p>
+<p class="text-[9px] uppercase text-zinc-500 font-bold"><i class="fa-solid ${icono}"></i> diferencia</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-1.5 text-[10px] border-t border-zinc-800/60 pt-2 mt-2">
+<div class="text-center"><p class="text-zinc-500 uppercase font-bold">Esperado</p><p class="text-zinc-300 font-bold">${money(c.esperado)}</p></div>
+<div class="text-center"><p class="text-zinc-500 uppercase font-bold">Contado</p><p class="text-white font-bold">${money(c.montoContado)}</p></div>
+<div class="text-center"><p class="text-zinc-500 uppercase font-bold">Ventas</p><p class="text-emerald-400 font-bold">${money(c.ventasEfectivo)}</p></div>
+</div>
+${c.notaCierre ? `<p class="text-[10px] text-amber-400 mt-2"><i class="fa-solid fa-note-sticky"></i> ${esc(c.notaCierre)}</p>` : ''}
+</div>`;
+}).join('');
+}
+
+/* ==================== IMPRESIÓN ==================== */
 function printTicket(sale) {
 const area = document.getElementById('printArea');
 const paperMM = PAPER_WIDTH === 58 ? 50 : 76;
@@ -964,11 +1341,22 @@ ${line('dashed')}
 setTimeout(() => window.print(), 200);
 }
 
+/* ==================== MENÚ ==================== */
+function previewProdImage(url) {
+const wrap = document.getElementById('prodImagePreview');
+const img = document.getElementById('prodImagePreviewImg');
+if (!url || !url.trim()) { wrap.classList.add('hide'); img.src = ''; return; }
+img.src = url;
+img.onerror = () => { wrap.classList.add('hide'); };
+img.onload = () => { wrap.classList.remove('hide'); };
+}
 function renderAdminMenu() {
 const items = Object.entries(menuData).sort((a,b)=>(a[1].categoria||'').localeCompare(b[1].categoria||''));
+const mediaHTML = (p) => p.imagen ? `<img src="${esc(p.imagen)}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:8px;" onerror="this.outerHTML='<span style=\\'font-size:24px;\\'>${p.emoji||'🍕'}</span>'">` : `<span style="font-size:24px;">${p.emoji || '🍕'}</span>`;
 const rowHTML = (key, p) => `
 <tr class="hover:bg-zinc-900/50 transition">
-<td class="p-3 font-semibold text-zinc-200">${p.emoji?p.emoji+' ':''}${esc(p.nombre)}</td>
+<td class="p-3"><div class="w-10 h-10 rounded-lg bg-zinc-950 flex items-center justify-center overflow-hidden">${mediaHTML(p)}</div></td>
+<td class="p-3 font-semibold text-zinc-200">${esc(p.nombre)}</td>
 <td class="p-3"><span class="text-[9px] uppercase font-bold px-2 py-1 rounded-full badge-${p.categoria}">${esc(p.categoria)}</span></td>
 <td class="p-3 text-amber-400 font-bold">${money(p.precio)}</td>
 <td class="p-3 text-zinc-400">${esc(p.desc||'')}</td>
@@ -977,11 +1365,11 @@ const rowHTML = (key, p) => `
 <button onclick="deleteProduct('${esc(key)}')" class="text-red-400 p-2"><i class="fa-solid fa-trash"></i></button>
 </td></tr>`;
 const tbody = document.getElementById('adminMenuTable');
-if (tbody) tbody.innerHTML = items.map(([k,p]) => rowHTML(k,p)).join('') || '<tr><td colspan="5" class="p-6 text-center text-zinc-500">Sin productos</td></tr>';
+if (tbody) tbody.innerHTML = items.map(([k,p]) => rowHTML(k,p)).join('') || '<tr><td colspan="6" class="p-6 text-center text-zinc-500">Sin productos</td></tr>';
 const mob = document.getElementById('adminMenuMobile');
 if (mob) mob.innerHTML = items.map(([key, p]) => `
 <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 flex items-center gap-3">
-<div class="w-11 h-11 rounded-lg bg-zinc-950 flex items-center justify-center text-xl shrink-0">${p.emoji || '🍕'}</div>
+<div class="w-14 h-14 rounded-lg bg-zinc-950 flex items-center justify-center text-xl shrink-0 overflow-hidden">${mediaHTML(p)}</div>
 <div class="flex-1 min-w-0">
 <p class="font-bold text-sm text-zinc-100 truncate">${esc(p.nombre)}</p>
 <div class="flex items-center gap-2 mt-1 flex-wrap">
@@ -999,6 +1387,7 @@ ${p.desc ? `<span class="text-[10px] text-zinc-500">${esc(p.desc)}</span>` : ''}
 function openProductModal(key='') {
 document.getElementById('productModal').classList.remove('hide');
 document.getElementById('editKey').value = key;
+document.getElementById('prodImagePreview').classList.add('hide');
 if (key) {
 const p = menuData[key];
 document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-pen text-red-500"></i> <span>Editar Producto</span>';
@@ -1007,10 +1396,12 @@ document.getElementById('prodCategory').value = p.categoria;
 document.getElementById('prodPrice').value = p.precio;
 document.getElementById('prodDesc').value = p.desc||'';
 document.getElementById('prodEmoji').value = p.emoji||'';
+document.getElementById('prodImagen').value = p.imagen||'';
+if (p.imagen) previewProdImage(p.imagen);
 } else {
 document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-pizza-slice text-red-500"></i> <span>Nuevo Producto</span>';
 document.getElementById('prodName').value=''; document.getElementById('prodCategory').value='slice';
-document.getElementById('prodPrice').value=''; document.getElementById('prodDesc').value=''; document.getElementById('prodEmoji').value='';
+document.getElementById('prodPrice').value=''; document.getElementById('prodDesc').value=''; document.getElementById('prodEmoji').value=''; document.getElementById('prodImagen').value='';
 }
 setTimeout(() => document.getElementById('prodName').focus(), 120);
 }
@@ -1022,8 +1413,9 @@ const categoria = document.getElementById('prodCategory').value;
 const precio = parseFloat(document.getElementById('prodPrice').value);
 const desc = document.getElementById('prodDesc').value.trim();
 const emoji = document.getElementById('prodEmoji').value.trim();
+const imagen = document.getElementById('prodImagen').value.trim();
 if (!nombre || isNaN(precio) || precio < 0) { showAlert('Datos incompletos','Complete el nombre y un precio válido.', true); return; }
-const prodData = { nombre, categoria, precio, desc, emoji };
+const prodData = { nombre, categoria, precio, desc, emoji, imagen };
 if (key) db.ref('menu/'+key).set(prodData); else db.ref('menu').push(prodData);
 closeProductModal(); toast(key?'Producto actualizado':'Producto agregado', 'success');
 }
@@ -1033,6 +1425,7 @@ if (!ok) return;
 db.ref('menu/'+key).remove(); toast('Producto eliminado', 'info');
 }
 
+/* ==================== STOCK ==================== */
 function renderStock() {
 const grid = document.getElementById('stockGrid'); if (!grid) return;
 const search = (document.getElementById('searchStock')?.value || '').toLowerCase();
@@ -1213,6 +1606,7 @@ ${m.nota ? `<p class="text-[10px] text-amber-400"><i class="fa-solid fa-note-sti
 }
 function closeStockItemHistoryModal() { document.getElementById('stockItemHistoryModal').classList.add('hide'); }
 
+/* ==================== WORKERS ==================== */
 function renderWorkers() {
 const container = document.getElementById('workersList'); if (!container) return;
 const items = Object.entries(workersData);
@@ -1375,6 +1769,7 @@ return `<div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 flex ju
 }
 function closeHistoryWorkerModal() { document.getElementById('historyWorkerModal').classList.add('hide'); }
 
+/* ==================== USERS ==================== */
 function renderAdminUsers() {
 const items = Object.entries(usersData);
 const rowHTML = (key, u) => `
@@ -1441,6 +1836,7 @@ if (!ok) return;
 db.ref('users/'+key).remove(); toast('Usuario eliminado', 'info');
 }
 
+/* ==================== STATS / VENTAS ==================== */
 function getSalesArray() { return Object.entries(salesData).map(([k, v]) => ({ ...v, _key: k })); }
 function filterSalesByRange() {
 const all = getSalesArray();
@@ -1529,6 +1925,7 @@ db.ref('sales').remove();
 toast('Historial eliminado', 'info');
 }
 
+/* ==================== INIT ==================== */
 window.addEventListener('load', init);
 </script>
 <script>
