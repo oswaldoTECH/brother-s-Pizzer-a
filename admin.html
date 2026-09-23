@@ -10,8 +10,9 @@
 <meta name="apple-mobile-web-app-title" content="Brother's Pizza">
 <title>Admin · Brother's Pizza</title>
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -140,6 +141,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .cat-section-header:first-child { margin-top: 0; }
 .cat-section-header h3 { font-weight: 800; font-size: 14px; }
 .cat-section-header .line { flex: 1; height: 1px; background: #27272a; }
+.ganancia-card { background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(5,150,105,0.05)); border: 2px solid rgba(16,185,129,0.4); border-radius: 16px; padding: 16px; }
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -185,8 +187,8 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 <nav id="appNav" class="bg-zinc-900/40 border-t border-zinc-800/60 px-3 sm:px-6 py-2 flex gap-2 overflow-x-auto nav-scroll">
 <button class="tab-btn active text-xs" data-tab="pos" onclick="switchTab('pos')"><i class="fa-solid fa-cash-register mr-1.5"></i> POS</button>
 <button class="tab-btn text-xs" data-tab="caja" onclick="switchTab('caja')"><i class="fa-solid fa-vault mr-1.5"></i> Caja</button>
+<button class="tab-btn text-xs" data-tab="stock" onclick="switchTab('stock')"><i class="fa-solid fa-boxes-stacked mr-1.5"></i> Stock</button>
 <button class="tab-btn admin-only text-xs" data-tab="menu" onclick="switchTab('menu')"><i class="fa-solid fa-utensils mr-1.5"></i> Menú</button>
-<button class="tab-btn admin-only text-xs" data-tab="stock" onclick="switchTab('stock')"><i class="fa-solid fa-boxes-stacked mr-1.5"></i> Stock</button>
 <button class="tab-btn admin-only text-xs" data-tab="workers" onclick="switchTab('workers')"><i class="fa-solid fa-hand-holding-dollar mr-1.5"></i> Ayudantes</button>
 <button class="tab-btn admin-only text-xs" data-tab="users" onclick="switchTab('users')"><i class="fa-solid fa-users mr-1.5"></i> Usuarios</button>
 <button class="tab-btn admin-only text-xs" data-tab="stats" onclick="switchTab('stats')"><i class="fa-solid fa-chart-line mr-1.5"></i> Reportes</button>
@@ -195,7 +197,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
 <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 pb-24 lg:pb-6">
 
-<!-- POS -->
 <section id="tab-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 <div class="lg:col-span-2 space-y-3 sm:space-y-4">
 <div class="relative">
@@ -226,7 +227,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
-<!-- CAJA -->
 <section id="tab-caja" class="hide space-y-4 sm:space-y-6">
 <div id="cajaStatusCard"></div>
 <div id="cajaContent"></div>
@@ -239,7 +239,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
-<!-- MENÚ -->
 <section id="tab-menu" class="hide space-y-4 sm:space-y-6">
 <div class="card">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
@@ -254,7 +253,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
-<!-- STOCK -->
 <section id="tab-stock" class="hide space-y-4 sm:space-y-6">
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
 <button onclick="setStockFilter('todos')" data-stockfilter="todos" class="stock-filter-card active">
@@ -280,13 +278,13 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 <h3 class="font-bold text-base text-white"><i class="fa-solid fa-warehouse text-red-500 mr-2"></i> Inventario <span id="stockFilterLabel" class="text-xs text-zinc-500 font-normal ml-2"></span></h3>
 <div class="flex gap-2 flex-wrap flex-1 sm:flex-none">
 <input id="searchStock" type="text" class="inp text-xs py-2 flex-1 sm:max-w-[200px]" placeholder="Buscar..." oninput="renderStock()">
-<button onclick="openStockModal()" class="btn-red text-xs"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline ml-1">Nuevo</span></button>
+<button onclick="openStockModal()" class="btn-red text-xs admin-only"><i class="fa-solid fa-plus"></i><span class="hidden sm:inline ml-1">Nuevo</span></button>
 </div>
 </div>
 <div id="stockGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"></div>
 </div>
 
-<div class="card">
+<div class="card admin-only">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-3">
 <h3 class="font-bold text-base text-white"><i class="fa-solid fa-clock-rotate-left text-red-500 mr-2"></i> Historial</h3>
 <div class="flex gap-2 flex-wrap flex-1 sm:flex-none">
@@ -298,7 +296,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
-<!-- WORKERS -->
 <section id="tab-workers" class="hide space-y-4 sm:space-y-6">
 <div class="grid grid-cols-3 gap-2 sm:gap-4">
 <div class="card stat-card border-red-500/20 !p-3 sm:!p-4"><p class="text-[9px] sm:text-[10px] text-red-400 uppercase font-bold tracking-wider mb-1">Deuda</p><h3 id="workersTotalDebt" class="text-lg sm:text-3xl font-black text-red-400">$0</h3></div>
@@ -314,7 +311,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
-<!-- USERS -->
 <section id="tab-users" class="hide space-y-4 sm:space-y-6">
 <div class="card">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
@@ -329,7 +325,6 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </section>
 
-<!-- STATS -->
 <section id="tab-stats" class="hide space-y-4 sm:space-y-6">
 <div class="flex gap-2 flex-wrap nav-scroll overflow-x-auto pb-1">
 <button data-range="hoy" onclick="setSalesRange('hoy')" class="tab-btn active text-xs">📅 Hoy</button>
@@ -466,7 +461,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 <div class="glass w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 slide-from-bottom sm:slide-up max-h-[92dvh] overflow-y-auto">
 <div class="drag-handle"></div>
 <h3 class="font-bold text-lg border-b border-zinc-800 pb-3 text-white flex items-center gap-2"><i class="fa-solid fa-vault text-red-500"></i> <span>Cerrar Caja</span></h3>
-<div id="cajaCloseSummary" class="space-y-2 text-xs bg-zinc-950/60 rounded-xl p-3 border border-zinc-800"></div>
+<div id="cajaCloseSummary" class="space-y-2 text-xs"></div>
 <div class="space-y-3 text-xs">
 <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Monto contado en caja ($)</label>
 <input id="cajaCloseAmount" type="number" inputmode="decimal" step="0.01" min="0" class="inp text-2xl font-black text-center" placeholder="0.00" oninput="updateCajaCloseDiff()"></div>
@@ -511,7 +506,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 </div>
 </div>
 <div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Cantidad</label><input id="adjustStockQty" type="number" inputmode="decimal" step="0.01" min="0" class="inp text-lg text-center font-bold" placeholder="0"></div>
-<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Motivo</label><input id="adjustStockNote" type="text" class="inp" placeholder="Ej. Compra"></div>
+<div><label class="block text-zinc-400 mb-1.5 font-semibold uppercase tracking-wider text-[10px]">Motivo</label><input id="adjustStockNote" type="text" class="inp" placeholder="Ej. Compra / Uso en cocina"></div>
 <p class="text-[10px] text-zinc-500 text-center"><i class="fa-solid fa-info-circle"></i> Se registrará a: <span id="adjustStockUser" class="text-sky-400 font-semibold"></span></p>
 </div>
 <div class="flex gap-2 pt-2 safe-bottom"><button onclick="closeStockAdjustModal()" class="btn-gray flex-1">Cancelar</button><button onclick="confirmStockAdjust()" class="btn-green flex-1">Aplicar</button></div>
@@ -877,7 +872,7 @@ if (!ok) return;
 localStorage.removeItem('bp_session'); session = null; showLogin();
 }
 function switchTab(tab) {
-if (session.role !== 'admin' && tab !== 'pos' && tab !== 'caja') return;
+if (session.role !== 'admin' && !['pos','caja','stock'].includes(tab)) return;
 ['pos','caja','menu','stock','workers','users','stats'].forEach(t => {
 const el = document.getElementById('tab-' + t);
 if (el) el.classList.toggle('hide', t !== tab);
@@ -1073,6 +1068,8 @@ el.className = ch < 0 ? 'text-xl font-black text-red-400' : 'text-xl font-black 
 }
 function quickCash(a) { const i=document.getElementById('payReceived'); i.value=((parseFloat(i.value)||0)+a).toFixed(2); calcChange(); }
 function exactCash() { document.getElementById('payReceived').value = getCartTotal().total.toFixed(2); calcChange(); }
+
+/* ✅ CORREGIDO: Ahora suma las ventas al total de la caja */
 function confirmCheckout() {
 if (cart.length===0) return;
 if (!cajaData.abierto) { showAlert('Caja cerrada','Debes abrir la caja antes de cobrar.', true); return; }
@@ -1091,13 +1088,20 @@ items: cart.map(c => ({ nombre:c.nombre, precio:c.precio, qty:c.qty, categoria:c
 subtotal, discountPct:dPct, discount:discountVal, total, payment:payMethod, received, change,
 note, cajero: session.name, cajaId: cajaData.id || null };
 db.ref('sales').push(newSale);
-if (payMethod === 'efectivo') {
-const key = cajaData._key;
-if (key) {
-const ventasEfectivo = (Number(cajaData.ventasEfectivo)||0) + total;
-db.ref('caja/' + key).update({ ventasEfectivo });
-}
-}
+
+// Actualizar contadores de caja (SIN usar _key, directo al nodo caja)
+const updates = {
+ventasEfectivo: Number(cajaData.ventasEfectivo) || 0,
+ventasTarjeta: Number(cajaData.ventasTarjeta) || 0,
+ventasTransferencia: Number(cajaData.ventasTransferencia) || 0,
+totalVentas: Number(cajaData.totalVentas) || 0
+};
+if (payMethod === 'efectivo') updates.ventasEfectivo += total;
+else if (payMethod === 'tarjeta') updates.ventasTarjeta += total;
+else if (payMethod === 'transferencia') updates.ventasTransferencia += total;
+updates.totalVentas += total;
+db.ref('caja').update(updates);
+
 cart=[];
 if (document.getElementById('cartDiscount')) document.getElementById('cartDiscount').value = 0;
 if (document.getElementById('cartDiscountMobile')) document.getElementById('cartDiscountMobile').value = 0;
@@ -1143,7 +1147,7 @@ statusCard.innerHTML = `
 <div class="text-center py-6">
 <div class="text-6xl mb-3">🔒</div>
 <h3 class="font-bold text-lg text-white mb-2">Caja Cerrada</h3>
-<p class="text-xs text-zinc-400 mb-4">Abre la caja para comenzar a registrar ventas en efectivo</p>
+<p class="text-xs text-zinc-400 mb-4">Abre la caja para comenzar a registrar ventas</p>
 <button onclick="openCajaOpenModal()" class="btn-green !px-6"><i class="fa-solid fa-lock-open mr-2"></i>Abrir Caja</button>
 </div>
 </div>`;
@@ -1152,6 +1156,9 @@ return;
 }
 const montoInicial = Number(cajaData.montoInicial) || 0;
 const ventasEfectivo = Number(cajaData.ventasEfectivo) || 0;
+const ventasTarjeta = Number(cajaData.ventasTarjeta) || 0;
+const ventasTransferencia = Number(cajaData.ventasTransferencia) || 0;
+const totalVentas = Number(cajaData.totalVentas) || (ventasEfectivo + ventasTarjeta + ventasTransferencia);
 const ingresos = Number(cajaData.ingresos) || 0;
 const retiros = Number(cajaData.retiros) || 0;
 const movimientos = cajaData.movimientos ? Object.entries(cajaData.movimientos).map(([k,v]) => ({...v, _key:k})).sort((a,b) => (b.timestamp||0) - (a.timestamp||0)) : [];
@@ -1166,22 +1173,44 @@ ${cajaData.notaApertura ? `<p class="text-[11px] text-amber-400 mt-0.5"><i class
 </div>
 <span class="caja-status-badge caja-open">● ACTIVA</span>
 </div>
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-<div class="bg-zinc-950/60 rounded-xl p-3 border border-zinc-800 text-center">
-<p class="text-[9px] text-zinc-500 uppercase font-bold mb-1">Inicial</p>
-<p class="text-sm font-black text-white">${money(montoInicial)}</p>
+
+<div class="ganancia-card mb-4">
+<div class="flex justify-between items-center">
+<div>
+<p class="text-[10px] text-emerald-400 uppercase font-bold tracking-widest mb-1">💰 Ganancia del día</p>
+<p class="text-xs text-zinc-400">Total vendido (todas las formas de pago)</p>
 </div>
-<div class="bg-zinc-950/60 rounded-xl p-3 border border-emerald-500/30 text-center">
-<p class="text-[9px] text-emerald-400 uppercase font-bold mb-1">+ Ventas</p>
+<p class="text-3xl font-black text-emerald-400">${money(totalVentas)}</p>
+</div>
+</div>
+
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+<div class="bg-zinc-950/60 rounded-xl p-2.5 border border-zinc-800 text-center">
+<p class="text-[9px] text-zinc-500 uppercase font-bold mb-1">💵 Efectivo</p>
 <p class="text-sm font-black text-emerald-400">${money(ventasEfectivo)}</p>
 </div>
-<div class="bg-zinc-950/60 rounded-xl p-3 border border-amber-500/30 text-center">
-<p class="text-[9px] text-amber-400 uppercase font-bold mb-1">+ Ing / - Ret</p>
-<p class="text-sm font-black text-amber-400">${money(ingresos)} / ${money(retiros)}</p>
+<div class="bg-zinc-950/60 rounded-xl p-2.5 border border-zinc-800 text-center">
+<p class="text-[9px] text-zinc-500 uppercase font-bold mb-1">💳 Tarjeta</p>
+<p class="text-sm font-black text-sky-400">${money(ventasTarjeta)}</p>
 </div>
-<div class="bg-zinc-950/60 rounded-xl p-3 border border-sky-500/30 text-center">
-<p class="text-[9px] text-sky-400 uppercase font-bold mb-1">Esperado</p>
-<p class="text-sm font-black text-sky-400">${money(esperado)}</p>
+<div class="bg-zinc-950/60 rounded-xl p-2.5 border border-zinc-800 text-center">
+<p class="text-[9px] text-zinc-500 uppercase font-bold mb-1">📱 Transf.</p>
+<p class="text-sm font-black text-fuchsia-400">${money(ventasTransferencia)}</p>
+</div>
+</div>
+
+<div class="grid grid-cols-3 gap-2 mb-4">
+<div class="bg-zinc-950/60 rounded-xl p-2.5 border border-zinc-800 text-center">
+<p class="text-[9px] text-zinc-500 uppercase font-bold mb-1">Inicial</p>
+<p class="text-xs font-black text-white">${money(montoInicial)}</p>
+</div>
+<div class="bg-zinc-950/60 rounded-xl p-2.5 border border-amber-500/30 text-center">
+<p class="text-[9px] text-amber-400 uppercase font-bold mb-1">Ing / Ret</p>
+<p class="text-xs font-black text-amber-400">${money(ingresos)} / ${money(retiros)}</p>
+</div>
+<div class="bg-zinc-950/60 rounded-xl p-2.5 border border-sky-500/30 text-center">
+<p class="text-[9px] text-sky-400 uppercase font-bold mb-1">Esperado caja</p>
+<p class="text-xs font-black text-sky-400">${money(esperado)}</p>
 </div>
 </div>
 <div class="grid grid-cols-3 gap-2">
@@ -1192,7 +1221,7 @@ ${cajaData.notaApertura ? `<p class="text-[11px] text-amber-400 mt-0.5"><i class
 </div>`;
 content.innerHTML = `
 <div class="card">
-<h3 class="font-bold text-base text-white mb-4"><i class="fa-solid fa-list text-red-500 mr-2"></i> Movimientos (${movimientos.length})</h3>
+<h3 class="font-bold text-base text-white mb-4"><i class="fa-solid fa-list text-red-500 mr-2"></i> Movimientos manuales (${movimientos.length})</h3>
 <div class="space-y-2 text-xs max-h-[400px] overflow-y-auto pr-1">
 ${movimientos.length === 0 ? '<p class="text-center text-zinc-500 py-6">Sin movimientos manuales</p>' :
 movimientos.map(m => {
@@ -1236,6 +1265,9 @@ abierto: true,
 id: Date.now(),
 montoInicial: monto,
 ventasEfectivo: 0,
+ventasTarjeta: 0,
+ventasTransferencia: 0,
+totalVentas: 0,
 ingresos: 0,
 retiros: 0,
 fechaApertura: todayISO(),
@@ -1264,14 +1296,12 @@ function confirmCajaMovement() {
 const monto = parseFloat(document.getElementById('cajaMovementAmount').value);
 const concepto = document.getElementById('cajaMovementConcept').value.trim() || (cajaMovementType === 'ingreso' ? 'Ingreso' : 'Retiro');
 if (isNaN(monto) || monto <= 0) { showAlert('Monto inválido','Ingresa un monto mayor a 0.', true); return; }
-const key = cajaData._key;
-if (!key) return;
 if (cajaMovementType === 'ingreso') {
-db.ref('caja/'+key).update({ ingresos: (Number(cajaData.ingresos)||0) + monto });
+db.ref('caja').update({ ingresos: (Number(cajaData.ingresos)||0) + monto });
 } else {
-db.ref('caja/'+key).update({ retiros: (Number(cajaData.retiros)||0) + monto });
+db.ref('caja').update({ retiros: (Number(cajaData.retiros)||0) + monto });
 }
-db.ref('caja/'+key+'/movimientos').push({
+db.ref('caja/movimientos').push({
 tipo: cajaMovementType,
 monto,
 concepto,
@@ -1286,15 +1316,33 @@ function openCajaCloseModal() {
 if (!cajaData.abierto) { showAlert('Caja cerrada','No hay caja abierta.', true); return; }
 const montoInicial = Number(cajaData.montoInicial) || 0;
 const ventasEfectivo = Number(cajaData.ventasEfectivo) || 0;
+const ventasTarjeta = Number(cajaData.ventasTarjeta) || 0;
+const ventasTransferencia = Number(cajaData.ventasTransferencia) || 0;
+const totalVentas = Number(cajaData.totalVentas) || (ventasEfectivo + ventasTarjeta + ventasTransferencia);
 const ingresos = Number(cajaData.ingresos) || 0;
 const retiros = Number(cajaData.retiros) || 0;
 const esperado = montoInicial + ventasEfectivo + ingresos - retiros;
 document.getElementById('cajaCloseSummary').innerHTML = `
+<div class="ganancia-card mb-3">
+<div class="flex justify-between items-center">
+<div>
+<p class="text-[10px] text-emerald-400 uppercase font-bold tracking-widest mb-1">💰 Ganancia del día</p>
+<p class="text-[10px] text-zinc-400">Total vendido del turno</p>
+</div>
+<p class="text-2xl font-black text-emerald-400">${money(totalVentas)}</p>
+</div>
+</div>
+<div class="space-y-1.5 text-xs bg-zinc-950/60 rounded-xl p-3 border border-zinc-800 mb-2">
+<div class="flex justify-between"><span class="text-zinc-400">💵 Ventas efectivo:</span><span class="font-bold text-emerald-400">+${money(ventasEfectivo)}</span></div>
+<div class="flex justify-between"><span class="text-zinc-400">💳 Ventas tarjeta:</span><span class="font-bold text-sky-400">+${money(ventasTarjeta)}</span></div>
+<div class="flex justify-between"><span class="text-zinc-400">📱 Ventas transfer.:</span><span class="font-bold text-fuchsia-400">+${money(ventasTransferencia)}</span></div>
+</div>
+<div class="space-y-1.5 text-xs bg-zinc-950/60 rounded-xl p-3 border border-zinc-800">
 <div class="flex justify-between"><span class="text-zinc-400">Monto inicial:</span><span class="font-bold text-white">${money(montoInicial)}</span></div>
-<div class="flex justify-between"><span class="text-zinc-400">Ventas efectivo:</span><span class="font-bold text-emerald-400">+${money(ventasEfectivo)}</span></div>
 <div class="flex justify-between"><span class="text-zinc-400">Ingresos:</span><span class="font-bold text-emerald-400">+${money(ingresos)}</span></div>
 <div class="flex justify-between"><span class="text-zinc-400">Retiros:</span><span class="font-bold text-amber-400">-${money(retiros)}</span></div>
-<div class="flex justify-between pt-2 border-t border-zinc-700 mt-2"><span class="text-white font-bold">ESPERADO:</span><span class="font-black text-sky-400 text-lg">${money(esperado)}</span></div>`;
+<div class="flex justify-between pt-2 border-t border-zinc-700 mt-2"><span class="text-white font-bold">ESPERADO EN CAJA:</span><span class="font-black text-sky-400 text-lg">${money(esperado)}</span></div>
+</div>`;
 document.getElementById('cajaCloseAmount').value = '';
 document.getElementById('cajaCloseNote').value = '';
 document.getElementById('cajaCloseDiff').innerHTML = '<p class="text-xs text-zinc-500">Ingresa el monto contado para ver la diferencia</p>';
@@ -1330,6 +1378,9 @@ const nota = document.getElementById('cajaCloseNote').value.trim();
 if (isNaN(contado) || contado < 0) { showAlert('Monto inválido','Ingresa el monto contado.', true); return; }
 const montoInicial = Number(cajaData.montoInicial) || 0;
 const ventasEfectivo = Number(cajaData.ventasEfectivo) || 0;
+const ventasTarjeta = Number(cajaData.ventasTarjeta) || 0;
+const ventasTransferencia = Number(cajaData.ventasTransferencia) || 0;
+const totalVentas = Number(cajaData.totalVentas) || (ventasEfectivo + ventasTarjeta + ventasTransferencia);
 const ingresos = Number(cajaData.ingresos) || 0;
 const retiros = Number(cajaData.retiros) || 0;
 const esperado = montoInicial + ventasEfectivo + ingresos - retiros;
@@ -1340,7 +1391,14 @@ fechaApertura: cajaData.fechaApertura,
 fechaCierre: todayISO(),
 cajeroApertura: cajaData.cajeroApertura,
 cajeroCierre: session.name,
-montoInicial, ventasEfectivo, ingresos, retiros, esperado,
+montoInicial,
+ventasEfectivo,
+ventasTarjeta,
+ventasTransferencia,
+totalVentas,
+ingresos,
+retiros,
+esperado,
 montoContado: contado,
 diferencia,
 notaApertura: cajaData.notaApertura || '',
@@ -1352,8 +1410,8 @@ db.ref('caja').remove();
 closeCajaCloseModal();
 toast('Caja cerrada correctamente', 'success');
 setTimeout(() => {
-const difTxt = Math.abs(diferencia) < 0.01 ? '✓ Cuadra perfecto' : (diferencia > 0 ? `Sobran ${money(diferencia)}` : `Faltan ${Math.abs(diferencia)}`);
-showAlert('Caja Cerrada', `Esperado: ${money(esperado)} · Contado: ${money(contado)} · ${difTxt}`, false);
+const difTxt = Math.abs(diferencia) < 0.01 ? '✓ Cuadra perfecto' : (diferencia > 0 ? `Sobran ${money(diferencia)}` : `Faltan ${money(Math.abs(diferencia))}`);
+showAlert('Caja Cerrada', `💰 Ganancia del día: ${money(totalVentas)}\n\nEsperado en caja: ${money(esperado)}\nContado: ${money(contado)}\n${difTxt}`, false);
 }, 300);
 }
 function renderCajaHistory() {
@@ -1364,6 +1422,7 @@ list.innerHTML = items.slice(0, 50).map(c => {
 const dif = Number(c.diferencia) || 0;
 const color = Math.abs(dif) < 0.01 ? 'text-emerald-400' : (dif > 0 ? 'text-sky-400' : 'text-red-400');
 const icono = Math.abs(dif) < 0.01 ? 'fa-check-circle' : (dif > 0 ? 'fa-arrow-up' : 'fa-arrow-down');
+const totalV = Number(c.totalVentas) || ((Number(c.ventasEfectivo)||0) + (Number(c.ventasTarjeta)||0) + (Number(c.ventasTransferencia)||0));
 return `<div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 fade-in">
 <div class="flex justify-between items-start gap-2 mb-2">
 <div class="min-w-0 flex-1">
@@ -1377,10 +1436,16 @@ return `<div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 fade-in
 <p class="text-[9px] uppercase text-zinc-500 font-bold"><i class="fa-solid ${icono}"></i> diferencia</p>
 </div>
 </div>
+<div class="ganancia-card !p-2.5 mb-2">
+<div class="flex justify-between items-center">
+<p class="text-[10px] text-emerald-400 uppercase font-bold">💰 Ganancia</p>
+<p class="text-lg font-black text-emerald-400">${money(totalV)}</p>
+</div>
+</div>
 <div class="grid grid-cols-3 gap-1.5 text-[10px] border-t border-zinc-800/60 pt-2 mt-2">
 <div class="text-center"><p class="text-zinc-500 uppercase font-bold">Esperado</p><p class="text-zinc-300 font-bold">${money(c.esperado)}</p></div>
 <div class="text-center"><p class="text-zinc-500 uppercase font-bold">Contado</p><p class="text-white font-bold">${money(c.montoContado)}</p></div>
-<div class="text-center"><p class="text-zinc-500 uppercase font-bold">Ventas</p><p class="text-emerald-400 font-bold">${money(c.ventasEfectivo)}</p></div>
+<div class="text-center"><p class="text-zinc-500 uppercase font-bold">Efectivo</p><p class="text-emerald-400 font-bold">${money(c.ventasEfectivo)}</p></div>
 </div>
 ${c.notaCierre ? `<p class="text-[10px] text-amber-400 mt-2"><i class="fa-solid fa-note-sticky"></i> ${esc(c.notaCierre)}</p>` : ''}
 </div>`;
@@ -1539,6 +1604,7 @@ renderStock();
 function renderStock() {
 const grid = document.getElementById('stockGrid'); if (!grid) return;
 const search = (document.getElementById('searchStock')?.value || '').toLowerCase();
+const isAdmin = session && session.role === 'admin';
 
 let totalCount = 0, lowCount = 0, outCount = 0, okCount = 0;
 Object.values(stockData).forEach(s => {
@@ -1593,6 +1659,10 @@ let color, barColor, statusText;
 if (qty <= 0) { color='text-red-400'; barColor='bg-gradient-to-r from-red-600 to-red-400'; statusText='⛔ AGOTADO'; }
 else if (qty <= min) { color='text-amber-400'; barColor='bg-gradient-to-r from-amber-600 to-amber-400'; statusText='⚠ BAJO'; }
 else { color='text-emerald-400'; barColor='bg-gradient-to-r from-emerald-600 to-emerald-400'; statusText='✓ OK'; }
+const adminActions = isAdmin ? `
+<button onclick="openStockModal('${esc(key)}')" class="w-9 h-9 rounded-lg bg-zinc-800 text-blue-400 flex items-center justify-center" title="Editar"><i class="fa-solid fa-pen text-xs"></i></button>
+<button onclick="deleteStock('${esc(key)}')" class="w-9 h-9 rounded-lg bg-zinc-800 text-red-400 flex items-center justify-center" title="Eliminar"><i class="fa-solid fa-trash text-xs"></i></button>
+` : '';
 return `
 <div class="card fade-in">
 <div class="flex justify-between items-start mb-3">
@@ -1609,20 +1679,20 @@ return `
 <div><p class="text-3xl font-black ${color}">${qty}</p>
 <p class="text-[10px] text-zinc-500 uppercase tracking-wider">${esc(s.unidad||'unid')} disponibles</p></div>
 <div class="flex gap-1">
-<button onclick="openStockAdjustModal('${esc(key)}','salida')" class="w-10 h-10 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center"><i class="fa-solid fa-minus text-xs"></i></button>
-<button onclick="openStockAdjustModal('${esc(key)}','entrada')" class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-plus text-xs"></i></button>
+<button onclick="openStockAdjustModal('${esc(key)}','salida')" class="w-10 h-10 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center" title="Salida"><i class="fa-solid fa-minus text-xs"></i></button>
+<button onclick="openStockAdjustModal('${esc(key)}','entrada')" class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center" title="Entrada"><i class="fa-solid fa-plus text-xs"></i></button>
 </div>
 </div>
 <div class="stock-bar mb-3"><div class="stock-bar-fill ${barColor}" style="width:${pct}%"></div></div>
 <div class="flex justify-end gap-1 pt-2 border-t border-zinc-800">
-<button onclick="openStockItemHistoryModal('${esc(key)}')" class="w-9 h-9 rounded-lg bg-zinc-800 text-sky-400 flex items-center justify-center"><i class="fa-solid fa-clock-rotate-left text-xs"></i></button>
-<button onclick="openStockModal('${esc(key)}')" class="w-9 h-9 rounded-lg bg-zinc-800 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
-<button onclick="deleteStock('${esc(key)}')" class="w-9 h-9 rounded-lg bg-zinc-800 text-red-400 flex items-center justify-center"><i class="fa-solid fa-trash text-xs"></i></button>
+<button onclick="openStockItemHistoryModal('${esc(key)}')" class="w-9 h-9 rounded-lg bg-zinc-800 text-sky-400 flex items-center justify-center" title="Historial"><i class="fa-solid fa-clock-rotate-left text-xs"></i></button>
+${adminActions}
 </div>
 </div>`;
 }).join('');
 }
 function openStockModal(key='') {
+if (session.role !== 'admin') { showAlert('Acceso denegado','Solo administradores pueden crear o editar insumos.', true); return; }
 document.getElementById('stockModal').classList.remove('hide');
 document.getElementById('editStockKey').value = key;
 if (key) {
@@ -1642,6 +1712,7 @@ setTimeout(() => document.getElementById('stockName').focus(), 120);
 }
 function closeStockModal() { document.getElementById('stockModal').classList.add('hide'); }
 function saveStock() {
+if (session.role !== 'admin') { showAlert('Acceso denegado','Solo administradores.', true); return; }
 const key = document.getElementById('editStockKey').value;
 const nombre = document.getElementById('stockName').value.trim();
 const cantidad = parseFloat(document.getElementById('stockQty').value);
@@ -1654,6 +1725,7 @@ if (key) db.ref('stock/'+key).set(data); else db.ref('stock').push(data);
 closeStockModal(); toast(key?'Insumo actualizado':'Insumo agregado', 'success');
 }
 async function deleteStock(key) {
+if (session.role !== 'admin') { showAlert('Acceso denegado','Solo administradores.', true); return; }
 const ok = await confirmDialog('Eliminar insumo','Se eliminará del inventario.');
 if (!ok) return;
 db.ref('stock/'+key).remove(); toast('Insumo eliminado', 'info');
